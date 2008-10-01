@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/Library/Frameworks/Python.framework/Versions/Current/bin/python2.5
 # coding=utf-8
 
 # Python program to produce Figure 2 in PlanetMath encyclopedia entry:
@@ -19,7 +19,8 @@ import optparse
 figures = {
   'star': [ 8+0j, 6-5j, 0-6j, 4-10j, 3-16j, 
             8-13j, 13-16j, 12-10j, 16-6j, 10-5j ],
-  'triangle': [ 1.0, 1.0j, -1.0] }
+  'triangle': [ 1.0, 1.0j, -1.0],
+  'atry': [ 10.0, 10.0j, -10.0, -10.0j] }
 
 # Parse command-line options to determine what figure to display
 opt_parser = optparse.OptionParser()
