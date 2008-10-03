@@ -61,7 +61,7 @@ opt_parser.add_option("-W", "--no-wavefronts",
                help="do not show the \"wavefront\" contours")
 opt_parser.add_option("-o", "--output",
                dest="output_file",
-               action="store", default="schwarz-christoffel.eps", metavar="FILE",
+               action="store", default="schwarz-christoffel.pdf", metavar="FILE",
                help="output file name for produced figure")
 (opts, args) = opt_parser.parse_args()
 
@@ -184,7 +184,7 @@ if opts.show_rays:
       U = [ 0j ] + [ w for w in W[:,v] ]
       cvs.stroke(polygonal_path(U, loop=False))
 
-cvs.writeEPSfile(opts.output_file)
+cvs.writePDFfile(opts.output_file)
 
 
 
