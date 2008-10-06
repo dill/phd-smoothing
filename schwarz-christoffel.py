@@ -20,7 +20,9 @@ figures = {
   'star': [ 8+0j, 6-5j, 0-6j, 4-10j, 3-16j, 
             8-13j, 13-16j, 12-10j, 16-6j, 10-5j ],
   'triangle': [ 1.0, 1.0j, -1.0],
-  'atry': [ 10.0, 10.0j, -10.0, -10.0j] }
+  'atry': [ 10.0, 10.0j, -10.0, -10.0j],
+#  'custom' : [] }
+  'custom' : [ 0.211050901126529+0.312942457182226j, 0.485636156571425+-0.126275026582302j, -0.0752188332734687+-0.433727265217471j, -0.314750651853059+-0.0750329868097734j, -0.180379143869386+-0.0896735696019243j, -0.303066172897957+0.247059834617547j, 0.140944027395917+-0.140915609374453j, 0.0357837167999996+0.305622165786150j ] }
 
 # Parse command-line options to determine what figure to display
 opt_parser = optparse.OptionParser()
@@ -61,9 +63,16 @@ opt_parser.add_option("-W", "--no-wavefronts",
                help="do not show the \"wavefront\" contours")
 opt_parser.add_option("-o", "--output",
                dest="output_file",
-               action="store", default="schwarz-christoffel.pdf", metavar="FILE",
+               action="store", default="dia-schwarz-christoffel.pdf", metavar="FILE",
                help="output file name for produced figure")
+#opt_parser.add_option("-C", "--custom",
+#               dest="custom_figure",
+#               action="store", metavar="CUSTOM",
+#               help="custom figure")
 (opts, args) = opt_parser.parse_args()
+
+
+
 
 # Performs 32-point Gauss quadrature
 gauss32_abscissa, gauss32_weights = p_roots(32)
@@ -134,6 +143,12 @@ def polygonal_path(Z, loop=True):
     pa.append(path.closepath())
 
   return pa
+
+
+
+# What to do if we have a custom figure
+#if (figure=="custom"):
+    
 
 
 # Get transformation coefficients, and print them out
