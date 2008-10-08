@@ -28,7 +28,7 @@ lines(c(points$x[1],points$x[length(points$x)]) ,c(points$y[1],points$y[length(p
 centroid<-list()
 centroid$x<-1/length(points$x) * sum(points$x)
 centroid$y<-1/length(points$y) * sum(points$y)
-# Now re-centre about the centroid
+# Now re-centre the points
 points$x<-points$x-centroid$x
 points$y<-points$y-centroid$y
 
@@ -36,7 +36,7 @@ points$y<-points$y-centroid$y
 points.complex<-paste(points$x,"+",points$y,"j",sep="")
 
 # Pretty printer
-cat("  'custom' : [", paste(points.complex,collapse=", "), "] }\n")
+cat("  'custom': [", paste(points.complex,collapse=", "), "] }\n")
 
 # Plot what the re-centred polygon looks like
 plot(points$x,points$y,pch=".")
