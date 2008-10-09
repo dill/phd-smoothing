@@ -63,7 +63,7 @@ c*******************************************************************
 c* scsolv                                     primary subroutine  **
 c*******************************************************************
 c
-      subroutine scsolv(iprint,iguess,tol,errest,n,c,z,wc,
+      subroutine scsolv(iprint,iguess,tol,errest,n,c,zre,zim,wc,
      &   wre,wim,betam,nptsq,qwork)
 c
 c this subroutine computes the accessory parameters c and
@@ -173,11 +173,13 @@ c october 1979 (version 1); july 1983 (version 2)
 c
       implicit complex(c,w,z)
       double precision wre,wim
+      double precision zre, zim
       common /param1/ kfix(20),krat(20),ncomp,nptsq2,c2,
      &  qwork2(460),betam2(20),z2(20),wc2,w2(20)
       dimension z(n),w(n),betam(n),qwork(1)
       dimension ajinv(20,20),scr(900),fval(19),y(19)
       dimension wre(n),wim(n)
+      dimension zre(n), zim(n)
       external scfun
       nm = n-1
 
@@ -260,6 +262,13 @@ c copy output data from /param1/:
       c = c2
       do 8 k = 1,nm
     8   z(k) = z2(k)
+
+c     separate z into real and imaginary parts
+      do i=1,n
+         zre=real(z)
+         zim=aimag(z)
+      end do
+
 c
 c print results and test accuracy:
       if (iprint.ge.0) call scoutp(n,c,z,wc,w,betam,nptsq)
@@ -310,8 +319,8 @@ c*******************************************************************
 c* zsc                                        primary subroutine  **
 c*******************************************************************
 c
-      function zsc(ww,iguess,zinit,z0,w0,k0,eps,ier,n,c,
-     &  z,wc,w,betam,nptsq,qwork)
+      subroutine zsc(ww,iguess,zinit,z0,w0,k0,eps,ier,n,c,
+     &  z,wc,wre,wim,betam,nptsq,qwork,evaled)
 c
 c computes inverse map z(ww) by newton iteration
 c
@@ -345,15 +354,35 @@ c          try again with a better initial guess.
 c
 c   n,c,z,wc,w,betam,nptsq,qwork     as in scsolv (input)
 c
+c   evaled  evaluated point
+c
 c convenient values of z0, w0, and k0 for some applications can be
 c supplied by subroutine nearw.
 c
       implicit complex(c,w,z)
+      complex evaled
+      double precision wim, wre
+      double precision zim, zre
+      dimension wim(n), wre(n)
+      dimension zim(n), zre(n)
       dimension scr(142),iscr(5)
       dimension z(n),w(n),betam(n),qwork(1)
       external zfode
       logical odecal
       common /param2/ cdwdt,z2(20),betam2(20),n2
+
+
+
+c     stick the real and imaginary parts of w back together
+      do i=1,n
+         w(i)=CMPLX(wre(i),wim(i))
+      end do
+c     stick the real and imaginary parts of z back together
+      do i=1,n
+         z(i)=CMPLX(zre(i),zim(i))
+      end do
+
+
 c
       odecal = .false.
       if (iguess.ne.1) goto 1
@@ -386,11 +415,12 @@ c refine answer by newton iteration:
       if (.not.odecal) goto 1
       if (ier.eq.0) write (6,202)
       ier = 1
-    5 zsc = zi
+    5 evaled = zi
 c
   201 format (/' *** nonstandard return from ode in zsc: iflag =',i2/)
   202 format (/' *** possible error in zsc: no convergence in 10'/
      &      '     iterations.  may need a better initial guess zinit')
+
       return
       end
 
@@ -808,14 +838,29 @@ c*******************************************************************
 c* nearw                                      primary subroutine  **
 c*******************************************************************
 c
-      subroutine nearw(ww,zn,wn,kn,n,z,wc,w,betam)
+      subroutine nearw(ww,zn,wn,kn,n,zre,zim,wc,wre,wim,betam)
 c
 c returns information associated with the nearest vertex w(k)
 c to the point ww, or with wc if wc is closer than any w(k).
 c zn = prevertex position, wn = w(zn), kn = vertex no. (0 to n)
 c
       implicit complex(c,w,z)
+      double precision wre, wim
+      double precision zre, zim
+      dimension wre(n), wim(n)
+      dimension zre(n), zim(n)
       dimension z(n),w(n),betam(n)
+
+c     stick the real and imaginary parts of w back together
+      do i=1,n
+         w(i)=CMPLX(wre(i),wim(i))
+      end do
+
+c     stick the real and imaginary parts of z back together
+      do i=1,n
+         z(i)=CMPLX(zre(i),zim(i))
+      end do
+
 c
       dist = abs(ww-wc)
       kn = 0
@@ -831,6 +876,7 @@ c
       if (kn.eq.0) return
       zn = z(kn)
       wn = w(kn)
+
       return
       end
 
