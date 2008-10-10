@@ -320,7 +320,7 @@ c* zsc                                        primary subroutine  **
 c*******************************************************************
 c
       subroutine zsc(ww,iguess,zinit,z0,w0,k0,eps,ier,n,c,
-     &  z,wc,wre,wim,betam,nptsq,qwork,evaled)
+     &  zre,zim,wc,wre,wim,betam,nptsq,qwork,evaled)
 c
 c computes inverse map z(ww) by newton iteration
 c
