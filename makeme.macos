@@ -1,0 +1,4 @@
+gfortran -arch i386  -isysroot /Developer/SDKs/MacOSX10.4u.sdk  -ffixed-form -fno-common -g -O2 -march=nocona -c  scpack.f90 -o scpack.o
+gfortran -arch i386  -isysroot /Developer/SDKs/MacOSX10.4u.sdk  -ffixed-form -fno-common -g -O2 -march=nocona -c  sclib.f90 -o sclib.o
+R CMD SHLIB scpack.o sclib.o -o scpack.so
+rm *.o

@@ -848,6 +848,7 @@ c to get this information across any vertices at infinity
 c should be signaled by the value w(k) = (99.,99.) on input.
 c
       implicit double complex(c,w)
+      double precision betam
       dimension w(n),betam(n)
 
 
