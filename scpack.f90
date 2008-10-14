@@ -809,6 +809,7 @@ c to the point ww, or with wc if wc is closer than any w(k).
 c zn = prevertex position, wn = w(zn), kn = vertex no. (0 to n)
 c
       implicit double complex(c,w,z)
+      double precision betam
       dimension z(n),w(n),betam(n)
 
 c
@@ -850,7 +851,8 @@ c
       implicit double complex(c,w)
       double precision betam
       dimension w(n),betam(n)
-
+      
+      print*,w
 
       c9 = (99.,99.)
 c
