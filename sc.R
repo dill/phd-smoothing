@@ -19,9 +19,9 @@ nvertices<-4
 
 # Position of vertices
 polyvertices<-vector("complex",nvertices)
-polyvertices[1]<-complex(1,10,0)
+polyvertices[1]<-complex(1,5,0)
 polyvertices[2]<-complex(1,0,10)
-polyvertices[3]<-complex(1,-10,0)
+polyvertices[3]<-complex(1,-1,0)
 polyvertices[4]<-complex(1,0,-10)
 
 # set number of quadrature points per subinterval
@@ -29,7 +29,7 @@ nptsq<-5
 
 # We use the fortran function ANGLES to compute the angles we need
 betam<-vector("numeric",nvertices)
-angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),WRE=as.numeric(Re(polyvertices)),WIM=as.numeric(Im(polyvertices)),BETAM=as.numeric(betam))
+angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
 betam<-angle.ret$BETAM
 
 # Now use qinit to initialise the Gauss-Jacobi quadrature
@@ -40,15 +40,14 @@ qwork<-qinit.ret$QWORK
 # Finally call the SCSOLV routine and find the parameters
 # IPRINT and IGUESS must be given to "avoid accidental exact solution"
 errest<-vector("numeric",1)
-c.const<-vector("numeric",2)
-wc<-c(0,sqrt(2))
-zre<-vector("numeric",nvertices)
-zim<-vector("numeric",nvertices)
-ret<-.Fortran("SCSOLV",IPRINT=as.numeric(0),IGUESS=as.numeric(1),TOL=as.numeric(1e-6),ERREST=as.numeric(errest),N=as.integer(nvertices),C=as.numeric(c.const),ZRE=as.numeric(zre),ZIM=as.numeric(zim),WC=as.numeric(wc),WRE=as.numeric(Re(polyvertices)),WIM=as.numeric(Im(polyvertices)),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
+c.const<-vector("complex",1)
+wc<-complex(1,0,sqrt(2))
+z<-vector("complex",nvertices)
+ret<-.Fortran("SCSOLV",IPRINT=as.numeric(0),IGUESS=as.numeric(1),TOL=as.numeric(1e-6),ERREST=as.numeric(errest),N=as.integer(nvertices),C=as.complex(c.const),Z=z,WC=as.complex(wc),W=as.complex(polyvertices),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
 
 
 # Set some variables
-prevertices<-complex(nvertices,ret$ZRE,ret$ZIM)
+prevertices<-ret$Z
 angles<-ret$BETAM
 centre<-ret$WC
 complex.scale.factor<-ret$C
@@ -108,29 +107,29 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prev
    	   #          lie entirely within the closed polygon.
    	   #
    	   #   k0     k if z0 = z(k) for some k, otherwise 0 (input)
-      z0<-vector("numeric",2)
-      k0<-vector("numeric",1)
-      w0<-vector("numeric",2)
-      evaled<-vector("numeric",2)
-      this.point<-c(Re(points[i]),Im(points[i]))
+      z0<-vector("complex",1)
+      k0<-vector("integer",0)
+      w0<-vector("complex",1)
+      evaled<-complex(1)
 
 #cat(as.numeric(this.point),as.numeric(z0),as.numeric(w0),as.numeric(k0),as.integer(nvertices),as.numeric(Re(prevertices)),as.numeric(Im(prevertices)),as.numeric(centre),as.numeric(Re(polyvertices)),as.numeric(Im(polyvertices)),as.numeric(angles),"\n",sep="\n*")
 #      cat("point:",this.point,"\n")
 
 
-      nearest<-.Fortran("NEARW",WW=as.numeric(this.point),ZN=as.numeric(z0),WN=as.numeric(w0),KN=as.numeric(k0),N=as.integer(nvertices),ZRE=as.numeric(Re(prevertices)),ZIM=as.numeric(Im(prevertices)),WC=as.numeric(centre),WRE=as.numeric(Re(polyvertices)),WIN=as.numeric(Im(polyvertices)),BETAM=as.numeric(angles))
+      nearest<-.Fortran("NEARW",WW=points[i],ZN=z0,WN=w0,KN=k0,N=as.integer(nvertices),Z=as.complex(prevertices),WC=as.complex(centre),W=as.complex(polyvertices),BETAM=as.numeric(angles))
 
 
-cat("near found\n")
+#cat("near found\n")
 
-   cat(as.numeric(this.point),as.numeric(2),as.numeric(nearest$ZN),as.numeric(nearest$ZN),as.numeric(nearest$WN),as.numeric(nearest$K0),as.numeric(accuracy),as.numeric(1),as.integer(nvertices),as.numeric(complex.scale.factor),as.numeric(Re(prevertices)),as.numeric(Im(prevertices)),as.numeric(centre),as.numeric(Re(polyvertices)),as.numeric(Im(polyvertices)),as.numeric(betam),as.numeric(nptsq),as.numeric(qwork),"---",as.numeric(evaled),"\n",sep="\n*")
+#   cat(as.numeric(this.point),as.numeric(2),as.numeric(nearest$ZN),as.numeric(nearest$ZN),as.numeric(nearest$WN),"---",as.numeric(nearest$KN),"---",as.numeric(accuracy),as.numeric(1),as.integer(nvertices),as.numeric(complex.scale.factor),as.numeric(Re(prevertices)),as.numeric(Im(prevertices)),as.numeric(centre),as.numeric(Re(polyvertices)),as.numeric(Im(polyvertices)),as.numeric(betam),as.numeric(nptsq),as.numeric(qwork),"---",as.numeric(evaled),"\n",sep="\n*")
 
 
-      map.ret<-.Fortran("ZSC",WW=as.numeric(this.point),IGUESS=as.numeric(2),ZINIT=as.numeric(nearest$ZN),Z0=as.numeric(nearest$ZN),W0=as.numeric(nearest$WN),K0=as.numeric(nearest$K0),EPS=as.numeric(accuracy),IER=as.numeric(1),N=as.integer(nvertices),C=as.numeric(complex.scale.factor),ZRE=as.numeric(Re(prevertices)),ZIM=as.numeric(Im(prevertices)),WC=as.numeric(centre),WRE=as.numeric(Re(polyvertices)),WIM=as.numeric(Im(polyvertices)),BETAM=as.numeric(angles),NPTSQ=as.numeric(nptsq),QWORK=as.numeric(qwork),EVALED=as.numeric(evaled))
+      map.ret<-.Fortran("ZSC",WW=as.numeric(this.point),IGUESS=as.numeric(2),ZINIT=as.complex(nearest$ZN),Z0=as.complex(nearest$ZN),W0=as.complex(nearest$WN),K0=as.integer(nearest$KN),EPS=as.numeric(accuracy),IER=as.numeric(1),N=as.integer(nvertices),C=as.complex(complex.scale.factor),Z=as.complex(prevertices),WC=as.numeric(centre),W=as.complex(polyvertices),BETAM=as.numeric(angles),NPTSQ=as.numeric(nptsq),QWORK=as.numeric(qwork),EVALED=as.complex(evaled))
   
-cat("mapped\n")
+#cat("mapped\n")
       # Push the value into the vector
-     # evaluated.points[i]<-complex(1,map.ret$evaled[1].map.ret$evaled[2])
+      evaluated.points[i]<-map.ret$EVALED
+      cat("original point: ",this.point," new point: ",map.ret$EVALED,"\n")
    }
 
    # Return the vector
@@ -145,21 +144,25 @@ some.points<-complex(4,c(0.01,0.03,0.002,0),c(0.4,0.00002,0.001,0))
 
 #cat(some.points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre,sep="\n*")
 
-retval<-sc.map.backwards(some.points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre)
+#retval<-sc.map.backwards(some.points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre)
 
 # Now we want to create some random points in the polygon and see how our map
 # works. We can do this using the splancs library...
 
-#library(splancs)
+library(splancs)
 
 
 # Create some data
-#poly.rand.data<-csr(as.points(Re(w),Im(w)),100)
+poly.rand.data<-csr(as.points(Re(polyvertices),Im(polyvertices)),100)
+complex.poly.rand.data<-complex(100,poly.rand.data[,1],poly.rand.data[,2])
 
 
+par(mfrow=c(2,1))
+plot(complex.poly.rand.data)
 
 
-
+retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre)
+plot(retval)
 
 
 

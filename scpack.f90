@@ -37,7 +37,7 @@ c n+1 contain quadrature nodes on output, the next n+1 contain
 c quadrature weights on output, and the final one is a
 c scratch vector needed by gaussj.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension qwork(1),betam(n)
 c
 c for each finite vertex w(k), compute nodes and weights for
@@ -63,8 +63,8 @@ c*******************************************************************
 c* scsolv                                     primary subroutine  **
 c*******************************************************************
 c
-      subroutine scsolv(iprint,iguess,tol,errest,n,c,zre,zim,wc,
-     &   wre,wim,betam,nptsq,qwork)
+      subroutine scsolv(iprint,iguess,tol,errest,n,c,z,wc,
+     &   w,betam,nptsq,qwork)
 c
 c this subroutine computes the accessory parameters c and
 c z(k) for the schwarz-christoffel transformation
@@ -124,9 +124,6 @@ c           must include at least one vertex w(k), even if it
 c           has to be a degenerate vertex with betam(k) = 0.
 c           w(n) and w(1) must be finite.
 
-c        NB this is infact entered as wre and wim to allow calling
-c           from R. These are then recombined as the above array
-
 c
 c   betam   real array with betam(k) the external angle in the
 c           polygon at vertex k divided by minus pi (input).
@@ -171,23 +168,13 @@ c 251 mercer st.,   new york, ny 10012
 c (212) 460-7224
 c october 1979 (version 1); july 1983 (version 2)
 c
-      implicit complex(c,w,z)
-      double precision wre,wim
-      double precision zre, zim
+      implicit double complex(c,w,z)
       common /param1/ kfix(20),krat(20),ncomp,nptsq2,c2,
      &  qwork2(460),betam2(20),z2(20),wc2,w2(20)
       dimension z(n),w(n),betam(n),qwork(1)
       dimension ajinv(20,20),scr(900),fval(19),y(19)
-      dimension wre(n),wim(n)
-      dimension zre(n), zim(n)
       external scfun
       nm = n-1
-
-c     stick the real and imaginary parts of w back together
-      do i=1,n
-         w(i)=CMPLX(wre(i),wim(i))
-      end do
-
 
 c
 c check input data:
@@ -263,12 +250,6 @@ c copy output data from /param1/:
       do 8 k = 1,nm
     8   z(k) = z2(k)
 
-c     separate z into real and imaginary parts
-      do i=1,n
-         zre=real(z)
-         zim=aimag(z)
-      end do
-
 c
 c print results and test accuracy:
       if (iprint.ge.0) call scoutp(n,c,z,wc,w,betam,nptsq)
@@ -306,7 +287,7 @@ c
 c convenient values of z0, w0, and k0 for most applications can be
 c supplied by subroutine nearz.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n),betam(n),qwork(1)
 c
       wsc = w0 + c * zquad(z0,k0,zz,kzz,n,z,betam,nptsq,qwork)
@@ -320,7 +301,7 @@ c* zsc                                        primary subroutine  **
 c*******************************************************************
 c
       subroutine zsc(ww,iguess,zinit,z0,w0,k0,eps,ier,n,c,
-     &  zre,zim,wc,wre,wim,betam,nptsq,qwork,evaled)
+     &  z,wc,w,betam,nptsq,qwork,evaled)
 c
 c computes inverse map z(ww) by newton iteration
 c
@@ -359,30 +340,13 @@ c
 c convenient values of z0, w0, and k0 for some applications can be
 c supplied by subroutine nearw.
 c
-      implicit complex(c,w,z)
-      complex evaled
-      double precision wim, wre
-      double precision zim, zre
-      dimension wim(n), wre(n)
-      dimension zim(n), zre(n)
+      implicit double complex(c,w,z)
+      double complex evaled
       dimension scr(142),iscr(5)
       dimension z(n),w(n),betam(n),qwork(1)
       external zfode
       logical odecal
       common /param2/ cdwdt,z2(20),betam2(20),n2
-
-
-
-c     stick the real and imaginary parts of w back together
-      do i=1,n
-         w(i)=CMPLX(wre(i),wim(i))
-      end do
-c     stick the real and imaginary parts of z back together
-      do i=1,n
-         z(i)=CMPLX(zre(i),zim(i))
-      end do
-
-
 c
       odecal = .false.
       if (iguess.ne.1) goto 1
@@ -433,7 +397,7 @@ c
 c
 c computes the function zdzdt needed by ode in zsc.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       common /param2/ cdwdt,z(20),betam(20),n
 c
       zdzdt = cdwdt / zprod(zz,0,n,z,betam)
@@ -451,7 +415,7 @@ c
 c checks geometry of the problem to make sure it is a form usable
 c by scsolv.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension w(n),betam(n)
 c
       sum = 0.
@@ -508,7 +472,7 @@ c
 c
 c transforms y(k) to z(k).  see comments in subroutine scsolv.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension y(n),z(n)
       nm = n - 1
       pi = acos(-1.)
@@ -538,7 +502,7 @@ c*******************************************************************
 c
 c this is the function whose zero must be found in scsolv.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension fval(ndim),y(ndim)
       common /param1/ kfix(20),krat(20),ncomp,nptsq,c,
      &  qwork(460),betam(20),z(20),wc,w(20)
@@ -585,7 +549,7 @@ c
 c prints a table of k, w(k), th(k), betam(k), and z(k).
 c also prints the constants n, nptsq, wc, c.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n),w(n),betam(n)
 c
       write (6,102) n, nptsq
@@ -621,7 +585,7 @@ c
 c
 c tests the computed map for accuracy.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n),w(n),betam(n),qwork(1)
 c
 c test length of radii:
@@ -649,7 +613,7 @@ c computes the complex line integral of zprod from za to zb along a
 c straight line segment within the unit disk.  function zquad1 is
 c called twice, once for each half of this integral.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n),betam(n),qwork(1)
 c
       if (abs(za).gt.1.1.or.abs(zb).gt.1.1) write (6,301)
@@ -673,7 +637,7 @@ c straight line segment within the unit disk.  compound one-sided
 c gauss-jacobi quadrature is used, using function dist to determine
 c the distance to the nearest singularity z(k).
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n),betam(n),qwork(1)
       data resprm /2./
 c
@@ -706,7 +670,7 @@ c
 c determines the distance from zz to the nearest singularity z(k)
 c other than z(ks).
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n)
 c
       dist = 99.
@@ -727,7 +691,7 @@ c
 c computes the integral of zprod from za to zb by applying a
 c one-sided gauss-jacobi formula with possible singularity at za.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n),betam(n),qwork(1)
 c
       zs = (0.,0.)
@@ -765,7 +729,7 @@ c *** note -- in practice this is the innermost subroutine
 c *** in scpack calculations.  the complex log calculation below
 c *** may account for as much as half of the total execution time.
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n),betam(n)
 c
       zsum = (0.,0.)
@@ -790,7 +754,7 @@ c           n
 c         prod  (1-zz/z(k))**betam(k)
 c          k=1
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n),betam(n)
 c
       sum = 0.
@@ -812,7 +776,7 @@ c returns information associated with the nearest prevertex z(k)
 c to the point zz, or with 0 if 0 is closer than any z(k).
 c zn = prevertex position, wn = w(zn), kn = prevertex no. (0 to n)
 c
-      implicit complex(c,w,z)
+      implicit double complex(c,w,z)
       dimension z(n),w(n),betam(n)
 c
       dist = abs(zz)
@@ -838,28 +802,14 @@ c*******************************************************************
 c* nearw                                      primary subroutine  **
 c*******************************************************************
 c
-      subroutine nearw(ww,zn,wn,kn,n,zre,zim,wc,wre,wim,betam)
+      subroutine nearw(ww,zn,wn,kn,n,z,wc,w,betam)
 c
 c returns information associated with the nearest vertex w(k)
 c to the point ww, or with wc if wc is closer than any w(k).
 c zn = prevertex position, wn = w(zn), kn = vertex no. (0 to n)
 c
-      implicit complex(c,w,z)
-      double precision wre, wim
-      double precision zre, zim
-      dimension wre(n), wim(n)
-      dimension zre(n), zim(n)
+      implicit double complex(c,w,z)
       dimension z(n),w(n),betam(n)
-
-c     stick the real and imaginary parts of w back together
-      do i=1,n
-         w(i)=CMPLX(wre(i),wim(i))
-      end do
-
-c     stick the real and imaginary parts of z back together
-      do i=1,n
-         z(i)=CMPLX(zre(i),zim(i))
-      end do
 
 c
       dist = abs(ww-wc)
@@ -889,7 +839,7 @@ c this now accepts and extra argument to allow it to be called from
 c R. w is split ito it's real an imaginary parts to bgin with and then
 c recombined.
 
-      subroutine angles(n,wre,wim,betam)
+      subroutine angles(n,w,betam)
 c
 c computes external angles -pi*betam(k) from knowledge of
 c the vertices w(k).  an angle betam(k) is computed for each
@@ -897,14 +847,8 @@ c k for which w(k-1), w(k), and w(k+1) are finite.
 c to get this information across any vertices at infinity
 c should be signaled by the value w(k) = (99.,99.) on input.
 c
-      implicit complex(c,w,z)
-      double precision wre,wim
-      dimension w(n),betam(n),wre(n),wim(n)
-
-c     stick the real and imaginary parts of w back together
-      do i=1,n
-         w(i)=CMPLX(wre(i),wim(i))
-      end do
+      implicit double complex(c,w)
+      dimension w(n),betam(n)
 
 
       c9 = (99.,99.)
