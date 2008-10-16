@@ -39,7 +39,9 @@ c        golub, g. h., and welsch, j. h., "calculation of gaussian
 c        quadrature rules," mathematics of computation 23 (april,
 c        1969), pp. 221-230.
 c
-      real b(n), t(n), w(n), muzero
+      implicit none
+      integer i,n,ierr
+      double precision b(n), t(n), w(n), muzero,alpha,beta
 c
       call class (n, alpha, beta, b, t, muzero)
       w(1) = 1.
@@ -50,6 +52,8 @@ c
   110    w(i) = muzero * w(i) * w(i)
       return
       end
+
+
       subroutine class(n, alpha, beta, b, a, muzero)
 c
 c           this procedure supplies the coefficients a(j), b(j) of the
@@ -67,7 +71,9 @@ c        of the given polynomial's weight function w(x).  since the
 c        polynomials are orthonormalized, the tridiagonal matrix is
 c        guaranteed to be symmetric.
 c
-      real a(n), b(n), muzero
+      implicit none
+      integer n,nm1,i
+      double precision a(n),b(n),muzero,alpha,beta,ab,abi,a2b2,gamma
 c
       nm1 = n - 1
 c
@@ -87,6 +93,10 @@ c
       a(n) = a2b2/((abi - 2.)*abi)
       return
       end
+cccccccccccccccccc
+
+
+ccc   imtql2
       subroutine imtql2(n, d, e, z, ierr)
 c
 c     this is a modified version of the eispack routine imtql2.
@@ -94,7 +104,9 @@ c     it finds the eigenvalues and first components of the
 c     eigenvectors of a symmetric tridiagonal matrix by the implicit ql
 c     method.
 c
-      real d(n), e(n), z(n), machep
+      implicit none
+      integer n,ierr,m,l,j,i,ii,mml,k
+      double precision d(n), e(n), z(n), machep,s,p,g,c,f,b,r
 c
 c     :::::::::: machep is a machine dependent parameter specifying
 c                the relative precision of floating point arithmetic.
@@ -185,13 +197,23 @@ c                eigenvalue after 30 iterations ::::::::::
  1000 ierr = l
  1001 return
       end
+cccccccccccccccccccccc
+
+
+ccccccccccccccccccccc
+c function gamma
       function gamma (x)
 c
 c computes the gamma function. needed by gaussj.
 c this function is adapted from an imsl routine but should
 c be replaced by any locally available alternative.
 c
+      implicit none
+      double precision p,x,t,p4,q,pi,xinf,big1,xmin,gamma,sign,y,
+     &   den,a,b,top
+      integer ier,iend,r,j,i,iend2,iend1
       logical            mflag
+
       dimension          p(5),q(4),p4(3)
 c                                  coefficients for minimax
 c                                  approximation to gamma(x),
@@ -229,9 +251,9 @@ c                                  first executable statement
 c                                  argument is negative
       mflag = .true.
       t = -t
-      r = aint(t)
+      r = int(t)
       sign = 1.0
-      if (amod(r,2.0) .eq. 0.0) sign = -1.
+      if (mod(r,2) .eq. 0.0) sign = -1.
       r = t-r
       if (r.ne.0.0) go to 20
       ier = 130
@@ -274,7 +296,7 @@ c                                  2.0 .le. t .le. 3.0
       gamma = y
       go to 9005
 c                                  t .gt. 12.0
-   60 top = alog(t)
+   60 top = log(t)
       top = t*(top-1.0)-.5*top
       t = 1.0/t
       b = t*t
@@ -288,6 +310,8 @@ c                                  t .gt. 12.0
   201 format (' *** error in gaussj gamma function routine')
  9005 return
       end
+
+
       subroutine ns01a (n,x,f,ajinv,dstep,dmax,acc,maxfun,iprint,w,
      2                 calfun)
 c
@@ -401,8 +425,13 @@ c   sgefa followed by sgedi.  these require in addition the
 c   linpack basic linear algebra subroutines saxpy, sscal,
 c   isamax, and sswap.
 c
+      implicit none
+      integer n, maxc,nt,ntest,iprint,lda,is,ic,i,ks,kk,k,info,nx,nf,j,
+     &   ijob,nw,nd,mw,ndc,maxfun
       external calfun
-      real x(1),f(1),lawork(20),ajinv(20,20),w(1),det(2)
+      double precision x(1),f(1),lawork(20),ajinv(20,20),w(1),det(2),
+     &   dstep,dtest,acc,dw,anmult,ds,dmm,dn,dmult,dss,ss,sp,fnp,fsq,
+     &   fmin,dd,pa,pj,tinc,dmax,dm
       integer ipvt(20)
 c     set various parameters
       maxc=0
@@ -769,9 +798,16 @@ c     update the approximations to j and to ajinv
    96 continue
       go to 38
       end
+cccccccccccccccccccccccccccccccccccccccccc
+
+
+
+
+cccccccccccccccccccccccccccccccccccccccccc
       subroutine sgefa(a,lda,n,ipvt,info)
-      integer ipvt(1)
-      real a(lda,1)
+      implicit none
+      integer ipvt(1),info,k,nm1,n,kp1,l,lda,isamax,j
+      double precision a(lda,1),t
 c
 c     linpack routine.
 c     sgefa factors a single precision matrix by gaussian elimination.

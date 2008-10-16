@@ -14,9 +14,11 @@ dyn.load("scpack.so")
 
 ### Create the variables
 
+
+
+######################################################
 # Number of vertices
 nvertices<-4
-
 # Position of vertices
 polyvertices<-vector("complex",nvertices)
 polyvertices[1]<-complex(1,-10,0)
@@ -24,13 +26,32 @@ polyvertices[2]<-complex(1,0,10)
 polyvertices[3]<-complex(1,10,0)
 polyvertices[4]<-complex(1,0,-10)
 
-# set number of quadrature points per subinterval
-nptsq<-5
-
+wc<-complex(1,0,sqrt(2))
 # We use the fortran function ANGLES to compute the angles we need
 betam<-vector("numeric",nvertices)
 angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
 betam<-angle.ret$BETAM
+#################################################
+
+# Test problem - L-shape
+#nvertices<-6
+#polyvertices<-vector("complex",nvertices)
+#polyvertices[1]<-complex(1,0,0)
+#polyvertices[2]<-complex(1,2,0)
+#polyvertices[3]<-complex(1,2,1)
+#polyvertices[4]<-complex(1,1,1)
+#polyvertices[5]<-complex(1,1,2)
+#polyvertices[6]<-complex(1,0,2)
+#####
+#betam<-vector("numeric",nvertices)
+#angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
+#betam<-angle.ret$BETAM
+#wc<-complex(1,0.5,0.5)
+#################################
+
+# set number of quadrature points per subinterval
+nptsq<-5
+
 
 # Now use qinit to initialise the Gauss-Jacobi quadrature
 qwork<-vector("numeric",nptsq*(2*nvertices+3))
@@ -41,9 +62,8 @@ qwork<-qinit.ret$QWORK
 # IPRINT and IGUESS must be given to "avoid accidental exact solution"
 errest<-vector("numeric",1)
 c.const<-vector("complex",1)
-wc<-complex(1,0,sqrt(2))
 z<-vector("complex",nvertices)
-ret<-.Fortran("SCSOLV",IPRINT=as.numeric(0),IGUESS=as.numeric(1),TOL=as.numeric(1e-6),ERREST=as.numeric(errest),N=as.integer(nvertices),C=as.complex(c.const),Z=z,WC=as.complex(wc),W=as.complex(polyvertices),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
+ret<-.Fortran("SCSOLV",IPRINT=as.numeric(0),IGUESS=as.numeric(0),TOL=as.numeric(1e-6),ERREST=as.numeric(errest),N=as.integer(nvertices),C=as.complex(c.const),Z=z,WC=as.complex(wc),W=as.complex(polyvertices),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
 
 
 # Set some variables
@@ -140,29 +160,33 @@ cat("mapped\n")
 
 
 # Test evaluation of the map
-some.points<-complex(4,c(0.01,0.03,0.002,0),c(0.4,0.00002,0.001,0))
+#some.points<-complex(4,c(0.01,0.03,0.002,0),c(0.4,0.00002,0.001,0))
+
+# L shape test
+#some.points<-complex(4,c(0.5,1,0.5,0.5),c(0.5,0.5,1,1.5))
 
 #cat(some.points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre,sep="\n*")
 
-retval<-sc.map.backwards(some.points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre)
+#retval<-sc.map.backwards(some.points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre)
 
 # Now we want to create some random points in the polygon and see how our map
 # works. We can do this using the splancs library...
 
-#library(splancs)
+library(splancs)
 
 
 # Create some data
-#poly.rand.data<-csr(as.points(Re(polyvertices),Im(polyvertices)),100)
-#complex.poly.rand.data<-complex(50,poly.rand.data[,1],poly.rand.data[,2])
+poly.rand.data<-csr(as.points(Re(polyvertices),Im(polyvertices)),100)
+complex.poly.rand.data<-complex(100,poly.rand.data[,1],poly.rand.data[,2])
 
 
 par(mfrow=c(2,1))
-#plot(complex.poly.rand.data)
+plot(complex.poly.rand.data)
 
-plot(some.points)
-#retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre)
-plot(retval)
+#plot(some.points)
+accuracy<-1e-6
+retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,angles,complex.scale.factor,centre)
+#plot(retval)
 
 
 

@@ -37,7 +37,10 @@ c n+1 contain quadrature nodes on output, the next n+1 contain
 c quadrature weights on output, and the final one is a
 c scratch vector needed by gaussj.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      integer n, nptsq, k, inodes, iwts,iscr
+      double precision betam,qwork
+      double complex c,w,z
       dimension qwork(1),betam(n)
 c
 c for each finite vertex w(k), compute nodes and weights for
@@ -168,7 +171,12 @@ c 251 mercer st.,   new york, ny 10012
 c (212) 460-7224
 c october 1979 (version 1); july 1983 (version 2)
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex c,w,z,wc,w2,wc2,c2,z2,scr
+      double precision betam, tol, errest,qwork,betam2,dstep,dmax,ajinv,
+     &   tmp2,tmp1,qwork2,fval,y
+      integer iprint,iguess,n,nptsq,i,km,k,nm,maxfun,neq,ncomp,nptsq2,
+     &   nwdim,kfix,krat
       common /param1/ kfix(20),krat(20),ncomp,nptsq2,c2,
      &  qwork2(460),betam2(20),z2(20),wc2,w2(20)
       dimension z(n),w(n),betam(n),qwork(1)
@@ -287,7 +295,10 @@ c
 c convenient values of z0, w0, and k0 for most applications can be
 c supplied by subroutine nearz.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex zz,z0,w0,c,z,wsc,zquad
+      integer kzz,k0,n, nptsq
+      double precision betam, qwork
       dimension z(n),betam(n),qwork(1)
 c
       wsc = w0 + c * zquad(z0,k0,zz,kzz,n,z,betam,nptsq,qwork)
@@ -340,8 +351,11 @@ c
 c convenient values of z0, w0, and k0 for some applications can be
 c supplied by subroutine nearw.
 c
-      implicit double complex(c,w,z)
-      double complex evaled
+      implicit none
+      double complex c,w,z,ww,z0,w0,wc,evaled,zinit,zi,z2,cdwdt,zfnwt,
+     &   wsc,zprod
+      double precision betam,eps,qwork,relerr,abserr,betam2,scr,t
+      integer iguess,k0,ier,n,nptsq,n2,k,iter,iscr,iflag
       dimension scr(142),iscr(5)
       dimension z(n),w(n),betam(n),qwork(1)
       external zfode
@@ -415,9 +429,13 @@ c
 c checks geometry of the problem to make sure it is a form usable
 c by scsolv.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex w
+      double precision eps, betam,sum
+      integer k,n
       dimension w(n),betam(n)
 c
+
       sum = 0.
       do 1 k = 1,n
     1   sum = sum + betam(k)
@@ -472,7 +490,10 @@ c
 c
 c transforms y(k) to z(k).  see comments in subroutine scsolv.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex z
+      double precision pi, dth, thsum, y
+      integer nm, n, k
       dimension y(n),z(n)
       nm = n - 1
       pi = acos(-1.)
@@ -502,7 +523,11 @@ c*******************************************************************
 c
 c this is the function whose zero must be found in scsolv.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex c,w,z,wc,zfval,zquad,zint,wdenom
+      double precision betam, fval,y,qwork
+      integer k,i,neq,n,nvert,ndim,kfix,krat,nfirst,kl,kr,ncomp,
+     & nptsq
       dimension fval(ndim),y(ndim)
       common /param1/ kfix(20),krat(20),ncomp,nptsq,c,
      &  qwork(460),betam(20),z(20),wc,w(20)
@@ -549,7 +574,10 @@ c
 c prints a table of k, w(k), th(k), betam(k), and z(k).
 c also prints the constants n, nptsq, wc, c.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex c,w,z,wc
+      integer n, nptsq,k
+      double precision betam,thdpi,pi
       dimension z(n),w(n),betam(n)
 c
       write (6,102) n, nptsq
@@ -585,7 +613,10 @@ c
 c
 c tests the computed map for accuracy.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex c,w,z,wc,wsc
+      double precision betam,qwork,errest,rade
+      integer k,nptsq,n
       dimension z(n),w(n),betam(n),qwork(1)
 c
 c test length of radii:
@@ -613,7 +644,10 @@ c computes the complex line integral of zprod from za to zb along a
 c straight line segment within the unit disk.  function zquad1 is
 c called twice, once for each half of this integral.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex c,w,z,za,zb,zmid,zquad,zquad1
+      integer n,ka,kb,nptsq
+      double precision betam,qwork
       dimension z(n),betam(n),qwork(1)
 c
       if (abs(za).gt.1.1.or.abs(zb).gt.1.1) write (6,301)
@@ -637,7 +671,10 @@ c straight line segment within the unit disk.  compound one-sided
 c gauss-jacobi quadrature is used, using function dist to determine
 c the distance to the nearest singularity z(k).
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex z,za,zb,zaa,zbb,zquad,zquad1,zqsum
+      integer ka, kb,nptsq,n
+      double precision betam,r,resprm,qwork,dist
       dimension z(n),betam(n),qwork(1)
       data resprm /2./
 c
@@ -670,7 +707,10 @@ c
 c determines the distance from zz to the nearest singularity z(k)
 c other than z(ks).
 c
-      implicit double complex(c,w,z)
+      implicit none
+      integer k,n,ks
+      double complex z,zz
+      double precision dist
       dimension z(n)
 c
       dist = 99.
@@ -691,7 +731,10 @@ c
 c computes the integral of zprod from za to zb by applying a
 c one-sided gauss-jacobi formula with possible singularity at za.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex c,w,z,za,zb,zs,zh,zc,zqsum,zprod
+      integer n,k,ka,iwt1,iwt2,nptsq,i,ioffst
+      double precision betam, qwork
       dimension z(n),betam(n),qwork(1)
 c
       zs = (0.,0.)
@@ -729,7 +772,10 @@ c *** note -- in practice this is the innermost subroutine
 c *** in scpack calculations.  the complex log calculation below
 c *** may account for as much as half of the total execution time.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex z,zz,zprod,zsum,ztmp
+      integer ks,k,n
+      double precision betam
       dimension z(n),betam(n)
 c
       zsum = (0.,0.)
@@ -754,7 +800,10 @@ c           n
 c         prod  (1-zz/z(k))**betam(k)
 c          k=1
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex z,zz,ztmp
+      double precision betam,rprod,sum
+      integer k,n
       dimension z(n),betam(n)
 c
       sum = 0.
@@ -776,7 +825,10 @@ c returns information associated with the nearest prevertex z(k)
 c to the point zz, or with 0 if 0 is closer than any z(k).
 c zn = prevertex position, wn = w(zn), kn = prevertex no. (0 to n)
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex zz,wn,wc,w,z
+      integer zn,kn,n,k
+      double precision betam,dist,distzk
       dimension z(n),w(n),betam(n)
 c
       dist = abs(zz)
@@ -808,8 +860,10 @@ c returns information associated with the nearest vertex w(k)
 c to the point ww, or with wc if wc is closer than any w(k).
 c zn = prevertex position, wn = w(zn), kn = vertex no. (0 to n)
 c
-      implicit double complex(c,w,z)
-      double precision betam
+      implicit none
+      double complex wc,w,z,wn,ww
+      integer zn,kn,k,n
+      double precision betam,dist,distwk
       dimension z(n),w(n),betam(n)
 
 c
@@ -836,10 +890,6 @@ c*******************************************************************
 c* angles                                     primary subroutine  **
 c*******************************************************************
 c
-c this now accepts and extra argument to allow it to be called from
-c R. w is split ito it's real an imaginary parts to bgin with and then
-c recombined.
-
       subroutine angles(n,w,betam)
 c
 c computes external angles -pi*betam(k) from knowledge of
@@ -848,12 +898,12 @@ c k for which w(k-1), w(k), and w(k+1) are finite.
 c to get this information across any vertices at infinity
 c should be signaled by the value w(k) = (99.,99.) on input.
 c
-      implicit double complex(c,w)
-      double precision betam
+      implicit none
+      double complex c9,w
+      integer n,k,km,kp
+      double precision betam, pi
       dimension w(n),betam(n)
       
-      print*,w
-
       c9 = (99.,99.)
 c
       pi = acos(-1.)
