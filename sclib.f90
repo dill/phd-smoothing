@@ -863,9 +863,16 @@ c
       if (a(n,n) .eq. 0.) info = n
       return
       end
+ccccccccccccccccccccccccccccccccccccccccc
+
+
+ccccccccccccccccccccccccccccccccccccccccc
+c  subroutine sgedi
+ccccccccccccccccccccccccccccccccccccccccc
       subroutine sgedi(a,lda,n,ipvt,det,work,job)
-      integer ipvt(1)
-      real a(lda,1),det(2),work(1)
+      implicit none
+      integer ipvt(1),l,nm1,n,k,kp1,j,i,kb,lda,job
+      double precision a(lda,1),det(2),work(1),ten,t
 c
 c     linpack routine.
 c     sgedi computes the determinant and inverse of a matrix
@@ -937,12 +944,20 @@ c
   150 continue
       return
       end
+cccccccccccccccccccccccccccc
+
+cccccccccccccccccccccccccccc
+c
+cccccccccccccccccccccccccccc
       subroutine saxpy(n,da,dx,incx,dy,incy)
 c
 c     constant times a vector plus a vector.
 c     jack dongarra, linpack, 3/11/78.
 c
-      real dx(1),dy(1)
+      implicit none
+      double precision dx(1),dy(1),da
+      integer n,i,ix,iy,incx,incy,mp1,m
+
       if(n.le.0)return
       if (da .eq. 0.) return
       if(incx.eq.1.and.incy.eq.1)go to 20
@@ -971,12 +986,18 @@ c
    50 continue
       return
       end
+ccccccccccccccccccccccccccccccc
+
+ccccccccccccccccccccccccccccccc
       subroutine  sscal(n,da,dx,incx)
 c
 c     scales a vector by a constant.
 c     jack dongarra, linpack, 3/11/78.
 c
-      real dx(1)
+      implicit none
+      double precision dx(1),da
+      integer n,m,i,nincx,incx,mp1
+
       if(n.le.0)return
       if(incx.eq.1)go to 20
       nincx = n*incx
@@ -1000,12 +1021,19 @@ c
    50 continue
       return
       end
+ccccccccccccccccccccccccccccccccccccc
+
+ccccccccccccccccccccccccccccccccccccc
       integer function isamax(n,dx,incx)
 c
 c     finds the index of element having max. absolute value.
 c     jack dongarra, linpack, 3/11/78.
 c
-      real dx(1)
+      implicit none
+      integer n,incx,isamax,ix,i
+      double precision dx(1),dmax
+
+
       isamax = 0
       if( n .lt. 1 ) return
       isamax = 1
@@ -1029,12 +1057,19 @@ c
    30 continue
       return
       end
+cccccccccccccccccccccccccccccc
+
+
+cccccccccccccccccccccccccccccc
       subroutine  sswap (n,dx,incx,dy,incy)
 c
 c     interchanges two vectors.
 c     jack dongarra, linpack, 3/11/78.
 c
-      real dx(1),dy(1)
+      implicit none
+      integer n,incx,incy,i,m,mp1,ix,iy
+      double precision dx(1),dy(1),dtemp
+
       if(n.le.0)return
       if(incx.eq.1.and.incy.eq.1)go to 20
       ix = 1
@@ -1071,6 +1106,9 @@ c
    50 continue
       return
       end
+ccccccccccccccccccccccccccccccccccc
+
+ccccccccccccccccccccccccccccccccccc
       subroutine ode(f,neqn,y,t,tout,relerr,abserr,iflag,work,iwork)
 c
 c   subroutine ode integrates a system of neqn
@@ -1178,11 +1216,21 @@ c*  subroutines  de  and  step  contain machine dependent constants.   *
 c*  be sure they are set before using  ode .                           *
 c***********************************************************************
 c
+      implicit none
+      double precision work,t,y,relerr,abserr,tout
+      integer iyy,iwt,neqn,iyp,iypout,iphi,iwork,ialpha,ibeta,
+     &   isig,iv,iw,ig,iphase,ipsi,ix,ih,ihold,istart,itold,
+     &   idelsn,ip,iflag
+
       logical start,phase1,nornd
       dimension y(neqn),work(1),iwork(5)
       external f
+
+
       data ialpha,ibeta,isig,iv,iw,ig,iphase,ipsi,ix,ih,ihold,istart,
      1  itold,idelsn/1,13,25,38,50,62,75,76,88,89,90,91,92,93/
+
+
       iyy = 100
       iwt = iyy + neqn
       ip = iwt + neqn
@@ -1207,6 +1255,9 @@ c
       if(nornd) iwork(2) = 1
       return
       end
+ccccccccccccccccccccccccccccccccc
+
+ccccccccccccccccccccccccccccccccc
       subroutine de(f,neqn,y,t,tout,relerr,abserr,iflag,
      1  yy,wt,p,yp,ypout,phi,alpha,beta,sig,v,w,g,phase1,psi,x,h,hold,
      2  start,told,delsgn,ns,nornd,k,kold,isnold)
@@ -1219,6 +1270,12 @@ c   this code is completely explained and documented in the text,
 c   computer solution of ordinary differential equations:  the initial
 c   value problem  by l. f. shampine and m. k. gordon.
 c
+      implicit none
+      double precision y,t,tout,relerr,abserr,
+     &  yy,wt,p,yp,ypout,phi,alpha,beta,sig,v,w,g,psi,x,h,hold,
+     &  told,releps,eps,tend,fouru,del,delsgn,abseps,absdel
+      integer neqn,iflag,nostep,l,kle4,maxnum,isn
+      
       logical stiff,crash,start,phase1,nornd
       dimension y(neqn),yy(neqn),wt(neqn),phi(neqn,16),p(neqn),yp(neqn),
      1  ypout(neqn),psi(12),alpha(12),beta(12),sig(13),v(12),w(12),g(13)
@@ -1349,6 +1406,9 @@ c
       if(kle4 .ge. 50) stiff = .true.
       go to 50
       end
+cccccccccccccccccccccccccccccc
+
+cccccccccccccccccccccccccccccc
       subroutine step(x,y,f,neqn,h,eps,wt,start,
 c    1  hold,k,kold,crash,phi,p,yp,psi)
      1  hold,k,kold,crash,phi,p,yp,psi,
