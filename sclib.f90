@@ -1274,7 +1274,7 @@ c
       double precision y,t,tout,relerr,abserr,
      &  yy,wt,p,yp,ypout,phi,alpha,beta,sig,v,w,g,psi,x,h,hold,
      &  told,releps,eps,tend,fouru,del,delsgn,abseps,absdel
-      integer neqn,iflag,nostep,l,kle4,maxnum,isn
+      integer neqn,iflag,nostep,l,kle4,maxnum,isn,k,kold,isnold,ns
       
       logical stiff,crash,start,phase1,nornd
       dimension y(neqn),yy(neqn),wt(neqn),phi(neqn,16),p(neqn),yp(neqn),
@@ -1337,7 +1337,7 @@ c
       x = t
       do 40 l = 1,neqn
    40   yy(l) = y(l)
-      delsgn = sign(1.,del)
+      delsgn = sign(dble(1.0),del)
       h = sign(max(abs(tout-x),fouru*abs(x)),tout-x)
 c
 c   if already past output point, interpolate and return
@@ -1526,6 +1526,13 @@ c   before returning.  to continue with the larger tolerance, the user
 c   just calls the code again.  a restart is neither required nor
 c   desirable.
 c
+      implicit none
+      double precision two,gstr,h,x,fouru,round,wt,g,sig,eps,sum,rho,
+     &   p5eps,phi,temp2,xold,erkp1,err,y,p,yp,psi,alpha,beta,sign,
+     &   w,v,erk,hold,absh,erkm2,erkm1,hnew,r,temp6,temp3,temp1,tau,twou
+      integer l,neqn,k,kold,i,j,nsp1,nsm2,knew,ip1,kp1,km1,im1,iq,km2,
+     &   kp2,limit2,ifail,limit1,ns,realns,reali,nsp2,temp4,temp5
+
       logical start,crash,phase1,nornd
       dimension y(neqn),wt(neqn),phi(neqn,16),p(neqn),yp(neqn),psi(12)
       dimension alpha(12),beta(12),sig(13),w(12),v(12),g(13),
@@ -1880,6 +1887,10 @@ c
       return
 c       ***     end block 4     ***
       end
+cccccccccccccccccccccc
+
+
+cccccccccccccccccccccc
       subroutine intrp(x,y,xout,yout,ypout,neqn,kold,phi,psi)
 c
 c   the methods in subroutine  step  approximate the solution near  x
@@ -1893,6 +1904,13 @@ c   value problem  by l. f. shampine and m. k. gordon.
 c
 c   input to intrp --
 c
+
+      implicit none
+      double precision x,y,xout,yout,ypout,phi,psi,w,gamma,eta,psijm1,
+     &   term,temp2,rho,hi,g,temp3
+      integer ki,kold,kipl,temp1,i,jm1,l,kip1,limit1,neqn,j
+
+
 c   all floating point variables are single precision
 c   the user provides storage in the calling program for the arrays in
 c   the call list
