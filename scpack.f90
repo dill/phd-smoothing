@@ -384,7 +384,7 @@ c get initial guess zi from program ode:
 c
 c refine answer by newton iteration:
     3 continue
-      do 4 iter = 1,10
+      do 4 iter = 1,50
         zfnwt = ww - wsc(zi,0,z0,w0,k0,n,c,z,betam,nptsq,qwork)
         zi = zi + zfnwt/(c*zprod(zi,0,n,z,betam))
         if (abs(zi).ge.1.1) zi = .5 * zi/abs(zi)
@@ -393,10 +393,11 @@ c refine answer by newton iteration:
       if (.not.odecal) goto 1
       if (ier.eq.0) write (6,202)
       ier = 1
+      print*,abs(zfnwt),eps
     5 evaled = zi
 c
   201 format (/' *** nonstandard return from ode in zsc: iflag =',i2/)
-  202 format (/' *** possible error in zsc: no convergence in 10'/
+  202 format (/' *** possible error in zsc: no convergence in 50'/
      &      '     iterations.  may need a better initial guess zinit')
 
       return
@@ -435,6 +436,8 @@ c
       integer k,n
       dimension w(n),betam(n)
 c
+
+      print*,real(betam)
 
       sum = 0.
       do 1 k = 1,n

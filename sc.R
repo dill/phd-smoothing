@@ -18,35 +18,35 @@ dyn.load("scpack.so")
 
 ######################################################
 # Number of vertices
-nvertices<-4
+#nvertices<-4
 # Position of vertices
-polyvertices<-vector("complex",nvertices)
-polyvertices[1]<-complex(1,-10,0)
-polyvertices[2]<-complex(1,0,10)
-polyvertices[3]<-complex(1,10,0)
-polyvertices[4]<-complex(1,0,-10)
-
-wc<-complex(1,0,sqrt(2))
-# We use the fortran function ANGLES to compute the angles we need
-betam<-vector("numeric",nvertices)
-angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
-betam<-angle.ret$BETAM
-#################################################
-
-# Test problem - L-shape
-#nvertices<-6
 #polyvertices<-vector("complex",nvertices)
-#polyvertices[1]<-complex(1,0,0)
-#polyvertices[2]<-complex(1,2,0)
-#polyvertices[3]<-complex(1,2,1)
-#polyvertices[4]<-complex(1,1,1)
-#polyvertices[5]<-complex(1,1,2)
-#polyvertices[6]<-complex(1,0,2)
-#####
+#polyvertices[1]<-complex(1,-10,0)
+#polyvertices[2]<-complex(1,0,10)
+#polyvertices[3]<-complex(1,10,0)
+#polyvertices[4]<-complex(1,0,-10)
+
+#wc<-complex(1,0,sqrt(2))
+# We use the fortran function ANGLES to compute the angles we need
 #betam<-vector("numeric",nvertices)
 #angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
 #betam<-angle.ret$BETAM
-#wc<-complex(1,0.5,0.5)
+#################################################
+
+# Test problem - L-shape
+nvertices<-6
+polyvertices<-vector("complex",nvertices)
+polyvertices[1]<-complex(1,0,0)
+polyvertices[2]<-complex(1,2,0)
+polyvertices[3]<-complex(1,2,1)
+polyvertices[4]<-complex(1,1,1)
+polyvertices[5]<-complex(1,1,2)
+polyvertices[6]<-complex(1,0,2)
+####
+betam<-vector("numeric",nvertices)
+angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
+betam<-angle.ret$BETAM
+wc<-complex(1,0.5,0.5)
 #################################
 
 # set number of quadrature points per subinterval
@@ -63,7 +63,7 @@ qwork<-qinit.ret$QWORK
 errest<-vector("numeric",1)
 c.const<-vector("complex",1)
 z<-vector("complex",nvertices)
-ret<-.Fortran("SCSOLV",IPRINT=as.numeric(0),IGUESS=as.numeric(0),TOL=as.numeric(1e-6),ERREST=as.numeric(errest),N=as.integer(nvertices),C=as.complex(c.const),Z=z,WC=as.complex(wc),W=as.complex(polyvertices),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
+ret<-.Fortran("SCSOLV",IPRINT=as.numeric(0),IGUESS=as.numeric(1),TOL=as.numeric(1e-6),ERREST=as.numeric(errest),N=as.integer(nvertices),C=as.complex(c.const),Z=z,WC=as.complex(wc),W=as.complex(polyvertices),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
 
 
 # Set some variables
@@ -133,23 +133,23 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prev
       evaled<-complex(1)
 
 #cat(points[i],z0,w0,as.integer(k0),as.integer(nvertices),prevertices,centre,polyvertices,as.numeric(angles),"\n",sep="\n*")
-      cat("point:",points[i],"\n")
+#      cat("point:",points[i],"\n")
 
 
       nearest<-.Fortran("NEARW",WW=points[i],ZN=z0,WN=w0,KN=k0,N=as.integer(nvertices),Z=as.complex(prevertices),WC=as.complex(centre),W=as.complex(polyvertices),BETAM=as.numeric(angles))
 
 
-cat("near found\n")
+#cat("near found\n")
 
 #   cat(as.numeric(this.point),as.numeric(2),as.numeric(nearest$ZN),as.numeric(nearest$ZN),as.numeric(nearest$WN),"---",as.numeric(nearest$KN),"---",as.numeric(accuracy),as.numeric(1),as.integer(nvertices),as.numeric(complex.scale.factor),as.numeric(Re(prevertices)),as.numeric(Im(prevertices)),as.numeric(centre),as.numeric(Re(polyvertices)),as.numeric(Im(polyvertices)),as.numeric(betam),as.numeric(nptsq),as.numeric(qwork),"---",as.numeric(evaled),"\n",sep="\n*")
 
 
       map.ret<-.Fortran("ZSC",WW=points[i],IGUESS=as.numeric(2),ZINIT=as.complex(nearest$ZN),Z0=as.complex(nearest$ZN),W0=as.complex(nearest$WN),K0=as.integer(nearest$KN),EPS=as.numeric(accuracy),IER=as.numeric(1),N=as.integer(nvertices),C=as.complex(complex.scale.factor),Z=as.complex(prevertices),WC=as.complex(centre),W=as.complex(polyvertices),BETAM=as.numeric(angles),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork),EVALED=as.complex(evaled))
   
-cat("mapped\n")
+#cat("mapped\n")
       # Push the value into the vector
       evaluated.points[i]<-map.ret$EVALED
-      cat(i,": original point: ",points[i]," new point: ",map.ret$EVALED,"\n")
+#      cat(i,": original point: ",points[i]," new point: ",map.ret$EVALED,"\n")
    }
 
    # Return the vector
@@ -186,7 +186,7 @@ plot(complex.poly.rand.data)
 #plot(some.points)
 accuracy<-1e-6
 retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,angles,complex.scale.factor,centre)
-#plot(retval)
+plot(retval)
 
 
 
