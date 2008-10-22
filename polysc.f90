@@ -1,22 +1,31 @@
       PROGRAM TEST1
-      IMPLICIT COMPLEX(C,W,Z)
-      DIMENSION Z(20),W(20),BETAM(20),QWORK(344),t(4),s(4)
+      IMPLICIT none
+      double COMPLEX C,W,zsc,wsc,Z,ww,zz,zero,zi,wc,wwex,zzex,wtmp,ztmp
+      integer n,i,ier,nptsq,iprint,iguess,k
+      double precision betam,err,qwork,errest,tol
+
+      DIMENSION Z(20),W(20),BETAM(4),QWORK(344)
+C,t(4),s(4)
+
+
       ZERO = (0.,0.)
       ZI = (0.,1.)
-C
 C SET UP PROBLEM:
       N = 4
       WC = CMPLX(0.,SQRT(2.))
-      W(1) = (10.,0.)
-      W(2) = (0.,10.)
-      W(3) = (-10.,0.)
-      W(4) = (0.,-10.)
-C      BETAM(1) = 1.
-C      BETAM(2) = -.5
-C      BETAM(3) = -2.
-C      BETAM(4) = -.5
+      W(1) = ZI
+      W(2) = ZERO
+      W(3) = (1.E20,1.E20)
+      W(4) = ZERO
 
-      CALL ANGLES(N,W,BETAM)
+      BETAM(1) = 1.
+      BETAM(2) = -.5
+      BETAM(3) = -2.
+      BETAM(4) = -.5
+
+C:      CALL ANGLES(N,W,BETAM)
+
+
 C
 C COMPUTE NODES AND WEIGHTS FOR PARAMETER PROBLEM:
       NPTSQ = 5

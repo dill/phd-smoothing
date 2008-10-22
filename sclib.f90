@@ -79,8 +79,8 @@ c
 c
    50 ab = alpha + beta
       abi = 2. + ab
-      muzero = 2. ** (ab + 1.) * gamma(alpha + 1.) * gamma(
-     x beta + 1.) / gamma(abi)
+      muzero = 2. ** (ab + 1.) * gamma(alpha + 1.) * 
+     &      gamma(beta + 1.) / gamma(abi)
       a(1) = (beta - alpha)/abi
       b(1) = sqrt(4.*(1. + alpha)*(1. + beta)/((abi + 1.)*abi*abi))
       a2b2 = beta*beta - alpha*alpha
@@ -88,7 +88,7 @@ c
          abi = 2.*i + ab
          a(i) = a2b2/((abi - 2.)*abi)
    51    b(i) = sqrt (4.*i*(i + alpha)*(i + beta)*(i + ab)/
-     1   ((abi*abi - 1)*abi*abi))
+     &   ((abi*abi - 1)*abi*abi))
       abi = 2.*n + ab
       a(n) = a2b2/((abi - 2.)*abi)
       return
@@ -235,6 +235,8 @@ c                                  gamma(big1) .approx. xinf
       data               xmin/5.8775e-39/
       data               big1/34.844/
 c                                  first executable statement
+
+
       ier = 0
       mflag = .false.
       t = x

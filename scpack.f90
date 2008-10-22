@@ -41,17 +41,29 @@ c
       integer n, nptsq, k, inodes, iwts,iscr
       double precision betam,qwork
       double complex c,w,z
-      dimension qwork(1),betam(n)
+      dimension qwork(1),betam(1:n)
 c
 c for each finite vertex w(k), compute nodes and weights for
 c one-sided gauss-jacobi quadrature along a curve beginning at z(k):
       iscr = nptsq*(2*n+2) + 1
-      do 1 k = 1,n
+      do k = 1,n
         inodes = nptsq*(k-1) + 1
         iwts = nptsq*(n+k) + 1
-    1   if (betam(k).gt.-1.) call gaussj(nptsq,0.,betam(k),
-     &    qwork(iscr),qwork(inodes),qwork(iwts))
-c
+
+         print*,"out"
+
+        if (betam(k).gt.-1.) then
+         print*,"in"
+
+         call gaussj(int(nptsq),dble(0.),dble(betam(k)),
+     &    dble(qwork(iscr)),dble(qwork(inodes)),dble(qwork(iwts)))
+         print*,betam
+         print*,betam(k)
+         
+        end if
+      end do
+
+      print*,"after"
 c compute nodes and weights for pure gaussian quadrature:
       inodes = nptsq*n + 1
       iwts = nptsq*(2*n+1) + 1
@@ -59,7 +71,7 @@ c compute nodes and weights for pure gaussian quadrature:
      &  qwork(iscr),qwork(inodes),qwork(iwts))
 c
       return
-      end
+      end subroutine
 
 
 c*******************************************************************
@@ -393,7 +405,6 @@ c refine answer by newton iteration:
       if (.not.odecal) goto 1
       if (ier.eq.0) write (6,202)
       ier = 1
-      print*,abs(zfnwt),eps
     5 evaled = zi
 c
   201 format (/' *** nonstandard return from ode in zsc: iflag =',i2/)
@@ -436,8 +447,6 @@ c
       integer k,n
       dimension w(n),betam(n)
 c
-
-      print*,real(betam)
 
       sum = 0.
       do 1 k = 1,n
@@ -917,6 +926,7 @@ c
         betam(k) = aimag(log((w(km)-w(k))/(w(kp)-w(k))))/pi - 1.
         if (betam(k).le.-1.) betam(k) = betam(k) + 2.
     1   continue
+
       return
       end
 
