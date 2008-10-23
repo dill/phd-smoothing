@@ -41,7 +41,7 @@ c
       integer n, nptsq, k, inodes, iwts,iscr
       double precision betam,qwork
       double complex c,w,z
-      dimension qwork(1),betam(1:n)
+      dimension qwork(n),betam(1:n)
 c
 c for each finite vertex w(k), compute nodes and weights for
 c one-sided gauss-jacobi quadrature along a curve beginning at z(k):
@@ -423,7 +423,10 @@ c
 c
 c computes the function zdzdt needed by ode in zsc.
 c
-      implicit double complex(c,w,z)
+      implicit none
+      double complex c,w,z,zz,zdzdt,cdwdt,zprod
+      integer n
+      double precision betam, t
       common /param2/ cdwdt,z(20),betam(20),n
 c
       zdzdt = cdwdt / zprod(zz,0,n,z,betam)

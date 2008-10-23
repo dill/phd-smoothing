@@ -14,7 +14,7 @@ mod2=sclib
 
 #########################################################
 
-cmplr=gfortran -ffixed-form -g
+cmplr=gfortran -ffixed-form -g -fbounds-check -Wuninitialized -O -ftrapv -fimplicit-none -fno-automatic 
 
 objects1 = $(mod1).o $(mod2).o $(main).o
 
