@@ -315,7 +315,7 @@ c                                  t .gt. 12.0
 
 
       subroutine ns01a (n,x,f,ajinv,dstep,dmax,acc,maxfun,iprint,w,
-     2                 calfun)
+     2                 calfun,qwork,iqwork)
 c
 c   this subroutine solves a system of nonlinear algebraic equations of
 c   the form f(x) = 0, where f and x are vectors of length n.  the
@@ -429,11 +429,11 @@ c   isamax, and sswap.
 c
       implicit none
       integer n, maxc,nt,ntest,iprint,lda,is,ic,i,ks,kk,k,info,nx,nf,j,
-     &   ijob,nw,nd,mw,ndc,maxfun
+     &   ijob,nw,nd,mw,ndc,maxfun,iqwork
       external calfun
-      double precision x(1),f(1),lawork(20),ajinv(20,20),w(1),det(2),
+      double precision x(n),f(n),lawork(20),ajinv(20,20),w(900),det(2),
      &   dstep,dtest,acc,dw,anmult,ds,dmm,dn,dmult,dss,ss,sp,fnp,fsq,
-     &   fmin,dd,pa,pj,tinc,dmax,dm
+     &   fmin,dd,pa,pj,tinc,dmax,dm,qwork(iqwork)
       integer ipvt(20)
 c     set various parameters
       maxc=0
@@ -468,7 +468,7 @@ c     start a new page for printing
    86 format ('1')
 c     call the subroutine calfun
     1 maxc=maxc+1
-      call calfun (n,x,f)
+      call calfun (n,x,f,qwork,iqwork)
 c     test for convergence
       fsq=0.
       do 2 i=1,n
@@ -809,8 +809,8 @@ cccccccccccccccccccccccccccccccccccccccccc
       subroutine sgefa(a,lda,n,ipvt,info)
       implicit none
       integer ipvt(1),info,k,nm1,n,kp1,l,lda,isamax,j
-      double precision a(lda,1),t
-c
+      double precision a(lda,n),t
+
 c     linpack routine.
 c     sgefa factors a single precision matrix by gaussian elimination.
 c     requires blas saxpy,sscal,isamax
@@ -1033,7 +1033,8 @@ c     jack dongarra, linpack, 3/11/78.
 c
       implicit none
       integer n,incx,isamax,ix,i
-      double precision dx(1),dmax
+      double precision dx(n),dmax
+c      originally dx was dx(1)
 
 
       isamax = 0

@@ -1,31 +1,31 @@
-cc     *** scpack version 2 ***        lloyd nicholas trefethen
-cc
-cc     history:
-cc       scpack 1 - double precision, ibm 370      oct. 1979
-cc       scpack 2 - single precision, portable     july 1983
-cc
-cc     scpack is a fortran package for the numerical implementation
-cc     of the schwarz-christoffel conformal map from a disk to
-cc     a polygon, which may contain vertices at infinity.  see
-cc     trefethen, "numerical computation of the schwarz-christoffel
-cc     transformation", siam j. sci. stat. comp. 1 (1980), 82-102.
-cc     the package may be freely copied and used, but reference to
-cc     the above paper should be given in any publications arising
-cc     from its use.
-cc
-cc     comment cards describe the principal features of the package.
-cc     additional documentation is available in the "scpack user's
-cc     guide".
-cc
-cc     the package requires library routines ns01a, gaussj, and ode,
-cc     and these contain machine dependent constants.  see the scpack
-cc     user's guide.
+c     *** scpack version 2 ***        lloyd nicholas trefethen
+c
+c     history:
+c       scpack 1 - double precision, ibm 370      oct. 1979
+c       scpack 2 - single precision, portable     july 1983
+c
+c     scpack is a fortran package for the numerical implementation
+c     of the schwarz-christoffel conformal map from a disk to
+c     a polygon, which may contain vertices at infinity.  see
+c     trefethen, "numerical computation of the schwarz-christoffel
+c     transformation", siam j. sci. stat. comp. 1 (1980), 82-102.
+c     the package may be freely copied and used, but reference to
+c     the above paper should be given in any publications arising
+c     from its use.
+c
+c     comment cards describe the principal features of the package.
+c     additional documentation is available in the "scpack user's
+c     guide".
+c
+c     the package requires library routines ns01a, gaussj, and ode,
+c     and these contain machine dependent constants.  see the scpack
+c     user's guide.
 
 
 c*******************************************************************
 c* qinit                                      primary subroutine  **
 c*******************************************************************
-      subroutine qinit(n,betam,nptsq,qwork)
+      subroutine qinit(n,betam,nptsq,qwork,iqwork)
 c
 c computes nodes and weights for gauss-jacobi quadrature
 c
@@ -38,10 +38,14 @@ c quadrature weights on output, and the final one is a
 c scratch vector needed by gaussj.
 c
       implicit none
-      integer n, nptsq, k, inodes, iwts,iscr
+      integer n, nptsq, k, inodes, iwts,iscr,iqwork
       double precision betam,qwork
       double complex c,w,z
-      dimension qwork(n),betam(1:n)
+      dimension qwork(iqwork),betam(1:n)
+
+
+
+
 c
 c for each finite vertex w(k), compute nodes and weights for
 c one-sided gauss-jacobi quadrature along a curve beginning at z(k):
@@ -50,20 +54,13 @@ c one-sided gauss-jacobi quadrature along a curve beginning at z(k):
         inodes = nptsq*(k-1) + 1
         iwts = nptsq*(n+k) + 1
 
-         print*,"out"
-
         if (betam(k).gt.-1.) then
-         print*,"in"
-
-         call gaussj(int(nptsq),dble(0.),dble(betam(k)),
-     &    dble(qwork(iscr)),dble(qwork(inodes)),dble(qwork(iwts)))
-         print*,betam
-         print*,betam(k)
-         
+         call gaussj(nptsq,0.0,betam(k),qwork(1:iscr),
+     &         qwork((iscr+1):inodes),
+     &         qwork((inodes+1):iwts))
         end if
       end do
 
-      print*,"after"
 c compute nodes and weights for pure gaussian quadrature:
       inodes = nptsq*n + 1
       iwts = nptsq*(2*n+1) + 1
@@ -79,7 +76,7 @@ c* scsolv                                     primary subroutine  **
 c*******************************************************************
 c
       subroutine scsolv(iprint,iguess,tol,errest,n,c,z,wc,
-     &   w,betam,nptsq,qwork)
+     &   w,betam,nptsq,qwork,iqwork)
 c
 c this subroutine computes the accessory parameters c and
 c z(k) for the schwarz-christoffel transformation
@@ -188,13 +185,18 @@ c
       double precision betam, tol, errest,qwork,betam2,dstep,dmax,ajinv,
      &   tmp2,tmp1,qwork2,fval,y
       integer iprint,iguess,n,nptsq,i,km,k,nm,maxfun,neq,ncomp,nptsq2,
-     &   nwdim,kfix,krat
+     &   nwdim,kfix,krat,iqwork,iqwork2
       common /param1/ kfix(20),krat(20),ncomp,nptsq2,c2,
-     &  qwork2(460),betam2(20),z2(20),wc2,w2(20)
-      dimension z(n),w(n),betam(n),qwork(1)
+     &  betam2(20),z2(20),wc2,w2(20)
+      dimension z(n),w(n),betam(n),qwork(iqwork)
       dimension ajinv(20,20),scr(900),fval(19),y(19)
       external scfun
       nm = n-1
+
+
+
+      iqwork2=iqwork
+      
 
 c
 c check input data:
@@ -253,17 +255,26 @@ c (this is necessary because ns01a requires a fixed calling
 c sequence in subroutine scfun.)
       nptsq2 = nptsq
       wc2 = wc
-      do 6 k = 1,n
+
+      do k = 1,n
         z2(k) = z(k)
         betam2(k) = betam(k)
-    6   w2(k) = w(k)
+        w2(k) = w(k)
+      end do
+      
       nwdim = nptsq * (2*n+3)
-      do 7 i = 1,nwdim
-    7   qwork2(i) = qwork(i)
+
+C      iqwork2=iqwork
+
+C      do i = 1,iqwork
+C         qwork2(i) = qwork(i)
+C      end do
+
+
 c
 c solve nonlinear system with ns01a:
       call ns01a(nm,y,fval,ajinv,dstep,dmax,tol,maxfun,
-     &  iprint,scr,scfun)
+     &  iprint,scr,scfun,qwork,iqwork)
 c
 c copy output data from /param1/:
       c = c2
@@ -273,7 +284,7 @@ c copy output data from /param1/:
 c
 c print results and test accuracy:
       if (iprint.ge.0) call scoutp(n,c,z,wc,w,betam,nptsq)
-      call sctest(errest,n,c,z,wc,w,betam,nptsq,qwork)
+      call sctest(errest,n,c,z,wc,w,betam,nptsq,qwork,iqwork)
       if (iprint.ge.-1) write (6,201) errest
   201 format (' errest:',e12.4/)
       return
@@ -285,7 +296,7 @@ c*******************************************************************
 c* wsc                                        primary subroutine  **
 c*******************************************************************
 c
-      function wsc(zz,kzz,z0,w0,k0,n,c,z,betam,nptsq,qwork)
+      function wsc(zz,kzz,z0,w0,k0,n,c,z,betam,nptsq,qwork,iqwork)
 c
 c computes forward map w(zz)
 c
@@ -309,11 +320,11 @@ c supplied by subroutine nearz.
 c
       implicit none
       double complex zz,z0,w0,c,z,wsc,zquad
-      integer kzz,k0,n, nptsq
+      integer kzz,k0,n, nptsq,iqwork
       double precision betam, qwork
-      dimension z(n),betam(n),qwork(1)
+      dimension z(n),betam(n),qwork(iqwork)
 c
-      wsc = w0 + c * zquad(z0,k0,zz,kzz,n,z,betam,nptsq,qwork)
+      wsc = w0 + c * zquad(z0,k0,zz,kzz,n,z,betam,nptsq,qwork,iqwork)
 c
       return
       end
@@ -324,7 +335,7 @@ c* zsc                                        primary subroutine  **
 c*******************************************************************
 c
       subroutine zsc(ww,iguess,zinit,z0,w0,k0,eps,ier,n,c,
-     &  z,wc,w,betam,nptsq,qwork,evaled)
+     &  z,wc,w,betam,nptsq,qwork,iqwork,evaled)
 c
 c computes inverse map z(ww) by newton iteration
 c
@@ -367,9 +378,9 @@ c
       double complex c,w,z,ww,z0,w0,wc,evaled,zinit,zi,z2,cdwdt,zfnwt,
      &   wsc,zprod
       double precision betam,eps,qwork,relerr,abserr,betam2,scr,t
-      integer iguess,k0,ier,n,nptsq,n2,k,iter,iscr,iflag
+      integer iguess,k0,ier,n,nptsq,n2,k,iter,iscr,iflag,iqwork
       dimension scr(142),iscr(5)
-      dimension z(n),w(n),betam(n),qwork(1)
+      dimension z(n),w(n),betam(n),qwork(iqwork)
       external zfode
       logical odecal
       common /param2/ cdwdt,z2(20),betam2(20),n2
@@ -534,7 +545,7 @@ c
 c*******************************************************************
 c* scfun                          subordinate(scsolv) subroutine  **
 c*******************************************************************
-      subroutine scfun(ndim,y,fval)
+      subroutine scfun(ndim,y,fval,qwork,iqwork)
 c
 c this is the function whose zero must be found in scsolv.
 c
@@ -542,17 +553,17 @@ c
       double complex c,w,z,wc,zfval,zquad,zint,wdenom
       double precision betam, fval,y,qwork
       integer k,i,neq,n,nvert,ndim,kfix,krat,nfirst,kl,kr,ncomp,
-     & nptsq
+     & nptsq,iqwork
       dimension fval(ndim),y(ndim)
       common /param1/ kfix(20),krat(20),ncomp,nptsq,c,
-     &  qwork(460),betam(20),z(20),wc,w(20)
+     &  betam(20),z(20),wc,w(20)
       n = ndim+1
 c
 c transform y(k) to z(k):
       call yztran(n,y,z)
 c
 c set up: compute integral from 0 to z(n):
-      wdenom = zquad((0.,0.),0,z(n),n,n,z,betam,nptsq,qwork)
+      wdenom = zquad((0.,0.),0,z(n),n,n,z,betam,nptsq,qwork,iqwork)
       c = (w(n)-wc) / wdenom
 c
 c case 1: w(k) and w(k+1) finite:
@@ -562,7 +573,7 @@ c (compute integral along chord z(k)-z(k+1)):
       do 10 neq = nfirst,ndim
         kl = krat(neq)
         kr = kl+1
-        zint = zquad(z(kl),kl,z(kr),kr,n,z,betam,nptsq,qwork)
+        zint = zquad(z(kl),kl,z(kr),kr,n,z,betam,nptsq,qwork,iqwork)
         fval(neq) = abs(w(kr)-w(kl)) - abs(c*zint)
    10 continue
 c
@@ -570,7 +581,7 @@ c case 2: w(k+1) infinite:
 c (compute contour integral along radius 0-z(k)):
    11 do 20 nvert = 1,ncomp
         kr = kfix(nvert)
-        zint = zquad((0.,0.),0,z(kr),kr,n,z,betam,nptsq,qwork)
+        zint = zquad((0.,0.),0,z(kr),kr,n,z,betam,nptsq,qwork,iqwork)
         zfval = w(kr) - wc - c*zint
         fval(2*nvert-1) = real(zfval)
         fval(2*nvert) = aimag(zfval)
@@ -624,25 +635,25 @@ c*******************************************************************
 c* sctest                         subordinate(scsolv) subroutine  **
 c*******************************************************************
 c
-      subroutine sctest(errest,n,c,z,wc,w,betam,nptsq,qwork)
+      subroutine sctest(errest,n,c,z,wc,w,betam,nptsq,qwork,iqwork)
 c
 c tests the computed map for accuracy.
 c
       implicit none
       double complex c,w,z,wc,wsc
       double precision betam,qwork,errest,rade
-      integer k,nptsq,n
-      dimension z(n),w(n),betam(n),qwork(1)
+      integer k,nptsq,n,iqwork
+      dimension z(n),w(n),betam(n),qwork(iqwork)
 c
 c test length of radii:
       errest = 0.
       do 10 k = 2,n
         if (betam(k).gt.-1.) rade = abs(wc -
-     &    wsc((0.,0.),0,z(k),w(k),k,n,c,z,betam,nptsq,qwork))
+     &    wsc((0.,0.),0,z(k),w(k),k,n,c,z,betam,nptsq,qwork,iqwork))
         if (betam(k).le.-1.) rade = abs(wsc((.1,.1),0,
-     &    z(k-1),w(k-1),k-1,n,c,z,betam,nptsq,qwork)
+     &    z(k-1),w(k-1),k-1,n,c,z,betam,nptsq,qwork,iqwork)
      &    - wsc((.1,.1),0,z(k+1),w(k+1),k+1,
-     &    n,c,z,betam,nptsq,qwork))
+     &    n,c,z,betam,nptsq,qwork,iqwork))
         errest = max(errest,rade)
    10   continue
       return
@@ -653,7 +664,7 @@ c*******************************************************************
 c* zquad                                      primary subroutine  **
 c*******************************************************************
 c
-      function zquad(za,ka,zb,kb,n,z,betam,nptsq,qwork)
+      function zquad(za,ka,zb,kb,n,z,betam,nptsq,qwork,iqwork)
 c
 c computes the complex line integral of zprod from za to zb along a
 c straight line segment within the unit disk.  function zquad1 is
@@ -661,16 +672,16 @@ c called twice, once for each half of this integral.
 c
       implicit none
       double complex c,w,z,za,zb,zmid,zquad,zquad1
-      integer n,ka,kb,nptsq
+      integer n,ka,kb,nptsq,iqwork
       double precision betam,qwork
-      dimension z(n),betam(n),qwork(1)
+      dimension z(n),betam(n),qwork(iqwork)
 c
       if (abs(za).gt.1.1.or.abs(zb).gt.1.1) write (6,301)
   301 format (/' *** warning in zquad: z outside the disk')
 c
       zmid = (za + zb) / 2.
-      zquad = zquad1(za,zmid,ka,n,z,betam,nptsq,qwork)
-     &  - zquad1(zb,zmid,kb,n,z,betam,nptsq,qwork)
+      zquad = zquad1(za,zmid,ka,n,z,betam,nptsq,qwork,iqwork)
+     &  - zquad1(zb,zmid,kb,n,z,betam,nptsq,qwork,iqwork)
       return
       end
 
@@ -679,7 +690,7 @@ c*******************************************************************
 c* zquad1                          subordinate(zquad) subroutine  **
 c*******************************************************************
 c
-      function zquad1(za,zb,ka,n,z,betam,nptsq,qwork)
+      function zquad1(za,zb,ka,n,z,betam,nptsq,qwork,iqwork)
 c
 c computes the complex line integral of zprod from za to zb along a
 c straight line segment within the unit disk.  compound one-sided
@@ -688,9 +699,9 @@ c the distance to the nearest singularity z(k).
 c
       implicit none
       double complex z,za,zb,zaa,zbb,zquad,zquad1,zqsum
-      integer ka, kb,nptsq,n
+      integer ka, kb,nptsq,n,iqwork
       double precision betam,r,resprm,qwork,dist
-      dimension z(n),betam(n),qwork(1)
+      dimension z(n),betam(n),qwork(iqwork)
       data resprm /2./
 c
 c check for zero-length integrand:
@@ -701,13 +712,13 @@ c
 c step 1: one-sided gauss-jacobi quadrature for left endpoint:
     1 r = min(1.,dist(za,ka,n,z)*resprm/abs(za-zb))
       zaa = za + r*(zb-za)
-      zquad1 = zqsum(za,zaa,ka,n,z,betam,nptsq,qwork)
+      zquad1 = zqsum(za,zaa,ka,n,z,betam,nptsq,qwork,iqwork)
 c
 c step 2: adjoin intervals of pure gaussian quadrature if necessary:
    10 if (r.eq.1.) return
       r = min(1.,dist(zaa,0,n,z)*resprm/abs(zaa-zb))
       zbb = zaa + r*(zb-zaa)
-      zquad1 = zquad1 + zqsum(zaa,zbb,0,n,z,betam,nptsq,qwork)
+      zquad1 = zquad1 + zqsum(zaa,zbb,0,n,z,betam,nptsq,qwork,iqwork)
       zaa = zbb
       goto 10
       end
@@ -741,17 +752,22 @@ c*******************************************************************
 c* zqsum                           subordinate(zquad) subroutine  **
 c*******************************************************************
 c
-      function zqsum(za,zb,ka,n,z,betam,nptsq,qwork)
+      function zqsum(za,zb,ka,n,z,betam,nptsq,qwork,iqwork)
 c
 c computes the integral of zprod from za to zb by applying a
 c one-sided gauss-jacobi formula with possible singularity at za.
 c
       implicit none
       double complex c,w,z,za,zb,zs,zh,zc,zqsum,zprod
-      integer n,k,ka,iwt1,iwt2,nptsq,i,ioffst
+      integer n,k,ka,iwt1,iwt2,nptsq,i,ioffst,iqwork
       double precision betam, qwork
-      dimension z(n),betam(n),qwork(1)
+      dimension z(n),betam(n),qwork(iqwork)
 c
+
+
+      print*,iqwork
+      print*,nptsq*(n+1)
+
       zs = (0.,0.)
       zh = (zb-za) / 2.
       zc = (za+zb) / 2.
@@ -760,8 +776,11 @@ c
       iwt1 = nptsq*(k-1) + 1
       iwt2 = iwt1 + nptsq - 1
       ioffst = nptsq*(n+1)
-      do 1 i = iwt1,iwt2
-    1   zs = zs + qwork(ioffst+i)*zprod(zc+zh*qwork(i),ka,n,z,betam)
+
+      do i = iwt1,iwt2
+        zs = zs + qwork(ioffst+i)*zprod(zc+zh*qwork(i),ka,n,z,betam)
+      end do
+
       zqsum = zs*zh
       if (abs(zh).ne.0..and.k.ne.n+1)
      &  zqsum = zqsum*abs(zh)**betam(k)
