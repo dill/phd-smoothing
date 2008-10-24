@@ -1,8 +1,14 @@
       PROGRAM TEST1
-      IMPLICIT COMPLEX(C,W,Z)
-      DIMENSION Z(20),W(20),BETAM(20),QWORK(344),t(4),s(4)
+      integer n,i,ier,nptsq,iprint,iguess,k,qsize
+      double precision betam(n),qwork
+      double COMPLEX c,w,zsc,wsc,z,ww,zz,zero,zi,wc,wwex,zzex,wtmp,
+     &          ztmp
+      double precision err,qwork,errest,tol
+      dimension Z(n),W(n),BETAM(n),QWORK
       ZERO = (0.,0.)
       ZI = (0.,1.)
+
+
 C
 C SET UP PROBLEM:
       N = 4
@@ -11,26 +17,42 @@ C SET UP PROBLEM:
       W(2) = (0.,10.)
       W(3) = (-10.,0.)
       W(4) = (0.,-10.)
-C      BETAM(1) = 1.
-C      BETAM(2) = -.5
-C      BETAM(3) = -2.
-C      BETAM(4) = -.5
+      BETAM(1) = 1.
+      BETAM(2) = -.5
+      BETAM(3) = -2.
+      BETAM(4) = -.5
 
-      CALL ANGLES(N,W,BETAM)
+C      CALL ANGLES(N,W,BETAM)
+
+      qsize=nptsq*(2*n+3)
+
+c do everything using the interface
+      call scint(N,betam,w,z,ci,qsize)
+
+
+
+
+
+
+
+
+
+
+
 C
 C COMPUTE NODES AND WEIGHTS FOR PARAMETER PROBLEM:
-      NPTSQ = 5
-      CALL QINIT(N,BETAM,NPTSQ,QWORK)
+C      NPTSQ = 5
+c      CALL QINIT(N,BETAM,NPTSQ,QWORK)
 C
 C SOLVE PARAMETER PROBLEM:
 C   (INITIAL GUESS MUST BE GIVEN TO AVOID ACCIDENTAL EXACT SOLUTION)
-      IPRINT = 0
-      IGUESS = 1
-      DO 1 K = 1,4
-    1 Z(K) = EXP(CMPLX(0.,K-4.))
-      TOL = 1.E-6
-      CALL SCSOLV(IPRINT,IGUESS,TOL,ERREST,N,C,Z,
-     &  WC,W,BETAM,NPTSQ,QWORK)
+c      IPRINT = 0
+c      IGUESS = 1
+c      DO 1 K = 1,4
+c    1 Z(K) = EXP(CMPLX(0.,K-4.))
+c      TOL = 1.E-6
+c      CALL SCSOLV(IPRINT,IGUESS,TOL,ERREST,N,C,Z,
+c     &  WC,W,BETAM,NPTSQ,QWORK)
 C
 C COMPARE WSC(Z) TO EXACT VALUES FOR VARIOUS Z:
       DO 10 I = 1,4
