@@ -39,9 +39,7 @@ c        golub, g. h., and welsch, j. h., "calculation of gaussian
 c        quadrature rules," mathematics of computation 23 (april,
 c        1969), pp. 221-230.
 c
-      implicit none
-      integer i,n,ierr
-      double precision b(n), t(n), w(n), muzero,alpha,beta
+      real b(n), t(n), w(n), muzero
 c
       call class (n, alpha, beta, b, t, muzero)
       w(1) = 1.
@@ -52,8 +50,6 @@ c
   110    w(i) = muzero * w(i) * w(i)
       return
       end
-
-
       subroutine class(n, alpha, beta, b, a, muzero)
 c
 c           this procedure supplies the coefficients a(j), b(j) of the
@@ -71,16 +67,14 @@ c        of the given polynomial's weight function w(x).  since the
 c        polynomials are orthonormalized, the tridiagonal matrix is
 c        guaranteed to be symmetric.
 c
-      implicit none
-      integer n,nm1,i
-      double precision a(n),b(n),muzero,alpha,beta,ab,abi,a2b2,gamma
+      real a(n), b(n), muzero
 c
       nm1 = n - 1
 c
    50 ab = alpha + beta
       abi = 2. + ab
-      muzero = 2. ** (ab + 1.) * gamma(alpha + 1.) * 
-     &      gamma(beta + 1.) / gamma(abi)
+      muzero = 2. ** (ab + 1.) * gamma(alpha + 1.) * gamma(
+     x beta + 1.) / gamma(abi)
       a(1) = (beta - alpha)/abi
       b(1) = sqrt(4.*(1. + alpha)*(1. + beta)/((abi + 1.)*abi*abi))
       a2b2 = beta*beta - alpha*alpha
@@ -88,15 +82,11 @@ c
          abi = 2.*i + ab
          a(i) = a2b2/((abi - 2.)*abi)
    51    b(i) = sqrt (4.*i*(i + alpha)*(i + beta)*(i + ab)/
-     &   ((abi*abi - 1)*abi*abi))
+     1   ((abi*abi - 1)*abi*abi))
       abi = 2.*n + ab
       a(n) = a2b2/((abi - 2.)*abi)
       return
       end
-cccccccccccccccccc
-
-
-ccc   imtql2
       subroutine imtql2(n, d, e, z, ierr)
 c
 c     this is a modified version of the eispack routine imtql2.
@@ -104,9 +94,7 @@ c     it finds the eigenvalues and first components of the
 c     eigenvectors of a symmetric tridiagonal matrix by the implicit ql
 c     method.
 c
-      implicit none
-      integer n,ierr,m,l,j,i,ii,mml,k
-      double precision d(n), e(n), z(n), machep,s,p,g,c,f,b,r
+      real d(n), e(n), z(n), machep
 c
 c     :::::::::: machep is a machine dependent parameter specifying
 c                the relative precision of floating point arithmetic.
@@ -197,23 +185,13 @@ c                eigenvalue after 30 iterations ::::::::::
  1000 ierr = l
  1001 return
       end
-cccccccccccccccccccccc
-
-
-ccccccccccccccccccccc
-c function gamma
       function gamma (x)
 c
 c computes the gamma function. needed by gaussj.
 c this function is adapted from an imsl routine but should
 c be replaced by any locally available alternative.
 c
-      implicit none
-      double precision p,x,t,p4,q,pi,xinf,big1,xmin,gamma,sign,y,
-     &   den,a,b,top
-      integer ier,iend,r,j,i,iend2,iend1
       logical            mflag
-
       dimension          p(5),q(4),p4(3)
 c                                  coefficients for minimax
 c                                  approximation to gamma(x),
@@ -235,8 +213,6 @@ c                                  gamma(big1) .approx. xinf
       data               xmin/5.8775e-39/
       data               big1/34.844/
 c                                  first executable statement
-
-
       ier = 0
       mflag = .false.
       t = x
@@ -253,9 +229,9 @@ c                                  first executable statement
 c                                  argument is negative
       mflag = .true.
       t = -t
-      r = int(t)
+      r = aint(t)
       sign = 1.0
-      if (mod(r,2) .eq. 0.0) sign = -1.
+      if (amod(r,2.0) .eq. 0.0) sign = -1.
       r = t-r
       if (r.ne.0.0) go to 20
       ier = 130
@@ -298,7 +274,7 @@ c                                  2.0 .le. t .le. 3.0
       gamma = y
       go to 9005
 c                                  t .gt. 12.0
-   60 top = log(t)
+   60 top = alog(t)
       top = t*(top-1.0)-.5*top
       t = 1.0/t
       b = t*t
@@ -312,10 +288,8 @@ c                                  t .gt. 12.0
   201 format (' *** error in gaussj gamma function routine')
  9005 return
       end
-
-
       subroutine ns01a (n,x,f,ajinv,dstep,dmax,acc,maxfun,iprint,w,
-     2                 calfun,qwork,iqwork)
+     2                 calfun)
 c
 c   this subroutine solves a system of nonlinear algebraic equations of
 c   the form f(x) = 0, where f and x are vectors of length n.  the
@@ -427,13 +401,8 @@ c   sgefa followed by sgedi.  these require in addition the
 c   linpack basic linear algebra subroutines saxpy, sscal,
 c   isamax, and sswap.
 c
-      implicit none
-      integer n, maxc,nt,ntest,iprint,lda,is,ic,i,ks,kk,k,info,nx,nf,j,
-     &   ijob,nw,nd,mw,ndc,maxfun,iqwork
       external calfun
-      double precision x(n),f(n),lawork(20),ajinv(20,20),w(900),det(2),
-     &   dstep,dtest,acc,dw,anmult,ds,dmm,dn,dmult,dss,ss,sp,fnp,fsq,
-     &   fmin,dd,pa,pj,tinc,dmax,dm,qwork(iqwork)
+      real x(1),f(1),lawork(20),ajinv(20,20),w(1),det(2)
       integer ipvt(20)
 c     set various parameters
       maxc=0
@@ -468,7 +437,7 @@ c     start a new page for printing
    86 format ('1')
 c     call the subroutine calfun
     1 maxc=maxc+1
-      call calfun (n,x,f,qwork,iqwork)
+      call calfun (n,x,f)
 c     test for convergence
       fsq=0.
       do 2 i=1,n
@@ -800,17 +769,10 @@ c     update the approximations to j and to ajinv
    96 continue
       go to 38
       end
-cccccccccccccccccccccccccccccccccccccccccc
-
-
-
-
-cccccccccccccccccccccccccccccccccccccccccc
       subroutine sgefa(a,lda,n,ipvt,info)
-      implicit none
-      integer ipvt(1),info,k,nm1,n,kp1,l,lda,isamax,j
-      double precision a(lda,n),t
-
+      integer ipvt(1)
+      real a(lda,1)
+c
 c     linpack routine.
 c     sgefa factors a single precision matrix by gaussian elimination.
 c     requires blas saxpy,sscal,isamax
@@ -865,16 +827,9 @@ c
       if (a(n,n) .eq. 0.) info = n
       return
       end
-ccccccccccccccccccccccccccccccccccccccccc
-
-
-ccccccccccccccccccccccccccccccccccccccccc
-c  subroutine sgedi
-ccccccccccccccccccccccccccccccccccccccccc
       subroutine sgedi(a,lda,n,ipvt,det,work,job)
-      implicit none
-      integer ipvt(1),l,nm1,n,k,kp1,j,i,kb,lda,job
-      double precision a(lda,1),det(2),work(1),ten,t
+      integer ipvt(1)
+      real a(lda,1),det(2),work(1)
 c
 c     linpack routine.
 c     sgedi computes the determinant and inverse of a matrix
@@ -946,20 +901,12 @@ c
   150 continue
       return
       end
-cccccccccccccccccccccccccccc
-
-cccccccccccccccccccccccccccc
-c
-cccccccccccccccccccccccccccc
       subroutine saxpy(n,da,dx,incx,dy,incy)
 c
 c     constant times a vector plus a vector.
 c     jack dongarra, linpack, 3/11/78.
 c
-      implicit none
-      double precision dx(1),dy(1),da
-      integer n,i,ix,iy,incx,incy,mp1,m
-
+      real dx(1),dy(1)
       if(n.le.0)return
       if (da .eq. 0.) return
       if(incx.eq.1.and.incy.eq.1)go to 20
@@ -988,18 +935,12 @@ c
    50 continue
       return
       end
-ccccccccccccccccccccccccccccccc
-
-ccccccccccccccccccccccccccccccc
       subroutine  sscal(n,da,dx,incx)
 c
 c     scales a vector by a constant.
 c     jack dongarra, linpack, 3/11/78.
 c
-      implicit none
-      double precision dx(1),da
-      integer n,m,i,nincx,incx,mp1
-
+      real dx(1)
       if(n.le.0)return
       if(incx.eq.1)go to 20
       nincx = n*incx
@@ -1023,20 +964,12 @@ c
    50 continue
       return
       end
-ccccccccccccccccccccccccccccccccccccc
-
-ccccccccccccccccccccccccccccccccccccc
       integer function isamax(n,dx,incx)
 c
 c     finds the index of element having max. absolute value.
 c     jack dongarra, linpack, 3/11/78.
 c
-      implicit none
-      integer n,incx,isamax,ix,i
-      double precision dx(n),dmax
-c      originally dx was dx(1)
-
-
+      real dx(1)
       isamax = 0
       if( n .lt. 1 ) return
       isamax = 1
@@ -1060,19 +993,12 @@ c      originally dx was dx(1)
    30 continue
       return
       end
-cccccccccccccccccccccccccccccc
-
-
-cccccccccccccccccccccccccccccc
       subroutine  sswap (n,dx,incx,dy,incy)
 c
 c     interchanges two vectors.
 c     jack dongarra, linpack, 3/11/78.
 c
-      implicit none
-      integer n,incx,incy,i,m,mp1,ix,iy
-      double precision dx(1),dy(1),dtemp
-
+      real dx(1),dy(1)
       if(n.le.0)return
       if(incx.eq.1.and.incy.eq.1)go to 20
       ix = 1
@@ -1109,9 +1035,6 @@ c
    50 continue
       return
       end
-ccccccccccccccccccccccccccccccccccc
-
-ccccccccccccccccccccccccccccccccccc
       subroutine ode(f,neqn,y,t,tout,relerr,abserr,iflag,work,iwork)
 c
 c   subroutine ode integrates a system of neqn
@@ -1219,21 +1142,11 @@ c*  subroutines  de  and  step  contain machine dependent constants.   *
 c*  be sure they are set before using  ode .                           *
 c***********************************************************************
 c
-      implicit none
-      double precision work,t,y,relerr,abserr,tout
-      integer iyy,iwt,neqn,iyp,iypout,iphi,iwork,ialpha,ibeta,
-     &   isig,iv,iw,ig,iphase,ipsi,ix,ih,ihold,istart,itold,
-     &   idelsn,ip,iflag
-
       logical start,phase1,nornd
       dimension y(neqn),work(1),iwork(5)
       external f
-
-
       data ialpha,ibeta,isig,iv,iw,ig,iphase,ipsi,ix,ih,ihold,istart,
      1  itold,idelsn/1,13,25,38,50,62,75,76,88,89,90,91,92,93/
-
-
       iyy = 100
       iwt = iyy + neqn
       ip = iwt + neqn
@@ -1258,9 +1171,6 @@ c
       if(nornd) iwork(2) = 1
       return
       end
-ccccccccccccccccccccccccccccccccc
-
-ccccccccccccccccccccccccccccccccc
       subroutine de(f,neqn,y,t,tout,relerr,abserr,iflag,
      1  yy,wt,p,yp,ypout,phi,alpha,beta,sig,v,w,g,phase1,psi,x,h,hold,
      2  start,told,delsgn,ns,nornd,k,kold,isnold)
@@ -1273,12 +1183,6 @@ c   this code is completely explained and documented in the text,
 c   computer solution of ordinary differential equations:  the initial
 c   value problem  by l. f. shampine and m. k. gordon.
 c
-      implicit none
-      double precision y,t,tout,relerr,abserr,
-     &  yy,wt,p,yp,ypout,phi,alpha,beta,sig,v,w,g,psi,x,h,hold,
-     &  told,releps,eps,tend,fouru,del,delsgn,abseps,absdel
-      integer neqn,iflag,nostep,l,kle4,maxnum,isn,k,kold,isnold,ns
-      
       logical stiff,crash,start,phase1,nornd
       dimension y(neqn),yy(neqn),wt(neqn),phi(neqn,16),p(neqn),yp(neqn),
      1  ypout(neqn),psi(12),alpha(12),beta(12),sig(13),v(12),w(12),g(13)
@@ -1340,7 +1244,7 @@ c
       x = t
       do 40 l = 1,neqn
    40   yy(l) = y(l)
-      delsgn = sign(dble(1.0),del)
+      delsgn = sign(1.,del)
       h = sign(max(abs(tout-x),fouru*abs(x)),tout-x)
 c
 c   if already past output point, interpolate and return
@@ -1409,9 +1313,6 @@ c
       if(kle4 .ge. 50) stiff = .true.
       go to 50
       end
-cccccccccccccccccccccccccccccc
-
-cccccccccccccccccccccccccccccc
       subroutine step(x,y,f,neqn,h,eps,wt,start,
 c    1  hold,k,kold,crash,phi,p,yp,psi)
      1  hold,k,kold,crash,phi,p,yp,psi,
@@ -1529,13 +1430,6 @@ c   before returning.  to continue with the larger tolerance, the user
 c   just calls the code again.  a restart is neither required nor
 c   desirable.
 c
-      implicit none
-      double precision two,gstr,h,x,fouru,round,wt,g,sig,eps,sum,rho,
-     &   p5eps,phi,temp2,xold,erkp1,err,y,p,yp,psi,alpha,beta,sign,
-     &   w,v,erk,hold,absh,erkm2,erkm1,hnew,r,temp6,temp3,temp1,tau,twou
-      integer l,neqn,k,kold,i,j,nsp1,nsm2,knew,ip1,kp1,km1,im1,iq,km2,
-     &   kp2,limit2,ifail,limit1,ns,realns,reali,nsp2,temp4,temp5
-
       logical start,crash,phase1,nornd
       dimension y(neqn),wt(neqn),phi(neqn,16),p(neqn),yp(neqn),psi(12)
       dimension alpha(12),beta(12),sig(13),w(12),v(12),g(13),
@@ -1890,10 +1784,6 @@ c
       return
 c       ***     end block 4     ***
       end
-cccccccccccccccccccccc
-
-
-cccccccccccccccccccccc
       subroutine intrp(x,y,xout,yout,ypout,neqn,kold,phi,psi)
 c
 c   the methods in subroutine  step  approximate the solution near  x
@@ -1907,13 +1797,6 @@ c   value problem  by l. f. shampine and m. k. gordon.
 c
 c   input to intrp --
 c
-
-      implicit none
-      double precision x,y,xout,yout,ypout,phi,psi,w,gamma,eta,psijm1,
-     &   term,temp2,rho,hi,g,temp3
-      integer ki,kold,kipl,temp1,i,jm1,l,kip1,limit1,neqn,j
-
-
 c   all floating point variables are single precision
 c   the user provides storage in the calling program for the arrays in
 c   the call list
