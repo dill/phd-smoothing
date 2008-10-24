@@ -21,6 +21,7 @@ cc     the package requires library routines ns01a, gaussj, and ode,
 cc     and these contain machine dependent constants.  see the scpack
 cc     user's guide.
 
+c this is a frivolous change
 
 c*******************************************************************
 c* qinit                                      primary subroutine  **
