@@ -26,7 +26,7 @@ c this is a frivolous change
 c*******************************************************************
 c* qinit                                      primary subroutine  **
 c*******************************************************************
-      subroutine qinit(n,betam,nptsq,qwork)
+      subroutine qinit(n,betam,nptsq,qwork,qsize)
 c
 c computes nodes and weights for gauss-jacobi quadrature
 c
@@ -39,7 +39,8 @@ c quadrature weights on output, and the final one is a
 c scratch vector needed by gaussj.
 c
       implicit complex(c,w,z)
-      dimension qwork(1),betam(n)
+      integer qsize
+      dimension qwork(qsize),betam(n)
 c
 c for each finite vertex w(k), compute nodes and weights for
 c one-sided gauss-jacobi quadrature along a curve beginning at z(k):
@@ -65,7 +66,7 @@ c* scsolv                                     primary subroutine  **
 c*******************************************************************
 c
       subroutine scsolv(iprint,iguess,tol,errest,n,c,z,wc,
-     &   wre,wim,betam,nptsq,qwork)
+     &   w,betam,nptsq,qwork)
 c
 c this subroutine computes the accessory parameters c and
 c z(k) for the schwarz-christoffel transformation
@@ -124,10 +125,6 @@ c           see betam, below.  each connected boundary component
 c           must include at least one vertex w(k), even if it
 c           has to be a degenerate vertex with betam(k) = 0.
 c           w(n) and w(1) must be finite.
-
-c        NB this is infact entered as wre and wim to allow calling
-c           from R. These are then recombined as the above array
-
 c
 c   betam   real array with betam(k) the external angle in the
 c           polygon at vertex k divided by minus pi (input).
@@ -173,20 +170,12 @@ c (212) 460-7224
 c october 1979 (version 1); july 1983 (version 2)
 c
       implicit complex(c,w,z)
-      double precision wre,wim
       common /param1/ kfix(20),krat(20),ncomp,nptsq2,c2,
      &  qwork2(460),betam2(20),z2(20),wc2,w2(20)
       dimension z(n),w(n),betam(n),qwork(1)
       dimension ajinv(20,20),scr(900),fval(19),y(19)
-      dimension wre(n),wim(n)
       external scfun
       nm = n-1
-
-c     stick the real and imaginary parts of w back together
-      do i=1,n
-         w(i)=CMPLX(wre(i),wim(i))
-      end do
-
 
 c
 c check input data:
@@ -844,7 +833,7 @@ c this now accepts and extra argument to allow it to be called from
 c R. w is split ito it's real an imaginary parts to bgin with and then
 c recombined.
 
-      subroutine angles(n,wre,wim,betam)
+      subroutine angles(n,w,betam)
 c
 c computes external angles -pi*betam(k) from knowledge of
 c the vertices w(k).  an angle betam(k) is computed for each
@@ -853,14 +842,7 @@ c to get this information across any vertices at infinity
 c should be signaled by the value w(k) = (99.,99.) on input.
 c
       implicit complex(c,w,z)
-      double precision wre,wim
       dimension w(n),betam(n),wre(n),wim(n)
-
-c     stick the real and imaginary parts of w back together
-      do i=1,n
-         w(i)=CMPLX(wre(i),wim(i))
-      end do
-
 
       c9 = (99.,99.)
 c

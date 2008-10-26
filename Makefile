@@ -14,8 +14,9 @@ mod2=sclib
 mod3=interface
 
 #########################################################
-
-cmplr=gfortran -ffixed-form -g -fbounds-check -Wuninitialized -O -ftrapv -fno-automatic 
+# really want to run this from -fbounds-check -fimplicit-none
+#
+cmplr=gfortran -ffixed-form -g -Wuninitialized -O -ftrapv -fno-automatic 
 
 objects1 = $(mod1).o $(mod2).o $(mod3).o $(main).o
 

@@ -1,42 +1,45 @@
-      PROGRAM TEST1
-      integer n,i,ier,nptsq,iprint,iguess,k,qsize
-      double precision betam(n),qwork
-      double COMPLEX c,w,zsc,wsc,z,ww,zz,zero,zi,wc,wwex,zzex,wtmp,
-     &          ztmp
-      double precision err,qwork,errest,tol
-      dimension Z(n),W(n),BETAM(n),QWORK
-      ZERO = (0.,0.)
-      ZI = (0.,1.)
+       PROGRAM TEST1
+       integer n,i,ier,nptsq,iprint,iguess,k,qsize
+c       double precision betam,qwork
+       COMPLEX c,z,w,zsc,wsc,ww,zz,zero,zi,wc,wwex,zzex,
+     &          wtmp,ztmp
+       real err,errest,tol
+       allocatable z(:),w(:)
+       allocatable betam(:)
+       allocatable qwork(:)
 
 
-C
+       ZERO = (0.,0.)
+       ZI = (0.,1.)
+
+
 C SET UP PROBLEM:
-      N = 4
-      WC = CMPLX(0.,SQRT(2.))
-      W(1) = (10.,0.)
-      W(2) = (0.,10.)
-      W(3) = (-10.,0.)
-      W(4) = (0.,-10.)
-      BETAM(1) = 1.
-      BETAM(2) = -.5
-      BETAM(3) = -2.
-      BETAM(4) = -.5
+       N = 4
+       nptsq=5
+       WC = CMPLX(0.,SQRT(2.))
+
+
+       allocate(z(n))
+       allocate(w(n))
+       allocate(betam(n))
+       W(1) = (10.,0.)
+       W(2) = (0.,10.)
+       W(3) = (-10.,0.)
+       W(4) = (0.,-10.)
+       BETAM(1) = 1.
+       BETAM(2) = -.5
+       BETAM(3) = -2.
+       BETAM(4) = -.5
 
 C      CALL ANGLES(N,W,BETAM)
 
-      qsize=nptsq*(2*n+3)
+       qsize=nptsq*(2*n+3)
+       allocate(qwork(qsize))
+
+
 
 c do everything using the interface
-      call scint(N,betam,w,z,ci,qsize)
-
-
-
-
-
-
-
-
-
+       call scint(N,betam,w,z,ci,qsize)
 
 
 C

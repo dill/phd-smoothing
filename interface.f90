@@ -5,9 +5,10 @@ c having to hack about with LINPACK. Hopefully.
       subroutine scint(n,betam,w,z,c,qsize)
 
          integer n,i,ier,nptsq,iprint,iguess,k,qsize
-         double COMPLEX c,w,zsc,wsc,z,ww,zz,zero,zi,wc,wwex,zzex,wtmp,
+         COMPLEX c,w,zsc,wsc,z,ww,zz,zero,zi,wc,wwex,zzex,wtmp,
      &          ztmp
-         double precision betam,err,qwork,errest,tol
+         real err,qwork,errest,tol
+c        double precision betam
          dimension Z(n),W(n),BETAM(n)
          dimension QWORK(qsize)
 
@@ -27,7 +28,7 @@ c      CALL ANGLES(N,W,BETAM)
 
 
 C COMPUTE NODES AND WEIGHTS FOR PARAMETER PROBLEM:
-      CALL QINIT(N,BETAM,NPTSQ,QWORK)
+      CALL QINIT(N,BETAM,NPTSQ,QWORK,qsize)
 
 
 
