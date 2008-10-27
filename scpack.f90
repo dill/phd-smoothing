@@ -828,11 +828,6 @@ c
 c*******************************************************************
 c* angles                                     primary subroutine  **
 c*******************************************************************
-c
-c this now accepts and extra argument to allow it to be called from
-c R. w is split ito it's real an imaginary parts to bgin with and then
-c recombined.
-
       subroutine angles(n,w,betam)
 c
 c computes external angles -pi*betam(k) from knowledge of
@@ -842,7 +837,12 @@ c to get this information across any vertices at infinity
 c should be signaled by the value w(k) = (99.,99.) on input.
 c
       implicit complex(c,w,z)
-      dimension w(n),betam(n),wre(n),wim(n)
+      dimension w(n),betam(n)
+
+
+      print*,w
+      print*,betam
+
 
       c9 = (99.,99.)
 c

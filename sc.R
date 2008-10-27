@@ -1,5 +1,5 @@
 # Script to call the SCPACK fortran routine 
-# The following files are needed from netib
+# The following files are needed from netlib
 #   http://www.netlib.org/conformal/scpack
 #   http://www.netlib.org/conformal/sclib
 
@@ -18,19 +18,29 @@ dyn.load("scpack.so")
 
 ######################################################
 # Number of vertices
-#nvertices<-4
+nvertices<-4
 # Position of vertices
-#polyvertices<-vector("complex",nvertices)
-#polyvertices[1]<-complex(1,-10,0)
-#polyvertices[2]<-complex(1,0,10)
-#polyvertices[3]<-complex(1,10,0)
-#polyvertices[4]<-complex(1,0,-10)
+polyvertices<-vector("complex",nvertices)
+polyvertices[1]<-complex(1,10,0)
+polyvertices[2]<-complex(1,0,10)
+polyvertices[3]<-complex(1,-10,0)
+polyvertices[4]<-complex(1,0,-10)
 
-#wc<-complex(1,0,sqrt(2))
-# We use the fortran function ANGLES to compute the angles we need
-#betam<-vector("numeric",nvertices)
-#angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
-#betam<-angle.ret$BETAM
+attr(polyvertices,"Csingle")
+
+
+wc<-complex(1,0,sqrt(2))
+betam<-vector("numeric",nvertices)
+betam[1]<-1.0
+betam[2]<--0.5
+betam[3]<--2.0
+betam[4]<--0.5
+betam<-as.single(betam)
+# Check to see if the ANGLES routine gives the same answer as
+# above.
+#.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.single(betam))
+
+
 #################################################
 
 # Test problem - L-shape
@@ -42,9 +52,9 @@ dyn.load("scpack.so")
 #polyvertices[4]<-complex(1,1,1)
 #polyvertices[5]<-complex(1,1,2)
 #polyvertices[6]<-complex(1,0,2)
-####
+#####
 #betam<-vector("numeric",nvertices)
-#angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
+#angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.single(betam))
 #betam<-angle.ret$BETAM
 #wc<-complex(1,0.5,0.5)
 #################################
@@ -52,50 +62,50 @@ dyn.load("scpack.so")
 
 
 # Test problem 2 - from scdoc
-nvertices<-4
-
-polyvertices<-vector("complex",nvertices)
-polyvertices[1]<-complex(1,0,1)
-polyvertices[2]<-complex(1,0,0)
-polyvertices[3]<-complex(1,1e20,1e20)
-polyvertices[4]<-complex(1,0,0)
-
-wc<-complex(1,0,sqrt(2))
-
-betam<-vector("numeric",nvertices)
-angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
-betam<-angle.ret$BETAM      
-betam[1]<-1
-betam[2]<--0.5
-betam[3]<--2
-betam[4]<--0.5
-
-
+#nvertices<-4
+#
+#polyvertices<-vector("complex",nvertices)
+#polyvertices[1]<-complex(1,0,1)
+#polyvertices[2]<-complex(1,0,0)
+#polyvertices[3]<-complex(1,1e20,1e20)
+#polyvertices[4]<-complex(1,0,0)
+#
+## approximate centre of w
+#wc<-complex(1,0,sqrt(2))
+#
+## angles
+#betam<-vector("numeric",nvertices)
+#betam[1]<-1
+#betam[2]<--0.5
+#betam[3]<--2
+#betam[4]<--0.5
 
 
 
 # set number of quadrature points per subinterval
 nptsq<-5
 
+# Size of the work array
+qsize<-as.integer(nptsq*(2*nvertices+3))
 
-# Now use qinit to initialise the Gauss-Jacobi quadrature
-qwork<-vector("numeric",nptsq*(2*nvertices+3))
-qinit.ret<-.Fortran("QINIT",N=as.integer(nvertices),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
-qwork<-qinit.ret$QWORK
+# setup some output variables
+z<-complex(nvertices)
+c.const<-complex(1)
+errest<-numeric(1)
 
-# Finally call the SCSOLV routine and find the parameters
-# IPRINT and IGUESS must be given to "avoid accidental exact solution"
+
+
 errest<-vector("numeric",1)
 c.const<-vector("complex",1)
 z<-vector("complex",nvertices)
-ret<-.Fortran("SCSOLV",IPRINT=as.numeric(0),IGUESS=as.numeric(1),TOL=as.numeric(1e-6),ERREST=as.numeric(errest),N=as.integer(nvertices),C=as.complex(c.const),Z=z,WC=as.complex(wc),W=as.complex(polyvertices),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
+sc.solution<-.Fortran("scint",N=as.integer(nvertices),BETAM=betam,W=polyvertices,Z=z,C=c.const,WC=wc,NPTSQ=as.integer(nptsq),ERREST=errest,QSIZE=qsize)
 
 
 # Set some variables
-prevertices<-ret$Z
-angles<-ret$BETAM
-centre<-ret$WC
-complex.scale.factor<-ret$C
+prevertices<-sc.solution$Z
+centre<-sc.solution$WC
+complex.scale.factor<-sc.solution$C
+angles<-sc.solution$BETAM
 
 # Wrapper for the forwards map
 # Forwards is disk->polygon

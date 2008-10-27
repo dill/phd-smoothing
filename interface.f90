@@ -2,7 +2,13 @@ c this will act as an interface between Fortran and R and avoid
 c having to hack about with LINPACK. Hopefully.
 
 
-      subroutine scint(n,betam,w,z,c,qsize)
+      subroutine scint(n,betam,dw,dz,dc,dwc,nptsq,errest,qsize)
+c put in a description of the args
+
+
+
+
+         double complex dw,dz,dc,dwc
 
          integer n,i,ier,nptsq,iprint,iguess,k,qsize
          COMPLEX c,w,zsc,wsc,z,ww,zz,zero,zi,wc,wwex,zzex,wtmp,
@@ -11,20 +17,23 @@ c having to hack about with LINPACK. Hopefully.
 c        double precision betam
          dimension Z(n),W(n),BETAM(n)
          dimension QWORK(qsize)
+         dimension dw(n), dz(n)
 
-c set the points per quadrature stuff
-      nptsq=5
 
 c leave these in for the moment
       ZERO = (0.,0.)
       ZI = (0.,1.)
-      WC = CMPLX(0.,SQRT(2.))
 
+c convert double complex back singles
+      z=cmplx(dz)
+      w=cmplx(dw)
+      wc=cmplx(dwc)
+      c=cmplx(dc)
 
 
 
 c we can calculate the angles if we wish
-c      CALL ANGLES(N,W,BETAM)
+      CALL ANGLES(N,W,BETAM)
 
 
 C COMPUTE NODES AND WEIGHTS FOR PARAMETER PROBLEM:
@@ -80,5 +89,16 @@ C
   200 FORMAT (1X)
   201 FORMAT (' Z,W,WEX,ERR: ',3('(',F6.3,',',F6.3,') '),D11.4)
   202 FORMAT (' W,Z,ZEX,ERR: ',3('(',F6.3,',',F6.3,') '),D11.4)
+
+
+c     set the types back...
+      dz=dcmplx(z)
+      dw=dcmplx(w)
+      dwc=dcmplx(wc)
+      dc=dcmplx(c)
+
+
+
+      return
 
       end subroutine
