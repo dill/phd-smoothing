@@ -1,0 +1,162 @@
+% Brief explanation of the Schwarz-Christoffel transform
+% David Lawrence Miller
+% d.l.miller@bath.ac.uk
+ 
+% Started : 29 October 2008
+% Completed (first draft) : 
+% Really completed :
+ 
+\documentclass[a4paper,10pt]{amsart}
+ 
+% Load some packages
+\usepackage{times, amsmath, amssymb, amsfonts, url, natbib, graphicx, multirow, bm, rotating}
+ 
+\usepackage{multirow}
+ 
+% top matter
+\title{The Schwarz-Christoffel transform and its possible application to finite area smoothing}
+\author{David Lawrence Miller}
+\email{d.l.miller@bath.ac.uk}
+\address{Mathematical Sciences, University of Bath, Bath, United Kingdom}
+ 
+% Shortcuts
+% Probability
+\newcommand{\prob}[1]{\mathbb{P}\left[ #1 \right]}
+% Hovitz-Thompson
+\newcommand{\HT}{\hat{\tau}_{HT}}
+% Schwarz-Christoffel
+\newcommand{\sch}{Schwarz-Christoffel }
+% fprime
+\newcommand{\fprime}{f^\prime(z)}
+
+\begin{document}
+ 
+% The abstract
+\begin{abstract}
+You should write an abstract here!
+
+\end{abstract}
+ 
+ 
+% New theorem for theorems
+\newtheorem{thm}{Theorem}[section]
+ 
+%New theorem for definitions
+\newtheorem{defn}{Definition}[section]
+ 
+\maketitle
+ 
+\section{Conformal Mappings}
+
+In complex analysis we define a conformal mapping as an analytic, injective map from the $z$ plane to the $w$ plane (\cite{handbuch}, \emph{pp. 672}), ie,
+
+\begin{equation*}
+w=f(z)=u+iv, \qquad f^\prime(z) \neq 0.
+\end{equation*} 
+
+The transformation of a line segment is the combination of a dilation (by a factor of $\sigma=\vert f^\prime(z) \vert$ and a rotation by $\alpha = \arg f^\prime(z)$. A conformal mapping preserves the angle of intersection of curves.
+
+\section{\sch Mapping}
+
+The \sch mapping (or transform or formula) is a method of conformally mapping the interior (or exterior) of a polygon to another domain (most commonly the unit disk or the upper half-plane.)
+
+This is achieved by looking at the derivative of the conformal map $f$. For some maps we may be express the derivative as:
+
+\begin{equation}
+\fprime = \prod f_k,
+\end{equation}
+
+for some (cannonical) functions $f_k$. So we can say that:
+
+\begin{equation}
+\arg \fprime = \prod \arg f_k.
+\end{equation}
+
+In the classical mapping (ie. from polygon to the half-plane) we see that each $\arg f_k$ is designed to be a step function such that $f$ maps the real line onto the boundry of the polygon (henceforth "the polygon".) Usually with conformal mappings it is the border that causes the most problems, however, with the \sch map we can use the Schwarz relflection principle (\cite{handbuch}, \emph{pp. 679}) we see that $f$ is analytic between the vertices on the polygon, $\fprime$ exists and hence $\arg \fprime$ is constant. We also know that $\arg \fprime$ undergoes a specific jump at each vertex, that being the (external) turning angle (denoted $\beta_k$ \footnote{$\beta_k = 1-\alpha_k$, $\alpha_k$ being the internal angle}) required at each vertex. 
+
+From this we can identify some function for $f_k$ which is analytic on $H^+$\footnote{The upper half-plane.} or the unit disk and satisfies the above conditions. In the half-plane case this is:
+
+\begin{equation}
+f_k = (z-z_k)^{-\beta_k},
+\end{equation}
+
+where the $k$s index the points on $\mathbb{R}$ that map to polygon's vertices. We pick the branch such that $f_k(z)>0$ if $z>z_k$ on $\mathbb{R}$
+
+\begin{equation}
+\fprime = C \prod_{k=1}^{n-1} f_k(z),
+\end{equation}
+
+and so, integrating we obtain:
+
+\begin{equation}
+f(z) = A + C \int^z \prod_{k=1}^{n-1} (\zeta-z_k)^{-\beta_k} d\zeta,
+\end{equation}
+
+where $A$ and $C$ are complex constants. This is known as the \emph{\sch formula} for the half-plane.
+
+
+\subsection{Nomenclature}
+
+At this point it is useful to take note of some of the nomenclature related to \sch mappings and to address some definitions.
+
+We first give a definition for the polygon and related quantities.
+
+\begin{defn}[Polygon]
+We define a polygon, $\Gamma$, as a collection of vertices $w_1, w_2,\dots,w_n$ and interior angles $\alpha_1\pi, \alpha_2\pi, \dots, \alpha_n\pi$. For convenience we define $w_{n+1} = w_1$ and $4_0=w_n$. The $w$s lie in $\mathbb{C} \cup {\infty}$. Numbering of vertices is counterclockwise (ie. the polygon is "to the left" as one traverses $w_k$ to $w_{k+1}$. The angles are such that $\alpha_k \in (0,2]$ and we require:
+
+\begin{equation}
+\sum_{k=1}^n (1-\alpha_k) = 2.
+\end{equation}
+
+Hence, the exterior angle, $\beta_k\pi$ is given by $(1-\alpha_k)\pi$.
+
+Usually, $\Gamma$ is used to refer to the boundary of the polygon and $P$ to the region inside.
+
+\end{defn}
+
+Since in the \sch transform we are actually looking for the inverse of the map from the polygon to the plane (or disk) we need to know the position that the vertices on $\Gamma$ (the $w_k$s) correspond to on the real line (or the boundry of the unit disk). These points are referred to as \emph{prevertices} and are denoted $z_k$.
+
+
+
+
+
+
+\subsection{Mapping to the upper half-plane}
+
+When we map $P$ to $H^+$ we set $f(\infty) = w_n$ without any loss of generality. We then have the formula (as above):
+
+\begin{equation}
+f(z) = A + C \int^z \prod_{k=1}^{n-1} (\zeta-z_k)^{-\beta_k} d\zeta.
+\end{equation}
+
+
+
+
+\subsection{Unit disk}
+
+For the unit disk we do not fix any points, however note below that the product now runs over all of the prevertices. The integrand is simply a constant multiple of the original form. This is merely to avoid problems in the calculation of the branch cuts (\cite{driscoll}, \emph{pp. 12}).
+
+\begin{equation}
+f(z) = A + C \int^z \prod_{k=1}^{n} (1 - \frac{\zeta}{z_k})^{-\beta_k} d\zeta.
+\end{equation}
+
+
+\section{Special cases}
+
+
+
+
+\section{Computation of the \sch mapping}
+
+It is generally easier to compute the \sch map to the unit disk rather than to $H^+$. For that reason we only address that here.
+
+
+
+
+
+
+
+\bibliographystyle{plainnat}
+\bibliography{sc-refs}
+
+\end{document}
