@@ -7,16 +7,9 @@
 # http://www.netlib.org/conformal/scdoc
 
 # First load the shared object file
-# You can create the object by running:
-# R CMD SHLIB scpack.f90 sclib.f90
 dyn.load("scpack.so")
 
-
 ### Create the variables
-
-
-
-######################################################
 # Number of vertices
 nvertices<-4
 # Position of vertices
@@ -25,9 +18,7 @@ polyvertices[1]<-complex(1,10,0)
 polyvertices[2]<-complex(1,0,10)
 polyvertices[3]<-complex(1,-10,0)
 polyvertices[4]<-complex(1,0,-10)
-
 attr(polyvertices,"Csingle")
-
 
 wc<-complex(1,0,sqrt(2))
 betam<-vector("numeric",nvertices)
@@ -41,9 +32,8 @@ betam<-as.single(betam)
 #.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.single(betam))
 
 
-#################################################
-
-# Test problem - L-shape
+#################################
+### Test problem - L-shape
 #nvertices<-6
 #polyvertices<-vector("complex",nvertices)
 #polyvertices[1]<-complex(1,0,0)
@@ -60,8 +50,8 @@ betam<-as.single(betam)
 #################################
 
 
-
-# Test problem 2 - from scdoc
+#################################
+### Test problem 2 - from scdoc
 #nvertices<-4
 #
 #polyvertices<-vector("complex",nvertices)
@@ -79,7 +69,7 @@ betam<-as.single(betam)
 #betam[2]<--0.5
 #betam[3]<--2
 #betam[4]<--0.5
-
+#################################
 
 
 # set number of quadrature points per subinterval
@@ -89,16 +79,15 @@ nptsq<-5
 qsize<-as.integer(nptsq*(2*nvertices+3))
 
 # setup some output variables
-z<-complex(nvertices)
-c.const<-complex(1)
-errest<-numeric(1)
-
-
-
 errest<-vector("numeric",1)
 c.const<-vector("complex",1)
+attr(c.const,"Csingle")
 z<-vector("complex",nvertices)
-sc.solution<-.Fortran("scint",N=as.integer(nvertices),BETAM=betam,W=polyvertices,Z=z,C=c.const,WC=wc,NPTSQ=as.integer(nptsq),ERREST=errest,QSIZE=qsize)
+attr(z,"Csingle")
+qwork<-vector("numeric",qsize)
+qwork<-as.single(qwork)
+
+sc.solution<-.Fortran("scint",N=as.integer(nvertices),BETAM=betam,W=polyvertices,Z=z,C=c.const,WC=wc,NPTSQ=as.integer(nptsq),ERREST=errest,QSIZE=qsize,QWORK=qwork)
 
 
 # Set some variables
@@ -106,6 +95,7 @@ prevertices<-sc.solution$Z
 centre<-sc.solution$WC
 complex.scale.factor<-sc.solution$C
 angles<-sc.solution$BETAM
+qwork<-sc.solution$QWORK
 
 # Wrapper for the forwards map
 # Forwards is disk->polygon
@@ -116,14 +106,14 @@ sc.map.forwards<-function(){
 
 # And the backwards map
 # backwards is polygon->disk
-sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre){
+sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prevertices,polyvertices,angles,complex.scale.factor,centre){
    # Arguments
    #  points                  vector of points at which we want to evaluate the map
    #  nvertices               number of vertices (not >20)
    #  betam                   array of external angles
    #  nptsq                   number of points per subinterval
    #  qwork                   quadrature work array
-   #  accuracy                desired accuracy in output (default 1e-6)
+   #  accuracy                desired accuracy in output (default 1e-3)
    #  prevertices             complex vector of prevertices
    #  polyvertices            complex vector of polgyon vertices
    #  angles                  exterior angles of the polygon
@@ -161,9 +151,13 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prev
       w0<-vector("complex",1)
       evaled<-complex(1)
 
-      nearest<-.Fortran("NEARW",WW=points[i],ZN=z0,WN=w0,KN=k0,N=as.integer(nvertices),Z=as.complex(prevertices),WC=as.complex(centre),W=as.complex(polyvertices),BETAM=as.numeric(angles))
+      attr(z0,"Csingle")
+      attr(w0,"Csingle")
+      attr(evaled,"Csingle")
 
-      map.ret<-.Fortran("ZSC",WW=points[i],IGUESS=as.numeric(2),ZINIT=as.complex(nearest$ZN),Z0=as.complex(nearest$ZN),W0=as.complex(nearest$WN),K0=as.integer(nearest$KN),EPS=as.numeric(accuracy),IER=as.numeric(1),N=as.integer(nvertices),C=as.complex(complex.scale.factor),Z=as.complex(prevertices),WC=as.complex(centre),W=as.complex(polyvertices),BETAM=as.numeric(angles),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork),EVALED=as.complex(evaled))
+      nearest<-.Fortran("NEARW",WW=points[i],ZN=z0,WN=w0,KN=k0,N=nvertices,Z=prevertices,WC=centre,W=polyvertices,BETAM=angles)
+
+      map.ret<-.Fortran("ZSC",WW=points[i],IGUESS=as.integer(2),ZINIT=nearest$ZN,Z0=nearest$ZN,W0=nearest$WN,K0=nearest$KN,EPS=accuracy,IER=as.integer(1),N=nvertices,C=complex.scale.factor,Z=prevertices,WC=centre,W=polyvertices,BETAM=angles,NPTSQ=nptsq,QWORK=qwork,EVALED=evaled)
   
       # Push the value into the vector
       evaluated.points[i]<-map.ret$EVALED

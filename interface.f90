@@ -2,7 +2,7 @@ c this will act as an interface between Fortran and R and avoid
 c having to hack about with LINPACK. Hopefully.
 
 
-      subroutine scint(n,betam,dw,dz,dc,dwc,nptsq,errest,qsize)
+      subroutine scint(n,betam,dw,dz,dc,dwc,nptsq,errest,qsize,qwork)
 c put in a description of the args
 
 
@@ -60,35 +60,6 @@ C   (INITIAL GUESS MUST BE GIVEN TO AVOID ACCIDENTAL EXACT SOLUTION)
 c do the actual call to scsolv
       CALL SCSOLV(IPRINT,IGUESS,TOL,ERREST,N,C,Z,
      &  WC,W,BETAM,NPTSQ,QWORK)
-
-
-C COMPARE WSC(Z) TO EXACT VALUES FOR VARIOUS Z:
-      DO 10 I = 1,4
-        ZZ = (.3,0.) * CMPLX(I-2.,.2*I+.5)
-        WW = WSC(ZZ,0,ZERO,WC,0,N,C,Z,BETAM,NPTSQ,QWORK)
-        ZTMP = -ZI * (ZZ-ZI) / (ZZ+ZI)
-        WWEX = ZI * SQRT(-ZTMP**2 + (1.,0.))
-        ERR = ABS(WW-WWEX)
-        WRITE (6,201) ZZ,WW,WWEX,ERR
-   10   CONTINUE
-      WRITE (6,200)
-C
-C COMPARE ZSC(W) TO EXACT VALUES FOR VARIOUS W:
-      DO 20 I = 1,6
-        WW = CMPLX(I-2.,SQRT(I+1.))
-        IER = 0
-        ZZ = ZSC(WW,0,ZERO,ZERO,WC,0,TOL,IER,
-     &    N,C,Z,WC,W,BETAM,NPTSQ,QWORK)
-        WTMP = ZI * SQRT((-1.,0.)-WW**2)
-        ZZEX = -ZI * (WTMP-ZI) / (WTMP+ZI)
-        ERR = ABS(ZZ-ZZEX)
-        WRITE (6,202) WW,ZZ,ZZEX,ERR
-   20   CONTINUE
-C
-      STOP
-  200 FORMAT (1X)
-  201 FORMAT (' Z,W,WEX,ERR: ',3('(',F6.3,',',F6.3,') '),D11.4)
-  202 FORMAT (' W,Z,ZEX,ERR: ',3('(',F6.3,',',F6.3,') '),D11.4)
 
 
 c     set the types back...

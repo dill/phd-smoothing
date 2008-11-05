@@ -1,0 +1,5 @@
+gfortran -ffixed-form -g -O2 -c  scpack.f90 -o scpack.o
+gfortran -ffixed-form -g -O2 -c  sclib.f90 -o sclib.o
+gfortran -ffixed-form -g -O2 -c  interface.f90 -o interface.o
+gcc -std=gnu99 -shared  -o scpack.so scpack.o sclib.o interface.o   -L/usr/lib/R/lib -lR
+
