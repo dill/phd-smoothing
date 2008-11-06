@@ -33,8 +33,7 @@
  
 % The abstract
 \begin{abstract}
-You should write an abstract here!
-
+Smoothing in a complex region is difficult. Current approaches are computationally intensive. Here we propose a method for using the \sch transform to warp a region to a more managable shape in order to smooth over points in it.
 \end{abstract}
  
  
@@ -192,7 +191,30 @@ where the $h_i$s are weights and the $x_i$ are referred to as nodes. $E_n$ is an
 
 The routine \texttt{SCSOLV} does the main work find the parameters of $f$. Using the nodes and weights for the Gauss-Jacobi quadrature found by \texttt{QINIT}. We then iterate through possible values for the prevertices in (\ref{unitscmap}) in order to minimise the result of the left hand side of (\ref{optimizeme}).
 
-\subsection{\texttt{ZSC}}
+\subsection{\texttt{WSC} and \texttt{ZSC}}
+
+\subsubsection{Forwards map}
+
+Once the prevertices and complex constants have been calculated, the hard work is over. Calculating the forwards map (\texttt{WSC}) is simply a case of evaluating $f$ at the necessary points. For clarity if we wish to find the point on polygon ($w$) given we know the point on the disk ($z$) we compute:
+
+\begin{equation}
+\label{unitscmap}
+w=f(z) = w_0 + C \int_{z_0}^{z} \prod_{k=1}^{n} (1 - \frac{\zeta}{z_k})^{-\beta_k} d\zeta,
+\end{equation}
+
+where $z_0$ is any point in the closed disk where $w_0 = f(z_0)$ is known and non-infinite. We may choose any point since the integrand is analytic throughout the mapping and hence the integral is path-independent (\cite{driscoll} \emph{p. 27}).
+
+
+\subsubsection{Backwards map}
+
+For calculating to get back from the polygon to the unit disk, we treat the equation $w(z)=w$ as a non-linear equation to be solved for $z$ (\cite{trefethen}, \emph{pp. 16-17}). These are solved iteratively as a series of first order ODEs, with the starting values coming from inverting (\ref{unitscmap}).
+
+
+
+
+
+
+
 
 
 
