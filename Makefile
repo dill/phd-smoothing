@@ -11,7 +11,7 @@ main=polysc
 # MODULE NAME  (no .f90)
 mod1=scpack
 mod2=sclib
-mod3=interface
+mod3=scint
 
 #########################################################
 # really want to run this from -fbounds-check -fimplicit-none

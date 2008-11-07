@@ -94,7 +94,7 @@ sc.solution<-.Fortran("scint",N=as.integer(nvertices),BETAM=betam,W=polyvertices
 prevertices<-sc.solution$Z
 centre<-sc.solution$WC
 complex.scale.factor<-sc.solution$C
-angles<-sc.solution$BETAM
+betam<-sc.solution$BETAM
 qwork<-sc.solution$QWORK
 
 # Wrapper for the forwards map
@@ -106,7 +106,7 @@ sc.map.forwards<-function(){
 
 # And the backwards map
 # backwards is polygon->disk
-sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prevertices,polyvertices,angles,complex.scale.factor,centre){
+sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prevertices,polyvertices,complex.scale.factor,centre){
    # Arguments
    #  points                  vector of points at which we want to evaluate the map
    #  nvertices               number of vertices (not >20)
@@ -116,7 +116,6 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prev
    #  accuracy                desired accuracy in output (default 1e-3)
    #  prevertices             complex vector of prevertices
    #  polyvertices            complex vector of polgyon vertices
-   #  angles                  exterior angles of the polygon
    #  complex.scale.factor    complex scaling factor
    #  centre                  approximate centre of the polygon
 
@@ -137,31 +136,11 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prev
    # The fortran->R link for complex variables is not vectorised, 
    # so we do this....
    evaluated.points<-complex(length(points))
-
-   for (i in 1:length(points)){
-      # Find a near point
-         # This sets the variables z0, w0 and k0 for the fortran routine ZSC.
-         #   z0     point in the disk near z(ww) at which w(z0) is known and
-    	   #          finite (input).
-   	   #   w0     w(z0)  (input).  the line segment from w0 to ww must
-   	   #          lie entirely within the closed polygon.
-   	   #   k0     k if z0 = z(k) for some k, otherwise 0 (input)
-      z0<-vector("complex",1)
-      k0<-vector("integer",1)
-      w0<-vector("complex",1)
-      evaled<-complex(1)
-
-      attr(z0,"Csingle")
-      attr(w0,"Csingle")
-      attr(evaled,"Csingle")
-
-      nearest<-.Fortran("NEARW",WW=points[i],ZN=z0,WN=w0,KN=k0,N=nvertices,Z=prevertices,WC=centre,W=polyvertices,BETAM=angles)
-
-      map.ret<-.Fortran("ZSC",WW=points[i],IGUESS=as.integer(2),ZINIT=nearest$ZN,Z0=nearest$ZN,W0=nearest$WN,K0=nearest$KN,EPS=accuracy,IER=as.integer(1),N=nvertices,C=complex.scale.factor,Z=prevertices,WC=centre,W=polyvertices,BETAM=angles,NPTSQ=nptsq,QWORK=qwork,EVALED=evaled)
+   attr(evaluated.points,"Csingle")   
+   attr(points,"Csingle")   
   
-      # Push the value into the vector
-      evaluated.points[i]<-map.ret$EVALED
-   }
+   mapint.call<-.Fortran("mapint",dpoints=points,npoints=as.integer(length(points)),n=as.integer(nvertices),betam=as.single(betam),nptsq=as.integer(nptsq),qwork=as.single(qwork),qsize=as.integer(length(qwork)),accuracy=as.single(accuracy),dz=prevertices,dw=polyvertices,c=complex.scale.factor,wc=centre,dretpoints=evaluated.points)
+
 
    # Return the vector
    return(evaluated.points)
@@ -194,13 +173,7 @@ plot(complex.poly.rand.data)
 
 #plot(some.points)
 accuracy<-1e-3
-retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,angles,complex.scale.factor,centre)
+retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
 plot(retval)
-
-
-
-
-
-
 
 
