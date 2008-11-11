@@ -2,11 +2,14 @@
 
       subroutine mapint(dpoints,npoints,n,betam,nptsq,qwork,qsize,
      &            accuracy,dz,dw,dc,dwc,dretpoints)
-c put in a description of the args
+C
+C       dpoints      vector of points to evaluate (double complex)
+C       npoints      length of the above (int)
+C       n            number of vertices in the polygon (int)
+C       betam        vector of external angles (real(n))
+C       nptsq        number of points 
+C
 
-C"NEARW",WW=this.point,ZN=z0,WN=w0,KN=k0,N=nvertices,Z=prevertices,WC=centre,W=polyvertices,BETAM=angles)
-
-C      map.ret<-.Fortran("ZSC",WW=this.point,IGUESS=as.integer(2),ZINIT=nearest$ZN,Z0=nearest$ZN,W0=nearest$WN,K0=nearest$KN,EPS=as.single(accuracy),IER=as.integer(1),N=as.integer(nvertices),C=complex.scale.factor,Z=prevertices,WC=centre,W=polyvertices,BETAM=angles,NPTSQ=as.integer(nptsq),QWORK=qwork,EVALED=evaled)
 
 
          double complex dpoints,dw,dz,dc,dwc,dretpoints
