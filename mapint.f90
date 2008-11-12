@@ -54,7 +54,7 @@ c     Call qinit to setup the qwork... debug
 
 C     Convert back to doubles   
       dretpoints(:)=dcmplx(retpoints(:))
-
+      print*,retpoints
 
       return
 

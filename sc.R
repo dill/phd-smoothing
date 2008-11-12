@@ -136,8 +136,13 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prev
    # The fortran->R link for complex variables is not vectorised, 
    # so we do this....
    evaluated.points<-complex(length(points))
-#   attr(evaluated.points,"Csingle")   
-#   attr(points,"Csingle")   
+   attr(evaluated.points,"Csingle")   
+   attr(points,"Csingle")   
+   attr(c,"Csingle")   
+   attr(prevertices,"Csingle")
+   attr(polyvertices,"Csingle")
+   attr(wc,"Csingle")
+   
   
    mapint.call<-.Fortran("mapint",dpoints=points,npoints=as.integer(length(points)),n=as.integer(nvertices),betam=as.single(betam),nptsq=as.integer(nptsq),qwork=as.single(qwork),qsize=as.integer(length(qwork)),accuracy=as.single(accuracy),dz=prevertices,dw=polyvertices,c=complex.scale.factor,wc=centre,dretpoints=evaluated.points)
 
