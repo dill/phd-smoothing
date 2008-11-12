@@ -1,5 +1,5 @@
 # Script to call the SCPACK fortran routine 
-# The following files are needed from netib
+# The following files are needed from netlib
 #   http://www.netlib.org/conformal/scpack
 #   http://www.netlib.org/conformal/sclib
 
@@ -7,33 +7,33 @@
 # http://www.netlib.org/conformal/scdoc
 
 # First load the shared object file
-# You can create the object by running:
-# R CMD SHLIB scpack.f90 sclib.f90
 dyn.load("scpack.so")
 
-
 ### Create the variables
-
-
-
-######################################################
 # Number of vertices
-#nvertices<-4
+nvertices<-4
 # Position of vertices
-#polyvertices<-vector("complex",nvertices)
-#polyvertices[1]<-complex(1,-10,0)
-#polyvertices[2]<-complex(1,0,10)
-#polyvertices[3]<-complex(1,10,0)
-#polyvertices[4]<-complex(1,0,-10)
+polyvertices<-vector("complex",nvertices)
+polyvertices[1]<-complex(1,10,0)
+polyvertices[2]<-complex(1,0,10)
+polyvertices[3]<-complex(1,-10,0)
+polyvertices[4]<-complex(1,0,-10)
+attr(polyvertices,"Csingle")
 
-#wc<-complex(1,0,sqrt(2))
-# We use the fortran function ANGLES to compute the angles we need
-#betam<-vector("numeric",nvertices)
-#angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
-#betam<-angle.ret$BETAM
-#################################################
+wc<-complex(1,0,sqrt(2))
+betam<-vector("numeric",nvertices)
+betam[1]<-1.0
+betam[2]<--0.5
+betam[3]<--2.0
+betam[4]<--0.5
+betam<-as.single(betam)
+# Check to see if the ANGLES routine gives the same answer as
+# above.
+#.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.single(betam))
 
-# Test problem - L-shape
+
+#################################
+### Test problem - L-shape
 #nvertices<-6
 #polyvertices<-vector("complex",nvertices)
 #polyvertices[1]<-complex(1,0,0)
@@ -42,60 +42,60 @@ dyn.load("scpack.so")
 #polyvertices[4]<-complex(1,1,1)
 #polyvertices[5]<-complex(1,1,2)
 #polyvertices[6]<-complex(1,0,2)
-####
+#####
 #betam<-vector("numeric",nvertices)
-#angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
+#angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.single(betam))
 #betam<-angle.ret$BETAM
 #wc<-complex(1,0.5,0.5)
 #################################
 
 
-
-# Test problem 2 - from scdoc
-nvertices<-4
-
-polyvertices<-vector("complex",nvertices)
-polyvertices[1]<-complex(1,0,1)
-polyvertices[2]<-complex(1,0,0)
-polyvertices[3]<-complex(1,1e20,1e20)
-polyvertices[4]<-complex(1,0,0)
-
-wc<-complex(1,0,sqrt(2))
-
-betam<-vector("numeric",nvertices)
-angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.numeric(betam))
-betam<-angle.ret$BETAM      
-betam[1]<-1
-betam[2]<--0.5
-betam[3]<--2
-betam[4]<--0.5
-
-
-
+#################################
+### Test problem 2 - from scdoc
+#nvertices<-4
+#
+#polyvertices<-vector("complex",nvertices)
+#polyvertices[1]<-complex(1,0,1)
+#polyvertices[2]<-complex(1,0,0)
+#polyvertices[3]<-complex(1,1e20,1e20)
+#polyvertices[4]<-complex(1,0,0)
+#
+## approximate centre of w
+#wc<-complex(1,0,sqrt(2))
+#
+## angles
+#betam<-vector("numeric",nvertices)
+#betam[1]<-1
+#betam[2]<--0.5
+#betam[3]<--2
+#betam[4]<--0.5
+#################################
 
 
 # set number of quadrature points per subinterval
 nptsq<-5
 
+# Size of the work array
+qsize<-as.integer(nptsq*(2*nvertices+3))
 
-# Now use qinit to initialise the Gauss-Jacobi quadrature
-qwork<-vector("numeric",nptsq*(2*nvertices+3))
-qinit.ret<-.Fortran("QINIT",N=as.integer(nvertices),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
-qwork<-qinit.ret$QWORK
-
-# Finally call the SCSOLV routine and find the parameters
-# IPRINT and IGUESS must be given to "avoid accidental exact solution"
+# setup some output variables
 errest<-vector("numeric",1)
 c.const<-vector("complex",1)
+attr(c.const,"Csingle")
 z<-vector("complex",nvertices)
-ret<-.Fortran("SCSOLV",IPRINT=as.numeric(0),IGUESS=as.numeric(1),TOL=as.numeric(1e-6),ERREST=as.numeric(errest),N=as.integer(nvertices),C=as.complex(c.const),Z=z,WC=as.complex(wc),W=as.complex(polyvertices),BETAM=as.numeric(betam),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork))
+attr(z,"Csingle")
+qwork<-vector("numeric",qsize)
+qwork<-as.single(qwork)
+
+sc.solution<-.Fortran("scint",N=as.integer(nvertices),BETAM=betam,W=polyvertices,Z=z,C=c.const,WC=wc,NPTSQ=as.integer(nptsq),ERREST=errest,QSIZE=qsize,QWORK=qwork)
 
 
 # Set some variables
-prevertices<-ret$Z
-angles<-ret$BETAM
-centre<-ret$WC
-complex.scale.factor<-ret$C
+prevertices<-sc.solution$Z
+centre<-sc.solution$WC
+complex.scale.factor<-sc.solution$C
+betam<-sc.solution$BETAM
+qwork<-sc.solution$QWORK
 
 # Wrapper for the forwards map
 # Forwards is disk->polygon
@@ -106,17 +106,16 @@ sc.map.forwards<-function(){
 
 # And the backwards map
 # backwards is polygon->disk
-sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre){
+sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prevertices,polyvertices,complex.scale.factor,centre){
    # Arguments
    #  points                  vector of points at which we want to evaluate the map
    #  nvertices               number of vertices (not >20)
    #  betam                   array of external angles
    #  nptsq                   number of points per subinterval
    #  qwork                   quadrature work array
-   #  accuracy                desired accuracy in output (default 1e-6)
+   #  accuracy                desired accuracy in output (default 1e-3)
    #  prevertices             complex vector of prevertices
    #  polyvertices            complex vector of polgyon vertices
-   #  angles                  exterior angles of the polygon
    #  complex.scale.factor    complex scaling factor
    #  centre                  approximate centre of the polygon
 
@@ -137,27 +136,11 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prev
    # The fortran->R link for complex variables is not vectorised, 
    # so we do this....
    evaluated.points<-complex(length(points))
-
-   for (i in 1:length(points)){
-      # Find a near point
-         # This sets the variables z0, w0 and k0 for the fortran routine ZSC.
-         #   z0     point in the disk near z(ww) at which w(z0) is known and
-    	   #          finite (input).
-   	   #   w0     w(z0)  (input).  the line segment from w0 to ww must
-   	   #          lie entirely within the closed polygon.
-   	   #   k0     k if z0 = z(k) for some k, otherwise 0 (input)
-      z0<-vector("complex",1)
-      k0<-vector("integer",1)
-      w0<-vector("complex",1)
-      evaled<-complex(1)
-
-      nearest<-.Fortran("NEARW",WW=points[i],ZN=z0,WN=w0,KN=k0,N=as.integer(nvertices),Z=as.complex(prevertices),WC=as.complex(centre),W=as.complex(polyvertices),BETAM=as.numeric(angles))
-
-      map.ret<-.Fortran("ZSC",WW=points[i],IGUESS=as.numeric(2),ZINIT=as.complex(nearest$ZN),Z0=as.complex(nearest$ZN),W0=as.complex(nearest$WN),K0=as.integer(nearest$KN),EPS=as.numeric(accuracy),IER=as.numeric(1),N=as.integer(nvertices),C=as.complex(complex.scale.factor),Z=as.complex(prevertices),WC=as.complex(centre),W=as.complex(polyvertices),BETAM=as.numeric(angles),NPTSQ=as.integer(nptsq),QWORK=as.numeric(qwork),EVALED=as.complex(evaled))
+#   attr(evaluated.points,"Csingle")   
+#   attr(points,"Csingle")   
   
-      # Push the value into the vector
-      evaluated.points[i]<-map.ret$EVALED
-   }
+   mapint.call<-.Fortran("mapint",dpoints=points,npoints=as.integer(length(points)),n=as.integer(nvertices),betam=as.single(betam),nptsq=as.integer(nptsq),qwork=as.single(qwork),qsize=as.integer(length(qwork)),accuracy=as.single(accuracy),dz=prevertices,dw=polyvertices,c=complex.scale.factor,wc=centre,dretpoints=evaluated.points)
+
 
    # Return the vector
    return(evaluated.points)
@@ -190,13 +173,7 @@ plot(complex.poly.rand.data)
 
 #plot(some.points)
 accuracy<-1e-3
-retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,angles,complex.scale.factor,centre)
+retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
 plot(retval)
-
-
-
-
-
-
 
 

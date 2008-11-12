@@ -1,54 +1,66 @@
-      PROGRAM TEST1
-      IMPLICIT none
-      double COMPLEX C,W,zsc,wsc,Z,ww,zz,zero,zi,wc,wwex,zzex,wtmp,ztmp
-      integer n,i,ier,nptsq,iprint,iguess,k,iqwork
-      double precision betam,err,qwork,errest,tol
-
-      DIMENSION Z(20),W(20),BETAM(4),qwork(344)
-c      dimension, allocatable QWORK(:)
-C,t(4),s(4)
-
-      iqwork=344
-c      allocate(qwork(iqwork))
+       PROGRAM TEST1
+       integer n,i,ier,nptsq,iprint,iguess,k,qsize
+c       double precision betam,qwork
+       COMPLEX c,z,w,zsc,wsc,ww,zz,zero,zi,wc,wwex,zzex,
+     &          wtmp,ztmp
+       real err,errest,tol
+       allocatable z(:),w(:)
+       allocatable betam(:)
+       allocatable qwork(:)
 
 
-      ZERO = (0.,0.)
-      ZI = (0.,1.)
+       ZERO = (0.,0.)
+       ZI = (0.,1.)
+
+
 C SET UP PROBLEM:
-      N = 4
-      WC = CMPLX(0.,SQRT(2.))
-      W(1) = ZI
-      W(2) = ZERO
-      W(3) = (1.E20,1.E20)
-      W(4) = ZERO
+       N = 4
+       nptsq=5
+       WC = CMPLX(0.,SQRT(2.))
 
-      BETAM(1) = 1.
-      BETAM(2) = -.5
-      BETAM(3) = -2.
-      BETAM(4) = -.5
 
-C:      CALL ANGLES(N,W,BETAM)
+       allocate(z(n))
+       allocate(w(n))
+       allocate(betam(n))
+       W(1) = (10.,0.)
+       W(2) = (0.,10.)
+       W(3) = (-10.,0.)
+       W(4) = (0.,-10.)
+       BETAM(1) = 1.
+       BETAM(2) = -.5
+       BETAM(3) = -2.
+       BETAM(4) = -.5
+
+C      CALL ANGLES(N,W,BETAM)
+
+       qsize=nptsq*(2*n+3)
+       allocate(qwork(qsize))
+
+
+
+c do everything using the interface
+       call scint(N,betam,w,z,ci,qsize)
 
 
 C
 C COMPUTE NODES AND WEIGHTS FOR PARAMETER PROBLEM:
-      NPTSQ = 5
-      CALL QINIT(N,BETAM,NPTSQ,QWORK,iqwork)
+C      NPTSQ = 5
+c      CALL QINIT(N,BETAM,NPTSQ,QWORK)
 C
 C SOLVE PARAMETER PROBLEM:
 C   (INITIAL GUESS MUST BE GIVEN TO AVOID ACCIDENTAL EXACT SOLUTION)
-      IPRINT = 0
-      IGUESS = 1
-      DO 1 K = 1,4
-    1 Z(K) = EXP(CMPLX(0.,K-4.))
-      TOL = 1.E-6
-      CALL SCSOLV(IPRINT,IGUESS,TOL,ERREST,N,C,Z,
-     &  WC,W,BETAM,NPTSQ,QWORK,iqwork)
+c      IPRINT = 0
+c      IGUESS = 1
+c      DO 1 K = 1,4
+c    1 Z(K) = EXP(CMPLX(0.,K-4.))
+c      TOL = 1.E-6
+c      CALL SCSOLV(IPRINT,IGUESS,TOL,ERREST,N,C,Z,
+c     &  WC,W,BETAM,NPTSQ,QWORK)
 C
 C COMPARE WSC(Z) TO EXACT VALUES FOR VARIOUS Z:
       DO 10 I = 1,4
         ZZ = (.3,0.) * CMPLX(I-2.,.2*I+.5)
-        WW = WSC(ZZ,0,ZERO,WC,0,N,C,Z,BETAM,NPTSQ,QWORK,iqwork)
+        WW = WSC(ZZ,0,ZERO,WC,0,N,C,Z,BETAM,NPTSQ,QWORK)
         ZTMP = -ZI * (ZZ-ZI) / (ZZ+ZI)
         WWEX = ZI * SQRT(-ZTMP**2 + (1.,0.))
         ERR = ABS(WW-WWEX)
@@ -61,7 +73,7 @@ C COMPARE ZSC(W) TO EXACT VALUES FOR VARIOUS W:
         WW = CMPLX(I-2.,SQRT(I+1.))
         IER = 0
         ZZ = ZSC(WW,0,ZERO,ZERO,WC,0,TOL,IER,
-     &    N,C,Z,WC,W,BETAM,NPTSQ,QWORK,iqwork)
+     &    N,C,Z,WC,W,BETAM,NPTSQ,QWORK)
         WTMP = ZI * SQRT((-1.,0.)-WW**2)
         ZZEX = -ZI * (WTMP-ZI) / (WTMP+ZI)
         ERR = ABS(ZZ-ZZEX)

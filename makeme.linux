@@ -1,0 +1,6 @@
+gfortran -ffixed-form -g -O2 -c  scpack.f90 -o scpack.o
+gfortran -ffixed-form -g -O2 -c  sclib.f90 -o sclib.o
+gfortran -ffixed-form -g -O2 -c  scint.f90 -o scint.o
+gfortran -ffixed-form -g -O2 -c  mapint.f90 -o mapint.o
+gcc -std=gnu99 -shared  -o scpack.so scpack.o sclib.o scint.o mapint.o  -L/usr/lib/R/lib -lR
+rm *.o
