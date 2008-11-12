@@ -44,17 +44,53 @@ Smoothing in a complex region is difficult. Current approaches are computational
 \newtheorem{defn}{Definition}[section]
  
 \maketitle
+
+
+
+\section{Motivation}
+
+
+
+\section{Method}
+
+In order to smooth around a complex region, one approach is to transform the shape of the region into a form that is easier to smooth over. So, for example, we could transform a region into a rectangle, circle or other familiar shape to avoid the problems found in \cite{ramsay}. To do this we wish to find some function that takes the points in the original region and maps them into the new space (see fig. \ref{simpledia}.)
+
+% Simple diagram showing the mapping
+\begin{figure} [tbp]
+\centering
+\includegraphics[scale=0.3]{figs/simpledia.pdf}
+\caption{writesomethinghere}
+\label{simpledia}
+\end{figure}
+
+
+
+In order to do this we use a method from complex analysis called the \sch mapping. This takes some arbitrary polygon and maps it to the upper half-plane ($H^+$) or the unit disk. This is achieved in the $H^+$ case by taking the vertices of the polygon and mapping them to points on the real line (see fig. \ref{reallinedia}.) For the unit disk case, we look for points on the circle bounding the unit disk and which vertices they map to on the polygon (see fig. \ref{unitdiskdia}.)
+
+% Diagram showing upper half plane to polygon
+\begin{figure} [tbp]
+\centering
+\includegraphics[scale=0.3]{figs/reallinedia.pdf}
+\caption{writesomethinghere}
+\label{reallinedia}
+\end{figure}
+
+% Diagram showing unit disk to polygon
+\begin{figure} [tbp]
+\centering
+\includegraphics[scale=0.3]{figs/unitdiskdia.pdf}
+\caption{writesomethinghere}
+\label{unitdiskdia}
+\end{figure}
+
+
+
+
+Although the \sch mapping is intended for use with polygons, it is easy to take an artibrary bounded region and draw a polygon around it. This can be done either by eye (for example, using the \texttt{locator()} function in \textbf{R}) or by using a an automated process.
+
+
+
  
-\section{Conformal Mappings}
-
-In complex analysis we define a conformal mapping as an analytic, injective map from the $z$ plane to the $w$ plane (\cite{handbuch}, \emph{p. 672}), ie,
-
-\begin{equation*}
-w=f(z)=u+iv, \qquad f^\prime(z) \neq 0.
-\end{equation*} 
-
-The transformation of a line segment is the combination of a dilation (by a factor of $\sigma=\vert f^\prime(z) \vert$) and a rotation (by $\alpha = \arg f^\prime(z)$.) A conformal mapping preserves the angle of intersection of curves.
-
 \section{\sch Mapping}
 
 The \sch mapping (or transform or formula) is a method of conformally mapping the interior (or exterior) of a polygon to another domain (most commonly the unit disk or the upper half-plane.)
