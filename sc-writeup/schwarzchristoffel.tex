@@ -89,72 +89,49 @@ In order to do this we use a method from complex analysis called the \sch mappin
 Although the \sch mapping is intended for use with polygons, it is easy to take an artibrary bounded region and draw a polygon around it. This can be done either by eye (for example, using the \texttt{locator()} function in \textbf{R}) or by using a an automated process.
 
 
-
- 
-\section{\sch Mapping}
-
-The \sch mapping (or transform or formula) is a method of conformally mapping the interior (or exterior) of a polygon to another domain (most commonly the unit disk or the upper half-plane.)
-
-This is achieved by looking at the derivative of some conformal map, $f$. For some maps we may be express the derivative as:
-
-\begin{equation}
-\fprime = \prod f_k,
-\end{equation}
-
-for some (cannonical) functions $f_k$. So we can say that:
-
-\begin{equation}
-\arg \fprime = \prod \arg f_k.
-\end{equation}
-
-In the classical mapping (ie. from polygon to the half-plane) we see that each $\arg f_k$ is designed to be a step function such that $f$ maps the real line onto the boundry of the polygon (henceforth ``the polygon''.) Usually with conformal mappings it is the border that causes the most problems, however, with the \sch map we use the Schwarz relflection principle (\cite{handbuch}, \emph{p. 679}) to see that $f$ is analytic between the vertices on the polygon, $\fprime$ exists and hence $\arg \fprime$ is constant. We also know that $\arg \fprime$ undergoes a specific jump at each vertex, that being the (external) turning angle (denoted $\beta_k$ \footnote{$\beta_k = 1-\alpha_k$, $\alpha_k$ being the internal angle}) required at each vertex. 
-
-From this we can identify some function for $f_k$ which is analytic on $H^+$\footnote{The upper half-plane.} or the unit disk and satisfies the above conditions. In the half-plane case this is:
-
-\begin{equation}
-\label{halfplanefunc}
-f_k = (z-z_k)^{-\beta_k},
-\end{equation}
-
-where $k$ indexes the points on $\mathbb{R}$ that map to polygon's vertices. We pick the branch such that $f_k(z)>0$ if $z>z_k$ on $\mathbb{R}$,
-
-\begin{equation}
-\fprime = C \prod_{k=1}^{n-1} f_k(z).
-\end{equation}
-
-So, integrating and substituting in (\ref{halfplanefunc}) we obtain:
-
-\begin{equation}
-f(z) = A + C \int^z \prod_{k=1}^{n-1} (\zeta-z_k)^{-\beta_k} d\zeta,
-\end{equation}
-
-where $A$ and $C$ are complex constants. This is known as the \emph{\sch formula} for the half-plane.
-
-
 \subsection{Nomenclature}
 
-At this point it is useful to take note of some of the nomenclature related to \sch mappings and to address some definitions.
+We first define a polygon formally and it's associated quantities as it will be referred to throughout the rest of the document.
 
-We first give a definition for the polygon and related quantities.
-
-\begin{defn}[Polygon]
-We define a polygon, $\Gamma$, as a collection of vertices $w_1, w_2,\dots,w_n$ and interior angles $\alpha_1\pi, \alpha_2\pi, \dots, \alpha_n\pi$. For convenience we define $w_{n+1} = w_1$ and $w_0=w_n$. The $w_i$ lie in $\mathbb{C} \cup {\infty}$. Numbering of vertices is counterclockwise (ie. the polygon is "to the left" as one traverses $w_k$ to $w_{k+1}$. The angles are such that $\alpha_k \in (0,2]$ and we require:
+A polygon, $\Gamma$, is a collection of vertices $w_1, w_2,\dots,w_n$ and interior angles $\alpha_1\pi, \alpha_2\pi, \dots, \alpha_n\pi$. For convenience we define $w_{n+1} = w_1$ and $w_0=w_n$. The $w_i$ lie in $\mathbb{C} \cup {\infty}$. Numbering of vertices is counterclockwise (ie. the polygon is "to the left" as one traverses $w_k$ to $w_{k+1}$. The angles are such that $\alpha_k \in (0,2]$ and we require:
 
 \begin{equation}
 \sum_{k=1}^n (1-\alpha_k) = 2.
 \end{equation}
 
-Hence, the exterior angle, $\beta_k\pi$ is given by $(1-\alpha_k)\pi$.
+We also define the exterior angle, $\beta_k\pi$, as given by $(1-\alpha_k)\pi$ (see fig. \ref{anglediagram}.)
+
+% Diagram showing unit disk to polygon
+\begin{figure} [tbp]
+\centering
+\includegraphics[scale=0.6]{figs/anglediagram.pdf}
+\caption{The external angle $\beta_k$ is associated with the vertex $w_k$. The internal angle is given by $\alpha_k$.}
+\label{anglediagram}
+\end{figure}
+
 
 Usually, $\Gamma$ is used to refer to the boundary of the polygon and $P$ to the region inside.
 
-\end{defn}
 
 Since in the \sch transform we are actually looking for the inverse of the map from the polygon to the plane (or disk). We use the function $f$ to go from the unit disk or $H^+$ to the polygon and $f$s inverse, $F$ to go from the polygon to the disk or half-plane.  
 
 We need to know the position that the vertices on $\Gamma$ (the $w_k$s) correspond to on the real line (or the boundry of the unit disk). These points are referred to as \emph{prevertices} and are denoted $z_k$.
 
 It is certainly worth noting at this point (to avoid confusion) that those points on the polygon are always referred to as $w_i$ (for some $i$) and those on the unit disk or $H_+$ as $z_i$ (for some $i$.)
+
+
+
+ 
+\section{\sch Mapping}
+
+The \sch mapping is defined in the following way:
+
+
+\begin{equation}
+f(z) = A + C \int^z \prod_{k=1}^{n-1} (\zeta-z_k)^{-\beta_k} d\zeta,
+\end{equation}
+
+where $A$ and $C$ are complex constants. This is known as the \emph{\sch formula} for the half-plane.
 
 
 
