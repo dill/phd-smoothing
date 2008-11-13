@@ -21,7 +21,8 @@ C
          dimension dw(n), dz(n),dpoints(npoints),dretpoints(npoints)
          
 C        internal vars
-         complex zn,wn,kn
+         complex zn,wn
+         integer kn
          integer ier
 
 
@@ -36,9 +37,8 @@ c convert double complex to singles
       c=cmplx(dc)
       points(:)=cmplx(dpoints(:))
 
-      print*,qwork, qsize
 c     Call qinit to setup the qwork... debug
-      CALL QINIT(N,BETAM,NPTSQ,QWORK,qsize)
+C      CALL QINIT(N,BETAM,NPTSQ,QWORK,qsize)
 
       ier=0
 
@@ -46,15 +46,19 @@ c     Call qinit to setup the qwork... debug
 
          call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
 
+
+         print*,"zn:",zn,"wn:",wn
+
          retpoints(i)=zsc(points(i),iguess,zinit,zn,wn,kn,accuracy,
      &          ier,n,c,z,wc,w,betam,nptsq,qwork)
 
 
+         print*,"point:",points(i),"ret:",retpoints(i)
       end do
 
 C     Convert back to doubles   
       dretpoints(:)=dcmplx(retpoints(:))
-      print*,retpoints
+C      print*,retpoints
 
       return
 
