@@ -23,43 +23,55 @@ C
 C        internal vars
          complex zn,wn
          integer kn
-         integer ier
+         integer ier,iguess
 
 
-c leave these in for the moment
-      ZERO = (0.,0.)
-      ZI = (0.,1.)
+         ! leave these in for the moment
+         ZERO = (0.,0.)
+         ZI = (0.,1.)
 
-c convert double complex to singles
-      z=cmplx(dz)
-      w=cmplx(dw)
-      wc=cmplx(dwc)
-      c=cmplx(dc)
-      points(:)=cmplx(dpoints(:))
+         ! convert double complex to singles
+         z=cmplx(dz)
+         w=cmplx(dw)
+         wc=cmplx(dwc)
+         c=cmplx(dc)
+         points(:)=cmplx(dpoints(:))
 
 c     Call qinit to setup the qwork... debug
 C      CALL QINIT(N,BETAM,NPTSQ,QWORK,qsize)
 
-      ier=0
+         ! error code, will !=0 if an error has ocurred.
+         ier=0
 
-      do i=1,npoints
+         ! we don't supply a guess so set iguess to be != 2
+         iguess=2
 
-         call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
+         do i=1,npoints
 
-
-         print*,"zn:",zn,"wn:",wn
-
-         retpoints(i)=zsc(points(i),iguess,zinit,zn,wn,kn,accuracy,
-     &          ier,n,c,z,wc,w,betam,nptsq,qwork)
+            call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
 
 
-         print*,"point:",points(i),"ret:",retpoints(i)
-      end do
+            print*,"zn:",zn,"wn:",wn
 
-C     Convert back to doubles   
-      dretpoints(:)=dcmplx(retpoints(:))
-C      print*,retpoints
+            retpoints(i)=zsc(points(i),iguess,zinit,zn,wn,kn,accuracy,
+     &                         ier,n,c,z,wc,w,betam,nptsq,qwork)
 
+
+            if(ier.ne.0) then
+              print*,"Error occurred mapping:",points(i)
+            end if
+
+            print*,"point:",points(i),"ret:",retpoints(i)
+         end do
+
+
+
+
+         print*,iguess,zinit,zn,wn,kn,accuracy,
+     &             ier,n,c,z,wc,w,betam,nptsq
+
+         ! Convert back to doubles   
+         dretpoints(:)=dcmplx(retpoints(:))
       return
 
       end subroutine
