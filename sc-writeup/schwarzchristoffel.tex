@@ -53,13 +53,13 @@ Smoothing in a complex region is difficult. Current approaches are computational
 
 \section{Method}
 
-In order to smooth around a complex region, one approach is to transform the shape of the region into a form that is easier to smooth over. So, for example, we could transform a region into a rectangle, circle or other familiar shape to avoid the problems found in \cite{ramsay}. To do this we wish to find some function that takes the points in the original region and maps them into the new space (see fig. \ref{simpledia}.)
+In order to smooth around a complex region, one approach is to transform the shape of the region into a form that is easier to smooth over. So, for example, we could transform a region into a rectangle, circle or other familiar shape to avoid the problems found in (for example) \cite{ramsay}. To do this we wish to find some function that takes the points in the original region and maps them into the new space (see fig. \ref{simpledia}.)
 
 % Simple diagram showing the mapping
-\begin{figure} [tbp]
+\begin{figure} [htbp]
 \centering
 \includegraphics[scale=0.3]{figs/simpledia.pdf}
-\caption{The function $f$ takes the points in the region on the right and maps them to the rectangular region.}
+\caption{The function $f$ takes the points in the rectangle and maps them to the region on the left.}
 \label{simpledia}
 \end{figure}
 
@@ -71,7 +71,7 @@ In order to do this we use a method from complex analysis called the \sch mappin
 \begin{figure} [tbp]
 \centering
 \includegraphics[scale=0.6]{figs/reallinedia.pdf}
-\caption{Here we show the mapping of the upper half-plane to the polygon. The vertices ($w_i$) are the result of applying $f$ to the points on the real line ($z_i$). This boundry of the polygon is mapped to the real line.}
+\caption{Here we show the mapping of the upper half-plane to the polygon. The vertices ($w_i$) are the result of applying $f$ to the points on the real line ($z_i$). The boundry of the polygon is mapped to the real line.}
 \label{reallinedia}
 \end{figure}
 
@@ -91,7 +91,7 @@ Although the \sch mapping is intended for use with polygons, it is easy to take 
 
 \subsection{Nomenclature}
 
-We first define a polygon formally and it's associated quantities as it will be referred to throughout the rest of the document.
+We first define a polygon formally and its associated quantities as it will be referred to throughout the rest of the document.
 
 A polygon, $\Gamma$, is a collection of vertices $w_1, w_2,\dots,w_n$ and interior angles $\alpha_1\pi, \alpha_2\pi, \dots, \alpha_n\pi$. For convenience we define $w_{n+1} = w_1$ and $w_0=w_n$. The $w_i$ lie in $\mathbb{C} \cup {\infty}$. Numbering of vertices is counterclockwise (ie. the polygon is "to the left" as one traverses $w_k$ to $w_{k+1}$. The angles are such that $\alpha_k \in (0,2]$ and we require:
 
@@ -102,7 +102,7 @@ A polygon, $\Gamma$, is a collection of vertices $w_1, w_2,\dots,w_n$ and interi
 We also define the exterior angle, $\beta_k\pi$, as given by $(1-\alpha_k)\pi$ (see fig. \ref{anglediagram}.)
 
 % Diagram showing the exterior/interior angle relationship.
-\begin{figure} [tbp]
+\begin{figure} [bp]
 \centering
 \includegraphics[scale=0.6]{figs/anglediagram.pdf}
 \caption{The external angle $\beta_k$ is associated with the vertex $w_k$. The internal angle is given by $\alpha_k$.}
@@ -111,7 +111,7 @@ We also define the exterior angle, $\beta_k\pi$, as given by $(1-\alpha_k)\pi$ (
 
 Usually, $\Gamma$ is used to refer to the boundary of the polygon and $P$ to the region inside.
 
-Since in the \sch transform we are actually looking for the inverse of the map from the polygon to the plane (or disk). We use the function $f$ to go from the unit disk or $H^+$ to the polygon and $f$s inverse, $F$ to go from the polygon to the disk or half-plane.  
+Since in the \sch transform we are actually looking for the inverse of the map from the polygon to the plane (or disk). We use the function $f$ to go from the unit disk or $H^+$ to the polygon and the inverse of $f$, $g$ to go from the polygon to the disk or half-plane.  
 
 We need to know the position that the vertices on $\Gamma$ (the $w_k$s) correspond to on the real line (or the boundry of the unit disk). These points are referred to as \emph{prevertices} and are denoted $z_k$.
 
@@ -122,17 +122,7 @@ It is certainly worth noting at this point (to avoid confusion) that those point
  
 \section{\sch Mapping}
 
-The \sch mapping is defined in the following way:
-
-
-\begin{equation}
-f(z) = A + C \int^z \prod_{k=1}^{n-1} (\zeta-z_k)^{-\beta_k} d\zeta,
-\end{equation}
-
-where $A$ and $C$ are complex constants. This is known as the \emph{\sch formula} for the half-plane.
-
-
-
+We now look at the mathematical formulation for both the upper half-plane and unit disk.
 
 \subsection{Mapping to the upper half-plane}
 
@@ -142,11 +132,10 @@ When we map $P$ to $H^+$ we set $f(\infty) = w_n$ without any loss of generality
 f(z) = A + C \int^z \prod_{k=1}^{n-1} (\zeta-z_k)^{-\beta_k} d\zeta.
 \end{equation}
 
-Although setting $f(\infty) = w_n$ does not make any mathematical differences, it does mean that the density of the points as they are mapped is rather odd. Points near$w_n$ have a large gap between them compared to those near other vertices. This phenomenon is known as "crowding" and is covered at length in \cite{driscoll}. For this reason it is more common to use the unit disk mapping, elaborated upon below.
-
+Although setting $f(\infty) = w_n$ does not make any difference in a mathematical sense, it does mean that the density of the points as they are mapped into $H^+$ is rather odd. Given two points near $w_n$, their spacing on the upper half-plane is huge in comparison to two points near the other vertices. For this reason it is more common to use the unit disk mapping, elaborated upon below. This phenomenon is known as "crowding" and is covered at length in \cite{driscoll}. 
 \subsection{Unit disk}
 
-For the unit disk we do not fix any points, however note below that the product now runs over all of the prevertices. The integrand is simply a constant multiple of the original form. This is merely to avoid problems in the calculation of the branch cuts (\cite{driscoll}, \emph{p. 12}).
+For the unit disk we do not fix any points, however note below that the product now runs over all of the prevertices. However, the integrand is simply a constant multiple of the original form. This is merely to avoid problems in the calculation of the branch cuts (\cite{driscoll}, \emph{p. 12}).
 
 \begin{equation}
 \label{unitscmap}
@@ -156,9 +145,23 @@ f(z) = A + C \int^z \prod_{k=1}^{n} (1 - \frac{\zeta}{z_k})^{-\beta_k} d\zeta.
 
 \section{Computation of the \sch mapping}
 
-Since it is generally easier to compute the \sch map to the unit disk rather than to $H^+$ (and for the reasons above, we can avoid crowding.) For that reason we only address mappings from/to the unit disk here. We now detail the process for computing the map as well as covering some of the pitfalls which may occur when computing the map.
+Since it is generally easier to compute the \sch map to the unit disk rather than to $H^+$ (and for the reasons above, we can avoid crowding.) For that reason we only address mappings from/to the unit disk here. We now detail the process for computing the map.
 
-To compute the map, we need to find the prevertices\footnote{Since the complex constants just control scaling and rotation.}. To find the $z_i$s we use an iterative routine which approximates our polygon, $\Gamma$ by $\Gamma^\prime$. We express this wish in the form of the following set of equations:
+
+\subsection{Outline of the computation of the map}
+To compute the map, we need to find the prevertices\footnote{Since the complex constants just control scaling and rotation.}. To find the $z_i$s we use an iterative routine which approximates our polygon, $\Gamma$ by $\Gamma^\prime$. 
+
+In order to use the routine we must first obtain the following information:
+
+\begin{enumerate}
+\item $w_1, \dots, w_n$, the vertices of $\Gamma$.
+\item $n$, the number of vertices.
+\item $\beta_1, \dots, \beta_n$, the external angles of $\Gamma$.
+\end{enumerate}
+
+It is worth noting that given the vertices, the other two quantities can be easily calculated.
+
+We express this wish in the form of the following set of equations:
 
 \begin{equation}
 \label{optimizeme}
@@ -179,17 +182,22 @@ otherwise, assume that up to scaling and rotation that $w_1$ and $w_2$ are corre
 
 So, we proceed in estimating $A$, $C$ and $z_i$ for $i=1,\dots,n$ using a quasi-Newton solver\footnote{We actually use steepest descent in the early iterations, followed by Newton's method later.}. In order to calculate the integrals in (\ref{optimizeme}) we use the Guass-Jacobi quadrature.
 
+\textbf{ RESTRUCTURE BELOW HERE }
+
+
+
+\subsection{Technical details of the computation}
+
 In the software \texttt{SCPACK}\footnote{Available from \url{http://netlib.org/conformal/scpack} and \url{http://netlib.org/conformal/sclib}} written by Trefethen, the following steps are taken to compute the map (\cite{scdoc}):
 
 \begin{enumerate}
 \item Subroutine \texttt{QINIT} is called to compute Gauss-Jacobi quadrature.
-\item Subroutine \texttt{SCSOLV} is called to compute the prevertices and complex onstants in the \sch mapping.
-\item Subroutine \texttt{WSC} or \texttt{ZSC} is called to compute the forwards or backwards map for a series of points.
+\item Subroutine \texttt{SCSOLV} is called to compute the prevertices and complex constants in the \sch mapping.
 \end{enumerate}
 
 We now address each of these steps in more detail.
 
-\subsection{\texttt{QINIT}}
+\subsubsection{\texttt{QINIT}}
 
 Here we set up the nodes and weights in the Gauss-Jacobi quadrature used to evaluate the integrals in \texttt{SCSOLV}. The Gauss-Jacobi quadrature is given by the following formula:
 
@@ -199,9 +207,15 @@ Here we set up the nodes and weights in the Gauss-Jacobi quadrature used to eval
 
 where the $h_i$s are weights and the $x_i$ are referred to as nodes. $\epsilon_n$ is an error term. The integral is rescaled to be over the correct interval (\cite{trefethen}, \emph{p. 11}). We do not go into any further detail and treat this process as a ``black box''.
 
-\subsection{\texttt{SCSOLV}}
+\subsubsection{\texttt{SCSOLV}}
 
 The routine \texttt{SCSOLV} does the main work in finding the parameters (prevertices) of $f$. Using the nodes and weights for the Gauss-Jacobi quadrature found by \texttt{QINIT}. We then iterate through possible values for the prevertices in (\ref{unitscmap}) in order to minimise the result of the left hand side of (\ref{optimizeme}).
+
+
+
+\textbf{ RESTRUCTURE ABOVE HERE }
+
+
 
 \subsection{Getting between the polygon and unit disk}
 
