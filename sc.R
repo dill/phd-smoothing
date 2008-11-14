@@ -18,7 +18,7 @@ polyvertices[1]<-complex(1,10,0)
 polyvertices[2]<-complex(1,0,10)
 polyvertices[3]<-complex(1,-10,0)
 polyvertices[4]<-complex(1,0,-10)
-attr(polyvertices,"Csingle")
+#attr(polyvertices,"Csingle")
 
 wc<-complex(1,0,sqrt(2))
 betam<-vector("numeric",nvertices)
@@ -81,9 +81,7 @@ qsize<-as.integer(nptsq*(2*nvertices+3))
 # setup some output variables
 errest<-vector("numeric",1)
 c.const<-vector("complex",1)
-attr(c.const,"Csingle")
 z<-vector("complex",nvertices)
-attr(z,"Csingle")
 qwork<-vector("numeric",qsize)
 qwork<-as.single(qwork)
 
@@ -136,17 +134,11 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prev
    # The fortran->R link for complex variables is not vectorised, 
    # so we do this....
    evaluated.points<-complex(length(points))
-#   attr(evaluated.points,"Csingle")   
-#   attr(points,"Csingle")   
-#   attr(c,"Csingle")   
-#   attr(prevertices,"Csingle")
-#   attr(polyvertices,"Csingle")
-#   attr(wc,"Csingle")
    
    mapint.call<-.Fortran("mapint",dpoints=points,npoints=as.integer(length(points)),n=as.integer(nvertices),betam=as.single(betam),nptsq=as.integer(nptsq),qwork=as.single(qwork),qsize=as.integer(length(qwork)),accuracy=as.single(accuracy),dz=prevertices,dw=polyvertices,c=complex.scale.factor,wc=centre,dretpoints=evaluated.points)
 
    # Return the vector
-   return(evaluated.points)
+   return(mapint.call$dretpoints)
 }
 
 
@@ -175,7 +167,7 @@ par(mfrow=c(2,1))
 plot(complex.poly.rand.data)
 
 #plot(some.points)
-accuracy<-1e-3
+accuracy<-as.single(0.0001)
 retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
 plot(retval)
 

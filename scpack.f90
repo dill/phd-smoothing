@@ -344,25 +344,6 @@ c
       external zfode
       logical odecal
       common /param2/ cdwdt,z2(20),betam2(20),n2
-c
-
-
-c      print*,"ww=",ww
-c      print*,iguess
-c      print*, zinit
-c      print*,z0
-c      print*,w0
-c      print*,k0
-c      print*,eps
-c      print*, ier
-c      print*,n
-c      print*,c
-c      print*,z
-c      print*,wc
-c      print*,w
-c      print*,betam
-c      print*,nptsq
-
 
       odecal = .false.
       if (iguess.ne.1) goto 1
@@ -400,6 +381,7 @@ c
   201 format (/' *** nonstandard return from ode in zsc: iflag =',i2/)
   202 format (/' *** possible error in zsc: no convergence in 10'/
      &      '     iterations.  may need a better initial guess zinit')
+
       return
       end
 

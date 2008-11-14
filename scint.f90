@@ -6,8 +6,6 @@ c having to hack about with LINPACK. Hopefully.
 c put in a description of the args
 
 
-
-
          double complex dw,dz,dc,dwc
 
          integer n,i,ier,nptsq,iprint,iguess,k,qsize
@@ -30,17 +28,12 @@ c convert double complex back singles
       wc=cmplx(dwc)
       c=cmplx(dc)
 
-
-
 c we can calculate the angles if we wish
-      CALL ANGLES(N,W,BETAM)
+!      CALL ANGLES(N,W,BETAM)
 
 
 C COMPUTE NODES AND WEIGHTS FOR PARAMETER PROBLEM:
       CALL QINIT(N,BETAM,NPTSQ,QWORK,qsize)
-
-
-
 
 C
 C SOLVE PARAMETER PROBLEM:
@@ -48,11 +41,9 @@ C   (INITIAL GUESS MUST BE GIVEN TO AVOID ACCIDENTAL EXACT SOLUTION)
       IPRINT = 0
       IGUESS = 1
 
-
       DO K = 1,n
          Z(K) = EXP(CMPLX(0.,K-4.))
       end do
-
 
 
       TOL = 1.E-6
@@ -67,7 +58,6 @@ c     set the types back...
       dw=dcmplx(w)
       dwc=dcmplx(wc)
       dc=dcmplx(c)
-
 
 
       return

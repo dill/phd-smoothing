@@ -21,7 +21,7 @@ C
          dimension dw(n), dz(n),dpoints(npoints),dretpoints(npoints)
          
 C        internal vars
-         complex zn,wn
+         complex zn,wn,tmp,zsc
          integer kn
          integer ier,iguess
 
@@ -37,9 +37,6 @@ C        internal vars
          c=cmplx(dc)
          points(:)=cmplx(dpoints(:))
 
-c     Call qinit to setup the qwork... debug
-C      CALL QINIT(N,BETAM,NPTSQ,QWORK,qsize)
-
          ! error code, will !=0 if an error has ocurred.
          ier=0
 
@@ -47,28 +44,15 @@ C      CALL QINIT(N,BETAM,NPTSQ,QWORK,qsize)
          iguess=2
 
          do i=1,npoints
-
             call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
-
-
-            print*,"zn:",zn,"wn:",wn
-
             retpoints(i)=zsc(points(i),iguess,zinit,zn,wn,kn,accuracy,
      &                         ier,n,c,z,wc,w,betam,nptsq,qwork)
-
 
             if(ier.ne.0) then
               print*,"Error occurred mapping:",points(i)
             end if
 
-            print*,"point:",points(i),"ret:",retpoints(i)
          end do
-
-
-
-
-         print*,iguess,zinit,zn,wn,kn,accuracy,
-     &             ier,n,c,z,wc,w,betam,nptsq
 
          ! Convert back to doubles   
          dretpoints(:)=dcmplx(retpoints(:))
