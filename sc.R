@@ -155,20 +155,20 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prev
 # Now we want to create some random points in the polygon and see how our map
 # works. We can do this using the splancs library...
 
-library(splancs)
+#library(splancs)
 
 
 # Create some data
-poly.rand.data<-csr(as.points(Re(polyvertices),Im(polyvertices)),100)
-complex.poly.rand.data<-complex(100,poly.rand.data[,1],poly.rand.data[,2])
+#poly.rand.data<-csr(as.points(Re(polyvertices),Im(polyvertices)),100)
+#complex.poly.rand.data<-complex(100,poly.rand.data[,1],poly.rand.data[,2])
 
 
-par(mfrow=c(2,1))
-plot(complex.poly.rand.data)
+#par(mfrow=c(2,1))
+#plot(complex.poly.rand.data)
 
 #plot(some.points)
 accuracy<-as.single(0.0001)
-retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
-plot(retval)
+#retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
+#plot(retval)
 
 

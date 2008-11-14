@@ -22,17 +22,37 @@ imag.points<-c()
 # be a bit crafty
 my.index<-c(1,2,3,4)
 
-for (i in my.index){
-   real.points<-c(real.points,Re(polyvertices[i]),Re(polyvertices[i+1]),NA)
-   imag.points<-c(imag.points,Im(polyvertices[i]),Im(polyvertices[i+1]),NA)
+bnd<-list()
+bnd$x<-Re(polyvertices)
+bnd$y<-Im(polyvertices)
+
+
+gridd<-seq(-10,10,0.5)
+
+my.grid<-c()
+it<-1
+
+for (i in gridd){
+   for (j in gridd){
+      my.grid[it]<-complex(1,i,j)
+      it<-it+1
+   }
 }
 
 
-bnd<-list()
-bnd$x<-real.points
-bnd$y<-imag.points
-inSide(bnd,c(1,2,4555,-10),c(1,1221,3,0))
-plot(bnd)
+
+
+inside.points<-inSide(bnd,Re(my.grid),Im(my.grid))
+
+par(mfrow=c(2,1),pch=".")
+
+plot(my.grid[inside.points],type="p")
 lines(bnd)
 
 
+eval.points<-sc.map.backwards(my.grid[inside.points],nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
+
+
+plot(eval.points)
+
+lines(bnd)
