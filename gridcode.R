@@ -47,6 +47,7 @@ plot(my.grid[inside.points],type="p")
 lines(bnd)
 
 # Calculate the new points
+accuracy<-0.0001
 eval.points<-sc.map.backwards(my.grid[inside.points],nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
 
 # Plot the new points
