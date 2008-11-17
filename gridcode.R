@@ -19,19 +19,16 @@ polyvertices[5]<-polyvertices[1]
 real.points<-c()
 imag.points<-c()
 
-# be a bit crafty
-my.index<-c(1,2,3,4)
-
+# Set the boundary
 bnd<-list()
 bnd$x<-Re(polyvertices)
 bnd$y<-Im(polyvertices)
 
 
+#Create the grid
 gridd<-seq(-10,10,0.5)
-
 my.grid<-c()
 it<-1
-
 for (i in gridd){
    for (j in gridd){
       my.grid[it]<-complex(1,i,j)
@@ -39,20 +36,19 @@ for (i in gridd){
    }
 }
 
-
-
-
+# Find the points that are inside the boundary
 inside.points<-inSide(bnd,Re(my.grid),Im(my.grid))
 
+# Set plotting parameters
 par(mfrow=c(2,1),pch=".")
 
+# Plot the original figure
 plot(my.grid[inside.points],type="p")
 lines(bnd)
 
-
+# Calculate the new points
 eval.points<-sc.map.backwards(my.grid[inside.points],nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
 
-
+# Plot the new points
 plot(eval.points)
 
-lines(bnd)

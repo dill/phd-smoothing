@@ -21,15 +21,9 @@ polyvertices[4]<-complex(1,0,-10)
 #attr(polyvertices,"Csingle")
 
 wc<-complex(1,0,sqrt(2))
+# Calculate the angles in the routine, just settting up a var to catch them
 betam<-vector("numeric",nvertices)
-betam[1]<-1.0
-betam[2]<--0.5
-betam[3]<--2.0
-betam[4]<--0.5
-betam<-as.single(betam)
-# Check to see if the ANGLES routine gives the same answer as
-# above.
-#.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.single(betam))
+
 
 
 #################################
@@ -49,29 +43,6 @@ betam<-as.single(betam)
 #wc<-complex(1,0.5,0.5)
 #################################
 
-
-#################################
-### Test problem 2 - from scdoc
-#nvertices<-4
-#
-#polyvertices<-vector("complex",nvertices)
-#polyvertices[1]<-complex(1,0,1)
-#polyvertices[2]<-complex(1,0,0)
-#polyvertices[3]<-complex(1,1e20,1e20)
-#polyvertices[4]<-complex(1,0,0)
-#
-## approximate centre of w
-#wc<-complex(1,0,sqrt(2))
-#
-## angles
-#betam<-vector("numeric",nvertices)
-#betam[1]<-1
-#betam[2]<--0.5
-#betam[3]<--2
-#betam[4]<--0.5
-#################################
-
-
 # set number of quadrature points per subinterval
 nptsq<-5
 
@@ -85,8 +56,8 @@ z<-vector("complex",nvertices)
 qwork<-vector("numeric",qsize)
 qwork<-as.single(qwork)
 
+# Compute the map
 sc.solution<-.Fortran("scint",N=as.integer(nvertices),BETAM=betam,W=polyvertices,Z=z,C=c.const,WC=wc,NPTSQ=as.integer(nptsq),ERREST=errest,QSIZE=qsize,QWORK=qwork)
-
 
 # Set some variables
 prevertices<-sc.solution$Z
@@ -140,35 +111,4 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=1e-3,prev
    # Return the vector
    return(mapint.call$dretpoints)
 }
-
-
-# Test evaluation of the map
-#some.points<-complex(4,c(0.01,0.03,0.002,0),c(0.4,0.00002,0.001,0))
-
-# L shape test
-#some.points<-complex(4,c(0.5,1,0.5,0.5),c(0.5,0.5,1,1.5))
-
-#cat(some.points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre,sep="\n*")
-
-#retval<-sc.map.backwards(some.points,nvertices,betam,nptsq,qwork,accuracy=1e-6,prevertices,polyvertices,angles,complex.scale.factor,centre)
-
-# Now we want to create some random points in the polygon and see how our map
-# works. We can do this using the splancs library...
-
-#library(splancs)
-
-
-# Create some data
-#poly.rand.data<-csr(as.points(Re(polyvertices),Im(polyvertices)),100)
-#complex.poly.rand.data<-complex(100,poly.rand.data[,1],poly.rand.data[,2])
-
-
-#par(mfrow=c(2,1))
-#plot(complex.poly.rand.data)
-
-#plot(some.points)
-accuracy<-as.single(0.0001)
-#retval<-sc.map.backwards(complex.poly.rand.data,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
-#plot(retval)
-
 

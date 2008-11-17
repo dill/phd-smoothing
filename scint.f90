@@ -29,7 +29,7 @@ c convert double complex back singles
       c=cmplx(dc)
 
 c we can calculate the angles if we wish
-!      CALL ANGLES(N,W,BETAM)
+      CALL ANGLES(N,W,BETAM)
 
 
 C COMPUTE NODES AND WEIGHTS FOR PARAMETER PROBLEM:
