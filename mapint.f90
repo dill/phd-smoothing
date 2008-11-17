@@ -49,7 +49,7 @@ C        internal vars
      &                         ier,n,c,z,wc,w,betam,nptsq,qwork)
 
             if(ier.ne.0) then
-              print*,"Error occurred mapping:",points(i)
+              print*,"Error",ier,"occurred mapping:",points(i)
             end if
 
          end do

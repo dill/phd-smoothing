@@ -11,18 +11,14 @@ dyn.load("scpack.so")
 
 ### Create the variables
 # Number of vertices
-nvertices<-4
+#nvertices<-4
 # Position of vertices
-polyvertices<-vector("complex",nvertices)
-polyvertices[1]<-complex(1,10,0)
-polyvertices[2]<-complex(1,0,10)
-polyvertices[3]<-complex(1,-10,0)
-polyvertices[4]<-complex(1,0,-10)
-#attr(polyvertices,"Csingle")
-
-wc<-complex(1,0,sqrt(2))
-# Calculate the angles in the routine, just settting up a var to catch them
-betam<-vector("numeric",nvertices)
+#polyvertices<-vector("complex",nvertices)
+#polyvertices[1]<-complex(1,10,0)
+#polyvertices[2]<-complex(1,0,10)
+#polyvertices[3]<-complex(1,-10,0)
+#polyvertices[4]<-complex(1,0,-10)
+#wc<-complex(1,0,sqrt(2))
 
 
 
@@ -36,10 +32,6 @@ betam<-vector("numeric",nvertices)
 #polyvertices[4]<-complex(1,1,1)
 #polyvertices[5]<-complex(1,1,2)
 #polyvertices[6]<-complex(1,0,2)
-#####
-#betam<-vector("numeric",nvertices)
-#angle.ret<-.Fortran("ANGLES",N=as.integer(nvertices),W=polyvertices,BETAM=as.single(betam))
-#betam<-angle.ret$BETAM
 #wc<-complex(1,0.5,0.5)
 #################################
 
@@ -55,9 +47,10 @@ c.const<-vector("complex",1)
 z<-vector("complex",nvertices)
 qwork<-vector("numeric",qsize)
 qwork<-as.single(qwork)
+betam<-vector("numeric",nvertices)
 
 # Compute the map
-sc.solution<-.Fortran("scint",N=as.integer(nvertices),BETAM=betam,W=polyvertices,Z=z,C=c.const,WC=wc,NPTSQ=as.integer(nptsq),ERREST=errest,QSIZE=qsize,QWORK=qwork)
+sc.solution<-.Fortran("scint",N=as.integer(nvertices),BETAM=as.single(betam),W=polyvertices,Z=z,C=c.const,WC=wc,NPTSQ=as.integer(nptsq),ERREST=errest,QSIZE=qsize,QWORK=qwork)
 
 # Set some variables
 prevertices<-sc.solution$Z

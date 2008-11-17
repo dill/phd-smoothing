@@ -1,47 +1,57 @@
-# Script to use locator to draw polygons and then
-# output the co-ordinates in the complex plane of 
-# its vertices.
+# Subroutine to create a polygon based on points clicked with locator()
+# Output:
+#  vertices of the polygon, centered
+#  the centroid
+#  returns are complex
 
-saved.par<-par()
-par(mfrow=c(2,2))
-# First, draw a plot window
-plot.new()
-# Add some axes
-axis(1)
-axis(2)
-axis(3)
-axis(4)
+"polygon.locator"<-function(){
 
+	saved.par<-par()
+	par(mfrow=c(2,1))
+	# First, draw a plot window
+	plot.new()
+   # Make it a decent size
+   plot.window( xlim =c(-10,10),ylim=c(-10,10))
 
-# Now run locator, limit to 10 (ie, n=9) sides, the last being the 
-# first point back to the last.
-points<-locator(n=9,type="l")
-
-# Add the last line in...
-lines(c(points$x[1],points$x[length(points$x)]) ,c(points$y[1],points$y[length(points$y)]))
+	# Add some axes
+	axis(1)
+	axis(2)
 
 
-# We want to then translate the polygon to be centred at (0,0) and
-# order the points in a clockwise function.
+   # sshhhh
+   options(locatorBell=FALSE)
 
-# First find the centroid
-centroid<-list()
-centroid$x<-1/length(points$x) * sum(points$x)
-centroid$y<-1/length(points$y) * sum(points$y)
-# Now re-centre the points
-points$x<-points$x-centroid$x
-points$y<-points$y-centroid$y
+	# Now run locator, limit to 10 (ie, n=9) sides, the last being the 
+	# first point back to the last.
+	points<-locator(n=9,type="l")
+	
+	# Add the last line in...
+	lines(c(points$x[1],points$x[length(points$x)]) ,c(points$y[1],points$y[length(points$y)]))
+	
+	
+	# We want to then translate the polygon to be centred at (0,0) and
+	# order the points in a clockwise function.
+	
+	# First find the centroid
+	centroid<-list()
+	centroid$x<-1/length(points$x) * sum(points$x)
+	centroid$y<-1/length(points$y) * sum(points$y)
+	# Now re-centre the points
+	points$x<-points$x-centroid$x
+	points$y<-points$y-centroid$y
+	
+	# Plot what the re-centred polygon looks like
+	plot(points$x,points$y,pch=".")
+	lines(c(points$x, points$x[1]),c(points$y,points$y[1]))
+	 
+   # Making these into complex
+   cpoints<-complex(length(points$x),points$x,points$y)
+   ccentroid<-complex(1,points$x,points$y)
 
-# Find the complex representation of the vertices
-points.complex<-paste(points$x,"+",points$y,"j",sep="")
+	 
+	# Recover old par values
+	par(saved.par)
 
-# Pretty printer
-cat("  'custom': [", paste(points.complex,collapse=", "), "] }\n")
+   return(list(vertices=cpoints,centre=ccentroid))
 
-# Plot what the re-centred polygon looks like
-plot(points$x,points$y,pch=".")
-lines(c(points$x, points$x[1]),c(points$y,points$y[1]))
-
-
-# Recover old par values
-par(saved.par)
+}

@@ -840,11 +840,6 @@ c
       implicit complex(c,w,z)
       dimension w(n),betam(n)
 
-
-      print*,w
-      print*,betam
-
-
       c9 = (99.,99.)
 c
       pi = acos(-1.)
