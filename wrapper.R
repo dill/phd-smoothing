@@ -23,3 +23,7 @@ resolution<-0.5
 # call the gridcode
 source("gridcode.R")
 
+# Unload the shared object
+dyn.unload("scpack.so")
+
+

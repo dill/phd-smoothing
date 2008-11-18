@@ -46,8 +46,8 @@
 	 
    # Making these into complex
    cpoints<-complex(length(points$x),points$x,points$y)
-   ccentroid<-complex(1,points$x,points$y)
-
+   # We re-centred on (0,0)
+   centre<-complex(1,0,0)
 	 
 	# Recover old par values
 	par(saved.par)
