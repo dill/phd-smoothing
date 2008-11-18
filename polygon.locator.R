@@ -6,8 +6,6 @@
 
 "polygon.locator"<-function(){
 
-	saved.par<-par()
-	par(mfrow=c(2,1))
 	# First, draw a plot window
 	plot.new()
    # Make it a decent size
@@ -36,22 +34,13 @@
 	centroid<-list()
 	centroid$x<-1/length(points$x) * sum(points$x)
 	centroid$y<-1/length(points$y) * sum(points$y)
-	# Now re-centre the points
-	points$x<-points$x-centroid$x
-	points$y<-points$y-centroid$y
-	
-	# Plot what the re-centred polygon looks like
-	plot(points$x,points$y,pch=".")
-	lines(c(points$x, points$x[1]),c(points$y,points$y[1]))
-	 
-   # Making these into complex
-   cpoints<-complex(length(points$x),points$x,points$y)
+
+	# Now re-centre the points, making these into complex
+   cpoints<-complex(length(points$x),points$x-centroid$x,points$y-centroid$y)
    # We re-centred on (0,0)
    centre<-complex(1,0,0)
-	 
-	# Recover old par values
-	par(saved.par)
 
+	 
    return(list(vertices=cpoints,centre=centre))
 
 }
