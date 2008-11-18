@@ -52,6 +52,6 @@
 	# Recover old par values
 	par(saved.par)
 
-   return(list(vertices=cpoints,centre=ccentroid))
+   return(list(vertices=cpoints,centre=centre))
 
 }
