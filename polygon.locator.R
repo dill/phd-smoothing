@@ -19,9 +19,9 @@
    # sshhhh
    options(locatorBell=FALSE)
 
-	# Now run locator, limit to 10 (ie, n=9) sides, the last being the 
+	# Now run locator, limit to 1000 (ie, n=999) sides, the last being the 
 	# first point back to the last.
-	points<-locator(n=9,type="l")
+	points<-locator(n=999,type="l")
 	
 	# Add the last line in...
 	lines(c(points$x[1],points$x[length(points$x)]) ,c(points$y[1],points$y[length(points$y)]))
@@ -36,10 +36,14 @@
 	centroid$y<-1/length(points$y) * sum(points$y)
 
 	# Now re-centre the points, making these into complex
-   cpoints<-complex(length(points$x),points$x-centroid$x,points$y-centroid$y)
+   #cpoints<-complex(length(points$x),points$x-centroid$x,points$y-centroid$y)
    # We re-centred on (0,0)
-   centre<-complex(1,0,0)
+   #centre<-complex(1,0,0)
 
+
+   # Without using the centering seems to work better
+   cpoints<-complex(length(points$x),points$x,points$y)
+   centre<-complex(1,centroid$x,centroid$y)
 	 
    return(list(vertices=cpoints,centre=centre))
 
