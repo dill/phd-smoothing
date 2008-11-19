@@ -4,32 +4,6 @@
 require(mgcv)
 require(soap)
 
-# Setup the polygon
-
-## Square
-#polyvertices<-vector("complex",nvertices)
-#polyvertices[1]<-complex(1,10,0)
-#polyvertices[2]<-complex(1,0,10)
-#polyvertices[3]<-complex(1,-10,0)
-#polyvertices[4]<-complex(1,0,-10)
-## Add extra vertex for going back to the start
-#polyvertices[5]<-polyvertices[1]
-#resolution<-0.5
-
-## L-shape
-#nvertices<-7
-#polyvertices<-vector("complex",nvertices)
-#polyvertices[1]<-complex(1,0,0)
-#polyvertices[2]<-complex(1,2,0)
-#polyvertices[3]<-complex(1,2,1)
-#polyvertices[4]<-complex(1,1,1)
-#polyvertices[5]<-complex(1,1,2)
-#polyvertices[6]<-complex(1,0,2)
-# Add extra vertex for going back to the start
-#polyvertices[7]<-polyvertices[1]
-#resolution<-0.4
-
-
 # set the bounds for the grid program
 real.points<-c()
 imag.points<-c()
@@ -56,10 +30,10 @@ for (i in gridd){
 inside.points<-inSide(bnd,Re(my.grid),Im(my.grid))
 
 # Set plotting parameters
-par(mfrow=c(2,1),pch=".")
+par(mfrow=c(1,2),pch=".")
 
 # Plot the original figure
-plot(my.grid[inside.points],type="p")
+plot(my.grid[inside.points],xlab="x",ylab="y")#,main="Original domain")
 lines(bnd)
 
 # Calculate the new points
@@ -67,5 +41,5 @@ accuracy<-0.0001
 eval.points<-sc.map.backwards(my.grid[inside.points],nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
 
 # Plot the new points
-plot(eval.points)
+plot(eval.points,xlab="x",ylab="y")#,main="Transformed domain")
 

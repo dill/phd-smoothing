@@ -243,6 +243,28 @@ To calculate points from the polygon to points on the unit disk, we treat the eq
 
 Using the Fortran library \texttt{SCPACK}\footnote{available at \url{http://www.netlib.org/conformal/sclib} and \url{http://www.netlib.org/conformal/scpack}.}, some wrapper code was written to interface with \textbf{R}\footnote{Code available at \url{http://github.com/dill/phd-smoothing/tree/master}.}
 
+\subsection{The \sch mapping for a sqaure}
+We first took a square with vertices at $(10,0), (0,10),(-10,0),(0,-10)$ and mapped this into the unit disk. We then took a regular grid of points and mapped their positions in the unit disk. The results from this can be seen in fig. (\ref{squaredomain}).
+
+% Square domain mapping diagram
+\begin{figure} [bp]
+\centering
+\includegraphics[scale=0.5]{figs/squaredomain.pdf}
+\caption{The left panel shows a regular grid of points over the square region. The right panel shows the mapping of these points under the \sch tranformation to the unit disk.}
+\label{squaredomain}
+\end{figure}
+
+\subsection{An irregular mapping}
+Next we used the \textbf{R} function \texttt{locator()} and drew and arbitrary polygon and then mapped this to the unit disk. Then, as above we took a regular grid over the polygon and mapped those points into the disk. The results may be seen in fig. (\ref{irregdomain})
+
+
+% Square domain mapping diagram
+\begin{figure} [tbp]
+\centering
+\includegraphics[scale=0.5]{figs/irregulardomain.pdf}
+\caption{The left panel shows a regular grid of points over region bound by a irregular nonagon. The right panel shows the mapping of these points under the \sch tranformation to the unit disk.}
+\label{irregdomain}
+\end{figure}
 
 
 \section{Application to finite area smoothing}

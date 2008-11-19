@@ -24,12 +24,7 @@ C        internal vars
          complex zn,wn,tmp,zsc
          integer kn
          integer ier,iguess
-
-
-         ! leave these in for the moment
-         ZERO = (0.,0.)
-         ZI = (0.,1.)
-
+         
          ! convert double complex to singles
          z=cmplx(dz)
          w=cmplx(dw)
@@ -48,10 +43,10 @@ C        internal vars
             retpoints(i)=zsc(points(i),iguess,zinit,zn,wn,kn,accuracy,
      &                         ier,n,c,z,wc,w,betam,nptsq,qwork)
 
+            ! Let the user know if there were any errors
             if(ier.ne.0) then
               print*,"An error occurred mapping:",points(i)
             end if
-
          end do
 
          ! Convert back to doubles   
