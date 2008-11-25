@@ -125,7 +125,11 @@ When we map $\Gamma$ to $H^+$ we set $f(\infty) = w_n$ without any loss of gener
 f(z) = A + C \int^z \prod_{k=1}^{n-1} (\zeta-z_k)^{-\beta_k} d\zeta.
 \end{equation}
 
+Here $A$ and $C$ are complex constants determined once the $z_k$ have been calculated. These control the scaling and rotation of the transform.
+
 Although setting $f(\infty) = w_n$ does not make any difference in a mathematical sense, it does mean that the density of the points as they are mapped into $H^+$ is rather odd. Given two points near $w_n$, their spacing on the upper half-plane is huge in comparison to two points near the other vertices. For this reason it is more common to use the unit disk mapping, elaborated upon below. This phenomenon is known as ``crowding'' and is covered at length in \cite{driscoll}. 
+
+
 
 \subsection{Unit disk}
 
@@ -136,6 +140,7 @@ For the unit disk we do not fix any points, however note below that the product 
 f(z) = A + C \int^z \prod_{k=1}^{n} (1 - \frac{\zeta}{z_k})^{-\beta_k} d\zeta.
 \end{equation}
 
+As above, $A$ and $C$ are complex constants.
 
 \section{Computation of the \sch mapping}
 
@@ -143,9 +148,9 @@ Since it is generally easier to compute the \sch map to the unit disk rather tha
 
 
 \subsection{Outline of the computation of the map}
-To compute the map, we need to find the prevertices\footnote{Since the complex constants just control scaling and rotation, we can compute them after computing the $z_k$.}. To find the $z_i$s we use an iterative routine which approximates our polygon, $\Gamma$, by $\Gamma^\prime$. 
+To compute the map, we need to find the prevertices, $z_i$\footnote{Since the complex constants just control scaling and rotation, we can compute them after computing the $z_k$.}. We achieve this by approximating the $z_i$ then mapping those points back to the polygon to give an estimate of $\Gamma$, $\Gamma^\prime$. 
 
-In our algorithm we wish to attempt to satisfy the following relation: 
+In our algorithm we require the following information: 
 
 \begin{enumerate}
 \item $w_1, \dots, w_n$, the vertices of $\Gamma$,
@@ -208,7 +213,7 @@ Using this, we iterate over the prevertices, calculating the differences between
  \begin{equation*}
  F(k,z_1,z_2) = \frac{\vert g(z_{k+1}) -  g(z_k) \vert}{\vert g(z_2)-g(z_1)\vert} - \frac{\vert w_{k+1} - w_k\vert}{\vert w_2 - w_1\vert}, \qquad \text{for } k=3,\dots,n-1,
  \end{equation*}
-\item While $F(k,z_1,\dots,z_n) < \epsilon \quad \forall k$:
+\item Until $\vert F(k,z_1,\dots,z_n)\vert < \epsilon \quad \forall k$:
 \begin{enumerate}
   \item Calculate $F(k,z_1,\dots,z_n) \quad \forall k$:
   \item Change the values of prevertices.
