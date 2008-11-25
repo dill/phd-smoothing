@@ -4,13 +4,13 @@ c having to hack about with LINPACK. Hopefully.
 
       subroutine scint(n,betam,dw,dz,dc,dwc,nptsq,errest,qsize,qwork)
 c put in a description of the args
-
+         implicit none
 
          double complex dw,dz,dc,dwc
          integer n,i,ier,nptsq,iprint,iguess,k,qsize
          COMPLEX c,w,zsc,wsc,z,ww,zz,zero,zi,wc,wwex,zzex,wtmp,
      &          ztmp
-         real err,qwork,errest,tol
+         real err,qwork,errest,tol,betam
          dimension Z(n),W(n),BETAM(n)
          dimension QWORK(qsize)
          dimension dw(n), dz(n)

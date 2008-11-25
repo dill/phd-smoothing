@@ -55,9 +55,12 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=as.single
    # Set up a var to catch the response
    evaluated.points<-complex(length(points))
    
-   mapint.call<-.Fortran("mapint",dpoints=points,npoints=as.integer(length(points)),n=as.integer(nvertices),betam=as.single(betam),nptsq=as.integer(nptsq),qwork=as.single(qwork),qsize=as.integer(length(qwork)),accuracy=as.single(accuracy),dz=prevertices,dw=polyvertices,c=complex.scale.factor,wc=centre,dretpoints=evaluated.points)
+   mapint.call<-.Fortran("mapint",dpoints=points,npoints=as.integer(length(points)),n=as.integer(nvertices),betam=as.single(betam),nptsq=as.integer(nptsq),qwork=as.single(qwork),qsize=as.integer(length(qwork)),accuracy=as.single(accuracy),dz=prevertices,dw=polyvertices,c=complex.scale.factor,wc=centre,dretpoints=evaluated.points,reterrors=as.integer(rep(0,length(points))))
 
-   # Return the vector
-   return(mapint.call$dretpoints)
+   # Return the vector of points and errors
+   ret<-list()
+   ret$eval.points<-mapint.call$dretpoints
+   ret$errors<-as.logical(mapint.call$reterrors)
+   return(ret)
 }
 

@@ -9,7 +9,7 @@
 	# First, draw a plot window
 	plot.new()
    # Make it a decent size
-   plot.window( xlim =c(-10,10),ylim=c(-10,10))
+   plot.window( xlim =c(0,10),ylim=c(0,10))
 
 	# Add some axes
 	axis(1)
