@@ -15,10 +15,8 @@ wc<-ret$centre
 # Do the mapping
 source("sc.R")
 
-# Set up the polygon again
-polyvertices<-ret$vertices
-polyvertices[nvertices+1]<-polyvertices[1]
 resolution<-0.1
+
 
 # call the gridcode
 source("gridcode.R")
