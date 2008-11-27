@@ -15,6 +15,7 @@ wc<-ret$centre
 # Do the mapping
 source("sc.R")
 
+
 resolution<-0.1
 
 

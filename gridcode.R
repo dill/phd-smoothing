@@ -11,7 +11,7 @@ par(mfrow=c(1,2),pch=".")
 plot(my.grid,xlab="x",ylab="y")#,main="Original domain")
 lines(polyvertices)
 lines(c(polyvertices[1],polyvertices[length(polyvertices)]))
-points(my.grid,col="blue",pch=21)
+#points(my.grid,col="blue",pch=21)
 
 # Calculate the new points
 accuracy<-0.0001
@@ -20,7 +20,7 @@ res<-sc.map.backwards(my.grid,nvertices,betam,nptsq,qwork,accuracy,prevertices,p
 eval.points<-res$eval.points
 
 # find the points that produced errors
-flagged.points<-res$errors
+flagged.points<-my.grid[res$errors]
 # colour them red on the original space
 points(Re(flagged.points),Im(flagged.points),pch=19,col="red")
 
@@ -41,9 +41,9 @@ plot(eval.points,xlab="x",ylab="y")#,main="Transformed domain")
 ## Now take the vertices of the polygon and put them on the plot
 ret.vertices<-sc.map.backwards(polyvertices,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
 #
-ret.vertices<-ret.vertices$eval.points
+mapped.vertices<-ret.vertices$eval.points
 #
-text(x=Re(ret.vertices),y=Im(ret.vertices),labels=seq(1,nvertices,1),adj=1.5,col="blue")
+text(x=Re(mapped.vertices),y=Im(mapped.vertices),labels=seq(1,nvertices,1)[!ret.vertices$errors],adj=1.5,col="blue")
 #
 #
 #
