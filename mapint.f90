@@ -44,9 +44,10 @@ C        internal vars
          points(:)=cmplx(dpoints(:))
 
          ! error code, will !=0 if an error has ocurred.
+         ! see below for error handling.
          ier=0
 
-         ! we don't supply a guess so set iguess to be != 2
+         ! we don't supply a guess so set iguess to be != 1
          iguess=2
 
          ! zinit doesn't matter, so just set it to zero
@@ -56,8 +57,16 @@ C        internal vars
          ! set reterrors
          reterrors(:)=0
 
+
+        PRINT*,"DEBUG: wc=",wc
+
          do i=1,npoints
-            call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
+!            call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
+         zn=(0.0,0.0)
+         kn=0
+         wn=wc
+         PRINT*,"DEBUG: wn=",wn,"kn=",kn,"zn=",zn
+
             retpoints(i)=zsc(points(i),iguess,zinit,zn,wn,kn,accuracy,
      &                         ier,n,c,z,wc,w,betam,nptsq,qwork)
 
