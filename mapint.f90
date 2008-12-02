@@ -35,7 +35,12 @@ C        internal vars
          complex zn,wn,tmp,zsc,zinit
          integer kn
          integer ier,iguess
-         
+       
+
+         ! some general purpose counters
+         integer icount,jcount
+ 
+ 
          ! convert double complex to singles
          z=cmplx(dz)
          w=cmplx(dw)
@@ -56,6 +61,11 @@ C        internal vars
          ! set reterrors
          reterrors(:)=0
 
+
+         icount=0
+         jcount=0
+
+
          ! loop over the points
          do i=1,npoints
             call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
@@ -65,11 +75,23 @@ C        internal vars
 
             ! Let the user know if there were any errors
             if(ier.ne.0) then
-               print*,"An error occurred mapping:",points(i)
+               !print*," *** An error occurred mapping:",points(i)
+               !print*,"      kn=",kn,"wn=",wn,"zn=",zn
+            icount=icount+1
+            if(ABS(REAL(wn)-REAL(wc))<0.0001) then
+            if(ABS(AIMAG(wn)-AIMAG(wc))<0.0001) then
+               print*,"zn==wc"
+               jcount=jcount+1
+            end if
+            end if
                ier=0
                reterrors(i)=1
             end if
          end do
+
+
+      PRINT*,"points=",npoints,"err=",icount,"wcerr=",jcount
+
 
          ! Convert back to doubles   
          dretpoints(:)=dcmplx(retpoints(:))
