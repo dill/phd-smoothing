@@ -53,28 +53,21 @@ C        internal vars
          ! zinit doesn't matter, so just set it to zero
          zinit = (0.0,0.0)
 
-
          ! set reterrors
          reterrors(:)=0
 
-
-        PRINT*,"DEBUG: wc=",wc
-
+         ! loop over the points
          do i=1,npoints
-!            call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
-         zn=(0.0,0.0)
-         kn=0
-         wn=wc
-         PRINT*,"DEBUG: wn=",wn,"kn=",kn,"zn=",zn
+            call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
 
             retpoints(i)=zsc(points(i),iguess,zinit,zn,wn,kn,accuracy,
      &                         ier,n,c,z,wc,w,betam,nptsq,qwork)
 
             ! Let the user know if there were any errors
             if(ier.ne.0) then
-              print*,"An error occurred mapping:",points(i)
-              reterrors(i)=1
-              ier=0 
+               print*,"An error occurred mapping:",points(i)
+               ier=0
+               reterrors(i)=1
             end if
          end do
 
