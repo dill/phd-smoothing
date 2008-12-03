@@ -37,10 +37,11 @@ C        internal vars
          integer ier,iguess
        
 
-         ! some general purpose counters
-         integer icount,jcount
- 
- 
+      integer jcount, icount
+
+      jcount=0
+      icount=0
+
          ! convert double complex to singles
          z=cmplx(dz)
          w=cmplx(dw)
@@ -62,10 +63,6 @@ C        internal vars
          reterrors(:)=0
 
 
-         icount=0
-         jcount=0
-
-
          ! loop over the points
          do i=1,npoints
             call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
@@ -73,25 +70,25 @@ C        internal vars
             retpoints(i)=zsc(points(i),iguess,zinit,zn,wn,kn,accuracy,
      &                         ier,n,c,z,wc,w,betam,nptsq,qwork)
 
+
             ! Let the user know if there were any errors
             if(ier.ne.0) then
-               !print*," *** An error occurred mapping:",points(i)
-               !print*,"      kn=",kn,"wn=",wn,"zn=",zn
-            icount=icount+1
-            if(ABS(REAL(wn)-REAL(wc))<0.0001) then
-            if(ABS(AIMAG(wn)-AIMAG(wc))<0.0001) then
-               print*,"zn==wc"
-               jcount=jcount+1
-            end if
-            end if
+          icount=icount+1
                ier=0
-               reterrors(i)=1
+               retpoints(i)=zsc(points(i),iguess,zinit,retpoints(i-1),
+     &                            points(i-1),0,
+     &                        accuracy,ier,n,c,z,wc,w,betam,nptsq,qwork)
+               if(ier.ne.0) then
+                  print*," *** An error occurred mapping:",points(i)
+                  reterrors(i)=1
+             jcount=jcount+1
+               end if
+               ier=0
             end if
          end do
 
 
-      PRINT*,"points=",npoints,"err=",icount,"wcerr=",jcount
-
+      PRINT*,"first=",icount,"second=",jcount
 
          ! Convert back to doubles   
          dretpoints(:)=dcmplx(retpoints(:))

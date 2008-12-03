@@ -59,7 +59,6 @@ sc.map.backwards<-function(points,nvertices,betam,nptsq,qwork,accuracy=as.single
 
    # Return the vector of points and errors
    ret<-list()
-   
    # errors, TRUE if there was an error
    ret$errors<-as.logical(mapint.call$reterrors)
    # return points that did not have errors
