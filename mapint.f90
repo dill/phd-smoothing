@@ -37,10 +37,12 @@ C        internal vars
          integer ier,iguess
        
 
-      integer jcount, icount
+      integer jcount, icount,wccount
 
       jcount=0
       icount=0
+      wccount=0
+
 
          ! convert double complex to singles
          z=cmplx(dz)
@@ -73,14 +75,23 @@ C        internal vars
 
             ! Let the user know if there were any errors
             if(ier.ne.0) then
+
+
+
+            if(CMPLX(0,0).eq.zn) then
+               wccount=wccount+1
+            end if
+   
+
           icount=icount+1
+                  reterrors(i)=1
                ier=0
                retpoints(i)=zsc(points(i),iguess,zinit,retpoints(i-1),
      &                            points(i-1),0,
      &                        accuracy,ier,n,c,z,wc,w,betam,nptsq,qwork)
                if(ier.ne.0) then
                   print*," *** An error occurred mapping:",points(i)
-                  reterrors(i)=1
+C                  reterrors(i)=1
              jcount=jcount+1
                end if
                ier=0
@@ -89,7 +100,7 @@ C        internal vars
 
 
       PRINT*,"first=",icount,"second=",jcount
-
+      PRINT*,"wccount=",wccount,"npoints=",npoints
          ! Convert back to doubles   
          dretpoints(:)=dcmplx(retpoints(:))
       return

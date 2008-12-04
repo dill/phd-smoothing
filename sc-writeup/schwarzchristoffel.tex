@@ -1,10 +1,8 @@
-% Brief explanation of the Schwarz-Christoffel transform
+% "Brief" explanation of the Schwarz-Christoffel transform
 % David Lawrence Miller
 % d.l.miller@bath.ac.uk
  
 % Started : 29 October 2008
-% Completed (first draft) : 
-% Really completed :
  
 \documentclass[a4paper,10pt]{amsart}
  
@@ -171,13 +169,17 @@ where $g=f^{-1}$.
 
 Intuitively we are looking at the differences between the side lengths of the polygon and the polygon as it is estimated by this iteration (\cite{snider}, \emph{p. A-3}), both scaled by the distance between the first two vertices.
 
-Note that the relation does not include the vertex $w_n$, nor do we look at $w_1$ or $w_2$ in the numerator on the right of the above equation. This is since (by theorem 3.1 of \cite{driscoll} \emph{p. 24}) a polygon is precisely defined by its angles and its vertices not including $w_n$\footnote{Since we know the direction of the edges leacving $w_1$ and $w_{n-1}$, we may find the point where they meet.}. We may find the scaling factor, $C$, from (\ref{unitscmap}) by using the following equation:
+Note that the relation does not include the vertex $w_n$, nor do we look at $w_1$ or $w_2$ in the numerator on the right of the above equation. This is since (by theorem 3.1 of \cite{driscoll} \emph{p. 24}) a polygon is precisely defined by its angles and its vertices not including $w_n$\footnote{Since we know the direction of the edges leacving $w_1$ and $w_{n-1}$, we may find the point where they meet.}. In practice we fix $z_n=1$, $z_{n-1}=-i$ and $z_{n-2}=-1$ (\cite{driscoll}, \emph{p. 24}.)
+
+We may find the scaling factor, $C$, from (\ref{unitscmap}) by using the following equation:
 
 \begin{equation}
 C=\frac{\vert g(z_2)-g(z_1)\vert}{\vert w_2 - w_1\vert},
 \end{equation}
 
 otherwise, we can assume that up to scaling and rotation that $w_1$ and $w_2$ are correct. In this case we know that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense.) 
+
+$A$ is the image of the base point of the integration, for computational reasons this is usually the prevertex nearest to the point $z$ that we wish to map in \ref{unitscmap}  (\cite{driscoll}, \emph{p. 27}.)
 
 
 \subsection{Technical details of the computation}

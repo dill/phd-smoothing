@@ -50,6 +50,8 @@ plot(eval.points,xlab="",ylab="",pch=".")
 #text(x=Re(mapped.vertices),y=Im(mapped.vertices),labels=seq(1,nvertices,1)[!ret.vertices$errors],adj=1.5,col="blue")
 
 
+text(x=Re(prevertices),y=Im(prevertices),col="red",labels=as.character(1:length(prevertices)))
+
 
 # And the same with the diagonals
 #ret.diag.1<-sc.map.backwards(diag.1,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
