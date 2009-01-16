@@ -34,7 +34,6 @@ ret.vertices<-sc.map.backwards(nr.polyvertices,nvertices,betam,nptsq,qwork,accur
 
 mapped.vertices<-ret.vertices$eval.points
 
-text(x=Re(mapped.vertices),y=Im(mapped.vertices),labels=seq(1,nvertices,1)[!ret.vertices$errors],adj=1.5,col="blue")
 
 
 
