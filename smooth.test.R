@@ -20,16 +20,18 @@ for (i in 1:length(bivn.kde$x)){
 y<-rep(bivn.kde$y,50)
 
 
-orig.data.set<-list(x=x,y=y,z=as.vector(bivn.kde$z))
-orig.fit<-gam(z~s(x,bs="cr")+s(y,bs="cr")+s(x,y,bs="cr"),data=orig.data.set)
+orig.data.set<-list(x=as.vector(x),y=as.vector(y),z=as.vector(bivn.kde$z))
+orig.fit<-gam(z~s(x,y,bs="tp"),data=orig.data.set)
 
-morph.data.set<-list(x=Re(eval.points),y=Im(eval.points),z=as.vector(bivn.kde$z))
-morph.fit<-gam(z~s(x)+s(y)+s(x,y),data=morph.data.set)
 
-# Plot the two side by side
+morph.data.set<-list(x=Re(eval.points),y=Im(eval.points),z=as.vector(bivn.kde$z[!res$errors]))
+morph.fit<-gam(z~s(x,y,bs="tp"),data=morph.data.set)
+
+
 par(mfrow=c(1,2))
-vis.gam(orig.fit)
-vis.gam(morph.fit)
+
+vis.gam(orig.fit,plot.type="contour")
+vis.gam(morph.fit,plot.type="contour")
 
 
 

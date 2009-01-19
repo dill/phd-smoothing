@@ -65,12 +65,22 @@ C                     points which had errors (int)
          reterrors(:)=0
 
 
-         ! if we are doing the backwards map
+         !!! if we are doing the backwards map
+         ! polygon-> disk
          if (mode.eq.1) then
 
             ! loop over the points
             do i=1,npoints
+               ! nearw finds the nearest vertex to the point which we
+               ! want to map.
                call nearw(points(i),zn,wn,kn,n,z,wc,w,betam)
+
+!               if(ABS(REAL(wn)-REAL(wc)) <0.0001)then
+!                  if(ABS(AIMAG(wn)-AIMAG(wc)) <  0.0001) then
+!                     print*,"!!!!!!!!!!!!!!!!!!!!!"
+!                  end if 
+!               end if 
+
 
                retpoints(i)=zsc(points(i),iguess,zinit,zn,wn,kn,accuracy
      &                         ,ier,n,c,z,wc,w,betam,nptsq,qwork)
@@ -81,24 +91,29 @@ C                     points which had errors (int)
                   end if
 
                   icount=icount+1
-                  reterrors(i)=1
+!                  reterrors(i)=1
                   ier=0
                   retpoints(i)=zsc(points(i),iguess,zinit,retpoints(i-1)
      &                            ,points(i-1),0,
      &                        accuracy,ier,n,c,z,wc,w,betam,nptsq,qwork)
                   if(ier.ne.0) then
                      print*," *** An error occurred mapping:",points(i)
-C                    reterrors(i)=1
+                    reterrors(i)=1
                      jcount=jcount+1
                   end if
                   ier=0
                end if
             end do
+         !!! doing the forwards map
+         ! disk -> polygon
          else
             do i=1,npoints
+               ! find the nearest point
                call nearz(points(i),zn,wn,kn,n,z,wc,w,betam)
 
-               ! is this point a vertex?
+               ! Is this point a vertex? If it is we need to set kzz
+               ! equal to the apropriate integer.
+               ! At the moment this is pretty inefficient.
                kzz=0
                do k=1,n
                   if (z(k).eq.points(i)) then
@@ -111,26 +126,14 @@ C                    reterrors(i)=1
      &                         ,n,c,z,betam,nptsq,qwork)
 
                if(ier.ne.0) then
-                  if(CMPLX(0,0).eq.zn) then
-                     wccount=wccount+1
-                  end if
-
-                  icount=icount+1
+                  print*," *** An error occurred mapping:",points(i)
                   reterrors(i)=1
-                  ier=0
-               retpoints(i)=wsc(points(i),kzz,zn,wn,kn
-     &                         ,n,c,z,betam,nptsq,qwork)
-                  if(ier.ne.0) then
-                     print*," *** An error occurred mapping:",points(i)
-C                    reterrors(i)=1
-                     jcount=jcount+1
-                  end if
-                  ier=0
                end if
+               ier=0
             end do
-
          end if
 
+      PRINT*,"error summary:"
       PRINT*,"first=",icount,"second=",jcount
       PRINT*,"wccount=",wccount,"npoints=",npoints
          ! Convert back to doubles   

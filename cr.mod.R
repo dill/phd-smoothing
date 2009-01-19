@@ -38,7 +38,10 @@ smooth.construct.cr.smooth.spec<-function(object,data,knots)
   # Things start to get weird here
   # map x onto the unit disk
   map.return<-sc.map.backwards(x,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
-  x<-map.return$
+  
+  # save the old x
+  x.save<-x
+  x<-map.return$eval.points
 
   #################################################
 
@@ -47,6 +50,16 @@ smooth.construct.cr.smooth.spec<-function(object,data,knots)
            as.double(C),as.integer(control))
 
   object$X <- matrix(oo[[5]],nx,nk)
+
+  #################################################
+  # map the design matrix back to the domain
+  map.return<-sc.map.forwards(object$X,nvertices,betam,nptsq,qwork,accuracy,prevertices,polyvertices,complex.scale.factor,wc)
+  object$X<-map.return$eval.points
+
+
+  #################################################
+
+
 
   object$S<-list()     # only return penalty if term not fixed
   if (!object$fixed)
