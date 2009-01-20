@@ -162,10 +162,10 @@ We express this wish in the form of the following set of equations:
 
 \begin{equation}
 \label{optimizeme}
-\frac{\vert g(z_{k+1}) -  g(z_k) \vert}{\vert g(z_2)-g(z_1)\vert} - \frac{\vert w_{k+1} - w_k\vert}{\vert w_2 - w_1\vert} = 0, \qquad \text{for } k=3,\dots,n-1,
+\frac{\vert g(z_{k+1}) -  g(z_k) \vert}{\vert g(z_2)-g(z_1)\vert} - \frac{\vert w_{k+1} - w_k\vert}{\vert w_2 - w_1\vert} = 0, \qquad \text{for } k=3,\dots,n-1.
 \end{equation}
 
-where $g=f^{-1}$. 
+Here $\vert g(z_{k+1}) -  g(z_k) \vert$ is the distance between the $k^{th}$ and $(k+1)^{th}$ vertex.  We find this by integrating along the line between the points in the domain of the polygon.
 
 Intuitively we are looking at the differences between the side lengths of the polygon and the polygon as it is estimated by this iteration (\cite{snider}, \emph{p. A-3}), both scaled by the distance between the first two vertices.
 
@@ -182,15 +182,9 @@ otherwise, we can assume that up to scaling and rotation that $w_1$ and $w_2$ ar
 $A$ is the image of the base point of the integration, for computational reasons this is usually the prevertex nearest to the point $z$ that we wish to map in \ref{unitscmap}  (\cite{driscoll}, \emph{p. 27}.)
 
 
-\subsection{Technical details of the computation}
+\subsection{Quadrature}
 
-The function $g$ in (\ref{optimizeme}) is found by taking the inverse of $f$, that is:
-
-\begin{equation}
-g(z) = \int_{z_j}^{z_{j+1}} f(\zeta) d\zeta.
-\end{equation}
-
-Calculating the above integral is time consuming, luckily we may use the Gauss-Jacobi quadrature in order to quickly compute the result. The quadrature is given by:
+Calculating the above integrals is time consuming, luckily we may use the Gauss-Jacobi quadrature in order to quickly compute the result. The quadrature is given by:
 
 \begin{equation}
 \int_{-1}^{1} (1-x)^\alpha (1+x)^\beta f(x) dx = \sum_{i=0}^{n-1}h_if(x_i) + \epsilon_n,
@@ -215,11 +209,7 @@ Using this, we iterate over the prevertices, calculating the differences between
  \begin{equation*}
  F(k,z_1,z_2) = \frac{\vert g(z_{k+1}) -  g(z_k) \vert}{\vert g(z_2)-g(z_1)\vert} - \frac{\vert w_{k+1} - w_k\vert}{\vert w_2 - w_1\vert}, \qquad \text{for } k=3,\dots,n-1,
  \end{equation*}
-\item Until $\vert F(k,z_1,\dots,z_n)\vert < \epsilon \quad \forall k$:
-\begin{enumerate}
-  \item Calculate $F(k,z_1,\dots,z_n) \quad \forall k$:
-  \item Change the values of prevertices.
-\end{enumerate}
+\item Use steepest descent and then Newton's method to until $\vert F(k,z_1,\dots,z_n)\vert < \epsilon \quad \forall k$. Starting values are $n$ equally spaces prevertices around the unit disk.
 \item Calculate $C$ and $A$.
 \item Return values for $z_1,\dots,z_n$, $C$ and $A$.
 \end{enumerate}
