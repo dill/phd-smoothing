@@ -51,3 +51,46 @@ polyvertices[5]<-complex(1,1,2)
 polyvertices[6]<-complex(1,0,2)
 wc<-complex(1,0.5,0.5)
 
+
+
+### L-shape with extra vertices to try to get rid
+### of crowding
+# Number of vertices
+nvertices<-8
+# Position of vertices
+polyvertices<-vector("complex",nvertices)
+polyvertices[1]<-complex(1,0,0)
+polyvertices[2]<-complex(1,1,0)
+polyvertices[3]<-complex(1,2,0)
+polyvertices[4]<-complex(1,2,1)
+polyvertices[5]<-complex(1,1,1)
+polyvertices[6]<-complex(1,1,2)
+polyvertices[7]<-complex(1,0,2)
+polyvertices[8]<-complex(1,0,1)
+wc<-complex(1,0.5,0.5)
+
+
+### L-shape with extra vertices to try to get rid
+### of crowding
+# Number of vertices
+nvertices<-8
+# Position of vertices
+polyvertices<-vector("complex",nvertices)
+polyvertices[1]<-complex(1,0,0)
+polyvertices[2]<-complex(1,0.5,0)
+polyvertices[3]<-complex(1,2,0)
+polyvertices[4]<-complex(1,2,1)
+polyvertices[5]<-complex(1,1,1)
+polyvertices[6]<-complex(1,1,2)
+polyvertices[7]<-complex(1,0,2)
+polyvertices[8]<-complex(1,0,0.5)
+wc<-complex(1,0.5,0.5)
+
+
+
+
+
+
+
+
+
