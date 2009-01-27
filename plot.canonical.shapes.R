@@ -8,7 +8,7 @@ nvertices<-4
 polyvertices<-vector("complex",nvertices)
 polyvertices[1]<-complex(1,-3,-3)
 polyvertices[2]<-complex(1,3,-3)
-polyvertices[3]<-complex(1,3,-3)
+polyvertices[3]<-complex(1,3,3)
 polyvertices[4]<-complex(1,-3,3)
 source("poly.centre.R")
 wc<-poly.centre(polyvertices)
