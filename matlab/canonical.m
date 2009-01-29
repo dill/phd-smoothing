@@ -11,36 +11,28 @@ y_points=[-5:0.1:5]
 
 
 %%% square
-poly_square=[-3 -3; 3 -3; 3 3;-3 3]
+poly=[-3 -3; 3 -3; 3 3;-3 3]
+vertex_points=[1 2 3 4]
 
 % find the internal points
-internal_points=inpoly([X(:) Y(:)], poly_square)
+internal_points=inpoly([X(:) Y(:)], poly)
 
 % create a complex set of points and polygon
 complex_points=complex(X(internal_points),Y(internal_points))
-complex_poly=polygon(complex(poly_square(:,1),poly_square(:,2)))
+complex_poly=polygon(complex(poly(:,1),poly(:,2)))
 
-f=diskmap(complex_poly)
-f=center(f,0)
+% with rectmap, you need to specify the vertices but not the centre
+f=rectmap(complex_poly, vertex_points)
+%f=center(f,0)
 plot(evalinv(f,complex_points),'.')
 
 
 %%% triangle
--3 -3;
-3 -3;
-0 3;
+-3 -3; 3 -3; 0 3;
 
 %%% Ramsey's horse shoe
--2.5 -0.5;
-2.5 -0.5;
-3.5 0.5;
-3.5 2;
-2.5 3;
--2.5 3;
--2.5 1.5;
-2 1.5;
-2 1;
-
+poly= [-2.5 -0.5; 2.5 -0.5; 3.5 0.5; 3.5 2; 2.5 3; -2.5 3; -2.5 1.5; 2 1.5; 2 1;]
+vertex_points=[1 9 6 7]
 
 
 %%% wiggly top 
