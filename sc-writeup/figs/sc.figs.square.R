@@ -17,7 +17,9 @@ polyvertices[1]<-complex(1,10,0)
 polyvertices[2]<-complex(1,0,10)
 polyvertices[3]<-complex(1,-10,0)
 polyvertices[4]<-complex(1,0,-10)
-wc<-complex(1,0,sqrt(2))
+source("poly.centre.R")
+wc<-poly.centre(polyvertices)
+
 
 # Set the variables
 polyvertices<-ret$vertices

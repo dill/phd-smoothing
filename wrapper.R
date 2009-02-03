@@ -16,7 +16,7 @@ wc<-ret$centre
 source("sc.R")
 
 
-resolution<-0.1
+resolution<-0.25
 
 
 # call the gridcode

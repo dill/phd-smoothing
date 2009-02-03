@@ -21,7 +21,7 @@ eval.points<-res$eval.points
 # find the points that produced errors
 flagged.points<-my.grid[res$errors]
 # colour them red on the original space
-points(Re(flagged.points),Im(flagged.points),pch=19,col="red")
+#points(Re(flagged.points),Im(flagged.points),pch=19,col="red")
 
 # Number the vertices
 text(x=Re(polyvertices),y=Im(polyvertices),labels=seq(1,nvertices,1),adj=1.5,col="blue")

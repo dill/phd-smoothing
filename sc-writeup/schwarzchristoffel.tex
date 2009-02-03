@@ -209,7 +209,7 @@ Using this, we iterate over the prevertices, calculating the differences between
  \begin{equation*}
  F(k,z_1,z_2) = \frac{\vert g(z_{k+1}) -  g(z_k) \vert}{\vert g(z_2)-g(z_1)\vert} - \frac{\vert w_{k+1} - w_k\vert}{\vert w_2 - w_1\vert}, \qquad \text{for } k=3,\dots,n-1,
  \end{equation*}
-\item Use steepest descent and then Newton's method to until $\vert F(k,z_1,\dots,z_n)\vert < \epsilon \quad \forall k$. Starting values are $n$ equally spaces prevertices around the unit disk.
+\item Use steepest descent and then Newton's method to until $\vert F(k,z_1,\dots,z_n)\vert < \epsilon \quad \forall k$. Starting values are $n$ equally spaced prevertices around the unit disk.
 \item Calculate $C$ and $A$.
 \item Return values for $z_1,\dots,z_n$, $C$ and $A$.
 \end{enumerate}
@@ -232,9 +232,16 @@ where $z_0$ is any point in the closed disk such that $w_0 = f(z_0)$ is known an
 
 \subsubsection{Backwards map}
 
-To calculate points from the polygon to points on the unit disk, we treat the equation $g(z)=w$ as a non-linear equation to be solved for $z$ (\cite{trefethen}, \emph{pp. 16-17}). These are solved iteratively as a series of first order ODEs, with the starting values coming from inverting (\ref{unitscmap}).
+To calculate points from the polygon to points on the unit disk, there are two possible approaches: 1) using Newton's method to solve the equation $f(z)-w=0$ and 2) solving the IVP:
 
-\textbf{SIMON: I know I need to expand on this, but I am waiting for the book to arrive in the library.}
+\begin{equation}
+\label{scivp}
+\frac{dz}{dw}=\frac{1}{f^\prime(z)} \quad \text{and} \quad z(w_0)=z_0.
+\end{equation}
+
+We infact use a combination of these methods; solving (\ref{scivp}) approximately gives the starting values for the Newton iterations which are significantly faster (since $f^\prime$ is cheaper to compute than $f$.) (\cite{driscoll} \emph{p. 29}.)
+
+The only problem with this is that the path from $w_0$ to the point to map, $w$, must lie entirely inside the polygon. This is not known since after the mapping has been computed, the only points that are known are the vertices (at which the IVP is singular.) So, to combat this, all of the points on the path are checked sequentially. This computation, although inelegant, is fast compared to the IVP/Newton iterations.
 
 \section{Examples of the mapping}
 
@@ -255,13 +262,33 @@ We first took a square with vertices at $(10,0), (0,10),(-10,0),(0,-10)$ and map
 Next we used the \textbf{R} function \texttt{locator()} and drew and arbitrary polygon and then mapped this to the unit disk. Then, as above we took a regular grid over the polygon and mapped those points into the disk. The results may be seen in fig. (\ref{irregdomain})
 
 
-% Square domain mapping diagram
+% Irregular mapping diagram
 \begin{figure} [tbp]
 \centering
 \includegraphics[scale=0.5]{figs/irregulardomain.pdf}
 \caption{The left panel shows a regular grid of points over region bound by a irregular nonagon. The right panel shows the mapping of these points under the \sch tranformation to the unit disk.}
 \label{irregdomain}
 \end{figure}
+
+
+\section{Crowding and the limits of \texttt{SCPACK}.}
+
+\subsection{Crowding and CRDT}
+
+A common problem with \sch mappings is that when there are a lot of vertices or there is an elongated region the mapped vertices are positioned too closely on the unit disk. This effect is referred to as ``crowding'' in the literature and can be observed in fig. (\ref{crowdeddisk}). Indeed, \cite{howell90} points out that in elgonated regions prevertices can be located exponentially close such that in finite precision arithmetic they have merged.
+
+
+
+% Crowded mapping diagram
+\begin{figure} [tbp]
+\centering
+\includegraphics[scale=0.5]{figs/crowdeddisk.pdf}
+\caption{}
+\label{crowdeddisk}
+\end{figure}
+
+
+
 
 
 %\section{Application to finite area smoothing}
