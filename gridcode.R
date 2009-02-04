@@ -8,7 +8,7 @@ my.grid<-make.grid(polyvertices,resolution)
 par(mfrow=c(1,2))
 
 # Plot the original figure
-plot(my.grid,xlab="",ylab="",pch=".")
+plot(my.grid,xlab="",ylab="",pch=".",xlim=c(min(Re(polyvertices)),max(Re(polyvertices))),ylim=c(min(Im(polyvertices)),max(Im(polyvertices))))
 lines(polyvertices)
 lines(c(polyvertices[1],polyvertices[length(polyvertices)]))
 #points(my.grid,col="blue",pch=21)
@@ -32,7 +32,7 @@ text(x=Re(wc),y=Im(wc),labels="wc",adj=1.5,col="blue")
 
 
 # Plot the new points
-plot(eval.points,xlab="",ylab="",pch=".")
+plot(eval.points,xlab="",ylab="",pch=".",xlim=c(min(Re(eval.points))+0.1,max(Re(eval.points)+0.1)),ylim=c(min(Im(eval.points)+0.1),max(Im(eval.points)+0.1)))
 
 # Now take the vertices of the polygon and put them on the plot
 text(x=Re(prevertices),y=Im(prevertices),col="blue",labels=as.character(1:length(prevertices)))
