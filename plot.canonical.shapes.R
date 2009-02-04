@@ -3,9 +3,9 @@
 # source the shapes
 source("canonical.shapes.R")
 
-par(mfrow=c(3,3))
+par(mfrow=c(3,2))
 
-for(i in 1:9){
+for(i in working.figs){
    plot(my.shapes[[i]]$points,main=my.shapes[[i]]$title,pch=".",xlab="",ylab="")
    lines(c(my.shapes[[i]]$points,my.shapes[[i]]$points[1]))
    points(my.shapes[[i]]$wc)
