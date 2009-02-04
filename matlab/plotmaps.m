@@ -46,7 +46,7 @@ plot(evalinv(f,complex_poly),[ ])
 hold off
 
 % print out to a file
-print('-dpsc2', strcat('matlab-test-',char(48+pcount),'.ps'))
+print('-dpsc2', strcat('matlab-test-',char(48+pcount),'.eps'))
 
 % increment
 pcount=pcount+1

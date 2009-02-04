@@ -1,7 +1,9 @@
-# plot the canonical domains
+# setup some canonical shapes in R and map them using the unit disk transform.
+# mainly used to compare withe transforms to rectangle done in matlab
 
-# source the shapes
+# load the shapes
 source("canonical.shapes.R")
+
 
 par(mfrow=c(3,3))
 
