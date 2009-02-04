@@ -21,21 +21,21 @@ polyvertices[7]<-complex(1,5.960821,8.030022)
 polyvertices[8]<-complex(1,5.804787,7.421264)
 polyvertices[9]<-complex(1,5.161147,6.442904)
 polyvertices[10]<-complex(1,2.430550,7.464747)
-polyvertices[11]<-complex(1,1.143269,4.290511)
-polyvertices[12]<-complex(1,3.074191,1.072792)
-polyvertices[13]<-complex(1,7.05306,1.725032)
+polyvertices[11]<-complex(1,2.000000,4.290511)
+polyvertices[12]<-complex(1,3.074191,2.000000)
+polyvertices[13]<-complex(1,7.05306,2.00000)
 polyvertices[14]<-complex(1,7.540666,4.11658)
 
 
 # Find the centre
 source("poly.centre.R")
-wc<-poly.centre(polyvertices)
+wc<-complex(1,6,6)
 
 # Do the mapping
 source("sc.R")
 
 # Set up the polygon again
-polyvertices<-ret$vertices
+#polyvertices<-ret$vertices
 polyvertices[nvertices+1]<-polyvertices[1]
 resolution<-0.5
 
