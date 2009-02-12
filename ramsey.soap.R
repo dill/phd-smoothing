@@ -1,5 +1,6 @@
 # Simon's code taken straight from soap-package.
 
+library(soap)
 
 ## create a boundary...
 fsb <- list(fs.boundary())
