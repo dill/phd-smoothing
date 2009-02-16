@@ -63,15 +63,15 @@ i<-1
 
    # create the knots
    knots.sc<-list(v=seq(min(prediction.grid$v),max(prediction.grid$v)
-                          ,length.out=20),w=seq(min(prediction.grid$w),
+                          ,length.out=6),w=seq(min(prediction.grid$w),
                            max(prediction.grid$w),length.out=20))
 
-   knots.sc$v<-c(-5,-4,-3,-2,knots.sc$v,2.1,2.5,3,3.5)
-   knots.sc$w<-c(-3,-2,-1.5,-1,knots.sc$w,31,31.5,32,32.5)
+   knots.sc$v<-c(-3.5,-3,-2.5,-2,knots.sc$v,2,2.5,3,3.5)
+   knots.sc$w<-c(-2.5,-2,-1.5,-1,knots.sc$w,31,31.5,32,32.5)
 
 
    #b.mapped <- gam(y~s(v,bs="ps")+s(w,bs="ps"),data=mapped.data)
-   b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=24),data=mapped.data,knots=knots.sc)
+   b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(10,24)),data=mapped.data,knots=knots.sc)
 
    # get predictions
    fv.mapped <- predict(b.mapped,prediction.grid)
