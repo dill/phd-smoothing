@@ -58,7 +58,7 @@ i<-1
    # fit with sc
    # using the p-spline basis
    #b.mapped <- gam(y~s(v,bs="ps")+s(w,bs="ps"),data=mapped.data)
-   b.mapped <- gam(y~te(v,w,bs="ps"),data=mapped.data,knots=list(v=seq(min(prediction.grid$v),max(prediction.grid$v),length.out=20),w=seq(seq(min(prediction.grid$w),max(prediction.grid$w),length.out=20))))
+   b.mapped <- gam(y~te(v,w,bs=c("ps","ps"),k=c(16,16)),data=mapped.data,knots=list(v=seq(min(prediction.grid$v),max(prediction.grid$v),length.out=20),w=seq(min(prediction.grid$w),max(prediction.grid$w),length.out=20)))
 
    # get predictions
    fv.mapped <- predict(b.mapped,prediction.grid)

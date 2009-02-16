@@ -4,3 +4,6 @@ make.samples.R
     |
     V
 map.samples.m
+    |
+    V
+fit.*.R
