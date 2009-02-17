@@ -29,18 +29,31 @@ names(fsb[[1]]) <- c("v","w") ## correct boundary names
 
 
 # log what's going on
-#sink(file="simrun.log")
+sink(file="pspline.simrun.log")
 
+
+### create the knots for the p-spline
+# they need to be wider than the data so that we can do prediction over the
+# whole grid.
+knots.sc<-list(v=seq(min(prediction.grid$v),max(prediction.grid$v)
+               ,length.out=4),w=seq(min(prediction.grid$w),
+               max(prediction.grid$w),length.out=18))
+
+v.spacing<-abs(knots.sc$v[2]-knots.sc$v[1])
+w.spacing<-abs(knots.sc$w[2]-knots.sc$w[1])
+   
+knots.sc$v<-unique(sort(c(seq(from=min(knots.sc$v),by=-v.spacing,length.out=4) ,
+               knots.sc$v,seq(from=max(knots.sc$v),by=v.spacing,length.out=4))))
+knots.sc$w<-unique(sort(c(seq(from=min(knots.sc$w),by=-w.spacing,length.out=4) ,
+               knots.sc$w,seq(from=max(knots.sc$w),by=w.spacing,length.out=4))))
 
 # how many times?
 n.samples<-1000
 
 # object to store the mses
-mses<-list(soap=c(),mapped=c())
+mses<-list(mapped=c())
 
-i<-1
-
-#for(i in 1:n.samples){
+for(i in 1:n.samples){
 
    # load the original data set
    orig.data<-read.csv(paste("ramsey-",i,".csv",sep=""),header=T)
@@ -61,17 +74,7 @@ i<-1
    # ie. m[1]
    pspline.order<-2
 
-   # create the knots
-   knots.sc<-list(v=seq(min(prediction.grid$v),max(prediction.grid$v)
-                          ,length.out=6),w=seq(min(prediction.grid$w),
-                           max(prediction.grid$w),length.out=20))
-
-   knots.sc$v<-c(-3.5,-3,-2.5,-2,knots.sc$v,2,2.5,3,3.5)
-   knots.sc$w<-c(-2.5,-2,-1.5,-1,knots.sc$w,31,31.5,32,32.5)
-
-
-   #b.mapped <- gam(y~s(v,bs="ps")+s(w,bs="ps"),data=mapped.data)
-   b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(10,24)),data=mapped.data,knots=knots.sc)
+   b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(6,20)),data=mapped.data,knots=knots.sc)
 
    # get predictions
    fv.mapped <- predict(b.mapped,prediction.grid)
@@ -82,19 +85,19 @@ i<-1
    # calculate the MSE
    mses$mapped<-c(mses$mapped,mean((tru-fv.mapped)^2,na.rm=T))
 
-#}
+}
 
-#cat("got to the end!\n")
+cat("got to the end!\n")
 
-#cat("mses$mapped mean is",mean(mses$mapped),"\n")
+cat("mses$mapped mean is",mean(mses$mapped),"\n")
 #cat("mses$soap mean is",mean(mses$soap),"\n")
 
 
-#write.csv(file="results.file.txt",mses)
+write.csv(file="pspline.results.txt",mses)
 
-#cat("written file!\nEND\n")
+cat("written file!\nEND\n")
 
-#sink(file=NULL)
+sink(file=NULL)
 
 
 

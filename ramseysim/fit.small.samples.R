@@ -41,53 +41,63 @@ n.samples<-1000
 # object to store the mses
 mses<-list(soap=c(),mapped=c())
 
-# this time we take a sample of size sample.size from
+# this time we take a sample of size sample.sizes[i] from
 # the data frame 
-sample.size<-100
+sample.sizes<-c(500,250,100,50)
 
-for(i in 1:n.samples){
+for(j in c(1:4)){
 
-   # load the original data set
-   orig.data<-read.csv(paste("ramsey-",i,".csv",sep=""),header=T)
+   sample.size<-sample.sizes[j]
 
-   # make the sample
-   sampled.points<-sample(c(1:dim(orig.data)[1]),sample.size)
-   orig.data<-orig.data[sampled.points,]
+   for(i in 1:n.samples){
+
+      # load the original data set
+      orig.data<-read.csv(paste("ramsey-",i,".csv",sep=""),header=T)
+   
+      # make the sample
+      sampled.points<-sample(c(1:dim(orig.data)[1]),sample.size)
+      orig.data<-orig.data[sampled.points,]
+   
+   
+      # load the mapped data set
+      mapped.data<-read.csv(paste("ramsey-mapped-",i,".csv",sep=""),header=F)
+      # add in the y column
+      mapped.data<-cbind(orig.data[[1]],mapped.data[sampled.points,])
+      # correct titles
+      names(mapped.data) <- c("y","v","w")
+   
+      ### soap code
+      # fit with soap
+      b.soap <- gam(y~s(v,w,k=40,bs="so",xt=list(bnd=fsb)),data=orig.data,knots=knots)
+   
+      # get predictions
+      fv.soap <- predict(b.soap,newdata=data.frame(v=xx,w=yy),block.size=-1)
+   
+      # calculate the MSE
+      mses$soap<-c(mses$soap,mean((tru-fv.soap)^2,na.rm=T))
+   
+   
+      ### sc code
+      # fit with sc
+      b.mapped <- gam(y~s(v,w,bs="tp"),data=mapped.data)
+   
+      # get predictions
+      fv.mapped <- predict(b.mapped,prediction.grid)
+   
+      # get rid of the points that are not in the grid
+      fv.mapped[!insiders]<-NA
+    
+      # calculate the MSE
+      mses$mapped<-c(mses$mapped,mean((tru-fv.mapped)^2,na.rm=T))
+   
+   }
 
 
-   # load the mapped data set
-   mapped.data<-read.csv(paste("ramsey-mapped-",i,".csv",sep=""),header=F)
-   # add in the y column
-   mapped.data<-cbind(orig.data[[1]],mapped.data[sampled.points,])
-   # correct titles
-   names(mapped.data) <- c("y","v","w")
-
-   ### soap code
-   # fit with soap
-   b.soap <- gam(y~s(v,w,k=40,bs="so",xt=list(bnd=fsb)),data=orig.data,knots=knots)
-
-   # get predictions
-   fv.soap <- predict(b.soap,newdata=data.frame(v=xx,w=yy),block.size=-1)
-
-   # calculate the MSE
-   mses$soap<-c(mses$soap,mean((tru-fv.soap)^2,na.rm=T))
-
-
-   ### sc code
-   # fit with sc
-   b.mapped <- gam(y~s(v,w,bs="tp"),data=mapped.data)
-
-   # get predictions
-   fv.mapped <- predict(b.mapped,prediction.grid)
-
-   # get rid of the points that are not in the grid
-   fv.mapped[!insiders]<-NA
- 
-   # calculate the MSE
-   mses$mapped<-c(mses$mapped,mean((tru-fv.mapped)^2,na.rm=T))
 
 }
 
+
+   
 cat("got to the end!\n")
 
 cat("mses$mapped mean is",mean(mses$mapped),"\n")
