@@ -79,7 +79,7 @@ for(j in c(1:3)){
       # load the mapped data set
       mapped.data<-read.csv(paste("ramsey-mapped-",i,".csv",sep=""),header=F)
       # add in the y column
-      mapped.data<-cbind(orig.data[[1]],mapped.data[sampled.points,])
+      mapped.data<-cbind(orig.data[[1]],mapped.data)
       # correct titles
       names(mapped.data) <- c("y","v","w")
    
