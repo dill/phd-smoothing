@@ -37,7 +37,7 @@ sink(file="pspline.simrun.log")
 # whole grid.
 knots.sc<-list(v=seq(min(prediction.grid$v),max(prediction.grid$v)
                ,length.out=4),w=seq(min(prediction.grid$w),
-               max(prediction.grid$w),length.out=18))
+               max(prediction.grid$w),length.out=8))
 
 v.spacing<-abs(knots.sc$v[2]-knots.sc$v[1])
 w.spacing<-abs(knots.sc$w[2]-knots.sc$w[1])
@@ -74,7 +74,7 @@ for(i in 1:n.samples){
    # ie. m[1]
    pspline.order<-2
 
-   b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(6,20)),data=mapped.data,knots=knots.sc)
+   b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(6,10)),data=mapped.data,knots=knots.sc)
 
    # get predictions
    fv.mapped <- predict(b.mapped,prediction.grid)

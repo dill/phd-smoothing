@@ -18,4 +18,4 @@ boxplot(soapcomp$soap,ylim=ylims,main="soap")
 # mapped+tp
 boxplot(soapcomp$mapped,ylim=ylims,main="sc+tp")
 # mapped+ps
-boxplot(psplinecomp$x,ylim=ylims,main="sc+ps")
+boxplot(psplinecomp$mapped,ylim=ylims,main="sc+ps")
