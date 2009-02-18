@@ -31,15 +31,29 @@ names(fsb[[1]]) <- c("v","w") ## correct boundary names
 knots <- data.frame(v=rep(seq(-.5,3,by=.5),4),
                     w=rep(c(-.6,-.3,.3,.6),rep(8,4)))
 
+
+# knots for the p-splines
+knots.sc<-list(v=seq(min(prediction.grid$v),max(prediction.grid$v)
+               ,length.out=4),w=seq(min(prediction.grid$w),
+               max(prediction.grid$w),length.out=8))
+
+v.spacing<-abs(knots.sc$v[2]-knots.sc$v[1])
+w.spacing<-abs(knots.sc$w[2]-knots.sc$w[1])
+
+knots.sc$v<-unique(sort(c(seq(from=min(knots.sc$v),by=-v.spacing,length.out=4) ,
+               knots.sc$v,seq(from=max(knots.sc$v),by=v.spacing,length.out=4))))
+knots.sc$w<-unique(sort(c(seq(from=min(knots.sc$w),by=-w.spacing,length.out=4) ,
+               knots.sc$w,seq(from=max(knots.sc$w),by=w.spacing,length.out=4))))
+
+
+
 # log what's going on
-sink(file="simrun.log")
+sink(file="small.sample.simrun.log")
 
 
 # how many times?
 n.samples<-1000
 
-# object to store the mses
-mses<-list(soap=c(),mapped=c())
 
 # this time we take a sample of size sample.sizes[i] from
 # the data frame 
@@ -47,7 +61,12 @@ sample.sizes<-c(500,250,100,50)
 
 for(j in c(1:4)){
 
+   # blank the storage before we start
+   mses<-list(soap=c(),mapped=c())
+
    sample.size<-sample.sizes[j]
+
+   cat("sample size:",sample.size,"\n")
 
    for(i in 1:n.samples){
 
@@ -79,8 +98,10 @@ for(j in c(1:4)){
    
       ### sc code
       # fit with sc
-      b.mapped <- gam(y~s(v,w,bs="tp"),data=mapped.data)
-   
+      # ie. m[1]
+      pspline.order<-2
+      b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(6,10)),data=mapped.data,knots=knots.sc)
+  
       # get predictions
       fv.mapped <- predict(b.mapped,prediction.grid)
    
@@ -92,21 +113,19 @@ for(j in c(1:4)){
    
    }
 
+   cat("got to the end!\n")
 
+   cat("mses$mapped mean for sample size",samplesize,"is",mean(mses$mapped),"\n")
+   cat("mses$soap mean for sample size",samplesize,"is",mean(mses$soap),"\n")
+
+   write.csv(file=paste("sample.size",sample.size,".results.txt"),mses)
+
+   cat("written file!\nEND\n")
 
 }
 
 
    
-cat("got to the end!\n")
-
-cat("mses$mapped mean is",mean(mses$mapped),"\n")
-cat("mses$soap mean is",mean(mses$soap),"\n")
-
-
-write.csv(file="sample.size.results.txt",mses)
-
-cat("written file!\nEND\n")
 
 sink(file=NULL)
 
