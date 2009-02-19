@@ -57,9 +57,9 @@ n.samples<-1000
 
 # this time we take a sample of size sample.sizes[i] from
 # the data frame 
-sample.sizes<-c(500,250,100,50)
+sample.sizes<-c(500,250,100)
 
-for(j in c(1:4)){
+for(j in c(1:3)){
 
    # blank the storage before we start
    mses<-list(soap=c(),mapped=c())
@@ -115,8 +115,8 @@ for(j in c(1:4)){
 
    cat("got to the end!\n")
 
-   cat("mses$mapped mean for sample size",samplesize,"is",mean(mses$mapped),"\n")
-   cat("mses$soap mean for sample size",samplesize,"is",mean(mses$soap),"\n")
+   cat("mses$mapped mean for sample size",sample.size,"is",mean(mses$mapped),"\n")
+   cat("mses$soap mean for sample size",sample.size,"is",mean(mses$soap),"\n")
 
    write.csv(file=paste("sample.size",sample.size,".results.txt"),mses)
 
