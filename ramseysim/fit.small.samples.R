@@ -118,7 +118,7 @@ for(j in c(1:3)){
    cat("mses$mapped mean for sample size",sample.size,"is",mean(mses$mapped),"\n")
    cat("mses$soap mean for sample size",sample.size,"is",mean(mses$soap),"\n")
 
-   write.csv(file=paste("sample.size",sample.size,".results.txt"),mses)
+   write.csv(file=paste("sample.size.",sample.size,".results.txt",sep=""),mses)
 
    cat("written file!\nEND\n")
 

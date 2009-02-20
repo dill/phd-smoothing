@@ -116,7 +116,7 @@ for(j in c(1:3)){
    cat("mses$mapped mean for noise level",noise.level,"is",mean(mses$mapped),"\n")
    cat("mses$soap mean for noise level",noise.level,"is",mean(mses$soap),"\n")
 
-   write.csv(file=paste("noisey-",noise.level,".results.txt"),mses)
+   write.csv(file=paste("noisey-",noise.level,".results.txt",sep=""),mses)
 
    cat("written file!\nEND\n")
 
