@@ -50,11 +50,62 @@ blah abstract
 
 Different approaches: Ramsey, Wang+Ranalli, soap
 
+Write intro para...
+
+What is a complex region?
+
+
+
+In order to deal with the problems of a complex region, so far, 4 different approaches have been proposed:
+
+\begin{enumerate}
+\item \cite{ramsay} proposes
+
+gradient normal to the surface stuff
+
+
+
+\item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines.
+
+
+
+
+\item \cite{soap} use the 
+
+\item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon.
+
+\end{enumerate}
 
 
 
 
 \section{Method}
+
+Here we formulate a conformal mapping from the domain of the problem (we call this the $W$ domain) to a domain on which it is easier to smooth (and where we can avoid the problems detailed above.)
+
+\subsection{\sch}
+
+
+\subsection{Problems}
+
+
+\subsection{Procedure}
+
+Our procedure consists of the following steps:
+
+Determine the area over which we would like to smooth, $W$.
+
+Compute the \sch transform of $W$ to get $Z$.
+
+Map the co-ordinates of the datapoints in $W$ to $Z$.
+
+Fit the GAM to the data in $Z$.
+
+
+
+
+
+
 
 Brief bit about SC.
 
