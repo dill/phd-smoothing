@@ -32,7 +32,7 @@
 
 % The abstract
 \begin{abstract}
-blah abstract
+abstract from useR?
 \end{abstract}
 
 
@@ -48,33 +48,32 @@ blah abstract
 
 \section{Ramsey's horseshoe}
 
-\ref{ramsay} proposes a function that embodies some of the problems that can occur when attempting to perform smoothing over complex regions. These
+\ref{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domains long axis. The so-called ``Ramsay horseshoe'' is shown in \ref{ramsayshorseshoe}.
 
-Different approaches: Ramsey, Wang+Ranalli, soap
-
-Write intro para...
-
-What is a complex region?
+Problems occur when the smooth uses the Euclidean distance between the $4$ and $-4$ arms of the hoseshoe. Clearly within the area the distance between these points is large, however instead we smooth across these features and observe a phenomenon known as ``leakage''. This clearly gives rise to bias in the inside of the horseshoe.
 
 
+\begin{table}
+\centering
+\begin{tabular}{c}
+\includegraphics[scale=0.25]{figs/ramsayhorseshoe.pdf} \\
+\end{tabular}
+\caption{Heatmap of the Ramsay horseshoe.}
+\label{rtest}
+\end{table}
 
-In order to deal with the problems of a complex region, so far, 4 different approaches have been proposed:
+Clearly we would like to use an approach that respects the shape of the region and does not show any evidence of leakage. In order to deal with the problems of a complex region, four different approaches have been proposed:
 
 \begin{enumerate}
-\item \cite{ramsay} proposes
+\item \cite{ramsay} proposes finite area $L$-splines (FELSPLINEs) which consist of triangulating the domain and then constructs a bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. The union of these functions is then a solution to a PDE.
 
-gradient normal to the surface stuff
+The problem with FELSPLINE is that it must have that the gradient is normal to the edge of the area. This is not neccessarily physically realistic in all situations.
 
+\item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. In this case they take the geodesic distance between two points, that being the shortest path within the domain in order to address the problem of the definition of ``close'' in the domain. 
 
+\item \cite{soap} consider a soap film over the domain which is weighed down by the data whilst minimizing the surface tension in the film.
 
-\item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines.
-
-
-
-
-\item \cite{soap} use the 
-
-\item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon.
+\item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon. This is what we propose here.
 
 \end{enumerate}
 
@@ -90,21 +89,28 @@ Here we formulate a conformal mapping from the domain of the problem (we call th
 
 \subsection{Problems}
 
+Linear fit onto the horseshoe.
+Look at some other shapes that break it.
+
+
 
 \subsection{Procedure}
 
 Our procedure consists of the following steps:
 
-Determine the area over which we would like to smooth, $W$.
+\begin{enumerate}
+\item Determine the area over which we would like to smooth, $W$.
 
-Compute the \sch transform of $W$ to get $Z$.
+\item Compute the \sch transform of $W$ to get $Z$.
 
-Map the co-ordinates of the datapoints in $W$ to $Z$.
+\item Map the co-ordinates of the datapoints in $W$ to $Z$.
 
-Fit the GAM to the data in $Z$.
+\item Fit the GAM to the data in $Z$.
 
+\end{enumerate}
 
-
+Say something about:
+Doing analysis in $Z$, doing analysis in $W$.
 
 
 
