@@ -13,7 +13,7 @@
 \usepackage{graphicx}
 
 % top matter
-\title{The Schwarz-Christoffel transform and its possible application to finite area smoothing}
+\title{Technical details of the schwarz-christoffel transform in relation to its application to smoothing}
 \author{David Lawrence Miller}
 \email{d.l.miller@bath.ac.uk}
 \address{Mathematical Sciences, University of Bath, Bath, United Kingdom}
@@ -44,15 +44,9 @@ Smoothing in a complex region is difficult. Current approaches (eg. soap film sm
  
 \maketitle
 
-
-
-\section{Motivation}
-
-It is often the case in ecological modelling that the survey region is not defined by the person analysing the data. Indeed it is often defined by the physical characteristics of the survey region. In this case we find that there are peninulae or irregular edges which are difficult to smooth over. Phenomena such as ``leakage'' occur and, as a result, cause the model to over-estimate density.
-
 \section{Method}
 
-In order to smooth around a complex region, one approach is to transform the shape of the region into a form that is easier to smooth over. So, for example, we could transform a region into a rectangle, circle or other familiar shape to avoid the problems found in (for example) \cite{ramsay}. To do this we wish to find some mapping between the original and transformed region (see fig. (\ref{simpledia}).)
+In order to smooth around a complex region, one approach is to transform the shape of the region into a form that is easier to smooth over. So, for example, we could transform a region into a rectangle, circle or other familiar shape to avoid the problems such as leakage. In this spirit, we wish to find some mapping such as $f$ in fig. \ref{simpledia}.
 
 % Simple diagram showing the mapping
 \begin{figure} [htbp]
