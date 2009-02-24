@@ -48,25 +48,39 @@ abstract from useR?
 
 \section{Ramsey's horseshoe}
 
-\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domain's long axis. The so-called ``Ramsay horseshoe'' is shown in \ref{ramsayshorseshoe}.
+\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domain's major axis. The so-called ``Ramsay horseshoe'' is shown in fig. (\ref{ramsayshorseshoe}).
 
-The test function highlights a common in spatial smoothing, that of ``leakage''. When a Euclidean distance metric is used then the model thinks that the distance between the two end points of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high density from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes bias in the estimation of the smooth.
+The test function highlights a common problem in spatial smoothing: that of ``leakage''. When the problem is specified in Euclidean distance, the model thinks that the distance between the $-4$ and $4$ points of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high density from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes bias in the estimation of the smooth.
 
-\begin{table}
+Fig. (\ref{tpleakage}) shows what happens when a thin plate spline is fitted to the horshoe with no information about the structure of the domain. Comparing the contour lines to those in the actual horseshoe, one can easily see that there is leakage.
+
+
+
+\begin{figure}
 \centering
-\begin{tabular}{c}
-\includegraphics[scale=0.25]{figs/ramsayhorseshoe.pdf} \\
-\end{tabular}
+% trim order l b r t
+\includegraphics[trim=1.5in 1in 0.5in 1in]{figs/ramsayhorseshoe.pdf} \\
 \caption{Heatmap of the Ramsay horseshoe.}
-\label{rtest}
-\end{table}
+\label{ramsayshorseshoe}
+\end{figure}
+
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=1.5in 1in 0.5in 1in]{figs/leakageexample.pdf} \\
+\caption{An example of leakage when using a thin plate spline.}
+\label{tpleakage}
+\end{figure}
+
+WRITE SOMETHING ABOUT: plots of v,w,y against each other from R. plot(fsb) or something...
+
 
 Clearly we would like to use an approach that respects the shape of the region and does not show any evidence of leakage. In order to deal with the problems of a complex region, four different approaches have been proposed:
 
 \begin{enumerate}
-\item \cite{ramsay} proposes finite area $L$-splines (FELSPLINEs.) These consist of triangulating the domain and then constructing a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. The union of these functions is then a solution to a PDE.
+\item \cite{ramsay} proposes finite area $L$-splines (FELSPLINEs.) The $L$-spline has a differential operator in its penalty, which cannot be analytically solved in two dimensions. However, to combat this, the author triangulates the domain and then constructs a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. The union of these functions is then a solution to the PDE in the penalty and therefore the solution to the usual smoothing objective function\footnote{\emph{ie.} $\sum_{i=1}^n (z_i-f(x_i,y_i;\theta))^2 + \lambda \int_\Omega Pf(x,y;\theta)d\Omega$, where $P$  is the penalty in whatever form it takes.}.
 
-FELSPLINE does not perform very well in practice since it specifies that the gradient is normal to the edge of the area. This is not neccessarily physically realistic in all situations.
+FELSPLINE does not perform very well in practice since it specifies that the gradient is normal to the edge of the area. This is not physically realistic in all situations.
 
 \item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. In this case they take the geodesic distance between two points, that being the shortest path within the domain in order to address the problem of the definition of ``close'' in the domain. 
 
@@ -75,9 +89,11 @@ Since the geodesic distance is only known if the intrinsic structure of the doma
 
 \item \cite{soap} consider a soap film over the domain which is weighed down by the data whilst minimizing the surface tension in the film.
 
-\item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon. This is what we propose here. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe back to a long strip and then smooth on that domain. This is the case for many such domains.
+\item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon. This is what we propose here. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe back to a long strip and then smooth on that domain.
 
 The major hurdle that this approach faces is that the nullspace of the smooth in the transformed space is not the same as it was.
+
+
 
 \end{enumerate}
 
@@ -86,16 +102,19 @@ The major hurdle that this approach faces is that the nullspace of the smooth in
 
 \section{Method}
 
-Here we formulate a conformal mapping from the domain of the problem (we call this the $W$ domain) to a domain on which it is easier to smooth (and where we can avoid the problems detailed above.)
+Here we formulate a conformal mapping from the domain of the problem (we call this the $W$ domain) to a domain on which it is easier to smooth (and where we can avoid the problems detailed above.) We elaborate on what was alluded to in \cite{eilerstalk}: using the \sch mapping to transform our domain to another in order to perform smoothing.
 
 \subsection{\sch}
 
 The \sch transform provides a way to map an arbitrary polygon in the complex plane to one of a set of objects (also in the complex plane) in a certain manner. The two most commonly mapped to objects are the unit disk and the rectangle. The procedure consists of adding vertices to the object you wish to map to and then deforming it iteratively until it is identical to the polygon.
 
-Full technical details are given in \cite{miller08}
+Full technical details are given in \cite{miller08}.
 
 
 \subsection{Problems}
+
+As mentioned above, when the domain has been morphed, it is not clear what the definition of smooth is on the domain, \emph{ie.} what the nullspace of the penalty term is. A simple way to find the nullspace (and visualize it) is to fit a simple linear model to a set of points sampled from the original domain. This will give an idea of what a straight line will be mapped to in the domain.
+
 
 Linear fit onto the horseshoe.
 Look at some other shapes that break it.
@@ -117,8 +136,9 @@ Our procedure consists of the following steps:
 
 \end{enumerate}
 
-Say something about:
-Doing analysis in $Z$, doing analysis in $W$.
+At this point it depends on the application as to whether a transform is needed to go back to the original domain. If we are only interested in, say, the density of a biological population, then this can be estimated in the transformed domain. On the other hand, it may be the objective to have some kind of heat map of the density, in which case the back-transform is required.
+
+
 
 
 
