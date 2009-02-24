@@ -48,10 +48,9 @@ abstract from useR?
 
 \section{Ramsey's horseshoe}
 
-\ref{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domains long axis. The so-called ``Ramsay horseshoe'' is shown in \ref{ramsayshorseshoe}.
+\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domain's long axis. The so-called ``Ramsay horseshoe'' is shown in \ref{ramsayshorseshoe}.
 
-Problems occur when the smooth uses the Euclidean distance between the $4$ and $-4$ arms of the hoseshoe. Clearly within the area the distance between these points is large, however instead we smooth across these features and observe a phenomenon known as ``leakage''. This clearly gives rise to bias in the inside of the horseshoe.
-
+The test function highlights a common in spatial smoothing, that of ``leakage''. When a Euclidean distance metric is used then the model thinks that the distance between the two end points of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high density from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes bias in the estimation of the smooth.
 
 \begin{table}
 \centering
@@ -65,15 +64,20 @@ Problems occur when the smooth uses the Euclidean distance between the $4$ and $
 Clearly we would like to use an approach that respects the shape of the region and does not show any evidence of leakage. In order to deal with the problems of a complex region, four different approaches have been proposed:
 
 \begin{enumerate}
-\item \cite{ramsay} proposes finite area $L$-splines (FELSPLINEs) which consist of triangulating the domain and then constructs a bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. The union of these functions is then a solution to a PDE.
+\item \cite{ramsay} proposes finite area $L$-splines (FELSPLINEs.) These consist of triangulating the domain and then constructing a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. The union of these functions is then a solution to a PDE.
 
-The problem with FELSPLINE is that it must have that the gradient is normal to the edge of the area. This is not neccessarily physically realistic in all situations.
+FELSPLINE does not perform very well in practice since it specifies that the gradient is normal to the edge of the area. This is not neccessarily physically realistic in all situations.
 
 \item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. In this case they take the geodesic distance between two points, that being the shortest path within the domain in order to address the problem of the definition of ``close'' in the domain. 
 
+Since the geodesic distance is only known if the intrinsic structure of the domain is known (which is rare in ecological examples), the authors use a different method to calculate the shortest path. For this they create a graph of the data points, with nodes at each point and the linear interpolant between the nodes. Floyd's algorithm is then run to find the $k$ nearest neighbors of each node. Unfortunately this is $\mathcal{O}(N^3)$ if $N$ is the number of datum.
+
+
 \item \cite{soap} consider a soap film over the domain which is weighed down by the data whilst minimizing the surface tension in the film.
 
-\item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon. This is what we propose here.
+\item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon. This is what we propose here. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe back to a long strip and then smooth on that domain. This is the case for many such domains.
+
+The major hurdle that this approach faces is that the nullspace of the smooth in the transformed space is not the same as it was.
 
 \end{enumerate}
 
@@ -85,6 +89,10 @@ The problem with FELSPLINE is that it must have that the gradient is normal to t
 Here we formulate a conformal mapping from the domain of the problem (we call this the $W$ domain) to a domain on which it is easier to smooth (and where we can avoid the problems detailed above.)
 
 \subsection{\sch}
+
+The \sch transform provides a way to map an arbitrary polygon in the complex plane to one of a set of objects (also in the complex plane) in a certain manner. The two most commonly mapped to objects are the unit disk and the rectangle. The procedure consists of adding vertices to the object you wish to map to and then deforming it iteratively until it is identical to the polygon.
+
+Full technical details are given in \cite{miller08}
 
 
 \subsection{Problems}
@@ -99,7 +107,7 @@ Look at some other shapes that break it.
 Our procedure consists of the following steps:
 
 \begin{enumerate}
-\item Determine the area over which we would like to smooth, $W$.
+\item Determine the domain over which we would like to smooth, $W$.
 
 \item Compute the \sch transform of $W$ to get $Z$.
 
@@ -139,7 +147,7 @@ Linear model stuff, will this work elsewhere?
 
 
 
-
+Modified horseshoe with the ridge in the middle
 
 
 
