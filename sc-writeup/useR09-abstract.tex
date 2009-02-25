@@ -1,0 +1,45 @@
+\documentclass[10pt]{article}
+
+\usepackage{url}
+
+\renewcommand{\title}[1]{\begin{center}{\bf \LARGE #1}\end{center}}
+\newcommand{\affiliations}{\footnotesize}
+\newcommand{\keywords}{\paragraph{Keywords:}}
+
+\setlength{\oddsidemargin}{0cm} \setlength{\evensidemargin}{0cm}
+\setlength{\textwidth}{16.5cm} \setlength{\topmargin}{-1cm}
+\setlength{\textheight}{24.5cm}
+
+\begin{document}
+\pagestyle{empty}
+
+\title{A domain-morphing approach to smoothing over complex regions}
+
+\begin{center}
+  {\bf David Lawrence Miller$^{1,*}$}
+\end{center}
+
+\begin{affiliations}
+1. University of Bath\par
+* Contact author: d.l.miller@bath.ac.uk
+\end{affiliations}
+
+\keywords Smoothing; Generalizedd Additive Models (GAMs); Spatial smoothing; penalized regression splines.
+
+\vskip 0.8cm
+
+Smoothing over complex 2-D regions is difficult. Several approaches have been proposed in past years including finite element analysis (Ramsay, 2002), within-area distance (Wang \& Ranalli, 2007) and recently soap film smoothing (Wood, Bravington \& Hedley, 2008.) Here I investigate an alternative method based on the Schwarz-Christoffel transform from complex analysis. This takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. We may then smooth over the transformed area using penalized regression splines and transform this smooth back to the original domain in order to perform analysis. I explore the utility of this transform on both real and simulated data.
+
+%%% Up to three references
+\paragraph{References}
+\begin{description}
+\item Ramsay, T. (2002) Spline smoothing over difficult regions. JRSSB, 64(2), 307-319.
+\item Wang, H., M.G. Ranalli (2007) Low-Rank Smoothing Splines on Complicated Domains. Biometrics, 63(1), 209-217.
+\item Wood, S.N., M.V. Bravington and S.L. Hedley (2008) Soap film smoothing. JRSSB, 70(5), 931-955.
+\end{description}
+
+%\nocite{ref1,ref2}
+%\bibliographystyle{amsplain}
+%\bibliography{biblioExample}
+
+\end{document}
