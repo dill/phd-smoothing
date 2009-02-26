@@ -10,7 +10,7 @@ path(path,'poly_stuff')
 nsamples=1000
 
 
-for i=638:nsamples
+for i=1:nsamples
    % load each sample in order
    thisdata=csvread(strcat('../ramseysim/ramsey-',num2str(i),'.csv'),1,0)
 

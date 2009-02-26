@@ -285,6 +285,11 @@ When the polygon has many vertices or there is elongated the mapped vertices are
 
 \subsection{Fixing crowding}
 
+A primitive way to fix the problem of crowding if it is caused by an elongated domain is to map to an elongated domain. This approach is suggested in \cite{howell90} however, as they point out, this does not eliminate all crowding and problems can still occur when there is a strongly acute peninsula in the polygon. Using a rectangular domain also does not fix problems which occur when mapping from T- or H-shaped domains.
+
+In order to combat this problem more effectively, \cite{vavasis96} propose the CRDT\footnote{CRDT standing for ``cross-ratios of the Delaunay triangulation''} algorithm. Without CRDT, the \sch transform enforces conditions on the side lengths and orientations, instead we now impose conditions about quadrilateral sections of the polygon and the diagonals of the polygon. This is done by first triangulating the domain and then merging each pair of triangles into a quadrilateral. A measure is then defined, the \emph{cross-ratio} which specifies a set of non-linear equations to be solved. These equations enforce the constraint that the cross-ratio in mapped polygon comes out correctly. 
+
+
 
 
 
