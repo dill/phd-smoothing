@@ -40,9 +40,7 @@
  
 % The abstract
 \begin{abstract}
-REPLACE THIS
-
-Smoothing in a complex region is difficult. Current approaches (eg. soap film smoothing, (\cite{soap}, \emph{pp.154-160}) or FELSPLINE (\cite{ramsay}))are computationally expensive. Here we propose a method for using the \sch transform to morph a complex region to a more managable shape in order to smooth over points in it.
+This document lays out some of teh technical details of the \sch mapping from a statistical perspective for the purposes of using the transform to morph a complex region before performing smoothing over it. 
 \end{abstract}
  
  
@@ -53,6 +51,8 @@ Smoothing in a complex region is difficult. Current approaches (eg. soap film sm
 \newtheorem{defn}{Definition}[section]
  
 \maketitle
+
+\markright{TECH. DETAILS OF SCHWARZ-CHRISTOFFEL MAPPING}
 
 \section{Method}
 
@@ -131,9 +131,9 @@ We use the function $\phi$ to go from the transformed domain to the polygon (fro
 
 \section{\sch Mapping}
 
-We now look at the mathematical formulation for the upper half-plane, unit disk and rectangle. For the purposes of smoothing we are interested in the function $\phi^{-1}$ (\emph{ie.} the function that goes from our domain to the transformed one), we first need to calculate $\phi$ before we may calculate its inverse\footnote{In conformal mapping literature $\phi$ is referred to as the \emph{forwards map} and $\phi^{-1}$ as the \emph{backwards map}.}.
+We now look at the mathematical formulation for the upper half-plane, unit disk and rectangle. There are many mappings that can be performed however the ones detailed here are either cannonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two.) For the purposes of smoothing we are interested in the function $\phi^{-1}$ (\emph{ie.} the function that goes from our domain to the transformed one), we first need to calculate $\phi$ before we may calculate its inverse\footnote{In conformal mapping literature $\phi$ is referred to as the \emph{forwards map} and $\phi^{-1}$ as the \emph{backwards map}.}.
 
-\subsection{Mapping to the upper half-plane}
+\subsection{The upper half-plane}
 
 When we map $\Gamma$ to $H^+$ we set $\phi(\infty) = w_n$ without any loss of generality. We then have the formula:
 
@@ -151,15 +151,15 @@ The formula for the unit disk looks very similar to that for $H^+$ but with the 
 
 \begin{equation}
 \label{unitscmap}
-\phi(z) = A + C \int^{w^*} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta.
+\phi(w^*) = A + C \int^{w^*} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta.
 \end{equation}
 
 As above, $A$ and $C$ are complex constants.
 
-
 \subsection{Rectangle}
+For the rectangle case we must specify four vertices of $\Gamma$ that map to the four corners of the rectangle. This uniquely specifies the aspect ratio of the rectangle (\cite{driscoll}, \emph{p. 48}).
 
-WRITE THIS
+The rectangle mapping is slightly different in its calculation to the two above mappings. We first map $\Gamma$ to the upper half-plane as detailed above. From there we can use the Jacobi elliptic function\footnote{The form of which is $\int_0^\gamma \frac{dt}{\sqrt{1-k^2\sin^2t}}$. Further details may be found at \url{http://mathworld.wolfram.com/JacobiEllipticFunctions.html}.} to map a rectangle to the upper half-plane. The computation of this map is expensive due to the evaluation of the elliptic function (\cite{driscoll}, \emph{p. 49}) so a shortcut using the mapping to the mapping to the strip. We do not go into further detail here, as the details are covered in \cite{howell90}.
 
 
 \section{Computation of the \sch mapping}
@@ -189,7 +189,7 @@ Intuitively we are looking at the differences between the side lengths of the po
 
 Note that the relation does not include the vertex $w_n$, nor do we look at $w_1$ or $w_2$ in the numerator on the right of the above equation. This is since (by theorem 3.1 of \cite{driscoll}, \emph{p. 24}) a polygon is precisely defined by its angles and its vertices not including $w_n$\footnote{Since we know the direction of the edges leacving $w_1$ and $w_{n-1}$, we may find the point where they meet.}. 
 
-It is for this reason, in the upper half-plane case, that we can map $w_n$ to $\infty$ without loss of generality. In practice we fix $w^*_n=1$, $w^*_{n-1}=-i$ and $z^*_{n-2}=-1$ in the unit disk case (\cite{driscoll}, \emph{p. 24}.) For the rectangle case we need to specify which vertices of $\Gamma$ map to which vertices of the rectangle.
+It is for this reason, in the upper half-plane case, that we can map $w_n$ to $\infty$ without loss of generality. In practice we fix $w^*_n=1$, $w^*_{n-1}=-i$ and $w^*_{n-2}=-1$ in the unit disk case (\cite{driscoll}, \emph{p. 24}.) For the rectangle case we need to specify which vertices of $\Gamma$ map to which vertices of the rectangle.
 
 We may find the scaling factor, $C$, (from \eqn{unitscmap}) by using the following equation:
 
@@ -220,9 +220,7 @@ F=\frac{\vert \phi^{-1}(w^*_{k+1}) -  \phi^{-1}(w^*_k) \vert}{\vert \phi^{-1}(w^
 \end{enumerate}
 
 
-SAY SOMETHING ABOUT STARTING VALUES
-Starting values are $n$ equally spaced prevertices around the unit disk.
-
+Starting values for the algorithm are evenly spaced vertices around the edge of the disk/rectangle or, in the case of the plane, along the real line. This is, of course, apart from those points specified as fixed above.
 
 \subsection{Getting between the $W$ and $W^*$}
 
