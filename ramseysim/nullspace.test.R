@@ -17,8 +17,8 @@ xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 tru <- fs.test(xx,yy) 
 
 # read in the predicition grid from matlab
-predback.real<-read.csv("../matlab/preal.csv",header=F)
-predback.imag<-read.csv("../matlab/pimag.csv",header=F)
+predback.real<-read.csv("./matlab/preal.csv",header=F)
+predback.imag<-read.csv("./matlab/pimag.csv",header=F)
 prediction.grid<-data.frame(v=predback.real[[1]],w=predback.imag[[1]])
 
 
