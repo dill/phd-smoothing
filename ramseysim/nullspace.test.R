@@ -30,8 +30,28 @@ names(fsb[[1]]) <- c("v","w") ## correct boundary names
 
 #linear.fit<-lm(tru~prediction.grid$v*prediction.grid$w)
 linear.fit<-lm(tru~prediction.grid$v+prediction.grid$w)
-pred<-predict(linear.fit,prediction.grid)
-pred[!insiders]<-NA
+
+
+
+#pred<-predict(linear.fit,prediction.grid)
+#pred[!insiders]<-NA
+
+
+# predict with w set and vary v?
+# then the other way around?
+
+
+
+
+
+
+
+
+#put the predicted linear points z values onto the horseshoe
+
+
+
+
 image(matrix(pred,m,n),col=heat.colors(100))
 contour(matrix(pred,m,n),nlevels=50,add=TRUE)
 

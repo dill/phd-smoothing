@@ -110,7 +110,7 @@ Full technical details are given in \cite{miller08}.
 
 \subsection{Problems}
 
-As mentioned above, when the domain has been morphed, it is not clear what the definition of smooth is on the domain, \emph{ie.} what the nullspace of the penalty term is. A simple way to find the nullspace (and visualize it) is to fit a simple linear model to a set of points sampled from the original domain. This will give an idea of what a straight line will be mapped to in the domain.
+As mentioned above, when the domain has been morphed it is not clear what the definition of smooth is on the domain, \emph{ie.} what the nullspace of the penalty term is. A simple way to find the nullspace (and visualize it) is to fit a simple linear model to a set of points sampled from the original domain. This will give an idea of what a straight line will be mapped to in the domain.
 
 
 Linear fit onto the horseshoe.
@@ -144,11 +144,24 @@ Brief bit about SC.
 
 Algorithm that we use.
 
+
+
+
 Matlab+R approach.
+
+There are several pieces of software available to perform the \sch mapping. The Fortran library \texttt{SCPACK} available on netlib was used initially, but only offers the mapping to the unit disk and does not include the CRDT method for performing the mapping (see \cite{miller08}, section BLAH.) 
+
+For this reason the SC tool
+
 
 
 
 \section{Simulations}
+
+In the spirit of those simulations carried out in \cite{soap}, a large scale simulations was run and comparison made to those results.
+
+
+
 
 What do we want to look at?
 

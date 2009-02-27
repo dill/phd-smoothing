@@ -26,14 +26,3 @@ for(i in 1:n.samples){
             row.names=FALSE)
 }
 
-
-
-
-
-
-
-
-
-
-
-
