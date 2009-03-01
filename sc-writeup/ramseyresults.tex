@@ -1,4 +1,4 @@
-% "Brief" explanation of the Schwarz-Christoffel transform
+% Report of results from Ramsay simulation experiment
 % David Lawrence Miller
 % d.l.miller@bath.ac.uk
 
@@ -27,12 +27,23 @@
 \newcommand{\sch}{Schwarz-Christoffel }
 % fprime
 \newcommand{\fprime}{f^\prime(z)}
+% figure reference command
+\newcommand{\fig}[1]{\emph{fig.} (\ref{#1})}
+% equation reference command
+\newcommand{\eqn}[1]{\emph{eqn.} (\ref{#1})}
+% phi inverse
+\newcommand{\phiinv}{\phi^{-1}}
+% use other phi
+\renewcommand{\phi}{\varphi}
+
+
+
 
 \begin{document}
 
 % The abstract
 \begin{abstract}
-abstract from useR?
+Smoothing over complex 2-D regions is difficult. Several approaches have been proposed in past years including finite element analysis (Ramsay, 2002), within-area distance (Wang \& Ranalli, 2007) and recently soap film smoothing (Wood, Bravington \& Hedley, 2008.) Here I investigate an alternative method based on the Schwarz-Christoffel transform from complex analysis. This takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. We may then smooth over the transformed area using penalized regression splines and transform this smooth back to the original domain in order to perform analysis. I explore the utility of this transform on both real and simulated data.
 \end{abstract}
 
 
@@ -48,11 +59,11 @@ abstract from useR?
 
 \section{Ramsey's horseshoe}
 
-\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domain's major axis. The so-called ``Ramsay horseshoe'' is shown in fig. (\ref{ramsayshorseshoe}).
+\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domain's major axis. The so-called ``Ramsay horseshoe'' is shown in \fig{ramsayshorseshoe}.
 
 The test function highlights a common problem in spatial smoothing: that of ``leakage''. When the problem is specified in Euclidean distance, the model thinks that the distance between the $-4$ and $4$ points of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high density from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes bias in the estimation of the smooth.
 
-Fig. (\ref{tpleakage}) shows what happens when a thin plate spline is fitted to the horshoe with no information about the structure of the domain. Comparing the contour lines to those in the actual horseshoe, one can easily see that there is leakage.
+\fig{tpleakage} shows what happens when a thin plate spline is fitted to the horshoe with no information about the structure of the domain. Comparing the contour lines to those in the actual horseshoe, one can easily see that there is leakage.
 
 
 
@@ -108,6 +119,10 @@ The \sch transform provides a way to map an arbitrary polygon in the complex pla
 Full technical details are given in \cite{miller08}.
 
 
+\subsection{P-splines}
+P-splines (\cite{eilersmarx96}) were used as the basis functions for the smooth since they present the easiest framework for adding arbitrary penalities. They are also not considered to be as ``optimal'' as thin plate splines.
+
+
 \subsection{Problems}
 
 As mentioned above, when the domain has been morphed it is not clear what the definition of smooth is on the domain, \emph{ie.} what the nullspace of the penalty term is. A simple way to find the nullspace (and visualize it) is to fit a simple linear model to a set of points sampled from the original domain. This will give an idea of what a straight line will be mapped to in the domain.
@@ -133,39 +148,52 @@ Our procedure consists of the following steps:
 
 \end{enumerate}
 
-At this point it depends on the application as to whether a transform is needed to go back to the original domain. If we are only interested in, say, the density of a biological population, then this can be estimated in the transformed domain. On the other hand, it may be the objective to have some kind of heat map of the density, in which case the back-transform is required.
+At this point it depends on the application as to whether a transform is needed to go back to the original domain. If we are only interested in, say, the density of a biological population, then this can be estimated in the transformed domain. On the other hand, it may be the objective to obtain other information of a graphical representation of the density, in which case the back-transform is required.
 
 
 
+\subsection{Software}
 
+There are several pieces of software available to perform the \sch mapping. The Fortran library \texttt{SCPACK} available on netlib was used initially, but only offers the mapping to the unit disk and does not include the CRDT method for performing the mapping (see \cite{miller08}, section BLAH.) For this reason the SC toolbox (\cite{driscoll}, SOME SECTION) for Matlab is used to perform the mapping. 
 
+The \textsf{R} library \texttt{mgcv} provides subroutines for fitting generalized additive models and, in particular, P-splines.
 
-Brief bit about SC.
-
-Algorithm that we use.
-
-
-
-
-Matlab+R approach.
-
-There are several pieces of software available to perform the \sch mapping. The Fortran library \texttt{SCPACK} available on netlib was used initially, but only offers the mapping to the unit disk and does not include the CRDT method for performing the mapping (see \cite{miller08}, section BLAH.) 
-
-For this reason the SC tool
+There are packages available to enable \textsf{R} to talk to Matlab and vice-verse, however this seemed like overkill given the situation and instead csv files were written by each program and read in by the other.
 
 
 
 
 \section{Simulations}
 
-In the spirit of those simulations carried out in \cite{soap}, a large scale simulations was run and comparison made to those results.
+In the spirit of those simulations carried out in \cite{soap}, a large scale experiment was run and comparison made to those results. We looked at two different test function on the Ramsey horseshoe; first the one described above, and the second with a gradient across the short axis of the horseshoe. This, second, test function can be seen in \fig{ramseyalt}. Table (\ref{simtable}) shows the setup of these experiments, these were run on both test functions.
 
 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=1.5in 1in 0.5in 1in]{figs/altramsayhorseshoe.pdf} \\
+\caption{Heatmap of the alternate version of the Ramsay horseshoe.}
+\label{altramsayshorseshoe}
+\end{figure}
+
+\begin{table}[ht]
+\begin{tabular}{c c}\\
+Sample size & Noise level$^{1}$ \\
+\hline
+1000 & 0.3 \\
+500 & 0.3 \\
+250 & 0.3 \\
+100 & 0.3 \\
+1000 & 0.3 \\
+1000 & 0.5 \\
+1000 & 1 \\
+1000 & 2 \\
+\end{tabular}
+\caption{Setup for the simulations. $^{1}$Noise level is noise added to the test function from a standard Normal multiplied by the value in this column. }
+\end{table}
 
 
 What do we want to look at?
-
-Why p-splines?
 
 
 \section{Analysis}
