@@ -88,7 +88,7 @@ Clearly we would like to use an approach that respects the shape of the region a
 \begin{enumerate}
 \item \cite{ramsay} proposes finite area $L$-splines (FELSPLINEs.) The $L$-spline has a differential operator in its penalty, which cannot be analytically solved in two dimensions. However, to combat this, the author triangulates the domain and then constructs a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. The union of these functions is then a solution to the PDE in the penalty and therefore the solution to the usual smoothing objective function\footnote{\emph{ie.} $\sum_{i=1}^n (z_i-f(x_i,y_i;\theta))^2 + \lambda \int_\Omega Pf(x,y;\theta)d\Omega$, where $P$  is the penalty in whatever form it takes.}.
 
-FELSPLINE does not perform very well in practice since it specifies that the gradient is normal to the edge of the area. This is not physically realistic in all situations.
+FELSPLINE does not perform very well in practice since its boundary conditions specify that the gradient is normal to the edge of the area. This is not physically realistic in all situations.
 
 \item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. In this case they take the geodesic distance between two points, that being the shortest path within the domain in order to address the problem of the definition of ``close'' in the domain. 
 
@@ -99,8 +99,7 @@ Since the geodesic distance is only known if the intrinsic structure of the doma
 
 \item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon. This is what we propose here. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe back to a long strip and then smooth on that domain.
 
-The major hurdle that this approach faces is that the nullspace of the smooth in the transformed space is not the same as it was.
-
+The problem that is approach faces is in fnding the nullspace of the smooth. It seems that the nullspace in the original domain will not be the same as the nullspace in the transformed domain. We address this problem below.
 
 
 \end{enumerate}
@@ -115,6 +114,8 @@ Here we formulate a conformal mapping from the domain of the problem (we call th
 \subsection{\sch}
 
 The \sch transform provides a way to map an arbitrary polygon in the complex plane to one of a set of objects (also in the complex plane) in a certain manner. The two most commonly mapped to objects are the unit disk and the rectangle. The procedure consists of adding vertices to the object you wish to map to and then deforming it iteratively until it is identical to the polygon.
+
+So, for example, say we want to transform between a regular nonagon and a rectagle. We add five sides to the rectangle and then go about deforming it to the shape of the nonagon (by changing the angles at the vertices.) 
 
 Full technical details are given in \cite{miller08}.
 

@@ -45,17 +45,15 @@ ramsay.inv <- function(a,d,r0=.1,r=.5,l=3,b=1,exclude=TRUE)
   ## convert x,y to along curve and distance to curve (a,d) 
   ## co-ordinates. 0 distance along is at (x=-r,y=0)  
 
-
-  # what are these conditions?!
   # this is the top arm
   ind <- a>=0.75
-  x[ind] <- a[ind] -q #done
-  y[ind] <- d[ind]+r #done
+  x[ind] <- a[ind]-q
+  y[ind] <- d[ind]+r
 
   # this is the bottom arm
   ind <- a<=-0.75 
-  x[ind] <- -(q + a[ind]) #done
-  y[ind] <- -(r + d[ind]) #done
+  x[ind] <- -(q + a[ind]) 
+  y[ind] <- -(r + d[ind])
 
   # this is the curve
   ind <- a < 0.75 & a>-0.75 #just a between those limits?
