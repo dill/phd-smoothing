@@ -34,7 +34,9 @@ for(i in 1:n.samples){
 
    n <- length(y)
    y <- y + rnorm(n)*.3 ## add noise
-   data.out<-as.matrix(cbind(y,unmapped.data$v,unmapped.data$w))
+   
+   v<-unmapped.data$v; w<-unmapped.data$w
+   data.out<-as.matrix(cbind(y,v,w))
 
    # write back over the file.
    write.csv(data.out,file=paste("ramsey-",i,".csv",sep=""),
