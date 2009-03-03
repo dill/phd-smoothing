@@ -36,9 +36,12 @@ ramsay.alt <- function(x,y,r0=.1,r=.5,l=3,b=1,exclude=TRUE)
 
   #f[a>4]<-seq(0,0.2,length.out=length(f[a>4]))
 
-   tmp<-(a-4)^2
+   f[x>3 & y>0]<-sqrt((x[x>3 & y>0]-3)^2+(y[x>3 & y>0]-0.5)^2)
+   f[x>3 & y<0]<-sqrt((x[x>3&y<0]-3)^2+(y[x>3 & y<0]+0.5)^2)
+
+  #f[(x-l)^2+d^2 > (r-r0)^2]<-seq(-4,0,length( f[(x-l)^2+d^2 > (r-r0)^2]))
    #tmp[a<4 & a>-4]<-0
-   f<-f+tmp
+   #f<-f+tmp
 
   if (exclude) f[ind] <- NA
   attr(f,"exclude") <- ind
