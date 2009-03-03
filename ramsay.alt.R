@@ -1,4 +1,4 @@
-# Altnerative version of the Ramsey horshoe with the
+# Alternative version of the Ramsey horshoe with the
 # gradient going across the short axis.
 
 # modified from soap v 0.1, Simon Wood
@@ -12,35 +12,37 @@ ramsay.alt <- function(x,y,r0=.1,r=.5,l=3,b=1,exclude=TRUE)
   ## convert x,y to along curve and distance to curve (a,d) 
   ## co-ordinates. 0 distance along is at (x=-r,y=0)  
 
+  # top arm
   ind <- x>=0 & y>0
   a[ind] <- q + x[ind]
   d[ind] <- y[ind]-r
 
+  # bottom arm
   ind <- x>=0 & y<=0
   a[ind] <- -q - x[ind]
   d[ind] <- -r - y[ind]
 
-
+  # curved bit
   ind <- x < 0
   a[ind] <- -atan(y[ind]/x[ind])*r
   d[ind] <- sqrt(x[ind]^2+y[ind]^2) - r
 
   ## create exclusion index
-
   ind <- abs(d)>r-r0 | (x>l & (x-l)^2+d^2 > (r-r0)^2)
 
  # f <- a*b # the original
 #  f <- a*b+d^2 # what is in by default
   f<-abs(d)
 
-  tmp<-a
-  tmp[-3<a<3]<-0 
-  f<-tmp 
+  #f[a>4]<-seq(0,0.2,length.out=length(f[a>4]))
+
+   tmp<-(a-4)^2
+   #tmp[a<4 & a>-4]<-0
+   f<-f+tmp
 
   if (exclude) f[ind] <- NA
   attr(f,"exclude") <- ind
 # just for testing
-#  return(list(f=f,a=a,d=d))
   # plot(a,d)
   return(f)
 }
