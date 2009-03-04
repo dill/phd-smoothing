@@ -22,4 +22,4 @@ thisdata_complex=complex(thisdata(:,1),thisdata(:,2))
 remappeddata=evalinv(f,thisdata_complex)
 
 % write out the file
-csvwrite('centrelinemapped.csv',real(remappeddata),imag(remappeddata))
+csvwrite('centrelinemapped.csv',[real(remappeddata),imag(remappeddata)])
