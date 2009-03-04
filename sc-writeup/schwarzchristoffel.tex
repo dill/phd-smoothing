@@ -176,7 +176,7 @@ We require the following information in order to compute the mapping:
 
 Clearly, given the vertices, the other two quantities can be easily calculated, so infact we only require the $w_k$.
 
-To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$we use the following set of equations:
+To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ we use the following set of equations:
 
 \begin{equation}
 \label{optimizeme}
@@ -185,7 +185,7 @@ To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$we use the
 
 Here $\vert \phiinv(w^*_{k+1}) -  \phiinv(w^*_k) \vert$ is the distance between the $k^{th}$ and $(k+1)^{th}$ vertex.  We find this by integrating along the line between the points in the domain of the polygon.
 
-Intuitively we are looking at the differences between the side lengths of the polygon and the polygon as it is estimated by this iteration (\cite{snider}, \emph{p. A-3}), both scaled by the distance between the first two vertices (in their respective domains.)
+Intuitivelyi, we are comparing the side lengths of the polygon and the approximation of the polygon in this iteration (\cite{snider}, \emph{p. A-3}), both scaled by the distance between the first two vertices (in their respective domains.)
 
 Note that the relation does not include the vertex $w_n$, nor do we look at $w_1$ or $w_2$ in the numerator on the right of the above equation. This is since (by theorem 3.1 of \cite{driscoll}, \emph{p. 24}) a polygon is precisely defined by its angles and its vertices not including $w_n$\footnote{Since we know the direction of the edges leacving $w_1$ and $w_{n-1}$, we may find the point where they meet.}. 
 
@@ -215,7 +215,7 @@ $A$ is the image of the base point of the integration, for computational reasons
  \begin{equation*}
 F=\frac{\vert \phi^{-1}(w^*_{k+1}) -  \phi^{-1}(w^*_k) \vert}{\vert \phi^{-1}(w^*_2)-\phi^{-1}(w^*_1)\vert} - \frac{\vert w_{k+1} - w_k\vert}{\vert w_2 - w_1\vert}, \qquad \text{for } k=3,\dots,n-1,
  \end{equation*}
-\item Use steepest descent and then Newton's method to until $\vert F\vert < \epsilon \quad \forall k$. \item Calculate $C$ and $A$.
+\item Use steepest descent and then Newton's method to until $\vert F\vert < \epsilon \quad \forall k$. \item Calculate $C$ and $A$ as detailed above.
 \item Return values for $w^*_1,\dots,w^*_n$, $C$ and $A$.
 \end{enumerate}
 
@@ -226,14 +226,14 @@ Starting values for the algorithm are evenly spaced vertices around the edge of 
 
 \subsubsection{Forwards map}
 
-Calculating the forwards map is simply a case of evaluating $f$ at the necessary points. For clarity if we wish to find the point on polygon ($w$) given we know the point on the disk ($w^*$) we compute:
+Calculating the forwards map is simply a case of evaluating $f$ at the necessary points. If we wish to find the point on polygon ($w$), given we know the point on the disk ($w^*$), we compute:
 
 \begin{equation}
 \label{forwardsmap}
 w=\phi(w^*) = w_0 + C \int_{w^*_0}^{z} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta,
 \end{equation}
 
-where $w^*_0$ is any point in the closed disk such that $w_0 = \phi(w^*_0)$ is known and non-infinite. We may choose any point since the integrand is analytic throughout the mapping and hence the integral is path-independent (\cite{driscoll} \emph{p. 27}).
+where $w^*_0$ is any point in the closed disk such that $w_0 = \phi(w^*_0)$ is known and non-infinite. We may choose any point since the integrand is analytic throughout the mapping and hence the integral is path-independent (\cite{driscoll} \emph{p. 27}). A common choice for $w_0$ is the centre of the polygon.
 
 Equivalent expressions exist for the rectangle and upper half-plane cases.
 
@@ -288,6 +288,9 @@ When the polygon has many vertices or there is elongated the mapped vertices are
 A primitive way to fix the problem of crowding if it is caused by an elongated domain is to map to an elongated domain. This approach is suggested in \cite{howell90} however, as they point out, this does not eliminate all crowding and problems can still occur when there is a strongly acute peninsula in the polygon. Using a rectangular domain also does not fix problems which occur when mapping from T- or H-shaped domains.
 
 In order to combat this problem more effectively, \cite{vavasis96} propose the CRDT\footnote{CRDT standing for ``cross-ratios of the Delaunay triangulation''} algorithm. Without CRDT, the \sch transform enforces conditions on the side lengths and orientations, instead we now impose conditions about quadrilateral sections of the polygon and the diagonals of the polygon. This is done by first triangulating the domain and then merging each pair of triangles into a quadrilateral. A measure is then defined, the \emph{cross-ratio} which specifies a set of non-linear equations to be solved. These equations enforce the constraint that the cross-ratio in mapped polygon comes out correctly. 
+
+\section{Software}
+There are several software packages available to perform the computation of the map (\cite{driscoll}, \emph{p. 39}.) Two were tested for our purposes: \texttt{SCPACK} and the SC Toolbox for MATLAB.
 
 
 

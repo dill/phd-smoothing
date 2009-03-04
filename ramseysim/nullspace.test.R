@@ -31,51 +31,58 @@ names(fsb[[1]]) <- c("v","w") ## correct boundary names
 # first take a line that runs along the centre of the horseshoe
 # can do thi using the transform in fs.test
 
+
+# leg x coordinates (these are the same for both)
+leg.x<-seq(0,max(fsb[[1]]$v),0.01)
+#reversed version
+r.leg.x<-leg.x[length(leg.x):1]
+
+# y coords
+leg.y.t<-rep(0.5,length(leg.x))
+leg.y.b<- -leg.y.t
+
+# middle curve
+# by default r=0.5, use this.
+r<-0.5
+curve.x<-seq(0,0.5,0.01)
+curve.x<-sqrt(r^2-curve.x^2)
+
+curve.y<-seq(0,0.5,length.out=length(curve.x))
+curve.y<-sqrt(r^2-curve.y^2)
+#curve.y<-curve.y[length(curve.y):1]
+
+# we've done a quarter, do the other quarter
+curve.x<--c(curve.x[length(curve.x):1],curve.x)
+curve.y<-c(curve.y,-curve.y[length(curve.y):1])
+
+# container
+fs.centreline<-list(x=c(r.leg.x,curve.x,leg.x),y=c(leg.y.t,curve.y,leg.y.b))
+
+# test
+fsb <- fs.boundary()
+m<-300;n<-150 
+xm <- seq(-1,4,length=m);yn<-seq(-1,1,length=n)
+xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
+tru <- matrix(fs.test(xx,yy),m,n) ## truth
+image(xm,yn,tru,col=heat.colors(100),xlab="x",ylab="y")
+points(fs.centreline,pch=".")
+
+
+# let evaluate these points using the fs.test function
+
+
+
+#
+
+fs.centre.eval<-fs.test(fs.centreline$x,fs.centreline$y)
+
+
+
+
+
 # this line is equiv. to...
-
-# doing the inverse to find the line
-ramsay.inv <- function(a,d,r0=.1,r=.5,l=3,b=1,exclude=TRUE)
-## test function based on Tim Ramsay (2002) J.R.Statist. Soc. B
-## 64(2):307-319 "Spline smoothing over difficult regions"
-{ 
-  # does this make sense?
-  q <- pi*r/2 ## 1/2 length of semi-circle part of centre curve
-  x <- y <- d*0 ## along and distance to arrays
-
-  ## convert x,y to along curve and distance to curve (a,d) 
-  ## co-ordinates. 0 distance along is at (x=-r,y=0)  
-
-  # this is the top arm
-  ind <- a>=0.75
-  x[ind] <- a[ind]-q
-  y[ind] <- d[ind]+r
-
-  # this is the bottom arm
-  ind <- a<=-0.75 
-  x[ind] <- -(q + a[ind]) 
-  y[ind] <- -(r + d[ind])
-
-  # this is the curve
-  ind <- a < 0.75 & a>-0.75 #just a between those limits?
-  x[ind]<-(d-r)*cos(-a/r)
-  y[ind]<-(d-r)*sin(-a/r)
-
-  ## create exclusion index
-  # can probably ignore this
-  ind <- abs(d)>r-r0 | (x>l & (x-l)^2+d^2 > (r-r0)^2)
-
- # f <- a*b # the original
-  f <- a*b+d^2 # what is in by default
-
-  if (exclude) f[ind] <- NA
-  attr(f,"exclude") <- ind
-# just for testing
-  par(mfrow=c(1,2))
-  plot(a,d)
-  plot(x,y)
-  return(list(f=f,a=a,d=d))
-}
-
+# export to matlab
+write.csv(fs.centreline,"centreline.csv",row.names=FALSE)
 
 
 # take those points, map them
