@@ -52,11 +52,18 @@ horse$y[8]<-min(fsb[[1]]$w[fsb[[1]]$w>0 & fsb[[1]]$v>0.5])
 
 ### the horseshoe along with it's morphed version (grid)
 pdf("mapping-grid.pdf",6,6)
+
+par(mfrow=c(1,2))
+
 # real domain
-plot(xx[insiders],pch=".",yy[insiders],xlab="",ylab="")
-text(horse,labels=c(1:length(horse$x)))
+plot(xx[insiders],pch=".",yy[insiders],xlab="",ylab="",asp=1)
+# put the vertex labels in the right place
+text(horse$x[c(1,8,5,4)],horse$y[c(1,8,5,4)],labels=c(1,8,5,4),pos=4,offset=0.3)
+text(horse$x[c(2,3)],horse$y[c(2,3)],labels=c(2,3),pos=2,offset=0.2)
+text(horse$x[c(6,7)],horse$y[c(6,7)],labels=c(6,7),pos=2,offset=0.2)
 lines(horse$x[c(1,8)],horse$y[c(1,8)])
 lines(horse)
+
 # mapped domain
 plot(prediction.grid,pch=".",xlab="",ylab="")
 lines()
@@ -67,7 +74,7 @@ dev.off()
 ### the horseshoe along with it's morphed version (heatmap)
 pdf("mapping-heatmap.pdf",6,6)
 par(mfrow=c(1,2))
-image(xm,yn,matrix(tru,m,n),col=heat.colors(100),xlab="",ylab="")
+image(xm,yn,matrix(tru,m,n),col=heat.colors(100),xlab="",ylab="",asp=1)
 
 dev.off()
 
@@ -125,31 +132,39 @@ sm<-read.csv("sample.size.100.results.txt",header=T)
 med<-read.csv("sample.size.250.results.txt",header=T)
 large<-read.csv("sample.size.500.results.txt",header=T)
 
-# find the y limits
-ylims<-c(0,max(sm$mapped,sm$soap,med$mapped,med$soap,large$mapped,large$soap))
+# log transform
+sm<-log(sm)
+med<-log(med)
+large<-log(large)
+
+# write to pdf
+pdf("sample.size.boxplots.pdf",4,4)
+
 # plot the boxplots
 par(mfrow=c(3,2))
 
 # first row small
-ylims<-c(0,max(sm$mapped,sm$soap))
+ylims<-c(min(sm$mapped,sm$soap),max(sm$mapped,sm$soap))
 # soap 
 boxplot(sm$soap,ylim=ylims)
 #mapped
 boxplot(sm$mapped,ylim=ylims)
 
 # first row small
-ylims<-c(0,max(med$mapped,med$soap))
+ylims<-c(min(med$mapped,med$soap),max(med$mapped,med$soap))
 # soap 
 boxplot(med$soap,ylim=ylims)
 #mapped
 boxplot(med$mapped,ylim=ylims)
 
 # first row small
-ylims<-c(0,max(largemapped,large$soap))
+ylims<-c(min(large$mapped,large$soap),max(large$mapped,large$soap))
 # soap 
 boxplot(large$soap,ylim=ylims)
 #mapped
 boxplot(large$mapped,ylim=ylims)
+
+dev.off()
 
 ##################################################
 

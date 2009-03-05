@@ -159,7 +159,7 @@ There are several pieces of software available to perform the \sch mapping. The 
 
 The \textsf{R} library \texttt{mgcv} provides subroutines for fitting generalized additive models and, in particular, P-splines.
 
-There are packages available to enable \textsf{R} to talk to Matlab and vice-verse, however this seemed like overkill given the situation and instead csv files were written by each program and read in by the other.
+There are packages available to enable \textsf{R} to talk to Matlab and vice-verse, however this seemed like overkill given the situation. So, for the purposes of this exploratory work csv files were written by each program and read in by the other.
 
 
 
@@ -181,6 +181,29 @@ In the spirit of those simulations carried out in \cite{soap}, a large scale exp
 \begin{tabular}{c c}\\
 Sample size & Noise level$^{1}$ \\
 \hline
+1000 & 0.3 &  0.004120259  ( 0.001118386 ) &  0.005167394  & ( 0.001142463 ) \\ 
+500  & 0.3 &  0.005046769  ( 0.001441953 ) &  0.006278962  & ( 0.001455517 ) \\ 
+250  & 0.3 &  0.008746142  ( 0.003923042 ) &  0.01073406  & ( 0.003049698 ) \\ 
+100  & 0.3 &  0.5100835  ( 13.38447 ) &  0.0222764  & ( 0.01003468 ) \\ 
+1000 &  0.5  &  0.01054972  ( 0.003533331 ) &  0.01268140  & ( 0.003401013 ) \\ 
+1000 &  1  &  0.02421589  ( 0.01075982 ) &  0.02749098  & ( 0.009582644 ) \\ 
+1000 &  2  &  0.06596285  ( 0.0480522 ) &  0.06859311  & ( 0.03330543 ) \\ 
+\end{tabular}
+\caption{Setup for the simulations. $^{1}$Noise level is noise added to the test function from a standard Normal multiplied by the value in this column. }
+\end{table}
+
+Again, following in the footsteps of \cite{soap}, the mean squared error between the true function and the fitted model was used to evaluate the model's performance.
+
+For the standard Ramsay horseshoe initial results were better than those for the soap film smoother \fig{ramsaysoapboxplot}.
+
+
+Table (\ref{ramseyresultstable}) shows the results from the 
+
+
+\begin{table}[ht]
+\begin{tabular}{c c}\\
+Sample size & Noise level & P-spline MSE (\emph{se}) & Soap MSE (\emph{se}) \\
+\hline
 1000 & 0.3 \\
 500 & 0.3 \\
 250 & 0.3 \\
@@ -190,9 +213,9 @@ Sample size & Noise level$^{1}$ \\
 1000 & 1 \\
 1000 & 2 \\
 \end{tabular}
-\caption{Setup for the simulations. $^{1}$Noise level is noise added to the test function from a standard Normal multiplied by the value in this column. }
+\label{}
+\caption{}
 \end{table}
-
 
 What do we want to look at?
 
