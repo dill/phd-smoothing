@@ -18,7 +18,7 @@ tru <- matrix(fs.test(xx,yy),m,n) ## truth
 pdf("ramsayhorseshoe.pdf",4,4)
 
 image(xm,yn,tru,col=heat.colors(100),xlab="",ylab="",
-      main="",axes=FALSE)
+      main="",axes=FALSE,asp=1)
 lines(fsb[[1]],lwd=3)
 contour(xm,yn,tru,levels=seq(-5,5,by=.25),add=TRUE)
 

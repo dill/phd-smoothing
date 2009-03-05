@@ -19,7 +19,7 @@ tru <- matrix(ramsay.alt(xx,yy),m,n) ## truth
 pdf("altramsayhorseshoe.pdf",4,4)
 
 image(xm,yn,tru,col=heat.colors(100),xlab="",ylab="",
-      main="",axes=FALSE)
+      main="",axes=FALSE,asp=1)
 lines(fsb[[1]],lwd=3)
 contour(xm,yn,tru,levels=seq(-1,1,by=.1),add=TRUE)
 
