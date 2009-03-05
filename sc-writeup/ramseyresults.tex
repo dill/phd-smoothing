@@ -181,13 +181,14 @@ In the spirit of those simulations carried out in \cite{soap}, a large scale exp
 \begin{tabular}{c c}\\
 Sample size & Noise level$^{1}$ \\
 \hline
-1000 & 0.3 &  0.004120259  ( 0.001118386 ) &  0.005167394  & ( 0.001142463 ) \\ 
-500  & 0.3 &  0.005046769  ( 0.001441953 ) &  0.006278962  & ( 0.001455517 ) \\ 
-250  & 0.3 &  0.008746142  ( 0.003923042 ) &  0.01073406  & ( 0.003049698 ) \\ 
-100  & 0.3 &  0.5100835  ( 13.38447 ) &  0.0222764  & ( 0.01003468 ) \\ 
-1000 &  0.5  &  0.01054972  ( 0.003533331 ) &  0.01268140  & ( 0.003401013 ) \\ 
-1000 &  1  &  0.02421589  ( 0.01075982 ) &  0.02749098  & ( 0.009582644 ) \\ 
-1000 &  2  &  0.06596285  ( 0.0480522 ) &  0.06859311  & ( 0.03330543 ) \\ 
+1000 & 0.3 \\
+500 & 0.3 \\
+250 & 0.3 \\
+100 & 0.3 \\
+1000 & 0.3 \\
+1000 & 0.5 \\
+1000 & 1 \\
+1000 & 2 \\
 \end{tabular}
 \caption{Setup for the simulations. $^{1}$Noise level is noise added to the test function from a standard Normal multiplied by the value in this column. }
 \end{table}
@@ -201,23 +202,22 @@ Table (\ref{ramseyresultstable}) shows the results from the
 
 
 \begin{table}[ht]
-\begin{tabular}{c c}\\
+\begin{tabular}{c c c c}\\
 Sample size & Noise level & P-spline MSE (\emph{se}) & Soap MSE (\emph{se}) \\
 \hline
-1000 & 0.3 \\
-500 & 0.3 \\
-250 & 0.3 \\
-100 & 0.3 \\
-1000 & 0.3 \\
-1000 & 0.5 \\
-1000 & 1 \\
-1000 & 2 \\
+\hline
+1000 & 0.3 &  0.00412  ( 0.00112 ) &  0.00517  ( 0.00114 ) \\ 
+500  & 0.3 &  0.00505  ( 0.00144 ) &  0.00628   ( 0.00146 ) \\ 
+250  & 0.3 &  0.00875  ( 0.00392 ) &  0.0107   ( 0.00305 ) \\ 
+100  & 0.3 &  0.51  ( 13.4 ) &  0.0223   ( 0.01 ) \\ 
+1000 &  0.5  &  0.0105  ( 0.00353 ) &  0.0127  ( 0.0034 ) \\ 
+1000 &  1  &  0.0242  ( 0.0108 ) &  0.0275  ( 0.00958 ) \\ 
+1000 &  2  &  0.066  ( 0.0481 ) &  0.0686  ( 0.0333 ) \\ 
 \end{tabular}
 \label{}
 \caption{}
 \end{table}
 
-What do we want to look at?
 
 
 \section{Analysis}
