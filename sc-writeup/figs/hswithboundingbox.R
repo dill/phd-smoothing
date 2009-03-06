@@ -32,7 +32,7 @@ horse$x[8]<-max(fsb[[1]]$v)
 horse$y[8]<-min(fsb[[1]]$w[fsb[[1]]$w>0 & fsb[[1]]$v>0.5])
 
 
-pdf("hswithboundingbox.pdf",4,4)
+pdf("hswithboundingbox.pdf",6,3)
 # plot the figure
 image(xm,yn,tru,col=heat.colors(100),xlab="",ylab="",asp=1,main="",axes=FALSE,xlim=c(-2,5))
 lines(fsb[[1]],lwd=3)

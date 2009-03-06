@@ -15,7 +15,7 @@ xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 tru <- matrix(fs.test(xx,yy),m,n) ## truth
 
 # output to pdf
-pdf("ramsayhorseshoe.pdf",4,4)
+pdf("ramsayhorseshoe.pdf",6,3)
 
 image(xm,yn,tru,col=heat.colors(100),xlab="",ylab="",
       main="",axes=FALSE,asp=1)

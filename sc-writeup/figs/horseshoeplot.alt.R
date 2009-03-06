@@ -16,7 +16,7 @@ source("../../ramsay.alt.R")
 tru <- matrix(ramsay.alt(xx,yy),m,n) ## truth
 
 # output to pdf
-pdf("altramsayhorseshoe.pdf",4,4)
+pdf("altramsayhorseshoe.pdf",6,3)
 
 image(xm,yn,tru,col=heat.colors(100),xlab="",ylab="",
       main="",axes=FALSE,asp=1)

@@ -5,7 +5,7 @@
 library(soap)
 
 # output to pdf
-pdf("leakageexample.pdf",4,4)
+pdf("leakageexample.pdf",6,3)
 
 
 ## create a boundary...

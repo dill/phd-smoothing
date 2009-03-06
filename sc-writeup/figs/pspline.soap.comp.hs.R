@@ -70,11 +70,30 @@ fv.mapped <- predict(b.mapped,prediction.grid)
 fv.mapped[!insiders]<-NA
 
 
-pdf("examplescsmooth.pdf",4,4)
-image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="",ylab="",asp=1,axes=FALSE,main="")
+pdf("compsmooth.pdf",6,3)
+par(mfrow=c(1,2))
+
+
+# sc mapping example
+image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="w",ylab="v",asp=1,main="")
 contour(xm,yn,matrix(fv.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE)
 names(fsb[[1]])<-c("x","y")
 lines(fsb[[1]],lwd=3)
+
+
+# soap example
+knots <- data.frame(v=rep(seq(-.5,3,by=.5),4),
+                    w=rep(c(-.6,-.3,.3,.6),rep(8,4)))
+names(fsb[[1]]) <- c("v","w") 
+b <- gam(y~s(v,w,k=40,bs="so",xt=list(bnd=fsb)),knots=knots,data=orig.data)
+fv <- predict(b,newdata=data.frame(v=xx,w=yy),block.size=-1)
+
+image(xm,yn,matrix(fv,m,n),col=heat.colors(100),xlab="v",ylab="w",main="",asp=1)
+contour(xm,yn,matrix(fv,m,n),levels=seq(-5,5,by=.25),add=TRUE)
+names(fsb[[1]]) <- c("x","y")
+lines(fsb[[1]],lwd=3)
+
+
 dev.off()
 
 

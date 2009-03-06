@@ -23,7 +23,7 @@ cat("1000 & 0.3 & ",mapped.mse," (",mapped.se,") & ",
 
 
 ## Different sample sizes
-sample.sizes<-c(500,250)#,100)
+sample.sizes<-c(500,250,100)
 
 for(my.size in sample.sizes){
    # read in the table

@@ -1,12 +1,8 @@
+# nullspace testing...
 
 library(soap)
 
-
-# need to create the prediction grid here!!!
-
-
 fsb <- list(fs.boundary())
-
 
 # create the grid
 m<-100;n<-50
