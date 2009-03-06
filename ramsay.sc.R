@@ -5,7 +5,6 @@ library(soap)
 
 ## create a boundary...
 fsb <- list(fs.boundary())
-names(fsb[[1]]) <- c("v","w") ## correct boundary names
  
 ## Simulate some fitting data, inside boundary...
 n<-1000
@@ -16,6 +15,7 @@ y <- y[ind];v <- v[ind]; w <- w[ind]
 n <- length(y)
 y <- y + rnorm(n)*.3 ## add noise
 
+names(fsb[[1]]) <- c("v","w") ## correct boundary names
 
 # First generate the polygon boundary in matlab format
 # this is a really rough boundary that covers a much great area than

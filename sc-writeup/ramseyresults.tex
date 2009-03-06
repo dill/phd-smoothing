@@ -29,6 +29,8 @@
 \newcommand{\fprime}{f^\prime(z)}
 % figure reference command
 \newcommand{\fig}[1]{\emph{fig.} (\ref{#1})}
+% figure reference command (start of sentance
+\newcommand{\Fig}[1]{\emph{Fig.} (\ref{#1})}
 % equation reference command
 \newcommand{\eqn}[1]{\emph{eqn.} (\ref{#1})}
 % phi inverse
@@ -43,7 +45,7 @@
 
 % The abstract
 \begin{abstract}
-Smoothing over complex 2-D regions is difficult. Several approaches have been proposed in past years including finite element analysis (Ramsay, 2002), within-area distance (Wang \& Ranalli, 2007) and recently soap film smoothing (Wood, Bravington \& Hedley, 2008.) Here I investigate an alternative method based on the Schwarz-Christoffel transform from complex analysis. This takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. We may then smooth over the transformed area using penalized regression splines and transform this smooth back to the original domain in order to perform analysis. I explore the utility of this transform on both real and simulated data.
+Smoothing over complex 2-D regions is difficult. Several approaches have been proposed including finite element analysis (Ramsay, 2002), within-area distance (Wang \& Ranalli, 2007) and recently soap film smoothing (Wood, Bravington \& Hedley, 2008.) Here I investigate an alternative method based on the Schwarz-Christoffel transform from complex analysis. This takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. We may then smooth over the transformed area using penalized regression splines and transform this smooth back to the original domain in order to perform analysis. I explore the utility of this transform for both real and simulated data.
 \end{abstract}
 
 
@@ -63,7 +65,7 @@ Smoothing over complex 2-D regions is difficult. Several approaches have been pr
 
 The test function highlights a common problem in spatial smoothing: that of ``leakage''. When the problem is specified in Euclidean distance, the model thinks that the distance between the $-4$ and $4$ points of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high density from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes bias in the estimation of the smooth.
 
-\fig{tpleakage} shows what happens when a thin plate spline is fitted to the horshoe with no information about the structure of the domain. Comparing the contour lines to those in the actual horseshoe, one can easily see that there is leakage.
+\Fig{tpleakage} shows what happens when a thin plate spline is fitted to the horshoe with no information about the structure of the domain. Comparing the contour lines to those in the actual horseshoe, one can easily see that there is leakage.
 
 
 
@@ -99,7 +101,7 @@ Since the geodesic distance is only known if the intrinsic structure of the doma
 
 \item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon. This is what we propose here. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe back to a long strip and then smooth on that domain.
 
-The problem that is approach faces is in fnding the nullspace of the smooth. It seems that the nullspace in the original domain will not be the same as the nullspace in the transformed domain. We address this problem below.
+This approach suffers from a few drawbacks. First, what is the natural domain to transform to? Clearly for some shapes this is obvious, but this is not always the case. The other problem is in fnding the nullspace of the smooth. It seems that the nullspace in the original domain will not be the same as the nullspace in the transformed domain. We address these problems below.
 
 
 \end{enumerate}
@@ -115,7 +117,7 @@ Here we formulate a conformal mapping from the domain of the problem (we call th
 
 The \sch transform provides a way to map an arbitrary polygon in the complex plane to one of a set of objects (also in the complex plane) in a certain manner. The two most commonly mapped to objects are the unit disk and the rectangle. The procedure consists of adding vertices to the object you wish to map to and then deforming it iteratively until it is identical to the polygon.
 
-So, for example, say we want to transform between a regular nonagon and a rectagle. We add five sides to the rectangle and then go about deforming it to the shape of the nonagon (by changing the angles at the vertices.) 
+So, for example, say we want to transform between a regular nonagon and a rectagle. We add five sides to the rectangle and then go about deforming it to the shape of the nonagon (by changing the angles at the vertices and then rescaling and rotating it as necessary.) 
 
 Full technical details are given in \cite{miller08}.
 
@@ -123,14 +125,6 @@ Full technical details are given in \cite{miller08}.
 \subsection{P-splines}
 P-splines (\cite{eilersmarx96}) were used as the basis functions for the smooth since they present the easiest framework for adding arbitrary penalities. They are also not considered to be as ``optimal'' as thin plate splines.
 
-
-\subsection{Problems}
-
-As mentioned above, when the domain has been morphed it is not clear what the definition of smooth is on the domain, \emph{ie.} what the nullspace of the penalty term is. A simple way to find the nullspace (and visualize it) is to fit a simple linear model to a set of points sampled from the original domain. This will give an idea of what a straight line will be mapped to in the domain.
-
-
-Linear fit onto the horseshoe.
-Look at some other shapes that break it.
 
 
 
@@ -161,7 +155,65 @@ The \textsf{R} library \texttt{mgcv} provides subroutines for fitting generalize
 
 There are packages available to enable \textsf{R} to talk to Matlab and vice-verse, however this seemed like overkill given the situation. So, for the purposes of this exploratory work csv files were written by each program and read in by the other.
 
+\section{Mapping the Ramsay horseshoe}
 
+In order to map the horseshoe, we draw a rough bounding box around the shape. This will serve as the domain that we want to transform from (rather than trying to approximate the curved edges with many straight lines.) The horseshoe, along with its bounding box is shown in \fig{hswithboundingbox}.
+
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=0in 1.5in 0in 1.5in]{figs/hswithboundingbox.pdf} \\
+\caption{The horseshoe with it's bounding box. Vertices 1, 4, 5 and 8 are mapped to the corners of the rectangle.}
+\label{hswithboundingbox}
+\end{figure}
+
+To begin with we took a sample of 1000 points from the horseshoe and then added some noise to the data. We then took the $x,y$ coordinates of the sampled points and ran them through the \texttt{evalinv()} function from the SC Toolbox. We then smoothed over the responses in the transformed domain. An example of the smooth is shown in \fig{examplescsmooth}.
+
+Comparing \fig{examplescsmooth} with \fig{ramsayshorseshoe} we see that transforming the domain allows us to smooth over the horseshoe quite well. In the next section we investigate the properties of the transform further via a simulation experiment.
+
+
+
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=0in 1.5in 0in 1.5in]{figs/examplescsmooth.pdf} \\
+\caption{An example of the smooth given with P-splines when the domain has been transformed using the \sch mapping.}
+\label{examplescsmooth}
+\end{figure}
+
+
+
+
+Show the morphed region with heatmap and the prevertices on it!
+
+
+
+\subsection{Problems}
+
+As mentioned above, when the domain has been morphed it is not clear what the definition of smoothness is on the domain, \emph{ie.} what the nullspace of the penalty term is. A simple way to find the nullspace (and visualize it) is to take a line that runs along the centre of the domain and look at the test function's response along this line in both domains. This will give an idea of what a straight line will be mapped to in the domain.
+
+\Fig{horseshoecentreline} shows the centre line that was evaluated on the horseshoe and \fig{horseshowcentrelinemapped}
+
+
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=0in 1.5in 0in 1.5in]{figs/horseshoecentreline.pdf} \\
+\caption{The dashed line here gives the centre line that we will map to investigate the smoothness under the \sch transform.}
+\label{horseshoecentreline}
+\end{figure}
+
+
+%\begin{figure}
+%\centering
+%% trim order l b r t
+%\includegraphics[trim=1in 1.5in 1in 1.5in]{figs/horseshoecentrelinemapped.pdf} \\
+%\caption{The dashed line here gives the centre line that we will map to investigate the smoothness under the \sch transform.}
+%\label{horseshoecentrelinemapped}
+%\end{figure}
+
+Linear fit onto the horseshoe.
+Look at some other shapes that break it.
 
 
 \section{Simulations}
@@ -172,7 +224,7 @@ In the spirit of those simulations carried out in \cite{soap}, a large scale exp
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[trim=1.5in 1in 0.5in 1in]{figs/altramsayhorseshoe.pdf} \\
+\includegraphics[trim=0in 1.5in 0in 1in]{figs/altramsayhorseshoe.pdf} \\
 \caption{Heatmap of the alternate version of the Ramsay horseshoe.}
 \label{altramsayshorseshoe}
 \end{figure}
@@ -198,7 +250,7 @@ Again, following in the footsteps of \cite{soap}, the mean squared error between
 For the standard Ramsay horseshoe initial results were better than those for the soap film smoother \fig{ramsaysoapboxplot}.
 
 
-Table (\ref{ramseyresultstable}) shows the results from the 
+Table (\ref{ramsayresultstable}) shows the results from the 
 
 
 \begin{table}[ht]
@@ -206,32 +258,17 @@ Table (\ref{ramseyresultstable}) shows the results from the
 Sample size & Noise level & P-spline MSE (\emph{se}) & Soap MSE (\emph{se}) \\
 \hline
 \hline
-1000 & 0.3 &  0.00412  ( 0.00112 ) &  0.00517  ( 0.00114 ) \\ 
-500  & 0.3 &  0.00505  ( 0.00144 ) &  0.00628   ( 0.00146 ) \\ 
-250  & 0.3 &  0.00875  ( 0.00392 ) &  0.0107   ( 0.00305 ) \\ 
-100  & 0.3 &  0.51  ( 13.4 ) &  0.0223   ( 0.01 ) \\ 
-1000 &  0.5  &  0.0105  ( 0.00353 ) &  0.0127  ( 0.0034 ) \\ 
-1000 &  1  &  0.0242  ( 0.0108 ) &  0.0275  ( 0.00958 ) \\ 
-1000 &  2  &  0.066  ( 0.0481 ) &  0.0686  ( 0.0333 ) \\ 
+1000 & 0.3 & 0.00412 (0.00112) & 0.00517 (0.00114) \\ 
+500 & 0.3 & 0.00505 (0.00144) & 0.00628 (0.00146) \\ 
+250 & 0.3 & 0.00875 (0.00392) & 0.0107 (0.00305) \\ 
+100 & 0.3 & 0.51 (13.4) & 0.0223 (0.01) \\ 
+1000 & 0.5 & 0.0105 (0.00353) & 0.0127 (0.0034) \\ 
+1000 & 1 & 0.0242 (0.0108) & 0.0275 (0.00958) \\ 
+1000 & 2 & 0.066 (0.0481) & 0.0686 (0.0333) \\ 
 \end{tabular}
-\label{}
+\label{ramsatresultstable}
 \caption{}
 \end{table}
-
-
-
-\section{Analysis}
-
-
-Linear model stuff, will this work elsewhere?
-
-
-
-
-
-
-
-
 
 
 

@@ -44,7 +44,7 @@ horse$y[7]<-min(fsb[[1]]$w[fsb[[1]]$w>0 & fsb[[1]]$v>0.5])
 horse$x[8]<-max(fsb[[1]]$v)
 horse$y[8]<-min(fsb[[1]]$w[fsb[[1]]$w>0 & fsb[[1]]$v>0.5])
 
-
+############# Setup done by now... ##########
 
 
 

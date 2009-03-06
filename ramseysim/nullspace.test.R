@@ -33,40 +33,40 @@ leg.y.t<-rep(0.5,length(leg.x))
 leg.y.b<- -leg.y.t
 
 # middle curve
+# create a circle first
 # by default r=0.5, use this.
 r<-0.5
-curve.x<-seq(0,0.5,0.01)
-curve.x<-sqrt(r^2-curve.x^2)
+t<-seq(0,2*pi,0.01)
+curve.x<-r*sin(t)
+curve.y<-r*cos(t)
 
-curve.y<-seq(0,0.5,length.out=length(curve.x))
-curve.y<-sqrt(r^2-curve.y^2)
-#curve.y<-curve.y[length(curve.y):1]
+# discard the right half
+curve.y<-curve.y[curve.x<0]
+curve.x<-curve.x[curve.x<0]
 
-# we've done a quarter, do the other quarter
-curve.x<--c(curve.x[length(curve.x):1],curve.x)
-curve.y<-c(curve.y,-curve.y[length(curve.y):1])
+# reverse
+curve.y<-curve.y[length(curve.y):1]
+curve.x<-curve.x[length(curve.x):1]
+
 
 # container
 fs.centreline<-list(x=c(r.leg.x,curve.x,leg.x),y=c(leg.y.t,curve.y,leg.y.b))
 
 # test
+#pdf("horseshoecentreline.pdf",4,4)
 #fsb <- fs.boundary()
 #m<-300;n<-150 
 #xm <- seq(-1,4,length=m);yn<-seq(-1,1,length=n)
 #xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 #tru <- matrix(fs.test(xx,yy),m,n) ## truth
-#image(xm,yn,tru,col=heat.colors(100),xlab="x",ylab="y")
-#points(fs.centreline,pch=".")
+#image(xm,yn,tru,col=heat.colors(100),xlab="",ylab="",asp=1,main="",axes=FALSE)
+#lines(fs.centreline,lty=2)
+#lines(fsb,lwd=3)
+#dev.off()
 
 
 # let evaluate these points using the fs.test function
-
-
-
-#
-
 fs.centre.eval<-fs.test(fs.centreline$x,fs.centreline$y)
-
 
 
 
@@ -80,5 +80,36 @@ fs.centre.eval<-fs.test(fs.centreline$x,fs.centreline$y)
 mapped.centreline<-read.csv("centrelinemapped.csv",header=F)
 names(mapped.centreline)<-c("x","y")
 
+# load the prevertices, as mapped by matlab
+preverts<-read.csv("ramsayprevertices.csv",header=F)
+names(preverts)<-c("x","y") 
 
-# now do some plotting of these...
+# load data
+predback.real<-read.csv("../matlab/preal.csv",header=F)
+predback.imag<-read.csv("../matlab/pimag.csv",header=F)
+predgrid<-data.frame(v=predback.real[[1]],w=predback.imag[[1]])
+
+
+# plot the morphed line
+plot(mapped.centreline,asp=1,type="l",lty=2)
+lines(c(preverts$x,preverts$x[1]),c(preverts$y,preverts$y[1]),lwd=3)
+
+
+
+
+## now do some plotting of these...
+# in the original domain
+par(mfrow=c(2,3))
+plot(fs.centre.eval,type="l",main="",ylab="",xlab="")
+plot(fs.centreline$x,fs.centre.eval,type="l",main="")
+plot(fs.centreline$y,fs.centre.eval,type="l",main="")
+
+# in the transformed domain
+plot(fs.centre.eval,type="l",main="",ylab="",xlab="")
+plot(mapped.centreline$x,fs.centre.eval,type="l",main="")
+plot(mapped.centreline$y,fs.centre.eval,type="l",main="")
+
+
+
+
+

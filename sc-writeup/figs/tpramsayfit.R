@@ -45,7 +45,7 @@ fv[!insiders]<-NA
 
 # plot
 image(xm,yn,matrix(fv,m,n),col=heat.colors(100),xlab="",ylab="",
-      main="",axes=FALSE)
+      main="",axes=FALSE,asp=1)
 contour(xm,yn,matrix(fv,m,n),levels=seq(-5,5,by=.25),add=TRUE)
 # add a line around the edge
 lines(fsb[[1]]$v,fsb[[1]]$w,lwd=3)
