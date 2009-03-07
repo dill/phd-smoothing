@@ -2,13 +2,7 @@
 # domain for the Ramsay horseshoe.
 library(soap)
 
-
-# need to create the prediction grid here!!!
-
-
 fsb <- list(fs.boundary())
-
-
 # create the grid
 m<-100;n<-50
 xm <- seq(-1,3.5,length=m);yn<-seq(-1,1,length=n)
@@ -22,12 +16,10 @@ predback.real<-read.csv("../../matlab/preal.csv",header=F)
 predback.imag<-read.csv("../../matlab/pimag.csv",header=F)
 prediction.grid<-data.frame(v=predback.real[[1]],w=predback.imag[[1]])
 
-
 # bit of faffing with titles
 names(fsb[[1]]) <- c("x","y") ## correct boundary names
 insiders<-inSide(fsb,x=xx,y=yy)
 names(fsb[[1]]) <- c("v","w") ## correct boundary names
-
 
 ### create the knots for the p-spline
 # they need to be wider than the data so that we can do prediction over the
@@ -47,7 +39,6 @@ knots.sc$w<-unique(sort(c(seq(from=min(knots.sc$w),by=-w.spacing,length.out=4) ,
 # load the original data set
 orig.data<-read.csv("ramsey-1.csv",header=T)
 
-
 # load the mapped data set
 mapped.data<-read.csv("ramsey-mapped-1.csv",header=F)
 # add in the y column
@@ -55,12 +46,10 @@ mapped.data<-cbind(orig.data[[1]],mapped.data)
 # correct titles
 names(mapped.data) <- c("y","v","w")
 
-
 # fit with sc
 # using the p-spline basis
 # ie. m[1]
 pspline.order<-2
-
 b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(6,10)),data=mapped.data,knots=knots.sc)
 
 # get predictions
@@ -70,16 +59,17 @@ fv.mapped <- predict(b.mapped,prediction.grid)
 fv.mapped[!insiders]<-NA
 
 
+
+############ First figure, two image plots
 pdf("compsmooth.pdf",6,3)
 par(mfrow=c(1,2))
 
-
 # sc mapping example
-image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="w",ylab="v",asp=1,main="")
+image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
+      cex.axis=0.5,asp=1,main="")
 contour(xm,yn,matrix(fv.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE)
 names(fsb[[1]])<-c("x","y")
 lines(fsb[[1]],lwd=3)
-
 
 # soap example
 knots <- data.frame(v=rep(seq(-.5,3,by=.5),4),
@@ -88,15 +78,39 @@ names(fsb[[1]]) <- c("v","w")
 b <- gam(y~s(v,w,k=40,bs="so",xt=list(bnd=fsb)),knots=knots,data=orig.data)
 fv <- predict(b,newdata=data.frame(v=xx,w=yy),block.size=-1)
 
-image(xm,yn,matrix(fv,m,n),col=heat.colors(100),xlab="v",ylab="w",main="",asp=1)
+image(xm,yn,matrix(fv,m,n),col=heat.colors(100),xlab="",ylab="",
+      cex.axis=0.5,main="",asp=1)
 contour(xm,yn,matrix(fv,m,n),levels=seq(-5,5,by=.25),add=TRUE)
 names(fsb[[1]]) <- c("x","y")
 lines(fsb[[1]],lwd=3)
 
+dev.off()
+
+########## Second plots, boxplot comparison between soap and sc
+
+pdf("scvssoapboxplot.pdf",4,4)
+par(mfrow=c(1,2))
+
+# load the data
+soapcomp<-read.csv("../../ramseysim/results.file.txt",header=T)
+psplinecomp<-read.csv("../../ramseysim/pspline.results.txt",header=T)
+
+# find the limits on the y axis
+ylims<-c(0,max(soapcomp$mapped,soapcomp$soap,psplinecomp$x))
+#ylims<-c(min(soapcomp$soap,psplinecomp$x),max(soapcomp$soap,psplinecomp$x))
+
+# plot the boxplots
+# mapped+ps
+boxplot(psplinecomp$mapped,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
+# soap
+boxplot(soapcomp$soap,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
+# mapped+tp
+### noot doing this at the moment
+#boxplot(soapcomp$mapped,ylim=ylims,main="sc+tp")
 
 dev.off()
 
 
-
+########## third plot
 
 
