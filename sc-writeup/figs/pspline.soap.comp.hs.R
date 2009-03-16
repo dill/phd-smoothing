@@ -51,24 +51,33 @@ names(mapped.data) <- c("y","v","w")
 # ie. m[1]
 pspline.order<-2
 b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(6,10)),data=mapped.data,knots=knots.sc)
-
 # get predictions
 fv.mapped <- predict(b.mapped,prediction.grid)
-
 # get rid of the points that are not in the grid
 fv.mapped[!insiders]<-NA
+
+# same for sc+tp
+b.tp.mapped<-gam(y~s(v,w),data=mapped.data)
+fv.tp.mapped <- predict(b.tp.mapped,prediction.grid)
+fv.tp.mapped[!insiders]<-NA
+
 
 
 
 ############ First figure, two image plots
-pdf("compsmooth.pdf",6,3)
-par(mfrow=c(1,2))
+pdf("compsmooth.pdf",6,2)
+par(mfrow=c(1,3))
 
-# sc mapping example
+# sc+ps mapping example
 image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,asp=1,main="")
+      cex.axis=0.5,asp=1,main="",ylim=c(-1.1,1.1))
 contour(xm,yn,matrix(fv.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE)
 names(fsb[[1]])<-c("x","y")
+lines(fsb[[1]],lwd=3)
+
+image(xm,yn,matrix(fv.tp.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
+      cex.axis=0.5,asp=1,main="",ylim=c(-1.1,1.1))
+contour(xm,yn,matrix(fv.tp.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE)
 lines(fsb[[1]],lwd=3)
 
 # soap example
@@ -79,7 +88,7 @@ b <- gam(y~s(v,w,k=40,bs="so",xt=list(bnd=fsb)),knots=knots,data=orig.data)
 fv <- predict(b,newdata=data.frame(v=xx,w=yy),block.size=-1)
 
 image(xm,yn,matrix(fv,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,main="",asp=1)
+      cex.axis=0.5,main="",asp=1,ylim=c(-1.1,1.1))
 contour(xm,yn,matrix(fv,m,n),levels=seq(-5,5,by=.25),add=TRUE)
 names(fsb[[1]]) <- c("x","y")
 lines(fsb[[1]],lwd=3)
@@ -88,8 +97,8 @@ dev.off()
 
 ########## Second plots, boxplot comparison between soap and sc
 
-pdf("scvssoapboxplot.pdf",4,4)
-par(mfrow=c(1,2))
+pdf("scvssoapboxplot.pdf",6,4)
+par(mfrow=c(1,3))
 
 # load the data
 soapcomp<-read.csv("../../ramseysim/results.file.txt",header=T)
@@ -102,15 +111,12 @@ ylims<-c(0,max(soapcomp$mapped,soapcomp$soap,psplinecomp$x))
 # plot the boxplots
 # mapped+ps
 boxplot(psplinecomp$mapped,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
+
+# mapped+tp
+boxplot(soapcomp$mapped,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
+
 # soap
 boxplot(soapcomp$soap,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
-# mapped+tp
-### noot doing this at the moment
-#boxplot(soapcomp$mapped,ylim=ylims,main="sc+tp")
 
 dev.off()
-
-
-########## third plot
-
 

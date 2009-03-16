@@ -53,10 +53,16 @@ names(mapped.data) <- c("y","v","w")
 pspline.order<-2
 b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(6,10)),data=mapped.data,knots=knots.sc)
 
-pdf("hsvisgam.pdf",2,4)
+# thin plate too
+b.tp.mapped<-gam(y~s(v,w),data=mapped.data)
+
+pdf("hsvisgam.pdf",3,4)
+
+par(mfrow=c(1,2))
 
 # plot the fit on the transformed domain
-vis.gam(b.mapped,main="",plot.type="contour",ylab="",xlab="",asp=1,cex.axis=0.5)
+vis.gam(b.mapped,main="",plot.type="contour",ylab="",xlab="",asp=1,cex.axis=0.3)
+vis.gam(b.tp.mapped,main="",plot.type="contour",ylab="",xlab="",asp=1,cex.axis=0.3)
 dev.off()
 
 

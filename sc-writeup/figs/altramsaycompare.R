@@ -71,6 +71,13 @@ fv.mapped <- predict(b.mapped,prediction.grid)
 # get rid of the points that are not in the grid
 fv.mapped[!insiders]<-NA
 
+# for the thin plate
+b.tp.mapped<-gam(y~s(v,w),data=mapped.data)
+# get predictions
+fv.tp.mapped <- predict(b.tp.mapped,prediction.grid)
+# get rid of the points that are not in the grid
+fv.tp.mapped[!insiders]<-NA
+
 # fit with soap
 b.soap <- gam(y~s(v,w,k=40,bs="so",xt=list(bnd=fsb)),data=orig.data,knots=knots)
 # get predictions
@@ -80,9 +87,9 @@ fv.soap <- predict(b.soap,newdata=data.frame(v=xx,w=yy),block.size=-1)
 
 
 ### actually do the plotting
-#pdf("altramsaycomp.pdf",12,6)
+pdf("altramsaycomp.pdf",12,6)
 
-par(mfrow=c(1,3))
+par(mfrow=c(2,2))
 names(fsb[[1]]) <- c("x","y")
 
 image(xm,yn,matrix(tru,m,n),col=heat.colors(100),xlab="",ylab="",asp=1,ylim=c(-1,1),axes=FALSE)
@@ -93,10 +100,14 @@ image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="",ylab="",asp=1,yli
 contour(xm,yn,matrix(fv.mapped,m,n),levels=seq(-0.5,0.5,by=.1),add=TRUE)
 lines(fsb[[1]],lwd=3)
 
+image(xm,yn,matrix(fv.tp.mapped,m,n),col=heat.colors(100),xlab="",ylab="",asp=1,ylim=c(-1,1),axes=FALSE)
+contour(xm,yn,matrix(fv.tp.mapped,m,n),levels=seq(-0.5,0.5,by=.1),add=TRUE)
+lines(fsb[[1]],lwd=3)
+
 image(xm,yn,matrix(fv.soap,m,n),col=heat.colors(100),xlab="",ylab="",asp=1,ylim=c(-1,1),axes=FALSE)
 contour(xm,yn,matrix(fv.soap,m,n),levels=seq(-0.5,0.5,by=.1),add=TRUE)
 lines(fsb[[1]],lwd=3)
 
-#dev.off()
+dev.off()
 
 
