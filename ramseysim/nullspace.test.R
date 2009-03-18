@@ -60,11 +60,11 @@ fs.centre.eval<-fs.test(fs.centreline$x,fs.centreline$y)
 
 
 # read the points in
-mapped.centreline<-read.csv("centrelinemapped.csv",header=F)
+mapped.centreline<-read.csv("../ramseysim/centrelinemapped.csv",header=F)
 names(mapped.centreline)<-c("x","y")
 
 # load the prevertices, as mapped by matlab
-preverts<-read.csv("ramsayprevertices.csv",header=F)
+preverts<-read.csv("../ramseysim/ramsayprevertices.csv",header=F)
 names(preverts)<-c("x","y") 
 
 # load data

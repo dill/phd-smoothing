@@ -74,12 +74,12 @@ par(mfrow=c(1,3),cex=0.5)
 plot(fs.centreline$y,fs.centre.eval,type="l",main="",asp=1,xlab="y",ylab="f")
 
 # in the transformed domain
-plot(mapped.centreline$y,fs.centre.eval,type="l",main="",asp=1,xlab="y*",ylab="f")
+plot(mapped.centreline$y,fs.centre.eval,type="l",main="",xlab="y*",ylab="f")
 
 # finally do this for the "natural" coordinates
 source("../ramsay.alt.debug.R")
 adlocs<-ramsay.alt.debug(fs.centreline$x,fs.centreline$y)
-plot(adlocs$a[length(adlocs$a):1],adlocs$f,type="l",main="",asp=1,xlab="a",ylab="f")
+plot(adlocs$a[length(adlocs$a):1],adlocs$f,type="l",main="",xlab="a",ylab="f")
 
 #off
 dev.off()

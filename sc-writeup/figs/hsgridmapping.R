@@ -20,17 +20,17 @@ names(grid) <- c("x","y")
 
 
 # do the plotting
-pdf("hsgridmapping.pdf",6,4)
+pdf("hsgridmapping.pdf",6,3)
 par(mfrow=c(1,2))
 
 # plot the horseshoe
-plot(xx[insiders],yy[insiders],pch=".",asp=1,xlab="",ylab="",cex=0.5,cex.axis=0.5)
+plot(xx[insiders],yy[insiders],pch=".",asp=1,xlab="",ylim=c(-1,1),ylab="",cex=0.5,cex.axis=0.5)
 lines(fsb[[1]],lwd=3)
 
 
 # plot the transformed horseshoe
-plot(grid$x[insiders],grid$y[insiders],pch=".",asp=1,xlab="",ylab="",cex=0.5,cex.axis=0.5)
+plot(grid$y[insiders],grid$x[insiders],pch=".",xlab="",asp=1,ylim=c(-2,2),ylab="",cex=0.5,cex.axis=0.5)
 fsb.mapped<-read.csv("fsbmapped.csv",header=F)
-lines(fsb.mapped,lwd=3)
+lines(fsb.mapped$V2,fsb.mapped$V1,lwd=3)
 
 dev.off()
