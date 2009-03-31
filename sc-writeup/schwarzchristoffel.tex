@@ -138,7 +138,7 @@ The forwards map, $\phi$, as we will see below, is determined up to scaling and 
 When we map $\Gamma$ to $H^+$ we set $\phi(\infty) = w_n$ without any loss of generality. We then have the formula:
 
 \begin{equation}
-\phi(w^*) = A + C \int^{w^*} \prod_{k=1}^{n-1} (\zeta-w^*_k)^{-\theta_k} d\zeta.
+\phi(w^*) = A + C \int^{w^*}_{w_0} \prod_{k=1}^{n-1} (\zeta-w^*_k)^{-\theta_k} d\zeta.
 \end{equation}
 
 Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been calculated. These control the scaling and rotation of the transform.
@@ -151,7 +151,7 @@ The formula for the unit disk looks very similar to that for $H^+$ but with the 
 
 \begin{equation}
 \label{unitscmap}
-\phi(w^*) = A + C \int^{w^*} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta.
+\phi(w^*) = A + C \int^{w^*}_{w_0} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta.
 \end{equation}
 
 As above, $A$ and $C$ are complex constants.
@@ -194,7 +194,7 @@ $A$ is the image of the base point of the integration, for computational reasons
 
 
 \subsection{Sketch of an algorithm to calculate the \sch mapping}
-
+\label{algorithmsketch}
 \begin{enumerate}
 \item Accept inputs:
    \begin{enumerate} 
@@ -276,9 +276,23 @@ When the polygon has many vertices or there is elongated the mapped vertices are
 
 \subsection{Fixing crowding}
 
-A primitive way to fix the problem of crowding if it is caused by an elongated domain is to map to an elongated domain such as the rectangle or plane. This approach is suggested in \cite{howell90} however, as they point out, this does not eliminate all crowding and problems can still occur when there are strongly acute peninsulae in the polygon. Using a rectangular domain also does not fix problems which occur when mapping from T- or H-shaped domains.
+A primitive way to fix the problem of crowding if it is caused by an elongated domain is to map to an elongated domain such as the rectangle or plane. This approach is suggested in \cite{howell90} however, as they point out, this does not eliminate all crowding and problems can still occur when there are strongly acute peninsulae in the polygon. Using a rectangular domain also does not fix problems which occur when mapping from T- or H-shaped domains (so-called ``multiply elongated'' domains.)
 
-In order to combat this problem more effectively, \cite{vavasis96} propose the CRDT\footnote{CRDT standing for ``cross-ratios of the Delaunay triangulation''} algorithm. Without CRDT, the \sch transform enforces conditions on the side lengths and orientations, instead we now impose conditions about quadrilateral sections of the polygon and the diagonals of the polygon. This is done by first triangulating the domain and then merging each pair of triangles into a quadrilateral. A measure is then defined (the \emph{cross-ratio}) which specifies a set of non-linear equations to be solved. These equations enforce the constraint that the cross-ratio in mapped polygon comes out correctly. 
+In order to combat this problem more effectively, \cite{vavasis96} propose the CRDT (cross-ratios of the Delaunay triangulation) algorithm. Since each set of prevertices has $n-3$ degrees of freedom, there is a three parameter family of possible vertex arragements that all map to the same polygon, we would like to be able to use the most stable of these \emph{embeddings}. These embeddings are related by the M\"{o}bius transformation.
+
+We can extend this idea further by noting that the polygon does not change if additional vertices are added inbetween the current ones, provided that the internal angle associated with the new vertex is $\pi$. These extra vertices also do not change the \sch formula since in \eqn{unitscmap} $\alpha_k=1$ for an angle of $\pi$. Adding these extra vertices allows us to control the aspect ratio of the map.
+
+Finally, in the classical solution to the \sch parameter problem we enforce conditions on the side lengths and orientations of the polygon, instead we would now like to impose conditions about quadrilateral sections of the polygon and the diagonals of the polygon. We can do this by first triangulating the domain and then merging each pair of triangles into a quadrilateral. A measure is then defined (the \emph{cross-ratio}) which specifies a set of non-linear equations to be solved. These equations enforce the constraint that the cross-ratio in mapped polygon comes out correctly. 
+
+Putting all of these ideas together gives the CRDT algorithm. We first add edges to the polygon with internal angle $\pi$ to remove enlongated parts of the domain and then triangulate the domain. Once the domain is triangulated we calculate the cross-ratio:
+
+\begin{equation}
+\rho(a,b,c,d) = \frac{(d-a)(b-c)}{(c-d)(a-b)},
+\end{equation}
+
+for each quadrilateral in the polygon. Then, analogously to \eqn{optimizeme} we set up a series of equations, specifying that the cross-ratios remain the same in the polygon and the transform of the rectangle back to the polygon. We then wish to solve for the values of $\rho$ for the original domain in the same manner as we solved for side lengths in the original problem. 
+
+The downside of using CRDT is that it may add too many vertices to maintain the aspect ratio (\cite{driscoll05}) and the CRDT algorithm is cubic in the number of vertices, so the algorithm tends to take longer than the one specified in Section (\ref{algorithmsketch}). This is, of course, ofset against the fact that we can actually calculate the transform.
 
 \bibliographystyle{plainnat}
 \bibliography{sc-refs}
