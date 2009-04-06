@@ -33,7 +33,7 @@ fv <- predict(b.mapped,newdata=data.frame(x=true.vals.mapped$x,y=true.vals.mappe
 
 par(mfrow=c(2,2))
 
-surf[!inside.points]<-NA
+#surf[!inside.points]<-NA
 
 ### first truth
 image(surf,col=heat.colors(100),xlab="v",ylab="w",main="truth")
