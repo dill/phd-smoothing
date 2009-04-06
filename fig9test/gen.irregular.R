@@ -70,18 +70,3 @@ yy<-yy[inside.points]
 # write out truth to a file
 write.csv(list(x=xx,y=yy,z=zz),"fig9truth.csv",row.names=FALSE)
 
-
-# pick some points and send to matlab
-this.samp<-list(x=c(),y=c(),z=c())
-
-samp.index<-sample(c(1:length(xx)),100)
-
-this.samp$x<-xx[samp.index]
-this.samp$y<-yy[samp.index]
-this.samp$z<-zz[samp.index]
-
-##### At this point write out the true function as a file,
-##### everything else should then be sampling that file
-write.csv(this.samp,"fig9out.csv",row.names=FALSE)
-
-
