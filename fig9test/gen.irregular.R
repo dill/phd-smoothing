@@ -67,6 +67,9 @@ yy<-yy[inside.points]
 # check that it looks okay...
 #image(surf); contour(surf, add = T)
 
+# write out truth to a file
+write.csv(list(x=xx,y=yy,z=zz),"fig9truth.csv",row.names=FALSE)
+
 
 # pick some points and send to matlab
 this.samp<-list(x=c(),y=c(),z=c())
@@ -77,16 +80,8 @@ this.samp$x<-xx[samp.index]
 this.samp$y<-yy[samp.index]
 this.samp$z<-zz[samp.index]
 
-
-write.csv(this.samp,"fig9out.csv")
-
-
-
 ##### At this point write out the true function as a file,
 ##### everything else should then be sampling that file
-
-
-# do an mgcv fit
-
+write.csv(this.samp,"fig9out.csv",row.names=FALSE)
 
 
