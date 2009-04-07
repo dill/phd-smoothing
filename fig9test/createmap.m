@@ -22,7 +22,7 @@ f=rectmap(polyv_p, vertex_points)
 sample_points=csvread('fig9truth.csv',1,0)
 
 % copy to output
-out_samp=sample_points
+z_out_samp=sample_points(sample_points(:,4)==1,3)
 
 % select the points we want 
 sample_points=sample_points(sample_points(:,4)==1,1:2)
@@ -33,5 +33,5 @@ sample_points=complex(sample_points(:,1),sample_points(:,2))
 % map those points
 mapped_sample_points=evalinv(f,sample_points)
 
-csvwrite('fig9truemapped.csv',[real(mapped_sample_points),imag(mapped_sample_points),out_samp(:,3)])
+csvwrite('fig9truemapped.csv',[real(mapped_sample_points),imag(mapped_sample_points),z_out_samp])
 
