@@ -45,18 +45,3 @@ mapped_sample_points=evalinv(f,sample_points)
 
 csvwrite('fig9truemapped.csv',[real(mapped_sample_points),imag(mapped_sample_points)])
 
-
-%%%%%%%%%%%%%%%%%%%%%%
-% load the points where the random sample was taken from R
-sample_points=csvread('fig9out.csv',1,0)
-
-% make the data into a complex var
-sample_points=complex(sample_points(:,1),sample_points(:,2))
-
-% map those points
-mapped_sample_points=evalinv(f,sample_points)
-
-csvwrite('fig9mapped.csv',[real(mapped_sample_points),imag(mapped_sample_points)])
-
-
-
