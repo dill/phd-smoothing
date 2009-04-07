@@ -27,23 +27,21 @@ polyvertices[10]<-polyvertices[1]
 require(MASS)
 
 # things that will eventually be args
-lims<-rep(c(-5,5),2)
-resolution<-1000 # number of points in the kernel density estimate
+lims<-rep(c(-10,10),2)
+resolution<-500 # number of points in the kernel density estimate
 
 # generate first MV normal
-bivn.1 <- mvrnorm(2500, mu = c(2, 2), Sigma = matrix(c(3, 0, 0, 3), 2))
+bivn.1 <- mvrnorm(2500, mu = c(5, 5), Sigma = matrix(c(10, 0, 0, 10), 2))
 bivn.kde.1 <- kde2d(bivn.1[,1], bivn.1[,2], n =resolution, lims=lims)
 # and the second...
-bivn.2 <- mvrnorm(2500, mu = c(-2, -2), Sigma = matrix(c(3, 0, 0, 3), 2))
+bivn.2 <- mvrnorm(2500, mu = c(0, -5), Sigma = matrix(c(10, 0, 0, 10), 2))
 bivn.kde.2 <- kde2d(bivn.2[,1], bivn.2[,2], n =resolution, lims=lims)
 
 # add them...
 surf<-list(x=c(),y=c(),z=c())
-surf$x<-bivn.kde.1$x+bivn.kde.2$x
-surf$y<-bivn.kde.1$y+bivn.kde.2$y
+surf$x<-bivn.kde.1$x
+surf$y<-bivn.kde.1$y
 surf$z<-bivn.kde.1$z+bivn.kde.2$z
-
-
 
 # find the inside points...
 library(soap)
@@ -59,14 +57,11 @@ xx<-rep(surf$x,yn); yy<-rep(surf$y,rep(xn,yn))
 
 inside.points<-inSide(bnd,xx,yy)
 
-#surf$x[!inside.points]<-surf$y[!inside.points]<-NA
-zz<-surf$z[inside.points]
-xx<-xx[inside.points]
-yy<-yy[inside.points]
-
 # check that it looks okay...
-#image(surf); contour(surf, add = T)
+#z=as.vector(surf$z)
+#z[!inside.points]<-NA
+#image(matrix(z,resolution,resolution)); contour(matrix(z,resolution,resolution),add=TRUE)
 
 # write out truth to a file
-write.csv(list(x=xx,y=yy,z=zz),"fig9truth.csv",row.names=FALSE)
+write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=inside.points),"fig9truth.csv",row.names=FALSE)
 
