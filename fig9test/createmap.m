@@ -15,7 +15,13 @@ polyv_p=polygon(complex(polyv(:,1),polyv(:,2)))
 vertex_points=[1 6 8 9]
 
 % do the mapping
+
+% rectangle map
 f=rectmap(polyv_p, vertex_points)
+
+% disk map
+%f=crdiskmap(polyv_p)
+
 
 %%%%%%%%%%%%%%%%%%%
 % load the truth points
