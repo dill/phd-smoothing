@@ -51,11 +51,15 @@ bnd<-list()
 bnd$x<-Re(polyvertices)
 bnd$y<-Im(polyvertices)
 
+# make a grid
 xn<-length(surf$x); yn<-length(surf$y)
 xx<-rep(surf$x,yn); yy<-rep(surf$y,rep(xn,yn))
 
-
+# find the inside points, make it 0/1 rather than T/F
 inside.points<-inSide(bnd,xx,yy)
+ind<-rep(0,length(inside.points))
+ind[inside.points]<-1
+
 
 # check that it looks okay...
 #z=as.vector(surf$z)
@@ -63,5 +67,5 @@ inside.points<-inSide(bnd,xx,yy)
 #image(matrix(z,resolution,resolution)); contour(matrix(z,resolution,resolution),add=TRUE)
 
 # write out truth to a file
-write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=inside.points),"fig9truth.csv",row.names=FALSE)
+write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=ind),"fig9truth.csv",row.names=FALSE)
 
