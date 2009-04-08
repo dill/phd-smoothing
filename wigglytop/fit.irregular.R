@@ -18,10 +18,12 @@ this.sample<-sample(c(1:dim(true.vals)[1]),samp.size)
 # noise
 ran<-rnorm(samp.size)*0.02
 
+true.vals$z[true.vals$inside==0]<-NA
+
+
 # take the points from the true and true mapped
 samp.data<-data.frame(x=true.vals$x[this.sample],y=true.vals$y[this.sample],z=true.vals$z[this.sample]+ran)
 samp.data.mapped<-data.frame(x=true.vals.mapped$x[this.sample],y=true.vals.mapped$y[this.sample],z=true.vals.mapped$z[this.sample]+ran)
-
 
 # run mgcv
 library(mgcv)
@@ -43,7 +45,7 @@ par(mfrow=c(2,2))
 tru<-matrix(c(0),res,res)
 tru[true.vals$inside==1]<-true.vals$z[true.vals$inside==1]
 tru[true.vals$inside==0]<-NA
-image(tru,col=heat.colors(100),xlab="v",ylab="w",main="truth")
+image(tru,col=heat.colors(100),xlab="x",ylab="y",main="truth")
 contour(tru,add=T)
 
 ### sc prediction w. tprs 
@@ -52,7 +54,7 @@ pred.grid<-matrix(c(0),res,res)
 pred.grid[true.vals$inside==1]<-fv
 pred.grid[true.vals$inside==0]<-NA
 
-image(pred.grid,col=heat.colors(100),xlab="v",ylab="w",main="sc+tprs prediction")
+image(pred.grid,col=heat.colors(100),xlab="x",ylab="y",main="sc+tprs prediction")
 contour(pred.grid,add=T)
 
 ### normal tprs
@@ -62,7 +64,7 @@ fv.tprs <- predict(b.tprs,newdata=data.frame(x=true.vals$x[true.vals$inside==1],
 pred.grid.tprs<-matrix(c(0),res,res)
 pred.grid.tprs[true.vals$inside==1]<-fv.tprs
 pred.grid.tprs[true.vals$inside==0]<-NA
-image(pred.grid.tprs,col=heat.colors(100),xlab="v",ylab="w",main="tprs prediction")
+image(pred.grid.tprs,col=heat.colors(100),xlab="x",ylab="y",main="tprs prediction")
 contour(pred.grid.tprs,add=T)
 
 

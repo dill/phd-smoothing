@@ -24,7 +24,7 @@ polyvertices[18]<-complex(1,-3,0.5)
 polyvertices[19]<-polyvertices[1]
 
 # write the vertives out to file
-write.csv(list(x=Re(polyvertices),y=Im(polyvertices)),"figverts.csv",row.names=FALSE)
+#write.csv(list(x=Re(polyvertices),y=Im(polyvertices)),"figverts.csv",row.names=FALSE)
 
 # now generate some data
 
@@ -68,10 +68,10 @@ ind[inside.points]<-1
 
 
 # check that it looks okay...
-z=as.vector(surf$z)
-z[!inside.points]<-NA
-image(matrix(z,resolution,resolution)); contour(matrix(z,resolution,resolution),add=TRUE)
+#z=as.vector(surf$z)
+#z[!inside.points]<-NA
+#image(matrix(z,resolution,resolution)); contour(matrix(z,resolution,resolution),add=TRUE)
 
 # write out truth to a file
-#write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=ind),"fig9truth.csv",row.names=FALSE)
+write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=ind),"fig9truth.csv",row.names=FALSE)
 
