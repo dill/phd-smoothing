@@ -40,7 +40,7 @@
  
 % The abstract
 \begin{abstract}
-This document lays out some of the technical details of the \sch mapping from a statistical perspective for the purposes of using the transform to morph a complex region before performing smoothing over it. 
+This document lays out some of the technical details of the \sch mapping from a statistical perspective for the purposes of using the transform to morph a 2D region before performing smoothing over it. 
 \end{abstract}
  
  
@@ -56,7 +56,7 @@ This document lays out some of the technical details of the \sch mapping from a 
 
 \section{Method}
 
-In order to smooth around a complex region, one approach is to transform the shape of the region into a shape that is easier to smooth over. So, for example, we could transform a region into a rectangle, circle or other familiar shape to avoid the problems such as leakage. In this spirit, we wish to find some mapping such as $\phi$ in \fig{simpledia}.
+Given some complicated region that it is difficult to smooth over, one approach is to morph or transform the domain. So, for example, one could transform a region into a rectangle, circle or other familiar shape to avoid the problems such as leakage. In this spirit, we wish to find some mapping such as $\phi$ in \fig{simpledia}.
 
 % Simple diagram showing the mapping
 \begin{figure} [htbp]
@@ -66,13 +66,13 @@ In order to smooth around a complex region, one approach is to transform the sha
 \label{simpledia}
 \end{figure}
 
-In our case we use a method from complex analysis called the \sch mapping. This takes some arbitrary polygon and maps it to some set shape. For example this could the upper half-plane ($H^+$), a rectangle or the unit disk. 
+In our case we use a method from complex analysis called the \sch mapping. This takes some arbitrary polygon and maps it to some set shape. Commonly this is the upper half-plane ($H^+$), a rectangle or the unit disk. 
 
 This is achieved in the $H^+$ case by taking the vertices of the polygon and mapping them to points on the real line (see \fig{reallinedia}.) This can be thought of as ``unwrapping'' the polygon onto the real line. 
 
 For the unit disk case, we take points on the circle bounding the unit disk and map vertices on the polygon to those points (see \fig{unitdiskdia}.) One can think of this as adding control points to the unit circle and using the exponents in the \sch formula (below) to tighten up the angles.
 
-The rectangular case is somewhat similar to the circle in that extra points are added to the boundary and the angles of these points tightened until the shape is identical to the polygon.
+The rectangular case is somewhat similar to the unit disk in that extra points are added to the boundary and the angles of these points tightened until the shape is identical to the polygon.
 
 % Diagram showing upper half plane to polygon
 \begin{figure} [tbp]
@@ -128,9 +128,9 @@ We use the function $\phi$ to go from the transformed domain to the polygon (fro
 
 \section{\sch Mapping}
 
-We now look at the mathematical formulation for the upper half-plane, unit disk and rectangle. There are many mappings that can be performed however the ones detailed here are either cannonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two.) For the purposes of smoothing we are interested in the function $\phi^{-1}$ (\emph{ie.} the function that goes from our domain to the transformed one), we first need to calculate $\phi$ before we may calculate its inverse\footnote{In conformal mapping literature $\phi$ is referred to as the \emph{forwards map} and $\phi^{-1}$ as the \emph{backwards map}.}.
+We now look at the mathematical formulation for the upper half-plane, unit disk and rectangle. There are many mappings that can be performed however those detailed here are either cannonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two.) For the purposes of smoothing we are interested in the function $\phi^{-1}$ (\emph{ie.} the function that goes from our domain to the transformed one.) We must first calculate $\phi$ before we may calculate its inverse\footnote{In conformal mapping literature $\phi$ is referred to as the \emph{forwards map} and $\phi^{-1}$ as the \emph{backwards map}.}.
 
-The forwards map, $\phi$, as we will see below, is determined up to scaling and rotation by the prevertices. So, our task is to efficiently find the prevertices and hence find the mapping $\phi$. The task of finding the prevertices is known as the \emph{\sch parameter problem}.
+The forwards map, $\phi$, as we will see below, is determined up to translation, scaling, and rotation by the prevertices. So, our task is to efficiently find the prevertices and hence find the mapping $\phi$. The task of obtaining the prevertices is known as the \emph{\sch parameter problem}.
 
 
 \subsection{The upper half-plane}
@@ -143,11 +143,11 @@ When we map $\Gamma$ to $H^+$ we set $\phi(\infty) = w_n$ without any loss of ge
 
 Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been calculated. These control the scaling and rotation of the transform.
 
-Although setting $\phi(\infty) = w_n$ does not make any difference in a mathematical sense, it does mean that the density of the points as they are mapped into $H^+$ is rather odd. Given two points near $w_n$, their spacing on the upper half-plane is huge in comparison to two points near the other vertices. For this reason it is more common to use the unit disk or rectangle mapping. This phenomenon is known as \emph{crowding} and will be covered in more detail below.
+Although setting $\phi(\infty) = w_n$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into $H^+$ is rather odd. Given two adjacent points near $w_n$, their spacing on the upper half-plane is huge in comparison to two adjacent points near the other vertices. For this reason it is more common to use the unit disk or rectangle mapping. 
 
 \subsection{Unit disk}
 
-The formula for the unit disk looks very similar to that for $H^+$ but with the product now running over all of the prevertices. The integrand is simply a constant multiple of the $H^+$ case. This is merely to avoid problems in the calculation of the branch cuts (\cite{driscoll}, \emph{p. 12}).
+The formula for the unit disk looks very similar to that for $H^+$ but the product now runs over all prevertices. The integrand is simply a constant multiple of the $H^+$ case. This is merely to avoid problems in the calculation of the branch cuts (\cite{driscoll}, \emph{p. 12}).
 
 \begin{equation}
 \label{unitscmap}
@@ -159,7 +159,7 @@ As above, $A$ and $C$ are complex constants.
 \subsection{Rectangle}
 For the rectangle case we must specify four vertices of $\Gamma$ that map to the four corners of the rectangle. This uniquely specifies the aspect ratio of the rectangle (\cite{driscoll}, \emph{p. 48}).
 
-The rectangle mapping is slightly different in its calculation to the two above mappings. We first map $\Gamma$ to the upper half-plane as detailed above. From there we can use the Jacobi elliptic function\footnote{The form of which is $\int_0^\gamma \frac{dt}{\sqrt{1-k^2\sin^2t}}$. Further details may be found at \url{http://mathworld.wolfram.com/JacobiEllipticFunctions.html}.} to map a rectangle to the upper half-plane. The computation of this map is expensive due to the evaluation of the elliptic function (\cite{driscoll}, \emph{p. 49}) so a shortcut using the mapping to the mapping to the strip. We do not go into further about detail here (as the computational intricacies are covered in \cite{howell90}) however, we cover the standard iterative method for finding prevertices without CRDT in the next section.
+The rectangle mapping is slightly different in its calculation to the two above mappings. We first map $\Gamma$ to the upper half-plane as detailed above. From there we can use the Jacobi elliptic function\footnote{The form of which is $\int_0^\gamma \frac{dt}{\sqrt{1-k^2\sin^2t}}$. Further details may be found at \url{http://mathworld.wolfram.com/JacobiEllipticFunctions.html}.} to map a rectangle to the upper half-plane. The computation of this map is expensive due to the evaluation of the elliptic function (\cite{driscoll}, \emph{p. 49}) so a shortcut using the mapping to the mapping to the strip. We do not go into further about detail here (as the computational intricacies are covered in \cite{howell90}.)
 
 
 
@@ -174,11 +174,11 @@ To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ we use th
 \frac{\vert \phiinv(w^*_{k+1}) -  \phiinv(w^*_k) \vert}{\vert \phiinv(w^*_2)-\phiinv(w^*_1)\vert} - \frac{\vert w_{k+1} - w_k\vert}{\vert w_2 - w_1\vert} = 0, \qquad \text{for } k=3,\dots,n-1.
 \end{equation}
 
-Here $\vert \phiinv(w^*_{k+1}) -  \phiinv(w^*_k) \vert$ is the distance between the $k^{th}$ and $(k+1)^{th}$ vertex.  We find this by integrating along the line between the points in the domain of the polygon.
+Here $\vert \phiinv(w^*_{k+1}) -  \phiinv(w^*_k) \vert$ is the distance between the $k^{th}$ and $(k+1)^{th}$ vertex.  We find this by integrating along the line between the points within $W$.
 
-Intuitively, we are comparing the side lengths of the polygon in order to evaluate approximation of the polygon in each iteration (\cite{snider}, \emph{p. A-3}), both scaled by the distance between the first two vertices (in their respective domains.)
+Intuitively, we are comparing the side lengths of the polygon in order to evaluate approximation of $\Gamma$ in each iteration (\cite{snider}, \emph{p. A-3}), both scaled by the distance between the first two vertices (in their respective domains.)
 
-Note that the relation does not include the vertex $w_n$, nor do we look at $w_1$ or $w_2$ in the numerator on the right of the above equation. The former is since (by theorem 3.1 of \cite{driscoll}, \emph{p. 24}) a polygon is precisely defined by its angles and its vertices not including $w_n$\footnote{Since we know the direction of the edges leacving $w_1$ and $w_{n-1}$, we may find the point where they meet.}. The latter is due to $w_1$ and $w_2$ being rescaled and translated by the complex constants, $A$ and $C$, in the \sch formula.
+Note that the relation does not include the vertex $w_n$, nor do we look at $w_1$ or $w_2$ in the numerator on the right of the above equation. The former is since (by theorem 3.1 of \cite{driscoll}, \emph{p. 24}) a polygon is precisely defined by its angles and its vertices not including $w_n$\footnote{Since we know the direction of the edges leaving $w_1$ and $w_{n-1}$, we may find the point where they meet.}. The latter is due to all vertices (and hence $w_1$ and $w_2$) being rescaled and translated by the complex constants, $A$ and $C$, in the \sch formula.
 
 It is for this reason, in the upper half-plane case, that we can map $w_n$ to $\infty$ without loss of generality. In practice we fix $w^*_n=1$, $w^*_{n-1}=-i$ and $w^*_{n-2}=-1$ in the unit disk case (\cite{driscoll}, \emph{p. 24}.) For the rectangle case we need to specify which vertices of $\Gamma$ map to which vertices of the rectangle.
 
@@ -190,7 +190,7 @@ C=\frac{\vert \phiinv(w^*_2)-\phiinv(w^*_1)\vert}{\vert w_2 - w_1\vert},
 
 otherwise, we can assume that up to scaling and rotation that $w_1$ and $w_2$ are correct. In which case we know that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense.) 
 
-$A$ is the image of the base point of the integration, for computational reasons this is usually the prevertex nearest to the point $w^*$ that we wish to map in \eqn{unitscmap}  (\cite{driscoll}, \emph{p. 27}.)
+$A$ is the image of the base point of the integration and is usually written as $w_0$. For computational reasons this is usually the prevertex nearest to the point $w^*$ that we wish to map in \eqn{unitscmap}  (\cite{driscoll}, \emph{p. 27}.)
 
 
 \subsection{Sketch of an algorithm to calculate the \sch mapping}
@@ -238,7 +238,7 @@ To calculate points from the polygon to points on the unit disk, there are two p
 \frac{dw^*}{dw}=\frac{1}{\phi^{-1}(w^*)} \quad \text{and} \quad \phiinv(w_0)=w^*_0.
 \end{equation}
 
-We infact use a combination of these methods; solving (\ref{scivp}) approximately gives the starting values for the Newton iterations which are significantly faster (since $\phi^{-1}$ is cheaper to compute than $\phi$.) (\cite{driscoll} \emph{p. 29}.)
+We in fact use a combination of these methods; solving (\ref{scivp}) approximately gives the starting values for the Newton iterations which are significantly faster (since $\phi^{-1}$ is cheaper to compute than $\phi$.) (\cite{driscoll} \emph{p. 29}.)
 
 The only problem with this is that the path from $w_0$ to the point to map, $w$, must lie entirely inside the polygon. This is not known since after the mapping has been computed, the only points that are known are the vertices (at which the IVP is singular.) So, to combat this, all of the points on the path are checked sequentially. This computation, although inelegant, is fast compared to the IVP/Newton iterations.
 
@@ -264,7 +264,7 @@ An example of using the backwards map to find the transformed co-ordinates from 
 \section{Crowding}
 
 \subsection{The crowding problem}
-When the polygon has many vertices or there is elongated the mapped vertices are positioned too closely in the transformed domain. This effect is referred to as \emph{crowding} and can be observed in \fig{crowdeddisk}. Indeed, \cite{howell90} points out that in elgonated regions prevertices can be located exponentially close such that in finite precision arithmetic they have merged.
+When the polygon is elongated or has many vertices, the mapped vertices are positioned too closely in the transformed domain. This effect is referred to as \emph{crowding} and can be observed in \fig{crowdeddisk}. Indeed, \cite{howell90} points out that in elgonated regions prevertices can be located exponentially close such that in finite precision arithmetic they have merged.
 
 % Crowded mapping diagram
 \begin{figure} [tbp]
@@ -276,11 +276,11 @@ When the polygon has many vertices or there is elongated the mapped vertices are
 
 \subsection{Fixing crowding}
 
-A primitive way to fix the problem of crowding if it is caused by an elongated domain is to map to an elongated domain such as the rectangle or plane. This approach is suggested in \cite{howell90} however, as they point out, this does not eliminate all crowding and problems can still occur when there are strongly acute peninsulae in the polygon. Using a rectangular domain also does not fix problems which occur when mapping from T- or H-shaped domains (so-called ``multiply elongated'' domains.)
+If the crowding is caused by $\Gamma$ being elongated then a  primitive fix is to map to an elongated domain such as the rectangle or plane. This approach is suggested in \cite{howell90} however, as they point out, this does not eliminate all crowding and problems can still occur when there are strongly acute peninsulae in the polygon. Mapping to an elongated domain also does not fix problems which occur when mapping from T- or H-shaped domains (so-called ``multiply elongated'' domains.)
 
-In order to combat this problem more effectively, \cite{vavasis96} propose the CRDT (cross-ratios of the Delaunay triangulation) algorithm. Since each set of prevertices has $n-3$ degrees of freedom, there is a three parameter family of possible vertex arragements that all map to the same polygon, we would like to be able to use the most stable of these \emph{embeddings}. These embeddings are related by the M\"{o}bius transformation.
+In order to combat this problem more effectively, \cite{vavasis96} propose the CRDT (cross-ratios of the Delaunay triangulation) algorithm. Since each set of prevertices has $n-3$ degrees of freedom, there is a three parameter family of possible vertex arragements that all map to the same polygon, we would like to use the most stable of these \emph{embeddings}. The M\"{o}bius transformation relates the embeddings to one another.
 
-We can extend this idea further by noting that the polygon does not change if additional vertices are added inbetween the current ones, provided that the internal angle associated with the new vertex is $\pi$. These extra vertices also do not change the \sch formula since in \eqn{unitscmap} $\alpha_k=1$ for an angle of $\pi$. Adding these extra vertices allows us to control the aspect ratio of the map.
+We can extend this idea further by noting that the polygon is identical if additional vertices are added between the current ones, provided that the internal angle associated with the new vertex is $\pi$. These extra vertices also do not change the \sch formula since in \eqn{unitscmap} $\alpha_k=1$ for an angle of $\pi$. Adding these extra vertices allows us to control the aspect ratio of the map.
 
 Finally, in the classical solution to the \sch parameter problem we enforce conditions on the side lengths and orientations of the polygon, instead we would now like to impose conditions about quadrilateral sections of the polygon and the diagonals of the polygon. We can do this by first triangulating the domain and then merging each pair of triangles into a quadrilateral. A measure is then defined (the \emph{cross-ratio}) which specifies a set of non-linear equations to be solved. These equations enforce the constraint that the cross-ratio in mapped polygon comes out correctly. 
 
@@ -292,7 +292,7 @@ Putting all of these ideas together gives the CRDT algorithm. We first add edges
 
 for each quadrilateral in the polygon. Then, analogously to \eqn{optimizeme} we set up a series of equations, specifying that the cross-ratios remain the same in the polygon and the transform of the rectangle back to the polygon. We then wish to solve for the values of $\rho$ for the original domain in the same manner as we solved for side lengths in the original problem. 
 
-The downside of using CRDT is that it may add too many vertices to maintain the aspect ratio (\cite{driscoll05}) and the CRDT algorithm is cubic in the number of vertices, so the algorithm tends to take longer than the one specified in Section (\ref{algorithmsketch}). This is, of course, ofset against the fact that we can actually calculate the transform.
+The downside of using CRDT is that it may add too many vertices to maintain the aspect ratio (\cite{driscoll05},) so the algorithm tends to take longer than the one specified in Section (\ref{algorithmsketch}) since it is $O(n^3)$. This is, of course, offset against the fact that the problem becomes tractable.
 
 \bibliographystyle{plainnat}
 \bibliography{sc-refs}
