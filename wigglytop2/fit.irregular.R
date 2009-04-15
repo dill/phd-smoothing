@@ -5,6 +5,8 @@ true.vals<-read.csv("fig9truth.csv",header=TRUE)
 true.vals.mapped<-read.csv("fig9truemapped.csv",header=FALSE)
 names(true.vals.mapped)<-c("x","y","z")
 
+verts<-read.csv("figverts.csv")
+names(verts)<-c("x","y")
 
 # sample from the matrix
 
@@ -14,12 +16,10 @@ samp.size<-10000
 # make a sample index
 this.sample<-sample(c(1:dim(true.vals)[1]),samp.size)
 
-
 # noise
 ran<-rnorm(samp.size)*0.02
 
 true.vals$z[true.vals$inside==0]<-NA
-
 
 # take the points from the true and true mapped
 samp.data<-data.frame(x=true.vals$x[this.sample],y=true.vals$y[this.sample],z=true.vals$z[this.sample]+ran)

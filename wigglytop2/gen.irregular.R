@@ -72,13 +72,6 @@ bivn.kde.5$z<-bivn.kde.5$z*5
 surf$z<-surf$z+bivn.kde.4$z+bivn.kde.5$z
 
 
-
-# blank out the other "leg"
-
-
-
-
-
 # find the inside points...
 library(soap)
 
@@ -91,6 +84,7 @@ bnd$y<-Im(polyvertices)
 xn<-length(surf$x); yn<-length(surf$y)
 xx<-rep(surf$x,yn); yy<-rep(surf$y,rep(xn,yn))
 
+# blank out the other "leg"
 surf$z[xx > -1.5 & xx < -0.5]<-0
 
 
