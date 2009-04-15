@@ -43,7 +43,7 @@
 
 % The abstract
 \begin{abstract}
-Here I investigate an alternative method for smoothing over 2-D regions based on the Schwarz-Christoffel transform from complex analysis. This takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. We may then smooth over the transformed area using penalized regression splines and transform this smooth back to the original domain in order to perform analysis. I explore the utility of this transform for the horseshoe shape proposed by \cite{ramsay}.
+Here I investigate an alternative method for smoothing over 2-D regions based on the Schwarz-Christoffel transform from complex analysis. The transform takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. We may then smooth over the transformed area using penalized regression splines. Finally, the smooth is transformed back to the original domain in order to perform analysis. I explore the utility of this transform for the horseshoe shape proposed by \cite{ramsay}.
 \end{abstract}
 
 
@@ -63,7 +63,7 @@ Here I investigate an alternative method for smoothing over 2-D regions based on
 
 The test function highlights a common problem in spatial smoothing: that of ``leakage''. When the problem is specified in Euclidean distance, the model thinks that the distance between the $-4$ and $4$ points of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high density from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes the smooth to be calculated incorrectly.
 
-\Fig{tpleakage} shows what happens when a thin plate spline is fitted to the horshoe with no information about the structure of the domain. Comparing the contour lines to those in the actual horseshoe, one can easily see that there is leakage.
+\Fig{tpleakage} shows what happens when a thin plate spline is fitted to the horseshoe with no information about the structure of the domain. Comparing the contour lines to those in the actual horseshoe, one can easily see that there is leakage.
 
 
 
@@ -90,18 +90,18 @@ Clearly we would like to use an approach that respects the shape of the region, 
 \begin{enumerate}
 \item \cite{ramsay} proposes finite area $L$-splines (FELSPLINEs.) The $L$-spline has a differential operator in its penalty, which cannot be analytically solved in two dimensions. However, to combat this, the author triangulates the domain and then constructs a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. The union of these functions is then a solution to the PDE in the penalty and therefore the solution to the usual smoothing objective function\footnote{\emph{ie.} $\sum_{i=1}^n (z_i-f(x_i,y_i;\theta))^2 + \lambda \int_\Omega Pf(x,y;\theta)d\Omega$, where $P$  is some penalty operator}.
 
-Although this method performed better than previous models on the horseshoe, FELSPLINE does not perform very well in practice. This is since its boundary conditions specify that the gradient is normal to the edge of the area. This is not always physically realistic.
+Although it performs better than previous models on the horseshoe, FELSPLINE does not do very well in practice. This is since its boundary conditions specify that the gradient is normal to the edge of the area. This is not always physically realistic.
 
-\item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. In this case they take the geodesic distance between two points, that being the shortest path within the domain in order to address the problem of the definition of ``close'' in the domain. 
+\item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. In this case they take the geodesic distance between two points, that being the shortest path within the domain. This gives a definition of how near objects are in the domain.
 
-Since the geodesic distance is only known if the intrinsic structure of the domain is known (which is rare in ecological examples), the authors use a different method to calculate the shortest path. For this they create a graph, with datum at each node and the distance between each pair of nodes as the weights on the edges. Floyd's algorithm is then run to find the $k$ nearest neighbors of each node. Unfortunately this is $\mathcal{O}(n^3)$ if $n$ is the number of datum.
+Since the geodesic distance is only known if the intrinsic structure of the domain is known (which is rare in ecological examples), the authors use a different method to calculate the shortest path. For this they create a graph, with datum at each node and the distance between each pair of nodes as the weights on the edges. Floyd's algorithm\footnote{Which is cubic in the number of vertices.} is then used to find the $k$ nearest neighbors of each node.
 
 
-\item \cite{soap} consider a soap film over the domain which is weighed down by the data whilst minimizing the surface tension in the film.
+\item \cite{soap} consider constructing a soap film over the domain. The film is then weighed down by the data, the objective is then to minimize the surface tension in the film.
 
-\item An alternative approach is to ``morph'' the area in question to be one that is more suitable for smoothing upon. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe back to a long strip and then smooth on that domain. This is what we propose here. 
+\item An alternative approach is to ``morph'' the area in question to be one which is more suitable for smoothing. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe into a long strip and then smooth on that domain. This is what we propose here. 
 
-This approach suffers from a few drawbacks. First, what is the natural domain to transform to? Second, what is the nullspace of this new domain? Clearly for some shapes the answer to both of these questions is obvious, but this is not always the case. It seems that the nullspace in the original domain will not be the same as the nullspace in the transformed domain. We address these problems in much greater detail below.
+This approach raises some questions. First, what is the natural domain to transform to? Second, what is the nullspace of this new domain? Clearly for some shapes the answer to both of these questions is obvious, but this is not always the case. We address these problems below.
 
 
 \end{enumerate}
@@ -111,17 +111,17 @@ This approach suffers from a few drawbacks. First, what is the natural domain to
 
 \section{Method}
 
-Here we formulate a conformal mapping from the domain of the problem (we call this the $W$ domain) to a domain on which it is easier to smooth (and where we can avoid the problems detailed above.) We elaborate on what was alluded to in \cite{eilerstalk}: using the \sch mapping to transform our domain to another in order to perform smoothing.
+Here we formulate a conformal mapping from the domain of the problem (we call this the $W$ domain) to a domain on which it is easier to smooth (which we denote $W^*$.) We elaborate on what was alluded to in \cite{eilerstalk}: using the \sch mapping to transform our domain to another in order to perform smoothing. Our hope is that by using our approach we can avoid the problems detailed above.
 
 \subsection{\sch}
 
-The \sch transform provides a way to map an arbitrary polygon in the complex plane to one of a set of objects (also in the complex plane.) The two most commonly mapped to objects are the unit disk and the rectangle. The procedure consists of adding vertices to the object you wish to map to and then deforming it iteratively until it is identical to the polygon.
+The \sch transform provides a way to map an arbitrary polygon in the complex plane to one of a set of objects (also in the complex plane.) The two most commonly mapped to objects are the unit disk and the rectangle. The procedure consists of adding vertices to the object you wish to map to and then deforming it iteratively until it is identical to the polygon. More formally we wish to find $\phi: W \mapsto W^*$.
 
-So, say we want to transform between a regular nonagon and a rectagle. We add five sides to the rectangle and then go about deforming it to the shape of the nonagon (by changing the angles at the vertices and then rescaling and rotating it as necessary.) 
+For example: we wish to transform between a regular nonagon and a rectagle. We add five sides to the rectangle and then go about deforming it to the shape of the nonagon (by changing the angles at the vertices and then rescaling and rotating it as necessary.) 
 
-\Fig{hsgridmapping} shows how a grid of points in the horseshoe are re-mapped via the \sch mapping. Here we see that the density of the grid once it has been mapped has become non-uniform. This presents the aforementioned problem of assessing the nullspace, \emph{ie.} what is the line that is unpenalised in our model?
+\Fig{hsgridmapping} shows how a grid of points in the horseshoe are re-mapped. We see that the density of the grid once it has been mapped has become non-uniform. This presents the aforementioned problem of calculating the nullspace of the penalty, \emph{ie.} what is the line that is unpenalised in our model?
 
-What is also notable here is that we have gone from one domain with a peninsula to another. However, we are more interested in making sure that the domain is less concave and minimizing the distortions to the points in the domain.
+Note that although we have gone from one domain with a peninsula to another, also featuring a peninsula. However, a considerable improvement has been made on the concavity of the region. 
 
 \begin{figure}
 \centering
@@ -129,7 +129,7 @@ What is also notable here is that we have gone from one domain with a peninsula 
 \begin{tabular}{cc}
 \includegraphics[height=0.75in, trim=1in 1in 0in 0.75in]{figs/hsgridmapping-1} & \includegraphics[height=0.75in, trim=1in 1in 0in 0.75in]{figs/hsgridmapping-2} \\
 \end{tabular}
-\caption{The mapping of a regular grid from the horseshoe under the \sch transform. The diagram was created by generating the grid over the bounding box in \fig{hswithboundingbox}, dropping those points not in the horseshow and then mapping the points.}
+\caption{The mapping of a regular grid from the horseshoe under the \sch transform. The diagram was created by generating the grid over the bounding box in \fig{hswithboundingbox}, dropping those points not in the horseshoe and then mapping the points.}
 \label{hsgridmapping}
 % generated by /phd-smoothing/sc-writeup/figs/hsgridmapping.R
 \end{figure}
@@ -138,7 +138,7 @@ Full technical details of the \sch mapping are given in \cite{miller08}.
 
 
 \subsection{P-splines}
-P-splines (\cite{eilersmarx96}) were used as the basis functions for the smooth since they present the easiest framework for adding arbitrary penalities. P-splines are essentially a B-spline basis with a penalty which provides a discrete approximation to the (standard) integrated $k^\text{th}$ derivative of the function. The penalty is given by:
+P-splines (\cite{eilersmarx96}) were used as the basis functions for the smooth since they present an easy framework for adding arbitrary penalties\footnote{Which may become useful if distortions to the polygon become problematic.}. P-splines are essentially a B-spline basis with a penalty which provides a discrete approximation to the (standard) integrated $k^\text{th}$ derivative of the function. The penalty is given by:
 
 \begin{equation*}
 \lambda \sum_{j=k+1}^n (\Delta^k a_j)^2,
@@ -147,18 +147,18 @@ P-splines (\cite{eilersmarx96}) were used as the basis functions for the smooth 
 where $n$ is the number of B-splines, $k$ the derivative we wish to approximate, $a_j$ the coefficient of the $j^\text{th}$ basis function and $\Delta a_j = a_j-a_{j-1}$ and hence $\Delta^2 a_j = a_j-2a_{j-1}+a_{j-2}$. $\lambda$ is the usual smoothing parameter. 
 
 \subsection{Thin plate regression splines}
-Thin plate regression splines (\cite{simonbook}, \emph{pp. 154-159}) provide a framework for smoothing in which knots do not to have to be selected and has an implicit definition of smoothness built into the model. In this definition of the spline, it is possible to set the degree of smoothness (via setting the order of the derivative to use in the penalty) it is also not necessary to choose a set of basis functions as these are also implicit in the model. 
+Thin plate regression splines (\cite{simonbook}, \emph{pp. 154-159}) provide a framework for smoothing in which knots do not to have to be selected and an implicit definition of smoothness is built into the model.
 
-As thin plate splines are isotropic smoothers it is not expected that the thin plate splines will do very well on the Ramsay test function since the function is naturally defined to have a gradient in one direction only. Thin plate splines are used here mainly as a comparison to the P-splines to assess whether the aforementioned effect is the only reason for the transformation's performance.
+As thin plate splines are isotropic smoothers it is not expected that the thin plate splines will do very well on the Ramsay test function since the test function is only varies along one axis. Thin plate splines are used here mainly as a comparison to the P-splines to assess whether the the P-spline's performance is due to the natural advantage of tensor product over isomorphic smoothers in such situations.
 
 \subsection{Procedure}
 
 Our procedure consists of the following steps:
 
 \begin{enumerate}
-\item Determine the domain over which we would like to smooth, $W$.
+\item Determine the domain over which we would like to smooth, $W$. This could be the region or a bounding box around it.
 
-\item Compute the \sch transform of $W$ to get $W^*$.
+\item Compute the \sch transform of $W$ to get $W^*$. To obtain the function, $\phi$.
 
 \item Map the co-ordinates of the datapoints in $W$ to $W^*$.
 
@@ -169,15 +169,15 @@ At this point it depends on the application as to whether a transform is needed 
 
 \subsection{Software}
 
-There are several pieces of software available to perform the \sch mapping. The Fortran library \texttt{SCPACK} is probably the oldest available package\footnote{\texttt{SCPACK} can be downloaded from Netlib} and was used initially. However, it only offers the mapping to the unit disk and does not include the CRDT method for performing the mapping (see \cite{miller08}, section (4.2).) For this reason the SC toolbox (\cite{driscoll}, \emph{pp. 115-119}) for Matlab is used to perform the mapping. 
+There are several pieces of software available to perform the \sch mapping. The Fortran library \texttt{SCPACK} is the oldest available package\footnote{\texttt{SCPACK} can be downloaded from Netlib.} and was used initially. However, it only offers the mapping to the unit disk and does not include the CRDT method for performing the mapping (see \cite{miller08}, section (4.2).) For this reason the SC toolbox (\cite{driscoll}, \emph{pp. 115-119}) for Matlab is used to perform the mapping. 
 
 The \textsf{R} library \texttt{mgcv} provides subroutines for fitting generalized additive models and, in particular, P-splines.
 
-Although packages are available to enable \textsf{R} to talk to Matlab and vice-verse, for the purposes of this exploratory work csv files were written by each program and read in by the other.
+Although packages are available to enable \textsf{R} to talk to Matlab and vice-verse, for the purposes of this exploratory work CSV files were written by each program and read in by the other.
 
 \section{Mapping the Ramsay horseshoe}
 
-In order to map the horseshoe, we first draw a rough bounding box around the shape. This will serve as the $W$ domain (rather than trying to approximate the curved edges with many straight lines.) The horseshoe, along with its bounding box is shown in \fig{hswithboundingbox}.
+In order to map the horseshoe, we first draw a rough bounding box around the shape. Rather than trying to approximate the curved edges with many straight lines, we use the bounding box as the $W$ domain remapped via the \texttt{evalinv()} function from the SC Toolbox. This is shown in \fig{hswithboundingbox}.
 
 \begin{figure}
 \centering
@@ -188,33 +188,35 @@ In order to map the horseshoe, we first draw a rough bounding box around the sha
 % generated by /phd-smoothing/sc-writeup/figs/hswithboundingbox.R
 \end{figure}
 
-The first step is to transform our bounding box into the rectangle. This is done using the \texttt{rectmap()}\footnote{or \texttt{crrectmap}, its CRDT equivalent (see \cite{miller08}.} function from the SC Toolbox in Matlab. This function solves the \sch parameter problem as detailed in \cite{miller08}.
+We then transform our bounding box into the rectangle. This is done using the \texttt{rectmap()}\footnote{or \texttt{crrectmap}, its CRDT equivalent (see \cite{miller08}.)} function from the SC Toolbox in Matlab. This function solves the \sch parameter problem as detailed in \cite{miller08}.
 
-A sample of 1000 points from the horseshoe was then taken and noise added to the data. First the $x,y$ coordinates of the sampled points where converted into complex numbers of the form $w=x+iy$ and then run through the \texttt{evalinv()} function from the SC Toolbox. This created a new set of coordinates $w^*=x^*+iy^*$. Smoothing was then performed over the responses in the $W^*$ domain using the \texttt{gam()} function in \texttt{mgcv}. 
+A sample of 1000 points from the horseshoe was then taken and noise added to the data. First the $x,y$ coordinates of the sampled points were expressed as complex numbers of the form $w=x+iy$. Then ampping was then performed. This created a new set of coordinates $w^*=x^*+iy^*$. Smoothing was then performed over the responses in the $W^*$ domain using the \texttt{gam()} function in \texttt{mgcv}. 
 
 Comparing the left hand figure in \fig{compsmooth} with \fig{ramsayshorseshoe} we see that transforming the domain gives quite a good approximation to the true figure.
 
-\Fig{compsmooth} shows a comparison between the predicted smooths given by the \sch transformed smooth (using a P-spline basis) and the smooth provided by the soap film smoother. The boxplots in \fig{scvssoapboxplot} show the mean squared error over a 100 by 50 point prediction grid.
+\Fig{compsmooth} shows a comparison between the predicted smooths given by the \sch transformed smooth (using a P-spline basis) and the smooth provided by the soap film smoother. 
+
+%The boxplots in \fig{scvssoapboxplot} show the per point mean squared error over a 100 by 50 call prediction grid.
 
 \begin{figure}
 \centering
 % trim order l b r t
 \includegraphics[trim=0.5in 0.5in 0in 0in]{figs/compsmooth.pdf} \\
-\caption{Comparison of smooths given using P-splines on the transformed domain (left), thin plate plines on the transformed domain (centre) and the smooth given by the soap film smoother (right.)}
+\caption{Comparison of smooths given using P-splines on the transformed domain (left), thin plate splines on the transformed domain (centre) and soap film smoother (right.)}
 \label{compsmooth}
 % generated by /phd-smoothing/sc-writeup/figs/pspline.soap.comp.hs.R
 \end{figure}
 
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[trim=0.5in 0in 0in 0in]{figs/scvssoapboxplot.pdf} \\
-\caption{Boxplots of mean squared error over the prediction grid. The left plot is for the transformation with P-splines (MSE 0.0041), centre plot is for the transform with thin plate splines (MSE 0.0041), and the right is the soap film smoother (MSE 0.00517.)} 
-\label{scvssoapboxplot}
+%\begin{figure}
+%\centering
+%% trim order l b r t
+%\includegraphics[trim=0.5in 0in 0in 0in]{figs/scvssoapboxplot.pdf} \\
+%\caption{Boxplots of mean squared error over the prediction grid. The left plot is for the transformation with P-splines (MSE 0.0041), centre plot is for the transform with thin plate splines (MSE 0.0041), and the right is the soap film smoother (MSE 0.00517.)} 
+%\label{scvssoapboxplot}
 % generated by /phd-smoothing/sc-writeup/figs/pspline.soap.comp.hs.R
-\end{figure}
+%\end{figure}
 
-Looking at the predicted values for the model in the transformed domain we get an indication as to why the fit is so good. \Fig{hsvisgam} shows the fitted surface and there we can see that there is a strong linear trend along the long axis of the horseshoe, making this a rather trivial smoothing problem for the model to deal with. So, it looks like we are addressing the problem in a more natural domain. In the next section we investigate this further.
+Looking at the predicted values for the model in the $W^*$ domain we get an indication as to why the fit is so good. \Fig{hsvisgam} shows the fitted surface and there we can see that there is a strong linear trend along the major axis of the horseshoe, making this a rather trivial smoothing problem. So, it looks like we are addressing the problem in a more natural domain. In the next section we investigate this further.
 
 \begin{figure}
 \centering
@@ -227,9 +229,11 @@ Looking at the predicted values for the model in the transformed domain we get a
 
 \subsection{Problems}
 
-As mentioned above, when the domain has been morphed it is not clear what the definition of smoothness is on the domain, \emph{ie.} what the nullspace of the penalty term is. A simple way to find the nullspace (and visualize it) is to take a line that runs along the centre of the domain and look at the test function's response along this line in both domains. This will give an idea of what a straight line will be mapped to in the domain.
+As mentioned above, when the domain has been morphed it is not clear what the definition of smoothness is, \emph{ie.} determining the nullspace of the penalty term. A simple way to find the nullspace (and visualize it) is to take a straight line in the domain and see what it maps to in the $W^*$ domain. We can also look at the response along that line and see what the 
 
-\Fig{horseshoecentreline} shows the centre line that was evaluated on the horseshoe and its equivalent line in the transformed domain. \Fig{centrelinelineplot} shows the evaluations of the horseshoe function over the line plotted against three coordinate systems. The first plot shows the function evaluations on the $W$ domain, the second on the $W^*$ domain and the final plot is in the horseshoe's ``natural'' domain, \emph{ie.} the value the horseshoe takes as a function of distance along the major axis of the shape.
+\Fig{horseshoecentreline} shows the line that was evaluated along the centre of the horseshoe and its equivalent line in the transformed domain. We can see from this that a line that is ``straight'' in the domain appears to be bent in the transform. The curvature does not appear to be particularly extreme in this case, however, one can imagine that this could get significantly worse for regions with more complicated boundaries.
+
+We may also look at the response along the centre line. \Fig{centrelinelineplot} shows the evaluations of the horseshoe function over the line plotted against three coordinate systems. The first plot shows the function evaluations on the $W$ domain, the second on the $W^*$ domain and the final plot is in the horseshoe's ``natural'' domain, \emph{ie.} the value the horseshoe takes as a function of distance along the major axis of the shape.
 
 \begin{figure}
 \centering
@@ -256,7 +260,7 @@ In the next section we investigate the properties of the transform further via a
 
 \section{Simulations}
 
-In the spirit of those simulations carried out in \cite{soap}, a large scale experiment was run and comparison made to those results. Data was simulated from two different test functions on the Ramsey horseshoe; first the one described above, and the second with a gradient across the short axis of the horseshoe. This, second, test function can be seen in \fig{altramsayhorseshoe}. Table (\ref{simtable}) shows the setup of these experiments, which were run on both test functions.
+In the spirit of those simulations carried out in \cite{soap}, a large scale experiment was run. Data was simulated from two different test functions on the Ramsey horseshoe; first the one described above, and the second with a gradient across the short axis of the horseshoe. This second test function can be seen in \fig{altramsayhorseshoe}. Table (\ref{simtable}) shows the setup of these experiments, which were run on both test functions.
 
 \begin{figure}
 \centering
@@ -285,9 +289,7 @@ Sample size & Noise level$^{1}$ \\
 
 Mean squared error between the true function and the fitted model was used to evaluate the model's performance. In the following tables we provide the mean squared error over a prediction grid of 1000 points averaged over 1000 generated data sets.
 
-
-
-Table (\ref{ramsayresultstable}) shows the results from the simulations for the standard horseshoe. A cursory glance show that that results were better than those for the soap film smoother for larger sample sizes and has comparable standard errors. Indeed, once we get to 100 samples the method does particularly badly. However, this is not as bad as it initially seems to be. Only 6 of the 1000 MSEs were greater than the mean (one of which was 54.6 and another was 437.99) so it seems that these two samples have contributed to this significant departure. This may not be the case with a different set of samples, however even with this problem (in whatever form it may manifest itself) the soap film has a lower MSE (and a significantly smaller standard error.) 
+Table (\ref{ramsayresultstable}) shows the results from the simulations for the standard horseshoe. A cursory glance show that that results were better than those for the soap film smoother for larger sample sizes and standard errors were comparable. Indeed, once we get to 100 samples the method performance degrades significantly. However, this is not as bad as it initially seems to be. Only 6 of the 1000 MSEs were greater than the mean (the largest two being 54.6 and 437.99) so it seems that these two samples have contributed to significant departure from the mean. Given a different set of samples this problem may not manifest itself, however the soap film smoother still has a smaller MSE and standard error.
 
 Once noise is introduced into the data we can see that the soap film and transformation method do as well as each other, MSEs are approximately the same and the standard errors are of the same order.
 
@@ -299,7 +301,7 @@ Once noise is introduced into the data we can see that the soap film and transfo
 \label{1000boxplots}
 \end{figure}
 
-\Fig{1000boxplots} compares boxplots of the MSEs for the first experiment. These plots are slightly different to the previous boxplots in that MSEs of 1000 simulations rather than the MSEs of 1000 points from the prediction grid. These plots show the \sch mapping doing better than the soap film smoother.
+\Fig{1000boxplots} compares boxplots of the MSEs for the first experiment. These plots show the \sch mapping doing better than the soap film smoother.
 
 \begin{table}[ht]
 \begin{tabular}{c c c c c}\\
@@ -319,7 +321,7 @@ Sample size & Noise level & P-spline MSE (\emph{se}) & Thin plate MSE (\emph{se}
 % generated by /phd-smoothing/sc-writeup/tablecode/ramsay.sim.results.table.R
 \end{table}
 
-Looking at table (\ref{altramsayresultstable}) we begin to see the soap film creap ahead of the transformation method. Although the MSEs are of approximately the same order (as are the standard errors), the soap film is gaining ground.
+For the alternative         Looking at table (\ref{altramsayresultstable}) we begin to see the soap film creap ahead of the transformation method. Although the MSEs are of approximately the same order (as are the standard errors), the soap film is gaining ground.
 
 \begin{table}[ht]
 \begin{tabular}{c c c c c}\\
