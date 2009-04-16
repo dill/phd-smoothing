@@ -292,6 +292,16 @@ Putting all of these ideas together gives the CRDT algorithm. We first add edges
 
 for each quadrilateral in the polygon. Then, analogously to \eqn{optimizeme} we set up a series of equations, specifying that the cross-ratios remain the same in the polygon and the transform of the rectangle back to the polygon. We then wish to solve for the values of $\rho$ for the original domain in the same manner as we solved for side lengths in the original problem. 
 
+We can see in \fig{uncrowdeddisk} that when the CRDT method is used with a rectangular domain that the crowding has been alleviated. The point density, as well as vertex density seems to be more uniform than in \fig{crowdeddisk}.
+
+% Uncrowded mapping diagram
+\begin{figure} [tbp]
+\centering
+\includegraphics[scale=0.5]{figs/irregular-fixed-crdt.pdf}
+\caption{The mapping of the irregular domain featured in \fig{crowdeddisk} using the CRDT method mapping to a rectangle. The crowding is now much less severe.}
+\label{uncrowdeddisk}
+\end{figure}
+
 The downside of using CRDT is that it may add too many vertices to maintain the aspect ratio (\cite{driscoll05},) so the algorithm tends to take longer than the one specified in Section (\ref{algorithmsketch}) since it is $O(n^3)$. This is, of course, offset against the fact that the problem becomes tractable.
 
 \bibliographystyle{plainnat}
