@@ -2,7 +2,7 @@
 
 # load some data...
 true.vals<-read.csv("fig9truth.csv",header=TRUE)
-true.vals.mapped<-read.csv("fig9truemapped.csv",header=FALSE)
+true.vals.mapped<-read.csv("fig9truemapped-rect.csv",header=FALSE)
 names(true.vals.mapped)<-c("x","y","z")
 
 # load the vertices data
@@ -12,14 +12,14 @@ names(verts)<-c("x","y")
 # sample from the matrix
 
 # how many points to sample
-samp.size<-10000
+samp.size<-1000
 
 # make a sample index
 this.sample<-sample(c(1:dim(true.vals)[1]),samp.size)
 
 
 # noise
-ran<-rnorm(samp.size)*2
+ran<-rnorm(samp.size)*0.02
 
 # take the points from the true and true mapped
 samp.data<-data.frame(x=true.vals$x[true.vals$inside==1],y=true.vals$y[true.vals$inside==1],z=true.vals$z[true.vals$inside==1])
@@ -38,7 +38,7 @@ fv <- predict(b.mapped,newdata=data.frame(x=true.vals.mapped$x,y=true.vals.mappe
 
 
 # pdf output
-pdf("fig9-dia.pdf",5,5)
+#pdf("fig9-dia.pdf",5,5)
 
 
 ### plotting code
@@ -105,7 +105,7 @@ lines(verts,lwd=2)
 
 
 # off
-dev.off()
+#dev.off()
 
 ### calculate the MSEs
 

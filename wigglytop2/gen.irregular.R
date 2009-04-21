@@ -45,7 +45,7 @@ require(MASS)
 
 # things that will eventually be args
 lims<-c(-3,3.5,-3,3)
-resolution<-500 # number of points in the kernel density estimate
+resolution<-50 # number of points in the kernel density estimate
 
 ### generate first MV normal
 # this is for the "leg"
@@ -95,13 +95,13 @@ ind[inside.points]<-1
 
 
 # check that it looks okay...
-z=as.vector(surf$z)
-z[!inside.points]<-NA
-# axis values
-axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
-image(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution))
-contour(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution),add=TRUE)
+#z=as.vector(surf$z)
+#z[!inside.points]<-NA
+## axis values
+#axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
+#image(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution))
+#contour(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution),add=TRUE)
 
 # write out truth to a file
-#write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=ind),"fig9truth.csv",row.names=FALSE)
+write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=ind),"wt2truth.csv",row.names=FALSE)
 

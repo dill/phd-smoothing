@@ -1,8 +1,8 @@
 # Fit a gam to the irregular region once it's been mapped
 
 # load some data...
-true.vals<-read.csv("fig9truth.csv",header=TRUE)
-true.vals.mapped<-read.csv("fig9truemapped.csv",header=FALSE)
+true.vals<-read.csv("wt2truth.csv",header=TRUE)
+true.vals.mapped<-read.csv("wt2truemapped.csv",header=FALSE)
 names(true.vals.mapped)<-c("x","y","z")
 
 verts<-read.csv("figverts.csv")
@@ -11,7 +11,7 @@ names(verts)<-c("x","y")
 # sample from the matrix
 
 # how many points to sample
-samp.size<-10000
+samp.size<-1000
 
 # make a sample index
 this.sample<-sample(c(1:dim(true.vals)[1]),samp.size)
@@ -34,7 +34,7 @@ b.mapped<-gam(z~s(x)+s(y),data=samp.data.mapped)
 # try to predict over the whole domain
 fv <- predict(b.mapped,newdata=data.frame(x=true.vals.mapped$x,y=true.vals.mapped$y))
 
-
+pdf("wt2-heatmap.pdf",7,7)
 
 res<-sqrt(length(true.vals$x))
 par(mfrow=c(2,2))
@@ -45,7 +45,7 @@ par(mfrow=c(2,2))
 tru<-matrix(c(0),res,res)
 tru[true.vals$inside==1]<-true.vals$z[true.vals$inside==1]
 tru[true.vals$inside==0]<-NA
-image(tru,col=heat.colors(100),xlab="x",ylab="y",main="truth")
+image(tru,col=heat.colors(100),xlab="x",ylab="y",main="truth",asp=1)
 contour(tru,add=T)
 
 ### sc prediction w. tprs 
@@ -54,7 +54,7 @@ pred.grid<-matrix(c(0),res,res)
 pred.grid[true.vals$inside==1]<-fv
 pred.grid[true.vals$inside==0]<-NA
 
-image(pred.grid,col=heat.colors(100),xlab="x",ylab="y",main="sc+tprs prediction")
+image(pred.grid,col=heat.colors(100),xlab="x",ylab="y",main="sc+tprs prediction",asp=1)
 contour(pred.grid,add=T)
 
 ### normal tprs
@@ -64,10 +64,10 @@ fv.tprs <- predict(b.tprs,newdata=data.frame(x=true.vals$x[true.vals$inside==1],
 pred.grid.tprs<-matrix(c(0),res,res)
 pred.grid.tprs[true.vals$inside==1]<-fv.tprs
 pred.grid.tprs[true.vals$inside==0]<-NA
-image(pred.grid.tprs,col=heat.colors(100),xlab="x",ylab="y",main="tprs prediction")
+image(pred.grid.tprs,col=heat.colors(100),xlab="x",ylab="y",main="tprs prediction",asp=1)
 contour(pred.grid.tprs,add=T)
 
-
+dev.off()
 
 ### calculate the MSEs
 

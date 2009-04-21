@@ -6,7 +6,7 @@ library(soap)
 
 # load some data...
 true.vals<-read.csv("fig9truth.csv",header=TRUE)
-true.vals.mapped<-read.csv("fig9truemapped.csv",header=FALSE)
+true.vals.mapped<-read.csv(paste("fig9truemapped-",domain,".csv",sep=""),header=FALSE)
 names(true.vals.mapped)<-c("x","y","z")
 
 # load the vertices data
@@ -22,17 +22,18 @@ knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
 
 
 #### OPTIONS TO SET ####
+# these are set in the file above at the moment
 # how many points to sample
-samp.size<-10000
+#samp.size<-10000
 # noise level
-noise.level<-0.02
+#noise.level<-0.02
 # domain
-domain<-"disk"
+#domain<-"disk"
 
 #### END OF OPTIONS ####
 
 # log this
-sink("simlog.txt")
+sink(paste("simlog-",domain,"-",samp.size,"-",noise.level,".txt",sep=""))
 
 cat("Simulation starts!\n")
 cat("Samples per iteration:",samp.size,"\n")
@@ -84,8 +85,8 @@ mse.data<-cbind(sctprs.mse,tprs.mse,soap.mse)
 cat("writing to file:",paste("mses-",domain,"-",samp.size,"-",noise.level,".txt",sep=""))
 write.csv(mse.data,file=paste("mses-",domain,"-",samp.size,"-",noise.level,".txt",sep=""))
 
-cat("data written!")
+cat("data written!\n")
  
-cat("simulation done!")
+cat("simulation done!\n")
 
 sink(NULL)

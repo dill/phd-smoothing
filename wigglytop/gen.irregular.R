@@ -34,7 +34,7 @@ require(MASS)
 
 # things that will eventually be args
 lims<-c(-3,3,-2,4)
-resolution<-500 # number of points in the kernel density estimate
+resolution<-50 # number of points in the kernel density estimate
 
 # generate first MV normal
 bivn.1 <- mvrnorm(2500, mu = c(-2, 0), Sigma = matrix(c(2, 0, 0, 2), 2))
@@ -73,5 +73,5 @@ ind[inside.points]<-1
 #image(matrix(z,resolution,resolution)); contour(matrix(z,resolution,resolution),add=TRUE)
 
 # write out truth to a file
-write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=ind),"fig9truth.csv",row.names=FALSE)
+write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=ind),"wttruth.csv",row.names=FALSE)
 

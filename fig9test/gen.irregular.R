@@ -28,7 +28,7 @@ require(MASS)
 
 # things that will eventually be args
 lims<-rep(c(-10,10),2)
-resolution<-500 # number of points in the kernel density estimate
+resolution<-50 # number of points in the kernel density estimate
 
 # generate first MV normal
 bivn.1 <- mvrnorm(2500, mu = c(5, 5), Sigma = matrix(c(10, 0, 0, 10), 2))

@@ -17,10 +17,10 @@ vertex_points=[1 6 8 9];
 % do the mapping
 
 % rectangle map
-%f=rectmap(polyv_p, vertex_points);
+f=rectmap(polyv_p, vertex_points);
 
 % disk map
-f=crdiskmap(polyv_p);
+%f=crdiskmap(polyv_p);
 
 
 %%%%%%%%%%%%%%%%%%%
