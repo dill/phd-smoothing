@@ -27,6 +27,10 @@ for (domain in c("disk","rect")){
 
       }
    }
+
+   # make the plots at this point
+   source("makeboxplots.R")
+
 }
 
 

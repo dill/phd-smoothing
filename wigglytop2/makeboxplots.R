@@ -13,8 +13,6 @@ for (samp.size in c(1000,100)){
       dat$tprs.mse<-log(dat$tprs.mse)
       dat$sctprs.mse<-log(dat$sctprs.mse)
 
-      ylims<-c(min(dat$tprs.mse,dat$sctprs.mse),max(dat$tprs.mse,dat$sctprs.mse))
-
       boxplot(dat$tprs.mse,main=paste(samp.size,",",noise.level,"tprs"),ylim=ylims,
                xlab=paste("MSE=",signif(mean(tprs.mse.orig,na.rm=TRUE),5),"se(MSE)=",
                signif(sd(tprs.mse.orig,na.rm=TRUE),5)))
