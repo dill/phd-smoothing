@@ -49,7 +49,10 @@ for (i in 1:500){
    
 }
 
-mse.data<-cbind(sctprs.mse,tprs.mse,soap.mse)
+mses<-c(sctprs.mse,tprs.mse,soap.mse)
+labs<-c(rep("SC+TPRS",length(sctprs.mse)),rep("TPRS",length(tprs.mse)),rep("soap",length(soap.mse)))
+
+mse.data<-list(mse=mses,labs=labs)
 
 cat("writing to file:",paste("mses-",domain,"-",samp.size,"-",noise.level,".txt",sep=""))
 write.csv(mse.data,file=paste("mses-",domain,"-",samp.size,"-",noise.level,".txt",sep=""))
