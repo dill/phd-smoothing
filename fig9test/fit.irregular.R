@@ -2,7 +2,7 @@
 
 # load some data...
 true.vals<-read.csv("fig9truth.csv",header=TRUE)
-true.vals.mapped<-read.csv("fig9truemapped-rect.csv",header=FALSE)
+true.vals.mapped<-read.csv("fig9truemapped-disk.csv",header=FALSE)
 names(true.vals.mapped)<-c("x","y","z")
 
 # load the vertices data
@@ -12,7 +12,7 @@ names(verts)<-c("x","y")
 # sample from the matrix
 
 # how many points to sample
-samp.size<-1000
+samp.size<-500
 
 # make a sample index
 this.sample<-sample(c(1:dim(true.vals)[1]),samp.size)
@@ -20,6 +20,7 @@ this.sample<-sample(c(1:dim(true.vals)[1]),samp.size)
 
 # noise
 ran<-rnorm(samp.size)*0.02
+#ran<-0
 
 # take the points from the true and true mapped
 samp.data<-data.frame(x=true.vals$x[true.vals$inside==1],y=true.vals$y[true.vals$inside==1],z=true.vals$z[true.vals$inside==1])
@@ -29,12 +30,6 @@ samp.data.mapped<-data.frame(x=true.vals.mapped$x[this.sample],y=true.vals.mappe
 
 # run mgcv
 library(mgcv)
-b.mapped<-gam(z~s(x)+s(y),data=samp.data.mapped)
-
-
-#### predict back
-# try to predict over the whole domain
-fv <- predict(b.mapped,newdata=data.frame(x=true.vals.mapped$x,y=true.vals.mapped$y))
 
 
 # pdf output
@@ -57,17 +52,19 @@ contour(axis.vals$x,axis.vals$y,tru,add=T)
 lines(verts,lwd=2)
 
 ### sc prediction w. tprs 
+b.mapped<-gam(z~s(x,y,k=49),data=samp.data.mapped)
+# try to predict over the whole domain
+fv <- predict(b.mapped,newdata=data.frame(x=true.vals.mapped$x,y=true.vals.mapped$y))
 # do some faffing for the plots
 pred.grid<-matrix(c(0),res,res)
 pred.grid[true.vals$inside==1]<-fv
 pred.grid[true.vals$inside==0]<-NA
-
 image(axis.vals$x,axis.vals$y,pred.grid,col=heat.colors(100),xlab="x",ylab="y",main="sc+tprs prediction",asp=1)
 contour(axis.vals$x,axis.vals$y,pred.grid,add=T)
 lines(verts,lwd=2)
 
 ### normal tprs
-b.tprs<-gam(z~s(x)+s(y),data=samp.data)
+b.tprs<-gam(z~s(x,y,k=49),data=samp.data)
 fv.tprs <- predict(b.tprs,newdata=data.frame(x=true.vals$x[true.vals$inside==1],y=true.vals$y[true.vals$inside==1]))
 
 pred.grid.tprs<-matrix(c(0),res,res)
@@ -82,15 +79,15 @@ lines(verts,lwd=2)
 library(soap)
 # setup knots
 # this is a faff
-knots.x<-rep(seq(-10,10,length.out=5),5)
-knots.y<-rep(seq(-10,10,length.out=5),rep(5,5))
+knots.x<-rep(seq(-10,10,length.out=7),7)
+knots.y<-rep(seq(-10,10,length.out=7),rep(7,7))
 
 insideknots<-inSide(verts,knots.x,knots.y)
 
 knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
 
 # fit
-b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=25),data=samp.data,knots=knots)
+b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=49),data=samp.data,knots=knots)
 
 # plot
 
