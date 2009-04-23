@@ -4,7 +4,7 @@
 
 
 
-pdf(file=paste("mses-boxplot.pdf",sep="",width=6,height=10)
+pdf(file=paste("mses-boxplot.pdf",sep="",width=6,height=10))
 
 par(mfrow=c(4,1))
 # make the text look better for printout
@@ -29,7 +29,7 @@ for (samp.size in c(1000,500)){
                  "TPRS: MSE=",mses[2],"se(MSE)=",ses[2],"\n",
                  "soap: MSE=",mses[3],"se(MSE)=",ses[3],"\n")
 
-      boxplot(log(mse)~lab,dat,main=paste(samp.size," samples, noise=",noise.level),
+      boxplot(log(mse)~labs,data=dat,main=paste(samp.size," samples, noise=",noise.level),
                xlab=xlab)
    }
 }
