@@ -4,7 +4,7 @@
 
 
 
-pdf(file=paste("mses-boxplot.pdf",sep="",width=6,height=10))
+pdf(file="mses-boxplot.pdf",width=4,height=10)
 
 par(mfrow=c(4,1))
 # make the text look better for printout

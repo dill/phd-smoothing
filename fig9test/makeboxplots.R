@@ -6,7 +6,7 @@ par(mfrow=c(4,1))
 # make the text look better for printout
 par(cex.lab=0.5)
 
-pdf(file=paste("mses-",domain,"-boxplot.pdf",sep="",width=6,height=10))
+pdf(file=paste("mses-",domain,"-boxplot.pdf",sep=""),width=6,height=10)
 
 for (samp.size in c(1000,500)){
    for(noise.level in c(0.02, 0.005)){
