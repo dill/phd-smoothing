@@ -11,13 +11,13 @@ verts<-read.csv("figverts.csv",header=FALSE)
 names(verts)<-c("x","y")
 
 # how many points to sample
-samp.size<-1000
+samp.size<-500
 
 # make a sample index
 this.sample<-sample(c(1:dim(true.vals)[1]),samp.size)
 
 # noise
-ran<-rnorm(samp.size)*0.005
+ran<-rnorm(samp.size)*0.02
 #ran<-0
 
 true.vals$z[true.vals$inside==0]<-NA

@@ -39,5 +39,5 @@ sample_points=complex(sample_points(:,1),sample_points(:,2));
 % map those points
 mapped_sample_points=evalinv(f,sample_points);
 
-csvwrite('fig9truemapped.csv',[real(mapped_sample_points),imag(mapped_sample_points),z_out_samp]);
+csvwrite('fig9truemapped-rect.csv',[real(mapped_sample_points),imag(mapped_sample_points),z_out_samp]);
 

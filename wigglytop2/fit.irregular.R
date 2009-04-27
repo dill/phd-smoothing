@@ -14,7 +14,7 @@ names(verts)<-c("x","y")
 # sample from the matrix
 
 # how many points to sample
-samp.size<-1000
+samp.size<-500
 
 # make a sample index
 this.sample<-sample(c(1:dim(true.vals)[1]),samp.size)
