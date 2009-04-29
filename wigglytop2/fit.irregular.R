@@ -66,8 +66,8 @@ contour(pred.grid.tprs,add=T)
 ### soap
 # setup knots
 # this is a faff
-knots.x<-rep(seq(-2.9,2.9,length.out=10),10)
-knots.y<-rep(seq(-2.9,3.6,length.out=10),rep(10,10))
+knots.x<-rep(seq(-2.9,2.9,length.out=8),8)
+knots.y<-rep(seq(-2.9,3.6,length.out=8),rep(8,8))
 insideknots<-inSide(verts,knots.x,knots.y)
 # just get rid of one knot on the boundary, this is a bit horrible, look away now...
 insideknots[59]<-FALSE
@@ -79,7 +79,7 @@ inside.points<-inSide(verts,samp.data$x,samp.data$y)
 samp.data<-data.frame(x=samp.data$x[inside.points],y=samp.data$y[inside.points],z=samp.data$z[inside.points])
 
 # fit + predict 
-b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=49),data=samp.data,knots=knots)
+b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=20),data=samp.data,knots=knots)
 fv.soap <- predict(b.soap,newdata=data.frame(x=true.vals$x[true.vals$inside==1],y=true.vals$y[true.vals$inside==1]))
 
 # plot
