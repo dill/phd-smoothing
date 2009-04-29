@@ -39,7 +39,7 @@ for (i in 1:500){
    
   
    ### soap fit
-   b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=49),data=samp.data,knots=knots)
+   b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=boundary.knots),data=samp.data,knots=knots)
    fv.soap <- predict(b.soap,newdata=data.frame(x=true.vals$x[true.vals$inside==1],y=true.vals$y[true.vals$inside==1]))
    
    ### calculate the MSEs

@@ -12,12 +12,20 @@ polyv_p=polygon(complex(polyv(:,1),polyv(:,2)));
 
 % which vertices on the polygon are vertices on the rectangle
 % this is a bit arbitrary
+
+% original values
 vertex_points=[1 2 3 18];
+% trying something else
+% vertex_points=[1 2 15 16]; % CRASH
+%vertex_points=[1 2 14 17]; % CRASH
 
 % do the mapping
 
 % rectangle map
 f=rectmap(polyv_p, vertex_points);
+
+% crdt
+%f=crrectmap(polyv_p);
 
 % disk map
 %f=crdiskmap(polyv_p);

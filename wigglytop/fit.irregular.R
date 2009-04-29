@@ -78,7 +78,7 @@ inside.points<-inSide(verts,samp.data$x,samp.data$y)
 samp.data<-data.frame(x=samp.data$x[inside.points],y=samp.data$y[inside.points],z=samp.data$z[inside.points])
 
 # fit
-b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=49),data=samp.data,knots=knots)
+b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=20),data=samp.data,knots=knots)
 
 # plot
 
