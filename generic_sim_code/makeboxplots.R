@@ -1,15 +1,13 @@
 # make some boxplots
 # plots on log scale, MSES reported underneath are _not_
 
-
-
-
 pdf(file="mses-boxplot.pdf",width=4,height=10)
 
 par(mfrow=c(4,1))
 # make the text look better for printout
-par(cex.lab=0.5)
+par(cex.lab=0.75)
 
+par(mar=c(3, 4, 4, 2)+0.1)
 
 
 for (samp.size in c(1000,500)){
@@ -29,8 +27,8 @@ for (samp.size in c(1000,500)){
                  "TPRS: MSE=",mses[2],"se(MSE)=",ses[2],"\n",
                  "soap: MSE=",mses[3],"se(MSE)=",ses[3],"\n")
 
-      boxplot(log(mse)~labs,data=dat,main=paste(samp.size," samples, noise=",noise.level),
-               xlab=xlab)
+      boxplot(log(mse)~labs,data=dat,main=paste(samp.size," samples, noise=",noise.level))
+               title(xlab=xlab)
    }
 }
 

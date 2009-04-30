@@ -16,11 +16,11 @@ names(verts)<-c("x","y")
 
 # setup knots
 # this is a faff
-knots.x<-rep(seq(-2.9,2.9,length.out=8),8)
-knots.y<-rep(seq(-2.9,3.6,length.out=8),rep(8,8))
+knots.x<-rep(seq(-2.9,2.9,length.out=10),10)
+knots.y<-rep(seq(-2.9,3.6,length.out=10),rep(10,10))
 insideknots<-inSide(verts,knots.x,knots.y)
 # just get rid of one knot on the boundary, this is a bit horrible, look away now...
-#insideknots[59]<-FALSE
+insideknots[59]<-FALSE
 knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
 #plot(verts,type="l");points(knots,col="red");text(knots,labels=c(1:dim(knots)[1]))
 boundary.knots<-20
