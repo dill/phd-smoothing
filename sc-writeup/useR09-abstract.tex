@@ -30,9 +30,9 @@
 
 Smoothing over complex 2-D regions is difficult. Several approaches have been proposed in past years including finite element analysis (Ramsay, 2002), within-area distance (Wang \& Ranalli, 2007) and recently soap film smoothing (Wood, Bravington \& Hedley, 2008.) Here I investigate two alternative methods.
 
-The first (following from Eilers, 2006) is based on the Schwarz-Christoffel transform from complex analysis. This takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. 
+The first (following from Eilers (2006)) is based on the Schwarz-Christoffel transform from complex analysis. This takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. 
 
-The second uses multidimensional scaling to create within-area distances to morph the shape into a more suitable shape.
+The second uses multidimensional scaling to create a set of within-area distances.Unlike Wang and Ranalli (2007) the distances are found using convex hulls. This gives a domain which takes into account the intrinsic structure of the domain.
 
 In both cases we may then smooth over the transformed area using penalized regression splines and transform this smooth back to the original domain in order to perform analysis. I explore the utility of both of these transforms on both real and simulated data.
 
