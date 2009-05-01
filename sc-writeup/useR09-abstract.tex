@@ -28,14 +28,21 @@
 
 \vskip 0.8cm
 
-Smoothing over complex 2-D regions is difficult. Several approaches have been proposed in past years including finite element analysis (Ramsay, 2002), within-area distance (Wang \& Ranalli, 2007) and recently soap film smoothing (Wood, Bravington \& Hedley, 2008.) Here I investigate an alternative method based on the Schwarz-Christoffel transform from complex analysis. This takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. We may then smooth over the transformed area using penalized regression splines and transform this smooth back to the original domain in order to perform analysis. I explore the utility of this transform on both real and simulated data.
+Smoothing over complex 2-D regions is difficult. Several approaches have been proposed in past years including finite element analysis (Ramsay, 2002), within-area distance (Wang \& Ranalli, 2007) and recently soap film smoothing (Wood, Bravington \& Hedley, 2008.) Here I investigate two alternative methods.
 
-%%% Up to three references
+The first (following from Eilers, 2006) is based on the Schwarz-Christoffel transform from complex analysis. This takes the region and ``morphs'' it to a rectangle or disk in a prescribed way. 
+
+The second uses multidimensional scaling to create within-area distances to morph the shape into a more suitable shape.
+
+In both cases we may then smooth over the transformed area using penalized regression splines and transform this smooth back to the original domain in order to perform analysis. I explore the utility of both of these transforms on both real and simulated data.
+
 \paragraph{References}
 \begin{description}
 \item Ramsay, T. (2002) Spline smoothing over difficult regions. JRSSB, 64(2), 307-319.
-\item Wang, H., M.G. Ranalli (2007) Low-Rank Smoothing Splines on Complicated Domains. Biometrics, 63(1), 209-217.
+\item Wang, H. and M.G. Ranalli (2007) Low-Rank Smoothing Splines on Complicated Domains. Biometrics, 63(1), 209-217.
 \item Wood, S.N., M.V. Bravington and S.L. Hedley (2008) Soap film smoothing. JRSSB, 70(5), 931-955.
+\item Eilers, P. H. C. (2006) P-spline smoothing on difficult domains. Seminar at the University of Munich.
+
 \end{description}
 
 %\nocite{ref1,ref2}
