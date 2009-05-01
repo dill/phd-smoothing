@@ -7,8 +7,9 @@ par(mfrow=c(4,1))
 # make the text look better for printout
 par(cex.lab=0.75)
 
-par(mar=c(3, 4, 4, 2)+0.1)
-
+# b l t r
+par(mar=c(7,3,2,1)+.1)
+par(mgp=c(6,2,0))
 
 for (samp.size in c(1000,500)){
    for(noise.level in c(0.02, 0.005)){
@@ -27,8 +28,7 @@ for (samp.size in c(1000,500)){
                  "TPRS: MSE=",mses[2],"se(MSE)=",ses[2],"\n",
                  "soap: MSE=",mses[3],"se(MSE)=",ses[3],"\n")
 
-      boxplot(log(mse)~labs,data=dat,main=paste(samp.size," samples, noise=",noise.level))
-               title(xlab=xlab)
+      boxplot(log(mse)~labs,data=dat,main=paste(samp.size," samples, noise=",noise.level,sep=""),xlab=xlab)
    }
 }
 

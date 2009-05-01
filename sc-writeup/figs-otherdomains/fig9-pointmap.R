@@ -20,7 +20,7 @@ for(i in c(1:2)){
    names(verts)<-c("x","y")
    
    # do some plotting
-   pdf(file=paste("fig9-pointplot-",domain[i],".pdf"))
+   pdf(file=paste("fig9-pointplot-",domain[i],".pdf",sep=""))
    plot(true.vals.mapped$x,true.vals.mapped$y,type="p",pch=19,asp=1,cex=0.25,main="",xlab="x",ylab="y")
    text(verts$x[1:9],verts$y[1:9],labels=c(1:length(vert.pos[[i]])),col="blue",pos=vert.pos[[i]])
    dev.off()

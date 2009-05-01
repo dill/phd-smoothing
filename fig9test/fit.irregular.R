@@ -2,7 +2,7 @@
 
 # load some data...
 true.vals<-read.csv("fig9truth.csv",header=TRUE)
-true.vals.mapped<-read.csv("fig9truemapped-disk.csv",header=FALSE)
+true.vals.mapped<-read.csv("fig9truemapped-rect.csv",header=FALSE)
 names(true.vals.mapped)<-c("x","y","z")
 
 # load the vertices data
