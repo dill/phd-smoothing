@@ -68,11 +68,11 @@ Given the relative success of using the \sch transform on the Ramsay horseshoe, 
 
 \section{General setup}
 
-For all of the examples below the function \texttt{mvnorm} from the \textsf{R} package \texttt{MASS} was used to generate a  multivariate Normal surface over the region in question. This was then discretized over a 50x50 grid. A 500 replicate simulation experiment was then run at two noise levels ($\sigma^2=0.02$, $\sigma^2=0.005$) and two sample sizes (1000, 500.) For each replicate we fit a smooth of thin plate regression splines, the soap film smoother of \cite{soap} and finally thin plate regression splines on the \sch transformed domain. The transformation was performed by the \textit{SC Toolbox for MATLAB} and models were fit using \texttt{mgcv} in \textsf{R}. We then compared the results from each model by calculating the mean squared error over a prediction grid over the region.
+For all of the examples below the function \texttt{mvnorm} from the \textsf{R} package \texttt{MASS} was used to generate a  multivariate Normal surface over the region in question. This was then discretized over a 50 by 50 grid. A 500 replicate simulation experiment was then run at two noise levels ($\sigma^2=0.02$, $\sigma^2=0.005$) and two sample sizes (1000, 500.) For each replicate we fit a smooth of thin plate regression splines, the soap film smoother of \cite{soap} and finally thin plate regression splines on the \sch transformed domain. The transformation was performed by the \textit{SC Toolbox for MATLAB} and models were fit using \texttt{mgcv} in \textsf{R}. We then compared the results from each model by calculating the mean squared error over a 50 by 50 cell prediction grid.
 
 \section{Example 1}
 
-We begin with an example from \cite{miller09}. The shape (shown in \fig{fig9-disk-real}) does not include any kind of peninsula, such as that in the Ramsay horseshoe, this is a deliberate of the performance of the \sch transform method and the soap film smoother in such situations. 
+We begin with an example from \cite{miller09}. The shape (shown in \fig{fig9-disk-real}) does not include any kind of peninsula, such as that in the Ramsay horseshoe. This is a deliberate test of the performance of the \sch transform method and the soap film smoother in such situations. 
 
 The shape was morphed to both the unit disk and the rectangle to see if this made a difference to the fit. For the rectangular mapping, vertices chosen (somewhat arbitrarily) to map to those of the rectangle were 1, 6, 8 and 9 (see \fig{fig9-numbered}.)
 
@@ -111,7 +111,7 @@ For the soap film smoother a 7 by 7 grid of which 17 inside knots were used and
 
 From this we can see that the thin plate regression splines appear to do very well for all cases, having the smallest for each configuration. The MSEs become closer as the sample size drops.
 
-Looking at \fig{fig9-disk-real} and \fig{fig9-rect-real} we can see that the \sch transform method seems to want to join the two high density points in the surface. This is presumably due to the ``bunching-up'' of space due to the transform. Indeed, this effect can be seen in \fig{fig9-rect-bunching} and \fig{fig9-disk-bunching}.
+Looking at \fig{fig9-disk-real} and \fig{fig9-rect-real} we can see that the \sch transform method seems to want to join the two high density points in the surface. This is presumably due to the ``bunching-up'' of space due to the transform. Indeed, this effect can be seen in \fig{fig9-rect-bunching} and \fig{fig9-disk-bunching}. It looks as if this effect has exacerbated the problems that can be seen for the thin plate regression spline fit. Extra contour lines can be seen in the \sch transformed fit, which are presumably due to this ``bunching up.''
 
 
 \begin{figure}[tbp]
@@ -201,7 +201,9 @@ For the soap film, several knot configurations were tried, the best one was to h
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Example 3}
 
-We repeated the procedure for another polygon with two peninsulae, shown in \fig{wigglytop2dia}. Initially, a transform using \texttt{rectmap} was used, but this failed to converge, so \texttt{crrectmap} was used.
+The third example is similar to the second but now has two peninsulae. Initially, a transform using \texttt{rectmap} was used, but this failed to converge, so \texttt{crrectmap} was used. The CRDT algorithm introduces extra vertices into the polygon with angle $\pi$, these are shown, along with the mapping in \fig{wigglytop2-numbered}. From this figure one can see that although there is no crowding in the numerical sense of \cite{driscoll} (ie. in a numerical sense), there is significant "bunching up" of the vertices. Without even performing the mapping, it would seem that this would introduce odd artifacts into the smooth.
+
+As with example 2, several combinations of vertex mappings and knots were tried. The result of this was that the vertices chosen to map to the corners of the rectangle were those shown in pink in \fig{wigglytop2-numbered}.
 
 \begin{figure}
 \centering

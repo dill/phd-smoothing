@@ -23,7 +23,7 @@ insideknots<-inSide(verts,knots.x,knots.y)
 insideknots[59]<-FALSE
 knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
 #plot(verts,type="l");points(knots,col="red");text(knots,labels=c(1:dim(knots)[1]))
-boundary.knots<-20
+boundary.knots<-30
 
 for (samp.size in c(1000,500)){
    for(noise.level in c(0.02, 0.005)){

@@ -13,11 +13,11 @@ verts<-read.csv("figverts.csv",header=FALSE)
 names(verts)<-c("x","y")
 
 # setup knots
-knots.x<-rep(seq(-2.9,2.9,length.out=7),7)
-knots.y<-rep(seq(-1.9,3.6,length.out=7),rep(7,7))
+knots.x<-rep(seq(-2.9,2.9,length.out=9),9)
+knots.y<-rep(seq(-1.9,3.6,length.out=9),rep(9,9))
 insideknots<-inSide(verts,knots.x,knots.y)
 knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
-boundary.knots<-20
+boundary.knots<-30
 
 # this should be pretty obvious
 
