@@ -23,7 +23,7 @@ convex_hull<-function(points){
    # first find all the angles and sort them
    my.angles<-angles(my.hull$x[1],my.hull$y[1],points$x[-1],points$y[-1])
    # second and third args below used to break ties
-   my.angles.index<-order(my.angles,points$y[-1],points$x[-1])
+   my.angles.index<-order(my.angles,points$x[-1],points$y[-1])
    anglelist<-list(angles=c(my.angles[my.angles.index]),
                    x=c(points$x[-1][my.angles.index]),
                    y=c(points$y[-1][my.angles.index]))
