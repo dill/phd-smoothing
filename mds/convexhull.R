@@ -23,7 +23,7 @@ convex_hull<-function(points){
    # first find all the angles and sort them
    my.angles<-angles(my.hull$x[1],my.hull$y[1],points$x[-1],points$y[-1])
    # second and third args below used to break ties
-   my.angles.index<-order(my.angles,points$x[-1],points$y[-1])
+   my.angles.index<-order(my.angles,points$y[-1],points$x[-1])
    anglelist<-list(angles=c(my.angles[my.angles.index]),
                    x=c(points$x[-1][my.angles.index]),
                    y=c(points$y[-1][my.angles.index]))
@@ -32,9 +32,11 @@ convex_hull<-function(points){
    # then find the first point to go to
    my.hull$x[2]<-anglelist$x[1]
    my.hull$y[2]<-anglelist$y[1]
+   my.hull$x[3]<-anglelist$x[2]
+   my.hull$y[3]<-anglelist$y[2]
 
    # keep place in the hull
-   j<-3
+   j<-4
 
    # iterate over list
    for(i in 3:(length(anglelist$angles))){
@@ -47,7 +49,7 @@ convex_hull<-function(points){
       # go back over all the old points
       # save the new point
       new_point<-pe(my.hull,j)
-      for(k in length(my.hull$x):3){
+      for(k in length(my.hull$x):2){
          # if points 1 and j are on the same side of the line between
          # k and k-1...
          if(is_left(new_point,pe(my.hull,k-1),pe(my.hull,k)) < 0){
@@ -59,6 +61,10 @@ convex_hull<-function(points){
             j<-j-1
          }
       }
+      # some debug stuff
+      #plot(anglelist$x,anglelist$y,pch=".")
+      #lines(my.hull,col="red")      
+
       j<-j+1
    }
 
