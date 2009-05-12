@@ -21,32 +21,50 @@ names(fsb[[1]]) <- c("v","w") ## correct boundary names
 
 
 # create the distance matrix
-# squared Euclidean distances
-dm<-function(x,y){
-   # create X matrix
-   X<-cbind(x,y)
-   # create B
-   B<-X%*%t(X)
-   
-   # now create a matrix of squared Euclidean distances
-   # create a blank matrix to push results into
-   D<-matrix(NA,dim(B)[1],dim(B)[2])
-   # fill in the gaps
-   for (r in 1:dim(B)[1]){
-      for (s in 1:dim(B)[1]){
-         # formula from Chatfield and Collins, eqn 10.8
-         D[r,s]<-B[r,r]+B[s,s]-2*B[r,s]
-      }
+create_distance_matrix<-function(x,y){
+   # requires the library soap   
+
+   # make sure that x and y are the same length
+   if(length(x)!=length(y){
+      return(FALSE)
    }
 
+   # create a matrix to hold the distances
+   D<-matrix(0,length(x),length(x))
+
+
+   # first find those points that we can use Euclidean
+   # distance for
+   for(i in 1:length(x)){
+      # create sequence
+      xseq<-seq(
+
+
+      # see if any of the points in the sequence are not inside
+      # add to list of non-inside points
+
+      # insert the distance if they are inside
+
+   }
+
+   # calculate the Euclidean distance
+
+
+   # calculate the convex hull distances
+
+
+
+   # create the lower triangle of the matrix
+   D<-D+t(D)-diag(D) 
+
    return(D)
+
 }
 
-distmatrix<-dm(v,w)
+
 plot(cmdscale(D,2),asp=1,pch=".",cex=3)
 
 
-samp<-data.frame(v=,w=,y=)
 
 
 

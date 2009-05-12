@@ -123,6 +123,3 @@ is_left<-function(p1,p2,p3){
    return(d)
 }
 
-
-# routine to find obviously interior points
-
