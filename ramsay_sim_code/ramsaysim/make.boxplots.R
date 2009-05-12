@@ -4,10 +4,6 @@
 # make the horseshoe
 library(soap)
 
-
-# need to create the prediction grid here!!!
-
-
 fsb <- list(fs.boundary())
 # create the grid
 m<-100;n<-50
@@ -45,10 +41,6 @@ horse$x[8]<-max(fsb[[1]]$v)
 horse$y[8]<-min(fsb[[1]]$w[fsb[[1]]$w>0 & fsb[[1]]$v>0.5])
 
 ############# Setup done by now... ##########
-
-
-
-
 
 ### the horseshoe along with it's morphed version (grid)
 pdf("mapping-grid.pdf",6,6)

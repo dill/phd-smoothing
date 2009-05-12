@@ -57,9 +57,9 @@ Here I investigate an alternative method for smoothing over 2-D regions based on
 
 
 
-\section{Ramsey's horseshoe}
+\section{Ramsay's horseshoe}
 
-\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domain's major axis. The so-called ``Ramsay horseshoe'' is shown in \fig{ramsayshorseshoe}.
+\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domain's major axis. \cite{soap} modifies the shape by adding curvature across the minor axis of the shape. The so-called ``Ramsay horseshoe'' is shown in \fig{ramsayshorseshoe}.
 
 The test function highlights a common problem in spatial smoothing: that of ``leakage''. When the problem is specified in Euclidean distance, the model thinks that the distance between the $-4$ and $4$ points of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high density from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes the smooth to be calculated incorrectly.
 
@@ -101,7 +101,7 @@ Since the geodesic distance is only known if the intrinsic structure of the doma
 
 \item An alternative approach is to ``morph'' the area in question to be one which is more suitable for smoothing. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe into a long strip and then smooth on that domain. This is what we propose here. 
 
-This approach raises some questions. First, what is the natural domain to transform to? Second, what is the nullspace of this new domain? Clearly for some shapes the answer to both of these questions is obvious, but this is not always the case. We address these problems below.
+This approach raises some questions. First, what is the natural domain to transform to? Second, what is the nullspace of the penalty term of a spline in this new domain? Clearly for some shapes the answer to both of these questions is obvious, but this is not always the case. We address these problems below.
 
 
 \end{enumerate}
@@ -115,7 +115,7 @@ Here we formulate a conformal mapping from the domain of the problem (we call th
 
 \subsection{\sch}
 
-The \sch transform provides a way to map an arbitrary polygon in the complex plane to one of a set of objects (also in the complex plane.) The two most commonly mapped to objects are the unit disk and the rectangle. The procedure consists of adding vertices to the object you wish to map to and then deforming it iteratively until it is identical to the polygon. More formally we wish to find $\phi: W \mapsto W^*$.
+The \sch transform provides a way to map an arbitrary polygon in the complex plane to one of a set of objects (also in the complex plane.) The two most commonly mapped to objects are the unit disk and the rectangle. The procedure consists of adding vertices to the object you wish to map to and then deforming it iteratively until it is identical to the polygon. More formally we wish to find $\phi: W^* \mapsto W$.
 
 For example: we wish to transform between a regular nonagon and a rectagle. We add five sides to the rectangle and then go about deforming it to the shape of the nonagon (by changing the angles at the vertices and then rescaling and rotating it as necessary.) 
 
@@ -138,16 +138,16 @@ Full technical details of the \sch mapping are given in \cite{miller08}.
 
 
 \subsection{P-splines}
-P-splines (\cite{eilersmarx96}) were used as the basis functions for the smooth since they present an easy framework for adding arbitrary penalties\footnote{Which may become useful if distortions to the polygon become problematic.}. P-splines are essentially a B-spline basis with a penalty which provides a discrete approximation to the (standard) integrated $k^\text{th}$ derivative of the function. The penalty is given by:
+P-splines (\cite{eilersmarx96}) were used as the basis functions for the smooth since they present an easy framework for adding arbitrary penalties\footnote{Which may become useful if distortions to the polygon become problematic.}. P-splines are essentially a B-spline basis with a penalty which provides a discrete approximation to the (standard) integrated $k^\text{th}$ derivative of the function. In one dimension the penalty is given by:
 
 \begin{equation*}
 \lambda \sum_{j=k+1}^n (\Delta^k a_j)^2,
 \end{equation*}
 
-where $n$ is the number of B-splines, $k$ the derivative we wish to approximate, $a_j$ the coefficient of the $j^\text{th}$ basis function and $\Delta a_j = a_j-a_{j-1}$ and hence $\Delta^2 a_j = a_j-2a_{j-1}+a_{j-2}$. $\lambda$ is the usual smoothing parameter. 
+where $n$ is the number of B-splines, $k$ the derivative we wish to approximate, $a_j$ the coefficient of the $j^\text{th}$ basis function and $\Delta a_j = a_j-a_{j-1}$ and hence $\Delta^2 a_j = a_j-2a_{j-1}+a_{j-2}$. $\lambda$ is the usual smoothing parameter. In more than one dimension we merely take the tensor product of this. 
 
 \subsection{Thin plate regression splines}
-Thin plate regression splines (\cite{simonbook}, \emph{pp. 154-159}) provide a framework for smoothing in which knots do not to have to be selected and an implicit definition of smoothness is built into the model.
+Thin plate regression splines (\cite{simonbook}, \emph{pp. 154-159}) provide a framework for smoothing in which knots do not to have to be selected and the smoothness is built into the model.
 
 As thin plate splines are isotropic smoothers it is not expected that the thin plate splines will do very well on the Ramsay test function since the test function is only varies along one axis. Thin plate splines are used here mainly as a comparison to the P-splines to assess whether the the P-spline's performance is due to the natural advantage of tensor product over isomorphic smoothers in such situations.
 
@@ -177,7 +177,7 @@ Although packages are available to enable \textsf{R} to talk to Matlab and vice-
 
 \section{Mapping the Ramsay horseshoe}
 
-In order to map the horseshoe, we first draw a rough bounding box around the shape. Rather than trying to approximate the curved edges with many straight lines, we use the bounding box as the $W$ domain remapped via the \texttt{evalinv()} function from the SC Toolbox. This is shown in \fig{hswithboundingbox}.
+In order to map the horseshoe, we first draw a rough bounding box around the shape. Rather than trying to approximate the curved edges with many straight lines, we use the bounding box as the $W$ domain remapped via the \texttt{evalinv()} function from the \emph{SC Toolbox}. This is shown in \fig{hswithboundingbox}.
 
 \begin{figure}
 \centering
@@ -188,7 +188,7 @@ In order to map the horseshoe, we first draw a rough bounding box around the sha
 % generated by /phd-smoothing/sc-writeup/figs/hswithboundingbox.R
 \end{figure}
 
-We then transform our bounding box into the rectangle. This is done using the \texttt{rectmap()}\footnote{or \texttt{crrectmap}, its CRDT equivalent (see \cite{miller08}.)} function from the SC Toolbox in Matlab. This function solves the \sch parameter problem as detailed in \cite{miller08}.
+We then transform our bounding box into the rectangle. This is done using the \texttt{rectmap()}\footnote{or \texttt{crrectmap}, its CRDT equivalent (see \cite{miller08}.)} function from the \emph{SC Toolbox} in Matlab. This function solves the \sch parameter problem as detailed in \cite{miller08}.
 
 A sample of 1000 points from the horseshoe was then taken and noise added to the data. First the $x,y$ coordinates of the sampled points were expressed as complex numbers of the form $w=x+iy$. The mapping was then performed. This created a new set of coordinates $w^*=x^*+iy^*$. Smoothing was then performed over the responses in the $W^*$ domain using the \texttt{gam()} function in \texttt{mgcv}. 
 
@@ -262,7 +262,7 @@ In the next section we investigate the properties of the transform further via a
 
 \section{Simulations}
 
-In the spirit of those simulations carried out in \cite{soap}, a large scale experiment was run. Data was simulated from two different test functions on the Ramsey horseshoe; first the one described above, and the second with a gradient across the short axis of the horseshoe. This second test function can be seen in \fig{altramsayhorseshoe}. Table (\ref{simtable}) shows the setup of these experiments, which were run on both test functions.
+In the spirit of those simulations carried out in \cite{soap}, a large scale experiment was run. Data was simulated from two different test functions on the Ramsay horseshoe; first the one described above, and the second with a gradient across the short axis of the horseshoe. This second test function can be seen in \fig{altramsayhorseshoe}. Table (\ref{simtable}) shows the setup of these experiments, which were run on both test functions.
 
 \begin{figure}
 \centering
@@ -291,35 +291,36 @@ Sample size & Noise level$^{1}$ \\
 
 Mean squared error between the true function and the fitted model was used to evaluate the model's performance. In the following tables we provide the mean squared error over a prediction grid of 1000 points averaged over 1000 generated data sets.
 
-Table (2) shows the results from the simulations for the standard horseshoe. A cursory glance show that that results were better than those for the soap film smoother for larger sample sizes and standard errors were comparable. Indeed, once we get to 100 samples the method performance degrades significantly. However, this is not as bad as it initially seems to be. Only 6 of the 1000 MSEs were greater than the mean (the largest two being 54.6 and 437.99) so it seems that these two samples have contributed to significant departure from the mean. Given a different set of samples this problem may not manifest itself, however the soap film smoother still has a smaller MSE and standard error.
+Table (2) shows the results from the simulations for the standard horseshoe. A cursory glance show that that results were better than those for the soap film smoother for larger sample sizes and standard errors were comparable. Once we get to 100 samples the method performance degrades over all methods.
 
 Once noise is introduced into the data we can see that the soap film and transformation method do as well as each other, MSEs are approximately the same and the standard errors are of the same order.
 
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[trim=0.5in 1in 0in 0.5in]{figs/1000boxplots.pdf} \\
-\caption{Boxplots of mean MSE from 1000 points on a prediction grid from 1000 simulations. Left plot is \sch transform with P-spline basis (with MSE 0.00412) and the right is the soap film smoother (MSE 0.00517.)}
+\includegraphics{figs/mses-boxplot.pdf} \\
+\caption{Boxplots of mean MSE from 1000 points on a prediction grid from 1000 simulations.}
 \label{1000boxplots}
+% generated by ramsaysim/makeboxplots.R
 \end{figure}
 
 \Fig{1000boxplots} compares boxplots of the MSEs for the first experiment. These plots show the \sch mapping doing better than the soap film smoother.
 
 \begin{table}[ht]
 \begin{tabular}{c c c c c}\\
-Sample size & Noise level & P-spline MSE (\emph{se}) & Thin plate MSE (\emph{se}) & Soap MSE (\emph{se}) \\
+Sample size & Noise level & P-spline MSE (\emph{sd}) & Thin plate MSE (\emph{sd}) & Soap MSE (\emph{sd}) \\
 \hline
 \hline
 1000 & 0.3 & 0.00412 (0.00112) & 0.00811 (0.00243) & 0.00517 (0.00114) \\ 
 500 & 0.3 & 0.00505 (0.00144) & 0.00478 (0.000955) & 0.00628 (0.00146) \\ 
 250 & 0.3 & 0.00875 (0.00392) & 0.00684 (0.00183) & 0.0107 (0.00305) \\ 
-100 & 0.3 & 0.523 (14) & 0.0118 (0.00461) & 0.0219 (0.0117) \\ 
+100 & 0.3 & 0.0225 (0.035) & 0.0118 (0.00461) & 0.0219 (0.0117) \\ 
 1000 & 0.5 & 0.0105 (0.00353) & 0.00811 (0.00243) & 0.0127 (0.0034) \\ 
 1000 & 1 & 0.0242 (0.0108) & 0.0161 (0.0069) & 0.0275 (0.00958) \\ 
 1000 & 2 & 0.066 (0.0481) & 0.0388 (0.0229) & 0.0686 (0.0333) \\ 
 \end{tabular}
 \label{table2}
-\caption{Results table for the transformed Ramsay horseshoe.}
+\caption{Mean squared error along with its standard deviation for the transformed Ramsay horseshoe (for P-spline and thin plate cases) versus those for the soap film smoother.}
 % generated by /phd-smoothing/sc-writeup/tablecode/ramsay.sim.results.table.R
 \end{table}
 
@@ -327,7 +328,7 @@ For the alternative horseshoe we begin to see the soap film creep ahead of the t
 
 \begin{table}[ht]
 \begin{tabular}{c c c c c}\\
-Sample size & Noise level & P-spline MSE (\emph{se}) & Thin plate MSE (\emph{se}) & Soap MSE (\emph{se}) \\
+Sample size & Noise level & P-spline MSE (\emph{sd}) & Thin plate MSE (\emph{sd}) & Soap MSE (\emph{sd}) \\
 \hline
 \hline
 1000 & 0.3 & 0.00415 (0.00117) & 0.0158 (0.00247) & 0.00378 (0.00108) \\ 
@@ -339,7 +340,7 @@ Sample size & Noise level & P-spline MSE (\emph{se}) & Thin plate MSE (\emph{se}
 1000 & 2 & 0.0605 (0.0468) & 0.0436 (0.0276) & 0.041 (0.0434) \\ 
 \end{tabular}
 \label{altramsayresultstable}
-\caption{Results table for the transformed alternate Ramsay horseshoe.}
+\caption{Mean squared error along with its standard deviation for the transformed alternate Ramsay horseshoe (for P-spline and thin plate cases) versus those for the soap film smoother.}
 % generated by /phd-smoothing/sc-writeup/tablecode/alt.ramsay.sim.results.table.R
 \end{table}
 
@@ -347,7 +348,7 @@ Sample size & Noise level & P-spline MSE (\emph{se}) & Thin plate MSE (\emph{se}
 \centering
 % trim order l b r t
 \includegraphics[width=5in, trim=0in 0in 0in 0in]{figs/altramsaycomp.pdf}\\
-\caption{Clockwise from top left: the original figure, the function estimated by the \sch transform with P-splines, function estimated by the \sch transform with thin plate splines and finally the soap film estimate.}
+\caption{Single realizations of the fit to the alternate Ramsay horseshoe for each method. Clockwise from top left: the original figure, the function estimated by the \sch transform with P-splines, function estimated by the \sch transform with thin plate splines and finally the soap film estimate.}
 \label{altramsaycomp}
 % generated by /phd-smoothing/sc-writeup/figs/altramsaycompare.R 
 \end{figure}

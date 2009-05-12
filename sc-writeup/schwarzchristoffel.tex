@@ -115,7 +115,7 @@ Here we use $\Gamma$ to refer to the boundary of the polygon and $P$ to the regi
 
 Vertices on the polygon are denoted as $w_k$ and those in the transformed domain are denoted as $w^*_k$ (referred to as \emph{prevertices}.) In general a point in the polygon's original domain is denoted as $w$ and in the transformed domain as $w^*$.
 
-We use the function $\phi$ to go from the transformed domain to the polygon (from $W^*$ to $W$). The inverse of $\phi$, $\phi^{-1}$, is used to go from the polygon to the disk, rectangle or half-plane (from $W$ to $W^*$.)  See \fig{mappingdia}.
+We use the function $\phi$ to go from the transformed domain to the polygon (\emph{ie.} $\phi:W^* \mapsto W$). The inverse of $\phi$, $\phi^{-1}$, is used to go from the polygon to the disk, rectangle or half-plane (from $W$ to $W^*$.)  See \fig{mappingdia}.
 
 % Mapping diagram from my whiteboard
 \begin{figure} [tbp]
@@ -171,10 +171,10 @@ To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ we use th
 
 \begin{equation}
 \label{optimizeme}
-\frac{\vert \phiinv(w^*_{k+1}) -  \phiinv(w^*_k) \vert}{\vert \phiinv(w^*_2)-\phiinv(w^*_1)\vert} - \frac{\vert w_{k+1} - w_k\vert}{\vert w_2 - w_1\vert} = 0, \qquad \text{for } k=3,\dots,n-1.
+\frac{\vert \phiinv(w_{k+1}) -  \phiinv(w_k) \vert}{\vert \phiinv(w_2)-\phiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} = 0, \qquad \text{for } k=3,\dots,n-1.
 \end{equation}
 
-Here $\vert \phiinv(w^*_{k+1}) -  \phiinv(w^*_k) \vert$ is the distance between the $k^{th}$ and $(k+1)^{th}$ vertex.  We find this by integrating along the line between the points within $W$.
+Here $\vert \phiinv(w_{k+1}) -  \phiinv(w_k) \vert$ is the distance between the $k^{th}$ and $(k+1)^{th}$ vertex.  We find this by integrating along the line between the points within $W$.
 
 Intuitively, we are comparing the side lengths of the polygon in order to evaluate approximation of $\Gamma$ in each iteration (\cite{snider}, \emph{p. A-3}), both scaled by the distance between the first two vertices (in their respective domains.)
 
@@ -185,7 +185,7 @@ It is for this reason, in the upper half-plane case, that we can map $w_n$ to $\
 We may find the scaling factor, $C$, (from \eqn{unitscmap}) by using the following equation:
 
 \begin{equation}
-C=\frac{\vert \phiinv(w^*_2)-\phiinv(w^*_1)\vert}{\vert w_2 - w_1\vert},
+C=\frac{\vert \phiinv(w_2)-\phiinv(w_1)\vert}{\vert w_2 - w_1\vert},
 \end{equation}
 
 otherwise, we can assume that up to scaling and rotation that $w_1$ and $w_2$ are correct. In which case we know that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense.) 
@@ -204,7 +204,7 @@ $A$ is the image of the base point of the integration and is usually written as 
    \end{enumerate}
 \item Define the objective function, $F$, as:
  \begin{equation*}
-F=\frac{\vert \phi^{-1}(w^*_{k+1}) -  \phi^{-1}(w^*_k) \vert}{\vert \phi^{-1}(w^*_2)-\phi^{-1}(w^*_1)\vert} - \frac{\vert w_{k+1} - w_k\vert}{\vert w_2 - w_1\vert}, \qquad \text{for } k=3,\dots,n-1,
+F=\frac{\vert \phiinv(w_{k+1}) -  \phiinv(w_k) \vert}{\vert \phiinv(w_2)-\phiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert}, \qquad \text{for } k=3,\dots,n-1,
  \end{equation*}
 \item Use steepest descent and then Newton's method to until $\vert F\vert < \epsilon \quad \forall k$. \item Calculate $C$ and $A$ as detailed above.
 \item Return values for $w^*_1,\dots,w^*_n$, $C$ and $A$.
