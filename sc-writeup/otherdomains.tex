@@ -195,7 +195,14 @@ From the boxplots in \fig{wigglytop-boxplots} we can see that again, thin plate 
 
 The third example is similar to the second but now has two peninsulae. Initially, a transform using \texttt{rectmap} was used, but this failed to converge, so \texttt{crrectmap} was used. The CRDT algorithm introduces extra vertices into the polygon with angle $\pi$, these are shown, along with the mapping in \fig{wigglytop2-numbered}. From this figure one can see that although there is no crowding in the numerical sense of \cite{driscoll} (ie. in a numerical sense), there is significant "bunching up" of the vertices. Without even performing the mapping, it would seem that this would introduce odd artifacts into the smooth.
 
-As with example 2, several combinations of vertex mappings and knots were tried. The result of this was that the vertices chosen to map to the corners of the rectangle were those shown in pink in \fig{wigglytop2-numbered}.
+As with example 2, several combinations of vertex mappings and knots were tried. The result of this was that the vertices chosen to map to the corners of the rectangle were those shown in pink in \fig{wigglytop2-numbered}. A 10 by 10 grid of internal knots was used, of which 47 were inside the region. The cyclic spline around the boundary used 30 knots.
+
+
+\Fig{wigglytop2-real} shows a realization for each of the methods. The \sch transform causes a huge distortion in the surface. The contour lines in the upper right pane of the figure show almost exactly how the distortions have pushed the data points around, causing a very bad fit. It also looks as though the smooth has joined all of the points up across the domain, which is clearly not what we want here. The thin plate spline and the transform method both smooth over the details in the first peninsula. Here it appears that soap is doing significantly better than the other methods, however this does not manifest itself in the boxplots in \fig{wigglytop2-boxplots}.
+
+
+
+
 
 \begin{figure}
 \centering
