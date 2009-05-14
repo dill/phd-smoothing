@@ -29,6 +29,7 @@ create_distance_matrix<-function(x,y,bnd,res=100){
 plot(x,y,pch=".",asp=1)
 lines(bnd)
 points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
+text(x=c(p1$x,p2$x),y=c(p1$y,p2$y),labels=c("1","2"))
 #lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="green")
 
          # find the intersection points (if any) 
@@ -50,13 +51,14 @@ points.2<-list(x=c(p1$x,bnd$x[(intp[1]+1):intp[2]],p2$x),
 
 # DEBUG
 cat("intp:",intp,"\n")
-#lines(x=bnd$x[intp[2]:(intp[1]+1)],y=bnd$y[intp[2]:(intp[1]+1)],col="blue",lwd=3)
-#lines(x=bnd$x[(intp[2]+1):intp[1]],y=bnd$y[(intp[2]+1):intp[1]],col="red",lwd=3)
 
-points(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],col="blue",lwd=3)
-points(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],col="red",lwd=3)
-text(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],labels=c("1","1+1"))
-text(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],labels=c("2","2+1"))
+points(points.1,pch=22,col="red")
+points(points.2,pch=22,col="blue")
+
+#points(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],col="blue",lwd=3)
+#points(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],col="red",lwd=3)
+#text(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],labels=c("1","1+1"))
+#text(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],labels=c("2","2+1"))
 a<-scan()
 
             # calculate the hulls
