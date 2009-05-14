@@ -25,12 +25,10 @@ create_distance_matrix<-function(x,y,bnd,res=100){
       for(j in (i+1):length(y)){
          p2<-list(x=x[j],y=y[j])
 
-# DEBUG
-plot(x,y,pch=".",asp=1)
-lines(bnd)
-points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
-text(x=c(p1$x,p2$x),y=c(p1$y,p2$y),labels=c("1","2"))
-#lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="green")
+         # DEBUG
+         #plot(x,y,pch=".",asp=1)
+         #lines(bnd)
+         #points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
 
          # find the intersection points (if any) 
          intp<-intersect_sides(p1,p2,bnd)
@@ -43,32 +41,36 @@ text(x=c(p1$x,p2$x),y=c(p1$y,p2$y),labels=c("1","2"))
 
 ############################################################
 ### WEIRD THINGS STILL HAPPENING HERE!
-points.1<-list(x=c(p1$x,bnd$x[intp[1]:(intp[2]+1)],p2$x),
-               y=c(p1$y,bnd$y[intp[1]:(intp[2]+1)],p2$y))
+            points.1<-list(x=c(p1$x,bnd$x[intp[1]:(intp[2]+1)],p2$x),
+                           y=c(p1$y,bnd$y[intp[1]:(intp[2]+1)],p2$y))
+            
+            points.2<-list(x=c(p1$x,bnd$x[(intp[1]+1):intp[2]],p2$x),
+                           y=c(p1$y,bnd$y[(intp[1]+1):intp[2]],p2$y))
 
-points.2<-list(x=c(p1$x,bnd$x[(intp[1]+1):intp[2]],p2$x),
-               y=c(p1$y,bnd$y[(intp[1]+1):intp[2]],p2$y))
-
-# DEBUG
-cat("intp:",intp,"\n")
-
-points(points.1,pch=22,col="red")
-points(points.2,pch=22,col="blue")
-
-#points(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],col="blue",lwd=3)
-#points(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],col="red",lwd=3)
-#text(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],labels=c("1","1+1"))
-#text(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],labels=c("2","2+1"))
-a<-scan()
+            # DEBUG
+            #cat("intp:",intp,"\n")
+            #points(points.1,pch=22,col="red")
+            #points(points.2,pch=22,col="blue")
+            #points(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],col="blue",lwd=3)
+            #points(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],col="red",lwd=3)
+            #text(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],labels=c("1","1+1"))
+            #text(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],labels=c("2","2+1"))
+            #a<-scan()
 
             # calculate the hulls
             hull.1<-convex_hull(points.1)
             hull.2<-convex_hull(points.2)
-# DEBUG
-lines(hull.1,col="green")
-lines(hull.2,col="blue")
-cat("waiting...\n")
-a<-scan()
+            
+            # DEBUG
+            if(length(intp)>2){
+         plot(x,y,pch=".",asp=1)
+         lines(bnd)
+         points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
+               lines(hull.1,col="green")
+               lines(hull.2,col="blue")
+               cat("waiting...\n")
+               a<-scan()
+            }
 ##############################################################
             # find their lengths, keeping the shortest
             if(hull_length(hull.1) < hull_length(hull.2)){
@@ -154,16 +156,16 @@ intersect_sides<-function(p1,p2,bnd){
          if((intx > min(ep$x)) & (intx < max(ep$x)) &
             (inty > min(ep$y)) & (inty < max(ep$y))){
 
-# DEBUG
-#abline(h=c(min(p1$y,p2$y), max(p1$y,p2$y)))      
-#abline(v=c(min(p1$x,p2$x), max(p1$x,p2$x)))
-#points(x=intx,y=inty,pch=22,cex=3,col="red")
-#abline(a=-c1/b1,b=-a1/b1,col="red",lwd=2)     
-#abline(a=-c2/b2,b=-a2/b2,col="red",lwd=2)     
-#a<-scan()
+            # DEBUG
+            #abline(h=c(min(p1$y,p2$y), max(p1$y,p2$y)))      
+            #abline(v=c(min(p1$x,p2$x), max(p1$x,p2$x)))
+            #points(x=intx,y=inty,pch=22,cex=3,col="red")
+            #abline(a=-c1/b1,b=-a1/b1,col="red",lwd=2)     
+            #abline(a=-c2/b2,b=-a2/b2,col="red",lwd=2)     
+            #a<-scan()
             # if it is within range, add that vertex pair number to a list
-            edges<-c(edges,i)
-            cat("edges: ",edges,"\n") 
+            #edges<-c(edges,i)
+            #cat("edges: ",edges,"\n") 
          }}
       }
    }

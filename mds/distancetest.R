@@ -5,7 +5,7 @@ library(soap)
 fsb <- fs.boundary()
 
 ## Simulate some fitting data, inside boundary...
-n<-1000
+n<-100
 x <- runif(n)*5-1; y<-runif(n)*2-1
 z <- fs.test(x,y,b=1)
 ind <- inSide(fsb,x=x,y=y) ## remove outsiders
