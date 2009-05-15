@@ -18,61 +18,105 @@ create_distance_matrix<-function(x,y,bnd,res=100){
    # create a matrix to hold the distances
    D<-matrix(0,length(x),length(x))
 
-   # first find those points that we can use Euclidean
-   # distance for
-   for(i in 1:length(x)){
+   # iterate over all of the pairs of points, only calculate the
+   # upper diagonal of the matrix, since it's symmetric
+   for(i in 1:(length(x)-1)){
       p1<-list(x=x[i],y=y[i])
       for(j in (i+1):length(y)){
          p2<-list(x=x[j],y=y[j])
 
-         # DEBUG
-         #plot(x,y,pch=".",asp=1)
-         #lines(bnd)
-         #points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
+# DEBUG
+plot(bnd,type="l",lwd=2,asp=1)
+points(x,y,pch=".")
+points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
+lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red",lwd=2)
 
-         # find the intersection points (if any) 
-         intp<-intersect_sides(p1,p2,bnd)
+         intp<-do_intersect(p1,p2,bnd)
+
+         if(any(intp)){
+
+            # find the intersecting sides
+#            intp<-intersect_sides(p1,p2,bnd)
+  
+
+#### test
+            # loop over everything in the polygon
+            # probably don't want to go from 1,
+            # instead, order the points according to the end of the first
+            # FALSE block?
+            
+            for(i in 1:length(intp){
+
+               hull<-list(x=c(),y=c())
+
+
+   #           # keep adding points to the hull
+               if(intp[i]){
+               
+                  hull$x<-c(hull$x,bnd$x[i])
+                  hull$y<-c(hull$y,bnd$y[i])
+
+               }else{
+                  # when we get to the first FALSE, add in the two points
+                  # and calculate the hull...
+                  
+                  hull$x<-c(hull$x,p1$x,p2$x)
+                  hull$y<-c(hull$y,p1$y,p2$y)
+
+                  ch<-convex_hull(hull)
+                     
+                  # if it's short, keep it
+                  if(length.ch(ch)<length.ch(ch.old)
+
+               }
+            }
+
  
-         if(length(intp)>=2){
-
             ### create a list of points to create the hulls from
             # NB. ordering here doesn't matter as convex hull is a sort
 
-
-############################################################
-### WEIRD THINGS STILL HAPPENING HERE!
-            points.1<-list(x=c(p1$x,bnd$x[intp[1]:(intp[2]+1)],p2$x),
-                           y=c(p1$y,bnd$y[intp[1]:(intp[2]+1)],p2$y))
+            points.1<-list(x=c(p1$x,
+                             bnd$x[c((intp[2]+1):length(bnd$x),1:intp[1])],p2$x),
+                           y=c(p1$y,
+                             bnd$y[c((intp[2]+1):length(bnd$y),1:intp[1])],p2$y))
             
             points.2<-list(x=c(p1$x,bnd$x[(intp[1]+1):intp[2]],p2$x),
                            y=c(p1$y,bnd$y[(intp[1]+1):intp[2]],p2$y))
 
-            # DEBUG
-            #cat("intp:",intp,"\n")
-            #points(points.1,pch=22,col="red")
-            #points(points.2,pch=22,col="blue")
-            #points(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],col="blue",lwd=3)
-            #points(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],col="red",lwd=3)
-            #text(x=bnd$x[c(intp[1],intp[1]+1)],y=bnd$y[c(intp[1],intp[1]+1)],labels=c("1","1+1"))
-            #text(x=bnd$x[c(intp[2],intp[2]+1)],y=bnd$y[c(intp[2],intp[2]+1)],labels=c("2","2+1"))
-            #a<-scan()
+
+# DEBUG
+cat("intp:",intp,"\n")
+points(x=points.1$x,y=points.1$y,col="blue")
+points(x=points.2$x,y=points.2$y,col="red")
+a<-scan()
+#
+#text(x=bnd$x[c(intp[1],(intp[1]+1))],y=bnd$y[c(intp[1],(intp[1]+1))],
+#    labels=c("1","1+1"))
+#
+#text(x=bnd$x[c(intp[2],(intp[2]+1))],y=bnd$y[c(intp[2],(intp[2]+1))],
+#     labels=c("2","2+1"))
+#a<-scan()
 
             # calculate the hulls
             hull.1<-convex_hull(points.1)
             hull.2<-convex_hull(points.2)
             
-            # DEBUG
-            if(length(intp)>2){
-         plot(x,y,pch=".",asp=1)
-         lines(bnd)
-         points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
-               lines(hull.1,col="green")
-               lines(hull.2,col="blue")
-               cat("waiting...\n")
-               a<-scan()
-            }
-##############################################################
+# DEBUG
+if(length(intp)>2){
+   plot(bnd,type="l",lwd=2,asp=1)
+   points(x,y,pch=".")
+   text(x=x,y=y,col="green",labels=c(1:length(x)))
+   points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
+   lines(hull.1,col="green")
+   lines(hull.2,col="blue")
+   cat("waiting...\n")
+   a<-scan()
+}
+
+
             # find their lengths, keeping the shortest
+            # since the hull includes the straight path from p1 to p2
+            # we need to subtract that when we put it into D
             if(hull_length(hull.1) < hull_length(hull.2)){
                D[i,j]<-hull_length(hull.1)-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
             }else{
@@ -98,15 +142,16 @@ create_distance_matrix<-function(x,y,bnd,res=100){
 }
 
 # find the intersecting side with a line between two points
-intersect_sides<-function(p1,p2,bnd){
+intersect_sides<-function(p1,p2,bnd,flags){
    # args:
    #  p1, p2      the two points making up the end points of the line
    #  bnd         boundary of the shape to test intersection with
+   #  flags       those edges that intersect the line between p1,p2
+   #              logical vector
    # return:
    #     side numbers that intersect (two furthest apart ones to account
    #     for the possibility for multiple edges)
 
-   # first calculate all intersections
    
    # store the first vertex of the edge, the other vertex of the
    # edge is that +1
@@ -150,23 +195,21 @@ intersect_sides<-function(p1,p2,bnd){
          }
  
          # see if it is within the line between the two points
-         if((intx > min(p1$x,p2$x)) & (intx < max(p1$x,p2$x)) &
-            (inty > min(p1$y,p2$y)) & (inty < max(p1$y,p2$y))){
+#         if((intx >= min(p1$x,p2$x)) & (intx <= max(p1$x,p2$x)) &
+#            (inty >= min(p1$y,p2$y)) & (inty <= max(p1$y,p2$y))){
          # see if the intersection occurs between the two smallest points
-         if((intx > min(ep$x)) & (intx < max(ep$x)) &
-            (inty > min(ep$y)) & (inty < max(ep$y))){
+#         if((intx >= min(ep$x)) & (intx <= max(ep$x)) &
+#            (inty >= min(ep$y)) & (inty <= max(ep$y))){
 
-            # DEBUG
-            #abline(h=c(min(p1$y,p2$y), max(p1$y,p2$y)))      
-            #abline(v=c(min(p1$x,p2$x), max(p1$x,p2$x)))
-            #points(x=intx,y=inty,pch=22,cex=3,col="red")
-            #abline(a=-c1/b1,b=-a1/b1,col="red",lwd=2)     
-            #abline(a=-c2/b2,b=-a2/b2,col="red",lwd=2)     
-            #a<-scan()
+# DEBUG
+# plot the intersection, line between p1 and p2
+#points(x=intx,y=inty,pch=22,cex=3,col="red")
+#abline(a=-c1/b1,b=-a1/b1,col="red",lwd=2)     
+#abline(a=-c2/b2,b=-a2/b2,col="red",lwd=2)     
+#a<-scan()
             # if it is within range, add that vertex pair number to a list
-            #edges<-c(edges,i)
-            #cat("edges: ",edges,"\n") 
-         }}
+            edges<-c(edges,i)
+#         }}
       }
    }
 
@@ -197,5 +240,44 @@ hull_length<-function(hull){
 
 }
 
+# do two points and the boundary intersect?
+do_intersect<-function(p1,p2,bnd){
+   # we do this by seeing if the bounding boxes intersect
+   # from Mastering Algorithms with Perl, p 451
 
+   eps<-1e-16
+
+   # returns a string of T/F values
+   ret<-rep(TRUE,(length(bnd$x)-1))
+
+
+   # bounding box around the points p1,p2
+   p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
+                y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
+
+   # iterate over sides (ie vertex pairs)
+   # NB the last vertex should be the first
+   for (i in 1:(length(bnd$x)-1)){
+
+      # bounding box for the edge
+      e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
+                   y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
+
+      if(e.bbox$x[1]+eps < p.bbox$x[2]) ret[i]<-FALSE
+      if(p.bbox$x[1]+eps < e.bbox$x[2]) ret[i]<-FALSE
+      if(e.bbox$y[1]+eps < p.bbox$y[2]) ret[i]<-FALSE
+      if(p.bbox$y[1]+eps < e.bbox$y[2]) ret[i]<-FALSE
+
+#DEBUG
+#if(ret[i]){
+#   lines(x=e.bbox$x,y=rep(e.bbox$y[1],2),col="green",lwd=4)
+#   lines(x=e.bbox$x,y=rep(e.bbox$y[2],2),col="green",lwd=4)
+#   lines(x=rep(e.bbox$x[1],2),y=rep(e.bbox$y),col="green",lwd=4)
+#   lines(x=rep(e.bbox$x[2],2),y=rep(e.bbox$y),col="green",lwd=4)
+#}
+
+   }
+   return(ret)
+
+}
 
