@@ -39,55 +39,25 @@ lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red",lwd=2)
 #            intp<-intersect_sides(p1,p2,bnd)
   
 
-#### test
-            # loop over everything in the polygon
-            # probably don't want to go from 1,
-            # instead, order the points according to the end of the first
-            # FALSE block?
             
-            for(i in 1:length(intp){
-
-               hull<-list(x=c(),y=c())
-
-
-   #           # keep adding points to the hull
-               if(intp[i]){
-               
-                  hull$x<-c(hull$x,bnd$x[i])
-                  hull$y<-c(hull$y,bnd$y[i])
-
-               }else{
-                  # when we get to the first FALSE, add in the two points
-                  # and calculate the hull...
-                  
-                  hull$x<-c(hull$x,p1$x,p2$x)
-                  hull$y<-c(hull$y,p1$y,p2$y)
-
-                  ch<-convex_hull(hull)
-                     
-                  # if it's short, keep it
-                  if(length.ch(ch)<length.ch(ch.old)
-
-               }
-            }
-
  
             ### create a list of points to create the hulls from
             # NB. ordering here doesn't matter as convex hull is a sort
 
-            points.1<-list(x=c(p1$x,
-                             bnd$x[c((intp[2]+1):length(bnd$x),1:intp[1])],p2$x),
-                           y=c(p1$y,
-                             bnd$y[c((intp[2]+1):length(bnd$y),1:intp[1])],p2$y))
+            picker<-c((which(intp)[1]+1):(rev(which(intp))[1]-1))
+            points.1<-list(x=c(p1$x,p2$x,bnd$x[picker]),
+                           y=c(p1$y,p2$y,bnd$y[picker]))
             
-            points.2<-list(x=c(p1$x,bnd$x[(intp[1]+1):intp[2]],p2$x),
-                           y=c(p1$y,bnd$y[(intp[1]+1):intp[2]],p2$y))
+            picker<-c((which(!intp)[1]+1):(rev(which(!intp))[1]-1))
+            points.2<-list(x=c(p1$x,p2$x,bnd$x[picker]),
+                           y=c(p1$y,p2$y,bnd$y[picker]))
 
 
 # DEBUG
-cat("intp:",intp,"\n")
-points(x=points.1$x,y=points.1$y,col="blue")
-points(x=points.2$x,y=points.2$y,col="red")
+#cat("intp:",intp,"\n")
+points(x=points.2$x,y=points.2$y,col="red",pch=22,cex=2)
+points(x=points.1$x,y=points.1$y,col="blue",pch=23,cex=2)
+text(x=points.1$x,y=points.1$y,labels=c(1:length(points.1$x)))
 a<-scan()
 #
 #text(x=bnd$x[c(intp[1],(intp[1]+1))],y=bnd$y[c(intp[1],(intp[1]+1))],
@@ -102,7 +72,7 @@ a<-scan()
             hull.2<-convex_hull(points.2)
             
 # DEBUG
-if(length(intp)>2){
+#if(length(intp)>=2){
    plot(bnd,type="l",lwd=2,asp=1)
    points(x,y,pch=".")
    text(x=x,y=y,col="green",labels=c(1:length(x)))
@@ -111,7 +81,7 @@ if(length(intp)>2){
    lines(hull.2,col="blue")
    cat("waiting...\n")
    a<-scan()
-}
+#}
 
 
             # find their lengths, keeping the shortest
@@ -274,6 +244,7 @@ do_intersect<-function(p1,p2,bnd){
 #   lines(x=e.bbox$x,y=rep(e.bbox$y[2],2),col="green",lwd=4)
 #   lines(x=rep(e.bbox$x[1],2),y=rep(e.bbox$y),col="green",lwd=4)
 #   lines(x=rep(e.bbox$x[2],2),y=rep(e.bbox$y),col="green",lwd=4)
+#   a<-scan()
 #}
 
    }
