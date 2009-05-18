@@ -21,12 +21,12 @@ convex_hull<-function(points){
    my.hull$y[1]<-points$y[order.index[1]]
 
    # first find all the angles and sort them
-   my.angles<-angles(my.hull$x[1],my.hull$y[1],points$x[-1],points$y[-1])
+   my.angles<-angles(my.hull$x[1],my.hull$y[1],points$x[-order.index[1]],points$y[-order.index[1]])
    # second and third args below used to break ties
-   my.angles.index<-order(my.angles,points$y[-1],points$x[-1])
+   my.angles.index<-order(my.angles,points$y[-order.index[1]],points$x[-order.index[1]])
    anglelist<-list(angles=c(my.angles[my.angles.index]),
-                   x=c(points$x[-1][my.angles.index]),
-                   y=c(points$y[-1][my.angles.index]))
+                   x=c(points$x[-order.index[1]][my.angles.index]),
+                   y=c(points$y[-order.index[1]][my.angles.index]))
 
 
    # then find the first point to go to
@@ -61,16 +61,11 @@ convex_hull<-function(points){
             j<-j-1
          }
       }
-      # some debug stuff
-      #plot(anglelist$x,anglelist$y,pch=".")
-      #lines(my.hull,col="red")      
-
       j<-j+1
    }
 
    # Add in the first point again
    my.hull<-list(x=c(my.hull$x,my.hull$x[1]),y=c(my.hull$y,my.hull$y[1]))
-
 
    # return polygon
    return(my.hull)
