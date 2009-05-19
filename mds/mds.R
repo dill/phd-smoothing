@@ -36,8 +36,10 @@ lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red",lwd=2)
          if(any(intp)){
 
             ### create a list of points to create the hulls from
-            # NB. ordering here doesn't matter as convex hull is a sort
+            # NB. ordering of points in the hull doesn't matter 
+            # as convex hull is a sort
 
+            # sort intp
             picker<-c((which(intp)[1]+1):(rev(which(intp))[1]-1))
             points.1<-list(x=c(p1$x,p2$x,bnd$x[picker]),
                            y=c(p1$y,p2$y,bnd$y[picker]))
