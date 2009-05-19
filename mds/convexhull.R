@@ -38,30 +38,33 @@ convex_hull<-function(points){
    # keep place in the hull
    j<-4
 
-   # iterate over list
-   for(i in 3:(length(anglelist$angles))){
-      # add new point to the hull   
-      my.hull$x[j]<-anglelist$x[i]
-      my.hull$y[j]<-anglelist$y[i]
-
-      #### test to see if adding this new element gets rid of
-      #### older points
-      # go back over all the old points
-      # save the new point
-      new_point<-pe(my.hull,j)
-      for(k in length(my.hull$x):2){
-         # if points 1 and j are on the same side of the line between
-         # k and k-1...
-         if(is_left(new_point,pe(my.hull,k-1),pe(my.hull,k)) < 0){
-            # remove the point
-            my.hull<-list(x=my.hull$x[-k],y=my.hull$y[-k])
-            
-            # make sure that j is still set to the right value
-            # maintaining compactness of the list
-            j<-j-1
+   # check that we've not just got a triangle...
+   if(length(anglelist$angles)>3){
+      # iterate over list
+      for(i in 3:(length(anglelist$angles))){
+         # add new point to the hull   
+         my.hull$x[j]<-anglelist$x[i]
+         my.hull$y[j]<-anglelist$y[i]
+   
+         #### test to see if adding this new element gets rid of
+         #### older points
+         # go back over all the old points
+         # save the new point
+         new_point<-pe(my.hull,j)
+         for(k in length(my.hull$x):2){
+            # if points 1 and j are on the same side of the line between
+            # k and k-1...
+            if(is_left(new_point,pe(my.hull,k-1),pe(my.hull,k)) < 0){
+               # remove the point
+               my.hull<-list(x=my.hull$x[-k],y=my.hull$y[-k])
+               
+               # make sure that j is still set to the right value
+               # maintaining compactness of the list
+               j<-j-1
+            }
          }
+         j<-j+1
       }
-      j<-j+1
    }
 
    # Add in the first point again
