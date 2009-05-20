@@ -26,67 +26,27 @@ create_distance_matrix<-function(x,y,bnd,res=100){
          p2<-list(x=x[j],y=y[j])
 
 # DEBUG
-plot(bnd,type="l",lwd=2,asp=1)
-points(x,y,pch=".")
-points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
-lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red",lwd=2)
+#plot(bnd,type="l",lwd=2,asp=1)
+#points(x,y,pch=".")
+#points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
+#lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red",lwd=2)
 
          intp<-do_intersect(p1,p2,bnd)
 
+         # if there are any intersections of the line p1p2 with 
+         # any boundary side
          if(any(intp)){
 
-            ### create a list of points to create the hulls from
-            # NB. ordering of points in the hull doesn't matter 
-            # as convex hull is a sort
-
-            # sort intp
-            picker<-c((which(intp)[1]+1):(rev(which(intp))[1]-1))
-            points.1<-list(x=c(p1$x,p2$x,bnd$x[picker]),
-                           y=c(p1$y,p2$y,bnd$y[picker]))
-            
-            picker<-c((which(!intp)[1]+1):(rev(which(!intp))[1]-1))
-            points.2<-list(x=c(p1$x,p2$x,bnd$x[picker]),
-                           y=c(p1$y,p2$y,bnd$y[picker]))
+            # call the Wood algorithm
+            path<-wood_path(p1,p2,bnd)
 
 
-# DEBUG
-points(x=points.2$x,y=points.2$y,col="red",pch=22,cex=2)
-points(x=points.1$x,y=points.1$y,col="blue",pch=23,cex=2)
-text(x=points.1$x,y=points.1$y,labels=c(1:length(points.1$x)))
-a<-scan()
-#
-#text(x=bnd$x[c(intp[1],(intp[1]+1))],y=bnd$y[c(intp[1],(intp[1]+1))],
-#    labels=c("1","1+1"))
-#
-#text(x=bnd$x[c(intp[2],(intp[2]+1))],y=bnd$y[c(intp[2],(intp[2]+1))],
-#     labels=c("2","2+1"))
-#a<-scan()
+            # find the length of the path
+            D[i,j]<-hull_length(path)
 
-            # calculate the hulls
-            hull.1<-convex_hull(points.1)
-            hull.2<-convex_hull(points.2)
-            
-# DEBUG
-plot(bnd,type="l",lwd=2,asp=1)
-points(x,y,pch=".")
-text(x=x,y=y,col="green",labels=c(1:length(x)))
-points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
-lines(hull.1,col="green")
-lines(hull.2,col="blue")
-cat("waiting...\n")
-a<-scan()
-
-            # find their lengths, keeping the shortest
-            # since the hull includes the straight path from p1 to p2
-            # we need to subtract that when we put it into D
-            if(hull_length(hull.1) < hull_length(hull.2)){
-               D[i,j]<-hull_length(hull.1)-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
-            }else{
-               D[i,j]<-hull_length(hull.2)-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
-            }
-
+         # if the line p1p2 doesn't intersect any sides
          }else{
-            # insert the distance if they are inside
+            # insert the distance
             D[i,j]<-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
 
          }
