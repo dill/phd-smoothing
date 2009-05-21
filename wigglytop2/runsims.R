@@ -16,14 +16,20 @@ names(verts)<-c("x","y")
 
 # setup knots
 # this is a faff
-knots.x<-rep(seq(-2.9,2.9,length.out=10),10)
-knots.y<-rep(seq(-2.9,3.6,length.out=10),rep(10,10))
+#knots.x<-rep(seq(-2.9,2.9,length.out=10),10)
+#knots.y<-rep(seq(-2.9,3.6,length.out=10),rep(10,10))
+#insideknots<-inSide(verts,knots.x,knots.y)
+#insideknots[59]<-FALSE
+#boundary.knots<-30
+
+knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
+knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
 insideknots<-inSide(verts,knots.x,knots.y)
-# just get rid of one knot on the boundary, this is a bit horrible, look away now...
-insideknots[59]<-FALSE
+insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE
+# for 15x15
+boundary.knots<-49
+
 knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
-#plot(verts,type="l");points(knots,col="red");text(knots,labels=c(1:dim(knots)[1]))
-boundary.knots<-30
 
 for (samp.size in c(1000,500)){
    for(noise.level in c(0.02, 0.005)){
@@ -32,5 +38,5 @@ for (samp.size in c(1000,500)){
 }
 
 
-source("../generic_sim_code/makeboxplots.R")
-
+#source("../generic_sim_code/makeboxplots.R")
+cat("*** Remember you need to merge graphs!")

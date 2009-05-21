@@ -76,12 +76,6 @@ convex_hull<-function(points){
 }
 
 
-# routine to Pick Elements, pe
-pe<-function(this.list,el){
-   lapply(this.list,function(x) x[el])
-}
-
-
 # routine for finding the angles between a point (x0,y0) and a series of other
 # points (x,y)
 angles<-function(x0,y0,x,y){

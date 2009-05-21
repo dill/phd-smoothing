@@ -30,10 +30,12 @@ knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
 
 for (samp.size in c(1000,500)){
    for(noise.level in c(0.02, 0.005)){
-      source("../generic_sim_code/runsim.R")
+      source("runsim.R")
    }
 }
 
 
-source("../generic_sim_code/makeboxplots.R")
+#source("../generic_sim_code/makeboxplots.R")
+
+cat("*** Remember you need to merge graphs!")
 
