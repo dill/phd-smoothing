@@ -63,11 +63,13 @@ contour(pred.grid.tprs,add=T)
 
 ### soap
 # setup knots
-knots.x<-rep(seq(-2.9,2.9,length.out=10),10)
-knots.y<-rep(seq(-2.9,3.6,length.out=10),rep(10,10))
+knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
+knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
 insideknots<-inSide(verts,knots.x,knots.y)
-insideknots[59]<-FALSE
+#insideknots[59]<-FALSE # for 10x10
+insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE # for 15x15
 knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
+boundary.knots<-49
 #plot(verts,type="l");points(knots,col="red")
 
 ## get only the inside points
@@ -75,7 +77,7 @@ inside.points<-inSide(verts,samp.data$x,samp.data$y)
 samp.data<-data.frame(x=samp.data$x[inside.points],y=samp.data$y[inside.points],z=samp.data$z[inside.points])
 
 # fit
-b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=49),data=samp.data,knots=knots)
+b.soap<-gam(z~s(x,y,bs="so",xt=list(bnd=list(verts)),k=boundary.knots),data=samp.data,knots=knots)
 fv.soap <- predict(b.soap,newdata=data.frame(x=true.vals$x[true.vals$inside==1],y=true.vals$y[true.vals$inside==1]))
 
 pred.grid.soap<-matrix(c(0),res,res)
