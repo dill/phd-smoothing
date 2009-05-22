@@ -14,9 +14,22 @@ intersection_point<-function(p1,p2,edge){
    # return:
    #     intersection point
 
+   eps<-1e-16
 
    # calculation of intersection is straight from 
    # Handbook of Mathematics Bronstein et al. pp. 195,196
+
+
+   # handle the horizontal/vertical line case...
+#   if(abs(p2$x-p1$x) <eps) p1$x<-0
+#   if(abs(p2$y-p1$y)<eps) p1$y<-0
+#   if(abs(edge$x[2]-edge$x[1])<eps) edge$x[1]<-0
+#   if(abs(edge$y[2]-edge$y[1])<eps) edge$y[1]<-0
+
+   if(p2$x==p1$x) p1$x<-0
+   if(p2$y==p1$y) p1$y<-0
+   if(edge$x[2]==edge$x[1]) edge$x[1]<-0
+   if(edge$y[2]==edge$y[1]) edge$y[1]<-0
 
    ### calculate intersection point
    # first calculate the coefficients for the lines

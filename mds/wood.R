@@ -10,7 +10,8 @@ wood_path<-function(p1,p2,bnd){
 
 # DEBUG
 plot(bnd,type="l",asp=1)
-
+points(p1,pch=24,col="pink")
+points(p2,pch=24,col="pink")
 
    # make a line between p1 and p2
 
@@ -46,6 +47,7 @@ text(ip1,labels=c("ip1"))
 points(ip2,pch=23,col="red")
 text(ip2,labels=c("ip2"))
 
+cat(ip2$x,ip2$y,"\n")
 
 
    # first, sort the list such that p1's first intersection point
@@ -55,17 +57,15 @@ text(ip2,labels=c("ip2"))
    ip1.index<-bbindex[order(dists)[1]] 
    ip2.index<-bbindex[order(dists)[length(dists)]] 
 
-# DEBUG
-text(pe(bnd,ip1.index),labels=c("ip1"))
-text(pe(bnd,length(bnd$x)),labels=c("end"))
-
    bnd.1.sort<-pe(bnd,c(ip1.index:(length(bnd$x)-1),1:(ip1.index-1)))
-   bnd.1.sort<-pe(bnd.1.sort,c(1:(1+abs(ip2.index-ip1.index))))
+   bnd.1.sort<-pe(bnd.1.sort,c(2:bbindex[2]))#(1+abs(ip2.index-ip1.index))))
+
 
    bnd.2.sort<-pe(bnd,c(ip2.index:(length(bnd$x)-1),1:(ip2.index-1)))
-   bnd.2.sort<-pe(bnd.2.sort,c(1:(1+abs(ip1.index-ip2.index))))
+   bnd.2.sort<-pe(bnd.2.sort,c(2:(abs(bbindex[1]-bbindex[2])+1)))
 
-# DEBUG
+
+### DEBUG
 lines(bnd.1.sort,col="red",lwd=2)
 a<-scan()
 lines(bnd.2.sort,col="blue",lwd=2)
