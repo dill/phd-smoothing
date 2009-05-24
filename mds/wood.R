@@ -35,7 +35,7 @@ cat("bbindex=",bbindex,"\n")
       ips$y<-c(ips$y,ip$y)      
 
       # find the distance and save
-      dists<-c(dists,sqrt((ip$x-bnd$x[i])^2+(ip$y-bnd$y[i])^2))
+      dists<-c(dists,sqrt((p1$x-ip$x)^2+(p1$y-ip$y)^2))
    }
    # the two intersection points
    ip1<-pe(ips,order(dists)[1])
@@ -47,23 +47,24 @@ text(ip1,labels=c("ip1"))
 points(ip2,pch=23,col="red")
 text(ip2,labels=c("ip2"))
 
-cat(ip2$x,ip2$y,"\n")
+   # sort the intersections by their distances from p1 and p2
+   ip1.index<-bbindex[order(dists)] 
+   ip2.index<-bbindex[order(dists,decreasing=TRUE)] 
 
+   # This is quite horrible code.
+   # What we do is: take the ordering that makes sense first
+   # eg 1:5 not 5:1, make that set of edges, then take the difference
+   # between that set and the complete set of vertices.
+   picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
+   picker<-c(picker[1]:picker[2])
+   bnd.1.sort<-pe(bnd,picker)
 
-   # first, sort the list such that p1's first intersection point
-   # is the first element
+   bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)))),setdiff(c(1:length(bnd$x)),picker))
+cat("diff=",setdiff(c(1:length(bnd$x)),picker),"\n")
+   bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),length(bnd.2.sort$x):picker[1]))
 
-   # vertex before the intersection point
-   ip1.index<-bbindex[order(dists)[1]] 
-   ip2.index<-bbindex[order(dists)[length(dists)]] 
-
-   bnd.1.sort<-pe(bnd,c(ip1.index:(length(bnd$x)-1),1:(ip1.index-1)))
-   bnd.1.sort<-pe(bnd.1.sort,c(2:bbindex[2]))#(1+abs(ip2.index-ip1.index))))
-
-
-   bnd.2.sort<-pe(bnd,c(ip2.index:(length(bnd$x)-1),1:(ip2.index-1)))
-   bnd.2.sort<-pe(bnd.2.sort,c(2:(abs(bbindex[1]-bbindex[2])+1)))
-
+cat("picked:",setdiff(c(1:length(bnd$x)),picker),"\n")
+text(bnd,labels=c(1:length(bnd$x)))
 
 ### DEBUG
 lines(bnd.1.sort,col="red",lwd=2)

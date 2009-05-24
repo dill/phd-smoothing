@@ -21,27 +21,26 @@ intersection_point<-function(p1,p2,edge){
 
 
    # handle the horizontal/vertical line case...
-#   if(abs(p2$x-p1$x) <eps) p1$x<-0
-#   if(abs(p2$y-p1$y)<eps) p1$y<-0
-#   if(abs(edge$x[2]-edge$x[1])<eps) edge$x[1]<-0
-#   if(abs(edge$y[2]-edge$y[1])<eps) edge$y[1]<-0
-
-   if(p2$x==p1$x) p1$x<-0
-   if(p2$y==p1$y) p1$y<-0
-   if(edge$x[2]==edge$x[1]) edge$x[1]<-0
-   if(edge$y[2]==edge$y[1]) edge$y[1]<-0
+   p1x<-p1$x
+   p1y<-p1$y
+   ex1<-edge$x[1]
+   ey1<-edge$y[1]
+   if(p2$x==p1$x) p1x<-0
+   if(p2$y==p1$y) p1y<-0
+   if(edge$x[2]==edge$x[1]) ex1<-0
+   if(edge$y[2]==edge$y[1]) ey1<-0
 
    ### calculate intersection point
    # first calculate the coefficients for the lines
    # the line between the points
-   a1<- -1/(p2$x-p1$x)
-   b1<- 1/(p2$y-p1$y)
-   c1<- p1$x/(p2$x-p1$x)-p1$y/(p2$y-p1$y)
+   a1<- -1/(p2$x-p1x)
+   b1<- 1/(p2$y-p1y)
+   c1<- p1$x/(p2$x-p1x)-p1$y/(p2$y-p1y)
 
    # the edge
-   a2<- -1/(edge$x[2]-edge$x[1])
-   b2<- 1/(edge$y[2]-edge$y[1])
-   c2<- edge$x[1]/(edge$x[2]-edge$x[1])-edge$y[1]/(edge$y[2]-edge$y[1])
+   a2<- -1/(edge$x[2]-ex1)
+   b2<- 1/(edge$y[2]-ey1)
+   c2<- edge$x[1]/(edge$x[2]-ex1)-edge$y[1]/(edge$y[2]-ey1)
 
    ### do something to check for infinities...
    if(all(c(a1,a2,b1,b2,c1,c2)!=Inf) & all(c(a1,a2,b1,b2,c1,c2)!=-Inf)){
