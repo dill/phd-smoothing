@@ -27,7 +27,6 @@ points(p2,pch=24,col="pink")
 cat("bbindex=",bbindex,"\n")
 
 
-
    for(i in bbindex){
       # calculate and save the intersection
       ip<-intersection_point(p1,p2,pe(bnd,c(i,i+1)))
@@ -57,25 +56,56 @@ text(ip2,labels=c("ip2"))
    # between that set and the complete set of vertices.
    picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
    picker<-c(picker[1]:picker[2])
+
+cat("pre-picker=",picker,"\n")
+
+#   if(do_intersect(p1,p2,pe(bnd,picker[1:2]))){
+#      picker<-picker[-1]
+#cat("orly?\n")
+#   }
+#
+#   if(do_intersect(p1,p2,pe(bnd,picker[(length(picker)-1):length(picker)]))){
+#      picker<-rev(rev(picker)[-1])
+#cat("orly2?\n")
+#   }
+
+
    bnd.1.sort<-pe(bnd,picker)
 
+cat("picker=",picker,"\n")
+
    bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)))),setdiff(c(1:length(bnd$x)),picker))
-cat("diff=",setdiff(c(1:length(bnd$x)),picker),"\n")
+#cat("diff=",setdiff(c(1:length(bnd$x)),picker),"\n")
    bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),length(bnd.2.sort$x):picker[1]))
 
-cat("picked:",setdiff(c(1:length(bnd$x)),picker),"\n")
+#cat("picked:",setdiff(c(1:length(bnd$x)),picker),"\n")
 text(bnd,labels=c(1:length(bnd$x)))
 
 ### DEBUG
-lines(bnd.1.sort,col="red",lwd=2)
-a<-scan()
-lines(bnd.2.sort,col="blue",lwd=2)
-a<-scan()
+#lines(bnd.1.sort,col="red",lwd=2)
+#a<-scan()
+#lines(bnd.2.sort,col="blue",lwd=2)
+#a<-scan()
 
+   # pick the shorter of the boundary sections
+   if(hull_length(bnd.1.sort)<hull_length(bnd.2.sort)){
+      bnd.start<-bnd.1.sort
+   }else{
+      bnd.start<-bnd.2.sort
+   }
 
-
+   
    # create the initial path:
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
+   my.path<-list(x=c(p1$x,ip1$x,rev(bnd.start$x),ip2$x,p2$x),
+                 y=c(p1$y,ip1$y,rev(bnd.start$y),ip2$y,p2$y))
+
+### DEBUG
+lines(my.path,col="red",lwd=2)
+a<-scan()
+
+return(my.path)
+
 
    # ***
 #   my.path<-delete_step(my.path,bnd)
