@@ -104,12 +104,15 @@ text(bnd,labels=c(1:length(bnd$x)))
 lines(my.path,col="red",lwd=2)
 a<-scan()
 
-return(my.path)
+
 
 
    # ***
-#   my.path<-delete_step(my.path,bnd)
+   my.path<-delete_step(my.path,bnd)
 
+lines(my.path,col="blue",lwd=2)
+a<-scan()
+return(my.path)
    # iterate over the points in the path:
       # alter the path, until on two consecutive runs there are
       # no changes to the path
@@ -135,23 +138,26 @@ return(my.path)
 
 }
 
-#delete_step<-function(path, bnd){
-#
-#   
-#   # iterate over the points in the path:
-#      # delete as many points as possible, making sure that the
-#      # path is still outside
-#
-#   for(i in 2:(length(path$x)-1)){
-#
-#      
-#
-#
-#
-#
-#
-#   }
-#
-#}
+delete_step<-function(path, bnd){
+
+   
+   # iterate over the points in the path:
+      # delete as many points as possible, making sure that the
+      # path is still outside
+
+   for(i in 2:(length(path$x)-1)){
+      # create the current triplet to inspect
+      my.trip<-pe(path,c(i-1,i,i+1))
+     
+      # if deleting the middle point makes the resulting line cross the
+      # the boundary then keep it, else get rid of it 
+      if(any(!do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))){
+         path<-pe(path,c(1:(i-1),(i+1):length(path$x)))
+      }
+
+
+   }
+
+}
 
 
