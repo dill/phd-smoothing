@@ -86,18 +86,21 @@ text(bnd,labels=c(1:length(bnd$x)))
 #lines(bnd.2.sort,col="blue",lwd=2)
 #a<-scan()
 
-   # pick the shorter of the boundary sections
-   if(hull_length(bnd.1.sort)<hull_length(bnd.2.sort)){
-      bnd.start<-bnd.1.sort
-   }else{
-      bnd.start<-bnd.2.sort
-   }
 
-   
-   # create the initial path:
+   # create the initial paths:
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   my.path<-list(x=c(p1$x,ip1$x,rev(bnd.start$x),ip2$x,p2$x),
-                 y=c(p1$y,ip1$y,rev(bnd.start$y),ip2$y,p2$y))
+   my.path.1<-list(x=c(p1$x,ip1$x,rev(bnd.1.sort$x),ip2$x,p2$x),
+                   y=c(p1$y,ip1$y,rev(bnd.1.sort$y),ip2$y,p2$y))
+   my.path.2<-list(x=c(p1$x,ip1$x,rev(bnd.2.sort$x),ip2$x,p2$x),
+                   y=c(p1$y,ip1$y,rev(bnd.2.sort$y),ip2$y,p2$y))
+
+   # pick the shorter path 
+   if(hull_length(my.path.1)<hull_length(my.path.2)){
+      my.path<-my.path.1
+   }else{
+      my.path<-my.path.2
+   }
+   
 
 ### DEBUG
 lines(my.path,col="red",lwd=2)
@@ -144,6 +147,7 @@ delete_step<-function(path, bnd){
 
    prev.path<-list(x=c(Inf),y=c(Inf))
 
+   # keep going until we don't remove any more points.
    while(length(prev.path$x)!=length(path$x) & length(prev.path$y)!=length(path$y)){
       # save the previous path to compare, above
       prev.path<-path
