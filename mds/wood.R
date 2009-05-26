@@ -6,17 +6,21 @@ wood_path<-function(p1,p2,bnd){
    # return:
    #  path        set of points on the path
 
-
 # DEBUG
 plot(bnd,type="l",asp=1)
+text(bnd,labels=c(1:length(bnd$x)))
 points(p1,pch=24,col="pink")
 points(p1,pch=24,col="pink")
 text(p1,label="1")
-text(p2,label="1")
+text(p2,label="2")
 
-cat("p1=",p1$x,p1$y,"\n")
-cat("p2=",p2$x,p2$y,"\n")
-   # make a line between p1 and p2
+   # HACKHACKHACK this may or may not be a fix to the
+   # paths joining the wrong points
+   if(p2$x<p1$x){
+      tmp<-p1
+      p1<-p2
+      p2<-tmp
+   }
 
    # find the first intersection between p1, p2 and the boundary
    # for each point
@@ -28,7 +32,6 @@ cat("p2=",p2$x,p2$y,"\n")
 
 # DEBUG
 cat("bbindex=",bbindex,"\n")
-
 
    for(i in bbindex){
       # calculate and save the intersection
@@ -60,36 +63,10 @@ text(ip2,labels=c("ip2"))
    picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
    picker<-c(picker[1]:picker[2])
 
-cat("pre-picker=",picker,"\n")
-
-#   if(do_intersect(p1,p2,pe(bnd,picker[1:2]))){
-#      picker<-picker[-1]
-#cat("orly?\n")
-#   }
-#
-#   if(do_intersect(p1,p2,pe(bnd,picker[(length(picker)-1):length(picker)]))){
-#      picker<-rev(rev(picker)[-1])
-#cat("orly2?\n")
-#   }
-
-
    bnd.1.sort<-pe(bnd,picker)
 
-cat("picker=",picker,"\n")
-
    bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)))),setdiff(c(1:length(bnd$x)),picker))
-#cat("diff=",setdiff(c(1:length(bnd$x)),picker),"\n")
    bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),length(bnd.2.sort$x):picker[1]))
-
-#cat("picked:",setdiff(c(1:length(bnd$x)),picker),"\n")
-text(bnd,labels=c(1:length(bnd$x)))
-
-### DEBUG
-#lines(bnd.1.sort,col="red",lwd=2)
-#a<-scan()
-#lines(bnd.2.sort,col="blue",lwd=2)
-#a<-scan()
-
 
    # create the initial paths:
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
@@ -105,7 +82,6 @@ text(bnd,labels=c(1:length(bnd$x)))
       my.path<-my.path.2
    }
    
-
 ### DEBUG
 lines(my.path,col="red",lwd=2)
 a<-scan()
@@ -114,10 +90,15 @@ a<-scan()
 
 
    # ***
+   # delete step, remove anything that doesn't need to be there
    my.path<-delete_step(my.path,bnd)
 
+### DEBUG
 lines(my.path,col="blue",lwd=2)
 a<-scan()
+
+
+
 return(my.path)
    # iterate over the points in the path:
       # alter the path, until on two consecutive runs there are
