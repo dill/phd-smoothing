@@ -28,7 +28,7 @@ for (i in 1:500){
    
    
    ### mapping
-   b.mapped<-gam(z~s(x,y,k=49),data=samp.data.mapped)
+   b.mapped<-gam(z~s(x,y,k=100),data=samp.data.mapped)
    fv <- predict(b.mapped,newdata=data.frame(x=true.vals.mapped$x,y=true.vals.mapped$y))
    
    ### calculate the MSEs

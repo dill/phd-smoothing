@@ -1,5 +1,4 @@
 # Simon's algorithm for finding the path
-
 wood_path<-function(p1,p2,bnd){
    # args:
    #  p1, p2      the two points to find the path between
@@ -138,25 +137,35 @@ return(my.path)
 
 }
 
+# iterate over the points in the path:
+# delete as many points as possible, making sure that the
+# path is still outside
 delete_step<-function(path, bnd){
 
+   prev.path<-list(x=c(Inf),y=c(Inf))
+
+   while(length(prev.path$x)!=length(path$x) & length(prev.path$y)!=length(path$y)){
+      # save the previous path to compare, above
+      prev.path<-path
+      # start point for triplet selection
+      i<-2
+      while((i+1)<=length(path$x)){
+         # create the current triplet to inspect
+         my.trip<-pe(path,c(i-1,i,i+1))
+        
+         # if deleting the middle point makes the resulting line cross the
+         # the boundary then keep it, else get rid of it 
+         if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
+            inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
+                       (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
+            path<-pe(path,-i)
+         }
    
-   # iterate over the points in the path:
-      # delete as many points as possible, making sure that the
-      # path is still outside
-
-   for(i in 2:(length(path$x)-1)){
-      # create the current triplet to inspect
-      my.trip<-pe(path,c(i-1,i,i+1))
-     
-      # if deleting the middle point makes the resulting line cross the
-      # the boundary then keep it, else get rid of it 
-      if(any(!do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))){
-         path<-pe(path,c(1:(i-1),(i+1):length(path$x)))
+         i<-i+1
       }
-
-
    }
+
+   return(path)
 
 }
 

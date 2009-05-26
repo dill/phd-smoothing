@@ -88,9 +88,9 @@ do_intersect<-function(p1,p2,bnd){
 
    eps<-1e-16
 
+
    # returns a string of T/F values
    ret<-rep(TRUE,(length(bnd$x)-1))
-
 
    # bounding box around the points p1,p2
    p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
@@ -99,6 +99,9 @@ do_intersect<-function(p1,p2,bnd){
    # iterate over sides (ie vertex pairs)
    # NB the last vertex should be the first
    for (i in 1:(length(bnd$x)-1)){
+
+
+
 
       # bounding box for the edge
       e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
@@ -150,4 +153,43 @@ do_intersect<-function(p1,p2,bnd){
    return(ret)
 
 }
+
+# special do_intersect, thinks that points that start/end at the same
+# place don't intersect. Neither do exactly overlapping lines.
+sp_do_intersect<-function(p1,p2,bnd){
+
+   # returns a string of T/F values
+   ret<-rep(TRUE,(length(bnd$x)-1))
+
+   # iterate over sides (ie vertex pairs)
+   # NB the last vertex should be the first
+   for (i in 1:(length(bnd$x)-1)){
+
+      # case where the lines are exactly overlapping
+      if((p1$x==bnd$x[i] & p2$x==bnd$x[i+1] &
+         p1$y==bnd$y[i] & p2$y==bnd$y[i+1])|
+         (p2$x==bnd$x[i] & p1$x==bnd$x[i+1] &
+         p2$y==bnd$y[i] & p1$y==bnd$y[i+1])) ret[i]<-FALSE
+
+      # start/end points the same
+      if((p1$x==bnd$x[i] & p1$y==bnd$y[i])|
+         (p2$x==bnd$x[i] & p2$y==bnd$y[i])|
+         (p1$x==bnd$x[i+1] & p1$y==bnd$y[i+1]) |
+         (p2$x==bnd$x[i+1] & p2$y==bnd$y[i+1])) ret[i]<-FALSE
+
+      # call original routine if this doesn't work
+      if(ret[i]) ret[i]<-do_intersect(p1,p2,pe(bnd,i:(i+1)))
+   }
+
+   return(ret)
+
+}
+
+
+
+
+
+
+
+
 
