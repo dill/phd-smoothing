@@ -69,6 +69,9 @@ hull_length<-function(hull){
    # return
    #     its length
 
+#   if(length(hull$x)<2) return(Inf)
+
+
    hullen<-0
 
    for (i in 1:(length(hull$x)-1)){

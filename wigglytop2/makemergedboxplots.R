@@ -1,7 +1,7 @@
 # make some boxplots
 # plots on log scale, MSES reported underneath are _not_
 
-pdf(file="merged-mses-boxplot.pdf",width=4,height=10)
+#pdf(file="merged-mses-boxplot.pdf",width=4,height=10)
 
 par(mfrow=c(4,1))
 # make the text look better for printout
@@ -42,4 +42,4 @@ for (samp.size in c(1000,500)){
    }
 }
 
-dev.off()
+#dev.off()

@@ -11,6 +11,7 @@ cat("Noise level:",noise.level,"\n")
 
 # vars to hold the mses
 sctprs.mse<-c()
+tprs.mse<-c()
 
 # do 500 replicates
 for (i in 1:500){
@@ -30,14 +31,17 @@ for (i in 1:500){
    ### mapping
    b.mapped<-gam(z~s(x,y,k=100),data=samp.data.mapped)
    fv <- predict(b.mapped,newdata=data.frame(x=true.vals.mapped$x,y=true.vals.mapped$y))
-   
-   ### calculate the MSEs
    sctprs.mse<-c(sctprs.mse,mean((true.vals$z[true.vals$inside==1]-fv)^2,na.rm=T))
+
+   ### tprs
+   b.tprs<-gam(z~s(x,y,k=100),data=samp.data)
+   fv.tp <- predict(b.tprs,newdata=data.frame(x=true.vals$x,y=true.vals$y))
+   tprs.mse<-c(tprs.mse,mean((true.vals$z[true.vals$inside==1]-fv.tp)^2,na.rm=T))
    
 }
 
-mses<-c(sctprs.mse)
-labs<-c(rep("SC+TPRSbbox",length(sctprs.mse)))
+mses<-c(sctprs.mse,tprs.mse)
+labs<-c(rep("SC+TPRSbbox",length(sctprs.mse),rep("TPRS",length(tprs.mse))))
 
 mse.data<-list(mse=mses,labs=labs)
 

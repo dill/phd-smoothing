@@ -10,8 +10,12 @@ wood_path<-function(p1,p2,bnd){
 # DEBUG
 plot(bnd,type="l",asp=1)
 points(p1,pch=24,col="pink")
-points(p2,pch=24,col="pink")
+points(p1,pch=24,col="pink")
+text(p1,label="1")
+text(p2,label="1")
 
+cat("p1=",p1$x,p1$y,"\n")
+cat("p2=",p2$x,p2$y,"\n")
    # make a line between p1 and p2
 
    # find the first intersection between p1, p2 and the boundary
