@@ -27,10 +27,11 @@ create_distance_matrix<-function(x,y,bnd,res=100){
          p2<-list(x=x[j],y=y[j])
 
 # DEBUG
-#plot(bnd,type="l",lwd=2,asp=1)
+plot(bnd,type="l",lwd=2,asp=1)
 #points(x,y,pch=".")
-#points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
+points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
 #lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red",lwd=2)
+a<-scan()
 
          intp<-do_intersect(p1,p2,bnd)
 

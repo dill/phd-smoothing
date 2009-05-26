@@ -27,7 +27,6 @@ points(p2,pch=24,col="pink")
 cat("bbindex=",bbindex,"\n")
 
 
-
    for(i in bbindex){
       # calculate and save the intersection
       ip<-intersection_point(p1,p2,pe(bnd,c(i,i+1)))
@@ -35,7 +34,7 @@ cat("bbindex=",bbindex,"\n")
       ips$y<-c(ips$y,ip$y)      
 
       # find the distance and save
-      dists<-c(dists,sqrt((ip$x-bnd$x[i])^2+(ip$y-bnd$y[i])^2))
+      dists<-c(dists,sqrt((p1$x-ip$x)^2+(p1$y-ip$y)^2))
    }
    # the two intersection points
    ip1<-pe(ips,order(dists)[1])
@@ -47,38 +46,73 @@ text(ip1,labels=c("ip1"))
 points(ip2,pch=23,col="red")
 text(ip2,labels=c("ip2"))
 
-cat(ip2$x,ip2$y,"\n")
+   # sort the intersections by their distances from p1 and p2
+   ip1.index<-bbindex[order(dists)] 
+   ip2.index<-bbindex[order(dists,decreasing=TRUE)] 
+
+   # This is quite horrible code.
+   # What we do is: take the ordering that makes sense first
+   # eg 1:5 not 5:1, make that set of edges, then take the difference
+   # between that set and the complete set of vertices.
+   picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
+   picker<-c(picker[1]:picker[2])
+
+cat("pre-picker=",picker,"\n")
+
+#   if(do_intersect(p1,p2,pe(bnd,picker[1:2]))){
+#      picker<-picker[-1]
+#cat("orly?\n")
+#   }
+#
+#   if(do_intersect(p1,p2,pe(bnd,picker[(length(picker)-1):length(picker)]))){
+#      picker<-rev(rev(picker)[-1])
+#cat("orly2?\n")
+#   }
 
 
-   # first, sort the list such that p1's first intersection point
-   # is the first element
+   bnd.1.sort<-pe(bnd,picker)
 
-   # vertex before the intersection point
-   ip1.index<-bbindex[order(dists)[1]] 
-   ip2.index<-bbindex[order(dists)[length(dists)]] 
+cat("picker=",picker,"\n")
 
-   bnd.1.sort<-pe(bnd,c(ip1.index:(length(bnd$x)-1),1:(ip1.index-1)))
-   bnd.1.sort<-pe(bnd.1.sort,c(2:bbindex[2]))#(1+abs(ip2.index-ip1.index))))
+   bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)))),setdiff(c(1:length(bnd$x)),picker))
+#cat("diff=",setdiff(c(1:length(bnd$x)),picker),"\n")
+   bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),length(bnd.2.sort$x):picker[1]))
 
-
-   bnd.2.sort<-pe(bnd,c(ip2.index:(length(bnd$x)-1),1:(ip2.index-1)))
-   bnd.2.sort<-pe(bnd.2.sort,c(2:(abs(bbindex[1]-bbindex[2])+1)))
-
+#cat("picked:",setdiff(c(1:length(bnd$x)),picker),"\n")
+text(bnd,labels=c(1:length(bnd$x)))
 
 ### DEBUG
-lines(bnd.1.sort,col="red",lwd=2)
-a<-scan()
-lines(bnd.2.sort,col="blue",lwd=2)
-a<-scan()
+#lines(bnd.1.sort,col="red",lwd=2)
+#a<-scan()
+#lines(bnd.2.sort,col="blue",lwd=2)
+#a<-scan()
 
+   # pick the shorter of the boundary sections
+   if(hull_length(bnd.1.sort)<hull_length(bnd.2.sort)){
+      bnd.start<-bnd.1.sort
+   }else{
+      bnd.start<-bnd.2.sort
+   }
 
-
+   
    # create the initial path:
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
+   my.path<-list(x=c(p1$x,ip1$x,rev(bnd.start$x),ip2$x,p2$x),
+                 y=c(p1$y,ip1$y,rev(bnd.start$y),ip2$y,p2$y))
+
+### DEBUG
+lines(my.path,col="red",lwd=2)
+a<-scan()
+
+
+
 
    # ***
-#   my.path<-delete_step(my.path,bnd)
+   my.path<-delete_step(my.path,bnd)
 
+lines(my.path,col="blue",lwd=2)
+a<-scan()
+return(my.path)
    # iterate over the points in the path:
       # alter the path, until on two consecutive runs there are
       # no changes to the path
@@ -104,23 +138,26 @@ a<-scan()
 
 }
 
-#delete_step<-function(path, bnd){
-#
-#   
-#   # iterate over the points in the path:
-#      # delete as many points as possible, making sure that the
-#      # path is still outside
-#
-#   for(i in 2:(length(path$x)-1)){
-#
-#      
-#
-#
-#
-#
-#
-#   }
-#
-#}
+delete_step<-function(path, bnd){
+
+   
+   # iterate over the points in the path:
+      # delete as many points as possible, making sure that the
+      # path is still outside
+
+   for(i in 2:(length(path$x)-1)){
+      # create the current triplet to inspect
+      my.trip<-pe(path,c(i-1,i,i+1))
+     
+      # if deleting the middle point makes the resulting line cross the
+      # the boundary then keep it, else get rid of it 
+      if(any(!do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))){
+         path<-pe(path,c(1:(i-1),(i+1):length(path$x)))
+      }
+
+
+   }
+
+}
 
 
