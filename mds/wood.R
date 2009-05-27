@@ -8,7 +8,7 @@ wood_path<-function(p1,p2,bnd){
 
 # DEBUG
 plot(bnd,type="l",asp=1)
-#text(bnd,labels=c(1:length(bnd$x)))
+text(bnd,labels=c(1:length(bnd$x)))
 points(p1,pch=24,col="pink")
 points(p1,pch=24,col="pink")
 text(p1,label="1")
@@ -189,6 +189,12 @@ alter_step<-function(path,bnd){
       while((i+1)<=length(path$x)){
          # for each point i, look at the line i-1 to i+1
          my.trip<-pe(path,c(i-1,i,i+1))
+
+### DEBUG
+plot(bnd,type="l")
+text(bnd,labels=1:length(bnd$x))
+lines(path,lwd=2,col="grey")
+
    
          ep1<-pe(my.trip,1)
          ep2<-pe(my.trip,3)
@@ -210,14 +216,17 @@ alter_step<-function(path,bnd){
                rm(npl)
             }
 
-#lines(new.path,lwd=2,col="pink")
+lines(new.path,lwd=2,col="pink")
 #text(new.path,labels=1:length(new.path$x))
 
 #mtrace(delete_step)
 
+### bug occurs here
+# need to remove those vertices that are leaves, ie. don't lead to the
+# point we want to get to!
             new.path<-delete_step(new.path,bnd)
 
-#lines(new.path,lwd=2,col="green")
+lines(new.path,lwd=2,col="green")
             
 ### Ideally it would be good to just call wood_path again here...
 
@@ -225,7 +234,7 @@ alter_step<-function(path,bnd){
             path<-list(x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
                        y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)]))
 ### DEBUG
-#a<-scan()
+a<-scan()
 #lines(new.path,lwd=2,col="orange")
             }
 
