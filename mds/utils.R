@@ -188,11 +188,70 @@ sp_do_intersect<-function(p1,p2,bnd){
 
 }
 
+# determine whether the line between two points is facing inside or outside
+facing<-function(p1,p2,bnd){
+   # Args:
+   #  p1, p2      the points
+   #  bnd         the boundary
+   # Return:
+   #              logical 2-vector, TRUE= facing inside
+   #                                FALSE= facing outside
 
 
 
 
+   # there might be no intersections, so if there aren't
+   # then just return FALSE and let the delete step take 
+   # care of it
+   ret<-rep(FALSE,2)
 
+   doint<-do_intersect(p1,p2,bnd)
 
+   if(sum(doint)>1){
 
+# DEBUG
+#text(p1,labels="1",col="green")
+#text(p2,labels="2",col="green")
+      # find intersections & sort by distance
+      bbindex<-c(1:(length(bnd$x)-1))[doint]
+      # hold distances and intersection points temporarily
+      dists<-c(); ips<-list(x=c(),y=c())
+
+      for(j in bbindex){
+         # calculate and save the intersection
+         ip<-intersection_point(p1,p2,pe(bnd,c(j,j+1)))
+         ips$x<-c(ips$x,ip$x)
+         ips$y<-c(ips$y,ip$y)
+
+         # find the distance and save
+         dists<-c(dists,sqrt((p1$x-ip$x)^2+(p1$y-ip$y)^2))
+      }
+
+      # find first intersection between p1 and bnd
+      p1.int<-pe(ips,order(dists)[1])
+      # find first intersection between p2 and bnd
+      p2.int<-pe(ips,order(dists,decreasing=TRUE)[1])
+  
+### DEBUG
+cat("bb:",bbindex[order(dists)],"\n")
+ 
+      # midpoint between p1 and first intersection 
+      p1.mp<-list(x=(p1.int$x+p1$x)/2,y=(p1.int$y+p1$y)/2)
+      # midpoint between p2 and first intersection 
+      p2.mp<-list(x=(p2.int$x+p2$x)/2,y=(p2.int$y+p2$y)/2)
+  
+### DEBUG
+#cat("facing x:",p1.int$x,p2.int$x,p1.mp$x,p2.mp$x,"\n")
+#cat("facing y:",p1.int$y,p2.int$y,p1.mp$y,p2.mp$y,"\n")
+
+ 
+      # are the midpoints inside?
+      ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
+   }
+
+### DEBUG
+cat("face inside:",ret,"\n")
+
+   return(ret)   
+}
 

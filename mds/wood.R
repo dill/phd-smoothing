@@ -8,11 +8,12 @@ wood_path<-function(p1,p2,bnd){
 
 # DEBUG
 plot(bnd,type="l",asp=1)
-text(bnd,labels=c(1:length(bnd$x)))
+#text(bnd,labels=c(1:length(bnd$x)))
 points(p1,pch=24,col="pink")
 points(p1,pch=24,col="pink")
 text(p1,label="1")
 text(p2,label="2")
+
 
    # HACKHACKHACK this may or may not be a fix to the
    # paths joining the wrong points
@@ -21,7 +22,43 @@ text(p2,label="2")
       p1<-p2
       p2<-tmp
    }
+   
+### DEBUG
+#lines(my.path,col="red",lwd=2)
+#a<-scan()
 
+   # create the initial path:
+   # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
+   my.path<-make_bnd_path(p1,p2,bnd)
+
+   # ***
+   # delete step, remove anything that doesn't need to be there
+   my.path<-delete_step(my.path,bnd)
+
+### DEBUG
+lines(my.path,col="blue",lwd=2)
+a<-scan()
+
+cat("x=c(",p1$x,p2$x,")\n")
+cat("y=c(",p1$y,p2$y,")\n")
+
+   # add new vertices
+   my.path<-alter_step(my.path,bnd)
+
+
+
+### DEBUG
+lines(my.path,col="orange",lwd=2)
+
+
+
+   return(my.path)
+
+
+}
+
+# create a path between p1 and p2 using the boundary
+make_bnd_path<-function(p1,p2,bnd){
    # find the first intersection between p1, p2 and the boundary
    # for each point
 
@@ -31,7 +68,7 @@ text(p2,label="2")
    dists<-c(); ips<-list(x=c(),y=c())
 
 # DEBUG
-cat("bbindex=",bbindex,"\n")
+#cat("bbindex=",bbindex,"\n")
 
    for(i in bbindex){
       # calculate and save the intersection
@@ -47,10 +84,10 @@ cat("bbindex=",bbindex,"\n")
    ip2<-pe(ips,order(dists,decreasing=TRUE)[1])
 
 # DEBUG
-points(ip1,pch=23,col="red")
-text(ip1,labels=c("ip1"))
-points(ip2,pch=23,col="red")
-text(ip2,labels=c("ip2"))
+#points(ip1,pch=23,col="red")
+#text(ip1,labels=c("ip1"))
+#points(ip2,pch=23,col="red")
+#text(ip2,labels=c("ip2"))
 
    # sort the intersections by their distances from p1 and p2
    ip1.index<-bbindex[order(dists)] 
@@ -63,6 +100,10 @@ text(ip2,labels=c("ip2"))
    picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
    picker<-c(picker[1]:picker[2])
 
+### DEBUG
+cat("picker=",picker,"\n")
+
+
    bnd.1.sort<-pe(bnd,picker)
 
    bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)))),setdiff(c(1:length(bnd$x)),picker))
@@ -70,66 +111,34 @@ text(ip2,labels=c("ip2"))
 
    # create the initial paths:
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   my.path.1<-list(x=c(p1$x,ip1$x,rev(bnd.1.sort$x),ip2$x,p2$x),
-                   y=c(p1$y,ip1$y,rev(bnd.1.sort$y),ip2$y,p2$y))
-   my.path.2<-list(x=c(p1$x,ip1$x,rev(bnd.2.sort$x),ip2$x,p2$x),
-                   y=c(p1$y,ip1$y,rev(bnd.2.sort$y),ip2$y,p2$y))
+   this.path.1<-list(x=c(p1$x,ip1$x,rev(bnd.1.sort$x),ip2$x,p2$x),
+                     y=c(p1$y,ip1$y,rev(bnd.1.sort$y),ip2$y,p2$y))
+   this.path.2<-list(x=c(p1$x,ip1$x,rev(bnd.2.sort$x),ip2$x,p2$x),
+                     y=c(p1$y,ip1$y,rev(bnd.2.sort$y),ip2$y,p2$y))
 
    # pick the shorter path 
-   if(hull_length(my.path.1)<hull_length(my.path.2)){
-      my.path<-my.path.1
+   if(hull_length(this.path.1)<hull_length(this.path.2)){
+      this.path<-this.path.1
    }else{
-      my.path<-my.path.2
+      this.path<-this.path.2
    }
-   
-### DEBUG
-lines(my.path,col="red",lwd=2)
-a<-scan()
 
-
-
-
-   # ***
-   # delete step, remove anything that doesn't need to be there
-   my.path<-delete_step(my.path,bnd)
-
-### DEBUG
-lines(my.path,col="blue",lwd=2)
-a<-scan()
-
-
-
-return(my.path)
-   # iterate over the points in the path:
-      # alter the path, until on two consecutive runs there are
-      # no changes to the path
-
-         # for each point i, look at the line i-1 to i+1
-
-            # does it go inside-outside-inside?
-               # create a path:
-               # i-1, i-1 1st intersection with bnd, some of bnd, 
-               #    i+1 1st intersection with bnd, i+1
-               # run from *** 
-
-
-            # if it goes inside-outside or outside-inside, ignore
-
-
-
-
-   # return the path
-
-
-
+   return(this.path)
 
 }
+
+
+
 
 # iterate over the points in the path:
 # delete as many points as possible, making sure that the
 # path is still outside
 delete_step<-function(path, bnd){
-
+   # Args:
+   #  path     the current path
+   #  bnd      the boundary
+   # Return:
+   #           revised path with dropped vertices
    prev.path<-list(x=c(Inf),y=c(Inf))
 
    # keep going until we don't remove any more points.
@@ -158,4 +167,79 @@ delete_step<-function(path, bnd){
 
 }
 
+# alter the path
+alter_step<-function(path,bnd){
+   # Args:
+   #  path     the current path
+   #  bnd      the boundary
+   # Return:
+   #           revised path with added/ammended vertices
 
+   # iterate over the points in the path:
+      # alter the path, until on two(?) consecutive runs there are
+      # no changes to the path
+
+
+   prev.path<-list(x=Inf,y=Inf)
+#
+   while(length(prev.path$x)!=length(path$x) & length(prev.path$y)!=length(path$y)){
+#      # save the previous path for comparison
+      prev.path<-path
+      i<-2 # start poin
+      while((i+1)<=length(path$x)){
+         # for each point i, look at the line i-1 to i+1
+         my.trip<-pe(path,c(i-1,i,i+1))
+   
+         ep1<-pe(my.trip,1)
+         ep2<-pe(my.trip,3)
+
+         if(all(facing(ep1,ep2,bnd))){
+            # create a new path
+            new.path<-make_bnd_path(ep1,ep2,bnd)
+
+            # this code might check to see if things are backwards
+            x.check<-(new.path$x[1:(length(new.path$x)-1)]
+                      +new.path$x[2:length(new.path$x)])/2
+            y.check<-(new.path$y[1:(length(new.path$y)-1)]
+                      +new.path$y[2:length(new.path$y)])/2
+            backwards.check<-inSide(bnd,x.check,y.check)
+
+            if(!all(backwards.check)){
+               npl<-length(new.path$x)
+               new.path<-pe(new.path,c(1,2,(npl-2):3,(npl-1),npl))
+               rm(npl)
+            }
+
+#lines(new.path,lwd=2,col="pink")
+#text(new.path,labels=1:length(new.path$x))
+
+#mtrace(delete_step)
+
+            new.path<-delete_step(new.path,bnd)
+
+#lines(new.path,lwd=2,col="green")
+            
+### Ideally it would be good to just call wood_path again here...
+
+            if(hull_length(new.path)<hull_length(my.trip)){ 
+            path<-list(x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
+                       y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)]))
+### DEBUG
+#a<-scan()
+#lines(new.path,lwd=2,col="orange")
+            }
+
+         }
+         # does it go inside-outside-inside?
+               # create a path:
+               # i-1, i-1 1st intersection with bnd, some of bnd, 
+               #    i+1 1st intersection with bnd, i+1
+               # run from *** 
+         # if it goes inside-outside or outside-inside, ignore
+         i<-i+1
+      }
+   }
+   # return the path
+   return(path)
+
+}
