@@ -197,9 +197,6 @@ facing<-function(p1,p2,bnd){
    #              logical 2-vector, TRUE= facing inside
    #                                FALSE= facing outside
 
-
-
-
    # there might be no intersections, so if there aren't
    # then just return FALSE and let the delete step take 
    # care of it
@@ -227,22 +224,51 @@ facing<-function(p1,p2,bnd){
          dists<-c(dists,sqrt((p1$x-ip$x)^2+(p1$y-ip$y)^2))
       }
 
+### DEBUG   
+#cat("dists=",dists,"\n")
+
+#      p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
+#      p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
+#
+#
+#      nonzero<-c(p1.ind,p2.ind)
+#      
+##cat("dists p1=",dists[-p1.ind],"\n")
+##cat("dists p2=",dists[-p2.ind],"\n")
+##cat("dists all=",dists[-c(p1.ind,p2.ind)],"\n")
+#
+#
+#### DEBUG
+##points(ips,col="red")
+##a<-scan()
+#
+#      # pick non-zero elements
+##      nonzero<-dists!=0
+#      dists<-dists[-nonzero]
+#      bbindex<-bbindex[-nonzero]
+#      ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
+
+
+### DEBUG
+#points(ips,col="red")
+#cat("bb:",bbindex[order(dists)],"\n")
+#cat("dists=",dists,"\n")
+#a<-scan()
+
       # find first intersection between p1 and bnd
       p1.int<-pe(ips,order(dists)[1])
       # find first intersection between p2 and bnd
       p2.int<-pe(ips,order(dists,decreasing=TRUE)[1])
   
-### DEBUG
-cat("bb:",bbindex[order(dists)],"\n")
- 
       # midpoint between p1 and first intersection 
       p1.mp<-list(x=(p1.int$x+p1$x)/2,y=(p1.int$y+p1$y)/2)
       # midpoint between p2 and first intersection 
       p2.mp<-list(x=(p2.int$x+p2$x)/2,y=(p2.int$y+p2$y)/2)
-  
+ 
 ### DEBUG
-#cat("facing x:",p1.int$x,p2.int$x,p1.mp$x,p2.mp$x,"\n")
-#cat("facing y:",p1.int$y,p2.int$y,p1.mp$y,p2.mp$y,"\n")
+#points(p1.mp,col="red")
+#points(p2.mp,col="red")
+#a<-scan()
 
  
       # are the midpoints inside?

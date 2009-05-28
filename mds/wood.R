@@ -7,12 +7,12 @@ wood_path<-function(p1,p2,bnd){
    #  path        set of points on the path
 
 # DEBUG
-plot(bnd,type="l",asp=1)
-text(bnd,labels=c(1:length(bnd$x)))
-points(p1,pch=24,col="pink")
-points(p1,pch=24,col="pink")
-text(p1,label="1")
-text(p2,label="2")
+#plot(bnd,type="l",asp=1)
+#text(bnd,labels=c(1:length(bnd$x)))
+#points(p1,pch=24,col="pink")
+#points(p1,pch=24,col="pink")
+#text(p1,label="1")
+#text(p2,label="2")
 
 
    # HACKHACKHACK this may or may not be a fix to the
@@ -36,21 +36,19 @@ text(p2,label="2")
    my.path<-delete_step(my.path,bnd)
 
 ### DEBUG
-lines(my.path,col="blue",lwd=2)
-a<-scan()
-
-cat("x=c(",p1$x,p2$x,")\n")
-cat("y=c(",p1$y,p2$y,")\n")
+#lines(my.path,col="blue",lwd=2)
+#a<-scan()
+#cat("x=c(",p1$x,p2$x,")\n")
+#cat("y=c(",p1$y,p2$y,")\n")
 
    # add new vertices
    my.path<-alter_step(my.path,bnd)
 
-
-
 ### DEBUG
+plot(bnd,type="l")
+text(bnd,labels=1:length(bnd$x))
 lines(my.path,col="orange",lwd=2)
-
-
+a<-scan()
 
    return(my.path)
 
@@ -88,6 +86,7 @@ make_bnd_path<-function(p1,p2,bnd){
 #text(ip1,labels=c("ip1"))
 #points(ip2,pch=23,col="red")
 #text(ip2,labels=c("ip2"))
+#a<-scan()
 
    # sort the intersections by their distances from p1 and p2
    ip1.index<-bbindex[order(dists)] 
@@ -101,7 +100,7 @@ make_bnd_path<-function(p1,p2,bnd){
    picker<-c(picker[1]:picker[2])
 
 ### DEBUG
-cat("picker=",picker,"\n")
+#cat("picker=",picker,"\n")
 
 
    bnd.1.sort<-pe(bnd,picker)
@@ -115,6 +114,13 @@ cat("picker=",picker,"\n")
                      y=c(p1$y,ip1$y,rev(bnd.1.sort$y),ip2$y,p2$y))
    this.path.2<-list(x=c(p1$x,ip1$x,rev(bnd.2.sort$x),ip2$x,p2$x),
                      y=c(p1$y,ip1$y,rev(bnd.2.sort$y),ip2$y,p2$y))
+
+   # remove duplicates
+#   dupes<-!(duplicated(this.path.1$x)&duplicated(this.path.1$y))
+#   this.path.1<-list(x=this.path.1$x[dupes],y=this.path.1$y[dupes])
+#   dupes<-!(duplicated(this.path.2$x)&duplicated(this.path.2$y))
+#   this.path.2<-list(x=this.path.2$x[dupes],y=this.path.2$y[dupes])
+
 
    # pick the shorter path 
    if(hull_length(this.path.1)<hull_length(this.path.2)){
@@ -150,10 +156,16 @@ delete_step<-function(path, bnd){
       while((i+1)<=length(path$x)){
          # create the current triplet to inspect
          my.trip<-pe(path,c(i-1,i,i+1))
+
+         if(my.trip$x[1]==my.trip$x[3]&my.trip$y[1]==my.trip$y[3]){
+            # if we are going forward and back again, just
+            # remove the point
+            path<-pe(path,-c(i,i+1))
+
         
          # if deleting the middle point makes the resulting line cross the
          # the boundary then keep it, else get rid of it 
-         if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
+         }else if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
             inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
                        (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
             path<-pe(path,-i)
@@ -193,8 +205,8 @@ alter_step<-function(path,bnd){
 ### DEBUG
 plot(bnd,type="l")
 text(bnd,labels=1:length(bnd$x))
-lines(path,lwd=2,col="grey")
-
+lines(my.trip,lwd=2,col="grey")
+a<-scan()
    
          ep1<-pe(my.trip,1)
          ep2<-pe(my.trip,3)
@@ -215,11 +227,12 @@ lines(path,lwd=2,col="grey")
                new.path<-pe(new.path,c(1,2,(npl-2):3,(npl-1),npl))
                rm(npl)
             }
+### DEBUG
+lines(new.path,lwd=2,col="red")
+text(new.path,labels=1:length(new.path$x))
+cat("new.path$x=",new.path$x,"\n")
+cat("new.path$y=",new.path$y,"\n")
 
-lines(new.path,lwd=2,col="pink")
-#text(new.path,labels=1:length(new.path$x))
-
-#mtrace(delete_step)
 
 ### bug occurs here
 # need to remove those vertices that are leaves, ie. don't lead to the
@@ -234,8 +247,8 @@ lines(new.path,lwd=2,col="green")
             path<-list(x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
                        y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)]))
 ### DEBUG
+lines(new.path,lwd=2,col="orange")
 a<-scan()
-#lines(new.path,lwd=2,col="orange")
             }
 
          }
