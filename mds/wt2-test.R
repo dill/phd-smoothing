@@ -23,21 +23,9 @@ source("utils.R")
 x<-c(-2.4688416, -1.1883870, -2.0504753,  0.0540343,  0.7386338,  1.7021442,  2.7163657)
 y<-c(2.1441334, 1.8962821, -1.8345328, -2.4867731, -0.6213657, -1.0127099, -2.5519972)
 
-# example of paths not joining the right points.
-#x<-c(-1.188387, -2.050475)
-#y<-c(1.834533, -1.896282)
-
-#for ( i in 1:(length(x)-1)){
-#   p1<-list(x=x[i],y=y[i])
-#   for(j in (i+1):length(x)){
-#
-#      p2<-list(x=x[j],y=y[j])
-#
-#      D<-wood_path(p1,p2,bnd)
-#
-#   }
-#
-#}
+# dies here...
+x=c( -1.188387 , 2.716366 )
+y=c( 1.896282 , -2.551997 )
 
 D<-create_distance_matrix(x,y,bnd)
 

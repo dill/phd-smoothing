@@ -239,8 +239,8 @@ facing<-function(p1,p2,bnd){
 #
 #
 #### DEBUG
-##points(ips,col="red")
-##a<-scan()
+#points(ips,col="red")
+#a<-scan()
 #
 #      # pick non-zero elements
 ##      nonzero<-dists!=0
@@ -266,8 +266,8 @@ facing<-function(p1,p2,bnd){
       p2.mp<-list(x=(p2.int$x+p2$x)/2,y=(p2.int$y+p2$y)/2)
  
 ### DEBUG
-#points(p1.mp,col="red")
-#points(p2.mp,col="red")
+#points(p1.mp,col="orange")
+#points(p2.mp,col="orange")
 #a<-scan()
 
  
@@ -276,7 +276,7 @@ facing<-function(p1,p2,bnd){
    }
 
 ### DEBUG
-cat("face inside:",ret,"\n")
+#cat("face inside:",ret,"\n")
 
    return(ret)   
 }
