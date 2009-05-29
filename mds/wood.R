@@ -240,9 +240,9 @@ alter_step<-function(path,bnd){
 
 
 ### DEBUG
-#lines(new.path,lwd=2,col="red")
-#text(new.path,labels=1:length(new.path$x))
-#a<-scan()
+lines(new.path,lwd=2,col="red")
+text(new.path,labels=1:length(new.path$x))
+a<-scan()
             new.path<-delete_step(new.path,bnd)
 
             if(hull_length(new.path)<hull_length(my.trip)){ 
