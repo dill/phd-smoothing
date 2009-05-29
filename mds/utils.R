@@ -224,30 +224,20 @@ facing<-function(p1,p2,bnd){
          dists<-c(dists,sqrt((p1$x-ip$x)^2+(p1$y-ip$y)^2))
       }
 
-### DEBUG   
-#cat("dists=",dists,"\n")
-
-#      p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
-#      p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
-#
-#
-#      nonzero<-c(p1.ind,p2.ind)
-#      
-##cat("dists p1=",dists[-p1.ind],"\n")
-##cat("dists p2=",dists[-p2.ind],"\n")
-##cat("dists all=",dists[-c(p1.ind,p2.ind)],"\n")
-#
-#
 #### DEBUG
 #points(ips,col="red")
 #a<-scan()
 #
 #      # pick non-zero elements
 ##      nonzero<-dists!=0
+#if(length(ips$x)>3){
+#      p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
+#      p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
+#      nonzero<-c(p1.ind,p2.ind)
 #      dists<-dists[-nonzero]
 #      bbindex<-bbindex[-nonzero]
 #      ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
-
+#}
 
 ### DEBUG
 #points(ips,col="red")
@@ -281,3 +271,31 @@ facing<-function(p1,p2,bnd){
    return(ret)   
 }
 
+# find if a point is on a line
+on_line<-function(p1,this.line){
+
+   eps<-1e-15
+   # left hand side of equation
+   leftside<-(p1$y-this.line$y[1])/(this.line$y[2]-this.line$y[1])
+   #right hand side of equation
+   rightside<-(p1$x-this.line$x[1])/(this.line$x[2]-this.line$x[1])
+
+   if(abs(leftside-rightside)<eps){
+       return(TRUE)
+   }else{
+      return(FALSE)
+   }
+}
+
+# find qhich boundary side a point is on
+which_side<-function(p1,bnd){
+
+   logical.response<-c(TRUE,(length(bnd$x)-1))
+
+   for(i in 1:(length(bnd$x)-1)){
+      logical.response[i]<-on_line(p1,pe(bnd,i:(i+1)))
+   }
+
+   return(c(1:(length(bnd$x)-1))[logical.response])
+
+}
