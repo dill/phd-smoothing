@@ -151,14 +151,11 @@ make_bnd_path<-function(p1,p2,bnd){
 
    # make sure we aren't adding a superfluous vertex (not both end of a side
    # that we don't need)
-   # ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
-
    if(length(picker)>1){
       if(on_line(ip1,pe(bnd.2.sort,1:2))){
          bnd.2.sort<-pe(bnd.2.sort,-1)
       }
       ep.1<-length(bnd.2.sort$x)
-
       if(on_line(ip2,pe(bnd.2.sort,(ep.1-1):ep.1))){
          bnd.2.sort<-pe(bnd.2.sort,-ep.1)
       }
@@ -218,7 +215,6 @@ delete_step<-function(path, bnd){
          # remove the point
          if(my.trip$x[1]==my.trip$x[3]&my.trip$y[1]==my.trip$y[3]){
             path<-pe(path,-c(i,i+1))
-
         
          # if deleting the middle point makes the resulting line cross the
          # the boundary then keep it, else get rid of it 
@@ -230,10 +226,6 @@ delete_step<-function(path, bnd){
    
          i<-i+1
       }
-
-#lines(path,lwd=2,col="red")
-#a<-scan()
-
    }
    return(path)
 }
@@ -262,17 +254,22 @@ alter_step<-function(path,bnd){
          # for each point i, look at the line i-1 to i+1
          my.trip<-pe(path,c(i-1,i,i+1))
 
-### DEBUG
-#plot(bnd,type="l")
-#text(bnd,labels=1:length(bnd$x))
-#lines(my.trip,lwd=2,col="grey")
-#a<-scan()
    
          ep1<-pe(my.trip,1)
          ep2<-pe(my.trip,3)
 
+
+### DEBUG
+plot(bnd,type="l")
+text(bnd,labels=1:length(bnd$x))
+lines(my.trip,lwd=2,col="grey")
+cat("face:",facing(ep1,ep2,bnd),"\n")
+a<-scan()
+
          # does it go inside-outside-inside?
          if(all(facing(ep1,ep2,bnd))){
+cat("in\n")
+
             # create a new path
             these.paths<-make_bnd_path(ep1,ep2,bnd)
 
@@ -283,25 +280,18 @@ alter_step<-function(path,bnd){
                new.path<-these.paths$path.2
             }
 
-            # this code might check to see if things are backwards
-#            x.check<-(new.path$x[1:(length(new.path$x)-1)]
-#                      +new.path$x[2:length(new.path$x)])/2
-#            y.check<-(new.path$y[1:(length(new.path$y)-1)]
-#                      +new.path$y[2:length(new.path$y)])/2
-#            backwards.check<-inSide(bnd,x.check,y.check)
-#            if(!all(backwards.check)){
-#               npl<-length(new.path$x)
-#               new.path<-pe(new.path,c(1,2,(npl-2):3,(npl-1),npl))
-#               rm(npl)
-#            }
-
 ### DEBUG
-#lines(new.path,lwd=2,col="red")
-#text(new.path,labels=1:length(new.path$x))
-#a<-scan()
+lines(new.path,lwd=2,col="red")
+points(new.path,cex=3,col="red")
+text(new.path,labels=1:length(new.path$x))
+
             new.path<-delete_step(new.path,bnd)
 
+lines(new.path,lwd=2,col="blue")
+a<-scan()
+
             if(hull_length(new.path)<hull_length(my.trip)){ 
+cat("inin\n")
                path<-list(x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
                        y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)]))
 
@@ -310,12 +300,10 @@ alter_step<-function(path,bnd){
 #lines(new.path,lwd=2,col="orange")
 #a<-scan()
             }
-
          }
          i<-i+1
       }
    }
    # return the path
    return(path)
-
 }

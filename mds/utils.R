@@ -69,9 +69,6 @@ hull_length<-function(hull){
    # return
    #     its length
 
-#   if(length(hull$x)<2) return(Inf)
-
-
    hullen<-0
 
    for (i in 1:(length(hull$x)-1)){
@@ -102,9 +99,6 @@ do_intersect<-function(p1,p2,bnd){
    # iterate over sides (ie vertex pairs)
    # NB the last vertex should be the first
    for (i in 1:(length(bnd$x)-1)){
-
-
-
 
       # bounding box for the edge
       e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
@@ -143,14 +137,6 @@ do_intersect<-function(p1,p2,bnd){
          }
 
       }
-#DEBUG
-#if(ret[i]){
-#   lines(x=e.bbox$x,y=rep(e.bbox$y[1],2),col="green",lwd=4)
-#   lines(x=e.bbox$x,y=rep(e.bbox$y[2],2),col="green",lwd=4)
-#   lines(x=rep(e.bbox$x[1],2),y=rep(e.bbox$y),col="green",lwd=4)
-#   lines(x=rep(e.bbox$x[2],2),y=rep(e.bbox$y),col="green",lwd=4)
-#   a<-scan()
-#}
 
    }
    return(ret)
@@ -183,9 +169,7 @@ sp_do_intersect<-function(p1,p2,bnd){
       # call original routine if this doesn't work
       if(ret[i]) ret[i]<-do_intersect(p1,p2,pe(bnd,i:(i+1)))
    }
-
    return(ret)
-
 }
 
 # determine whether the line between two points is facing inside or outside
@@ -209,6 +193,9 @@ facing<-function(p1,p2,bnd){
 # DEBUG
 #text(p1,labels="1",col="green")
 #text(p2,labels="2",col="green")
+#lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),lwd=2,col="green")
+
+
       # find intersections & sort by distance
       bbindex<-c(1:(length(bnd$x)-1))[doint]
       # hold distances and intersection points temporarily
@@ -230,14 +217,14 @@ facing<-function(p1,p2,bnd){
 #
 #      # pick non-zero elements
 ##      nonzero<-dists!=0
-#if(length(ips$x)>3){
-#      p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
-#      p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
-#      nonzero<-c(p1.ind,p2.ind)
-#      dists<-dists[-nonzero]
-#      bbindex<-bbindex[-nonzero]
-#      ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
-#}
+if(length(ips$x)>3){
+      p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
+      p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
+      nonzero<-c(p1.ind,p2.ind)
+      dists<-dists[-nonzero]
+      bbindex<-bbindex[-nonzero]
+      ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
+}
 
 ### DEBUG
 #points(ips,col="red")
@@ -256,9 +243,9 @@ facing<-function(p1,p2,bnd){
       p2.mp<-list(x=(p2.int$x+p2$x)/2,y=(p2.int$y+p2$y)/2)
  
 ### DEBUG
-#points(p1.mp,col="orange")
-#points(p2.mp,col="orange")
-#a<-scan()
+points(p1.mp,col="orange",cex=3)
+points(p2.mp,col="orange",cex=3)
+a<-scan()
 
  
       # are the midpoints inside?
