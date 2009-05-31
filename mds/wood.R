@@ -74,11 +74,10 @@ lines(my.path,col="orange",lwd=2)
 
 
       # add new vertices
-#      my.path<-alter_step(my.path,bnd)
+      my.path<-alter_step(my.path,bnd)
 
 ### DEBUG
-#lines(my.path,col="blue",lwd=2)
-#a<-scan()
+lines(my.path,col="blue",lwd=2)
 
    }
 
@@ -104,9 +103,6 @@ make_bnd_path<-function(p1,p2,bnd){
    # hold distances and intersection points temporarily
    dists<-c(); ips<-list(x=c(),y=c())
 
-# DEBUG
-#cat("bbindex=",bbindex,"\n")
-
    for(i in bbindex){
       # calculate and save the intersection
       ip<-intersection_point(p1,p2,pe(bnd,c(i,i+1)))
@@ -120,13 +116,6 @@ make_bnd_path<-function(p1,p2,bnd){
    ip1<-pe(ips,order(dists)[1])
    ip2<-pe(ips,order(dists,decreasing=TRUE)[1])
 
-# DEBUG
-#points(ip1,pch=23,col="red")
-text(ip1,labels=c("ip1"))
-#points(ip2,pch=23,col="red")
-text(ip2,labels=c("ip2"))
-#a<-scan()
-
    # sort the intersections by their distances from p1 and p2
    ip1.index<-bbindex[order(dists)] 
    ip2.index<-bbindex[order(dists,decreasing=TRUE)] 
@@ -138,55 +127,31 @@ text(ip2,labels=c("ip2"))
    picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
    picker<-c(picker[1]:picker[2])
 
-cat("1- picker=",picker,"\n")
-
    bnd.1.sort<-pe(bnd,picker)
-
-#lines(bnd.1.sort,col="red",lwd=2)
 
    # make sure we aren't adding a superfluous vertex (not both end of a side
    # that we don't need)
    # ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
    if(length(picker)>1){
 
-cat("1:",on_line(ip1,pe(bnd.1.sort,1:2)),"\n")
       if(on_line(ip1,pe(bnd.1.sort,1:2))){
-cat("1really?\n")
          bnd.1.sort<-pe(bnd.1.sort,-1)
          picker<-picker[-1]
       }
       ep.1<-length(bnd.1.sort$x)
 
-cat("2:",on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1)),"\n")
       if(on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1))){
-cat("2really?\n")
          bnd.1.sort<-pe(bnd.1.sort,-ep.1)
          picker<-picker[-ep.1]
       }
    }
 
-
-
-
-
-
-### DEBUG
-cat("2- picker=",picker,"\n")
-cat("setdiff=",setdiff(c(1:(length(bnd$x)-1)),picker),"\n")
-
-
    bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)-1))),setdiff(c(1:(length(bnd$x)-1)),picker))
    bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),length(bnd.2.sort$x):picker[1]))
-
-
-### DEBUG
-#cat("ints:", do_intersect(ip1,pe(bnd.1.sort,1),bnd),"\n")
-
 
    # make sure we aren't adding a superfluous vertex (not both end of a side
    # that we don't need)
    # ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
-
 
    if(length(picker)>1){
       if(on_line(ip1,pe(bnd.2.sort,1:2))){
@@ -199,45 +164,29 @@ cat("setdiff=",setdiff(c(1:(length(bnd$x)-1)),picker),"\n")
       }
    }
 
-cat("1st picker",picker[1]-1,picker[1],"\n")
-cat("2nd picker",picker[length(picker)],picker[length(picker)]+1,"\n")
+   # tackle the index going out of range, ugly but necessary without 
+   # a stack structure
+   pickend<-picker[length(picker)]
+   if(pickend==(length(bnd$x))) pickend<-1
+   pickendp<-pickend+1
 
-      # tackle the index going out of range, ugly but necessary without 
-      # a stack structure
-      pickend<-picker[length(picker)]
-      if(pickend==(length(bnd$x))) pickend<-1
-      pickendp<-pickend+1
-
-      pickstart<-picker[1]
-      pickstartm<-pickstart-1
-      if(pickstart==1) pickstartm<-length(bnd$x)-1
-
-#mtrace(on_line)
-
-
-      if(on_line(ip2,pe(bnd,pickend:pickendp))&
-            on_line(ip1,pe(bnd,pickstartm:pickstart))){
-
-cat("2222really?\n")
-         bnd.1.sort<-list(x=rev(bnd.1.sort$x),
-                          y=rev(bnd.1.sort$y))
-         bnd.2.sort<-list(x=rev(bnd.2.sort$x),
-                          y=rev(bnd.2.sort$y))
-      }
-
-
+   pickstart<-picker[1]
+   pickstartm<-pickstart-1
+   if(pickstart==1) pickstartm<-length(bnd$x)-1
+      
+   if(on_line(ip2,pe(bnd,pickend:pickendp))&
+      on_line(ip1,pe(bnd,pickstartm:pickstart))){
+      bnd.1.sort<-list(x=rev(bnd.1.sort$x),
+                       y=rev(bnd.1.sort$y))
+      bnd.2.sort<-list(x=rev(bnd.2.sort$x),
+                       y=rev(bnd.2.sort$y))
+   }
 
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    bnd.1.sort<-list(x=c(ip1$x,rev(bnd.1.sort$x),ip2$x),
                     y=c(ip1$y,rev(bnd.1.sort$y),ip2$y))
    bnd.2.sort<-list(x=c(ip1$x,rev(bnd.2.sort$x),ip2$x),
                     y=c(ip1$y,rev(bnd.2.sort$y),ip2$y))
-
-
-### DEBUG
-lines(bnd.1.sort,col="blue",lwd=2)
-lines(bnd.2.sort,col="red",lwd=2)
-a<-scan()
 
    # return both paths
    return(list(path.1=bnd.1.sort,path.2=bnd.2.sort))
@@ -314,10 +263,10 @@ alter_step<-function(path,bnd){
          my.trip<-pe(path,c(i-1,i,i+1))
 
 ### DEBUG
-plot(bnd,type="l")
-text(bnd,labels=1:length(bnd$x))
-lines(my.trip,lwd=2,col="grey")
-a<-scan()
+#plot(bnd,type="l")
+#text(bnd,labels=1:length(bnd$x))
+#lines(my.trip,lwd=2,col="grey")
+#a<-scan()
    
          ep1<-pe(my.trip,1)
          ep2<-pe(my.trip,3)
@@ -347,9 +296,9 @@ a<-scan()
 #            }
 
 ### DEBUG
-lines(new.path,lwd=2,col="red")
-text(new.path,labels=1:length(new.path$x))
-a<-scan()
+#lines(new.path,lwd=2,col="red")
+#text(new.path,labels=1:length(new.path$x))
+#a<-scan()
             new.path<-delete_step(new.path,bnd)
 
             if(hull_length(new.path)<hull_length(my.trip)){ 
