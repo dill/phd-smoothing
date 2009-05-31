@@ -287,7 +287,34 @@ on_line<-function(p1,this.line){
    }
 }
 
-# find qhich boundary side a point is on
+
+# find if a point is on a line
+on_line_2<-function(p1,this.line){
+# from http://local.wasp.uwa.edu.au/~pbourke/geometry/pointline/
+
+   eps<-1e-16   
+
+   u<-(p1$x-this.line$x[1])*(this.line$x[2]-this.line$x[1])+(p1$y-this.line$y[1])*(this.line$y[2]-this.line$y[1])/((this.line$x[2]-this.line$x[1])^2+(this.line$y[2]-this.line$y[1])^2)
+
+   np<-list(x=c(),y=c())
+   np$x<-this.line$x[1]+u*(this.line$x[2]-this.line$x[1])
+   np$y<-this.line$y[1]+u*(this.line$y[2]-this.line$y[1])
+   
+   np.dist<-sqrt((np$x-p1$x)^2+(np$y-p1$y)^2)
+
+   if(np.dist<eps){
+       return(TRUE)
+   }else{
+      return(FALSE)
+   }
+}
+
+
+
+
+
+
+# find which boundary side a point is on
 which_side<-function(p1,bnd){
 
    logical.response<-c(TRUE,(length(bnd$x)-1))

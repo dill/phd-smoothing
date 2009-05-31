@@ -18,10 +18,13 @@ wood_path<-function(p1,p2,bnd){
 # DEBUG
 plot(bnd,type="l",asp=1)
 text(bnd,labels=c(1:length(bnd$x)))
-#points(p1,pch=24,col="pink")
-#points(p2,pch=24,col="pink")
-text(p1,label="1")
-text(p2,label="2")
+points(p1,pch=24,col="pink")
+points(p2,pch=24,col="pink")
+#text(p1,label="1")
+#text(p2,label="2")
+cat("next point pairing:\n")
+cat("x=c(",p1$x,",",p2$x,")\n")
+cat("y=c(",p1$y,",",p2$y,")\n")
 
    # create the initial path:
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
@@ -67,7 +70,7 @@ text(p2,label="2")
 
 ### DEBUG      
 #plot(bnd,type="l")
-#lines(my.path,col="orange",lwd=2)
+lines(my.path,col="orange",lwd=2)
 
 
       # add new vertices
@@ -82,11 +85,9 @@ text(p2,label="2")
 ### DEBUG
 #lines(my.path,col="blue",lwd=2)
 #a<-scan()
-cat("x=c(",p1$x,",",p2$x,")\n")
-cat("y=c(",p1$y,",",p2$y,")\n")
 #plot(bnd,type="l")
 #text(bnd,labels=1:length(bnd$x))
-lines(my.path,col="orange",lwd=2)
+#lines(my.path,col="orange",lwd=2)
 a<-scan()
    return(my.path)
 
@@ -148,13 +149,17 @@ cat("1- picker=",picker,"\n")
    # ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
    if(length(picker)>1){
 
+cat("1:",on_line(ip1,pe(bnd.1.sort,1:2)),"\n")
       if(on_line(ip1,pe(bnd.1.sort,1:2))){
+cat("1really?\n")
          bnd.1.sort<-pe(bnd.1.sort,-1)
          picker<-picker[-1]
       }
       ep.1<-length(bnd.1.sort$x)
 
+cat("2:",on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1)),"\n")
       if(on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1))){
+cat("2really?\n")
          bnd.1.sort<-pe(bnd.1.sort,-ep.1)
          picker<-picker[-ep.1]
       }
@@ -162,12 +167,15 @@ cat("1- picker=",picker,"\n")
 
 
 
+
+
+
 ### DEBUG
 cat("2- picker=",picker,"\n")
-cat("setdif",setdiff(c(1:length(bnd$x)),picker),"\n")
+cat("setdiff=",setdiff(c(1:(length(bnd$x)-1)),picker),"\n")
 
 
-   bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)))),setdiff(c(1:length(bnd$x)),picker))
+   bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)-1))),setdiff(c(1:(length(bnd$x)-1)),picker))
    bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),length(bnd.2.sort$x):picker[1]))
 
 
@@ -179,44 +187,45 @@ cat("setdif",setdiff(c(1:length(bnd$x)),picker),"\n")
    # that we don't need)
    # ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
 
+
    if(length(picker)>1){
       if(on_line(ip1,pe(bnd.2.sort,1:2))){
          bnd.2.sort<-pe(bnd.2.sort,-1)
-         picker<-picker[-1]
       }
       ep.1<-length(bnd.2.sort$x)
+
       if(on_line(ip2,pe(bnd.2.sort,(ep.1-1):ep.1))){
          bnd.2.sort<-pe(bnd.2.sort,-ep.1)
-         picker<-picker[-ep.1]
       }
    }
 
+cat("1st picker",picker[1]-1,picker[1],"\n")
+cat("2nd picker",picker[length(picker)],picker[length(picker)]+1,"\n")
 
-##############
+      # tackle the index going out of range, ugly but necessary without 
+      # a stack structure
+      pickend<-picker[length(picker)]
+      if(pickend==(length(bnd$x))) pickend<-1
+      pickendp<-pickend+1
 
-   ip1.side<-which_side(ip1,bnd)
+      pickstart<-picker[1]
+      pickstartm<-pickstart-1
+      if(pickstart==1) pickstartm<-length(bnd$x)-1
 
-   sorter<-c(ip1.side,picker[1],picker[length(picker)])
+#mtrace(on_line)
 
-   if(order(sorter)[1]==sorter[1]){
-   bnd.1.sort<-list(x=rev(bnd.1.sort$x),
-                    y=rev(bnd.1.sort$y))
-   bnd.2.sort<-list(x=rev(bnd.2.sort$x),
-                    y=rev(bnd.2.sort$y))
 
-#      tmp<-ip1
-#      ip1<-ip2
-#      ip2<-tmp
+      if(on_line(ip2,pe(bnd,pickend:pickendp))&
+            on_line(ip1,pe(bnd,pickstartm:pickstart))){
 
-   }
+cat("2222really?\n")
+         bnd.1.sort<-list(x=rev(bnd.1.sort$x),
+                          y=rev(bnd.1.sort$y))
+         bnd.2.sort<-list(x=rev(bnd.2.sort$x),
+                          y=rev(bnd.2.sort$y))
+      }
 
-####################
 
-   # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-#   bnd.1.sort<-list(x=c(ip1$x,rev(bnd.1.sort$x),ip2$x),
-#                    y=c(ip1$y,rev(bnd.1.sort$y),ip2$y))
-#   bnd.2.sort<-list(x=c(ip1$x,rev(bnd.2.sort$x),ip2$x),
-#                    y=c(ip1$y,rev(bnd.2.sort$y),ip2$y))
 
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    bnd.1.sort<-list(x=c(ip1$x,rev(bnd.1.sort$x),ip2$x),
@@ -224,6 +233,11 @@ cat("setdif",setdiff(c(1:length(bnd$x)),picker),"\n")
    bnd.2.sort<-list(x=c(ip1$x,rev(bnd.2.sort$x),ip2$x),
                     y=c(ip1$y,rev(bnd.2.sort$y),ip2$y))
 
+
+### DEBUG
+lines(bnd.1.sort,col="blue",lwd=2)
+lines(bnd.2.sort,col="red",lwd=2)
+a<-scan()
 
    # return both paths
    return(list(path.1=bnd.1.sort,path.2=bnd.2.sort))
