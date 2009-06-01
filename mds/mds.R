@@ -47,8 +47,5 @@ create_distance_matrix<-function(x,y,bnd){
    # create the lower triangle of the matrix
    # NB. diagonal should be 0
    D<-D+t(D) 
-
    return(D)
-
 }
-
