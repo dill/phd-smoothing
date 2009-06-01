@@ -200,13 +200,16 @@ facing<-function(p1,p2,bnd){
          dists<-c(dists,sqrt((p1$x-ip$x)^2+(p1$y-ip$y)^2))
       }
 
+      # remove duplicates (ie when dist is zero)
       if(length(ips$x)>3){
             p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
             p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
             nonzero<-c(p1.ind,p2.ind)
-            dists<-dists[-nonzero]
-            bbindex<-bbindex[-nonzero]
-            ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
+            if(length(nonzero)!=0){
+               dists<-dists[-nonzero]
+               bbindex<-bbindex[-nonzero]
+               ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
+            }
       }
 
       # find first intersection between p1 and bnd

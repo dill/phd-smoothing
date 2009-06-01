@@ -4,7 +4,7 @@
 source("utils.R")
 
 # create the distance matrix
-create_distance_matrix<-function(x,y,bnd,res=100){
+create_distance_matrix<-function(x,y,bnd){
    # requires the library soap   
    # args:
    #  x,y      data points
@@ -26,22 +26,13 @@ create_distance_matrix<-function(x,y,bnd,res=100){
       for(j in (i+1):length(y)){
          p2<-list(x=x[j],y=y[j])
 
-# DEBUG
-#plot(bnd,type="l",lwd=2,asp=1)
-#points(x,y,pch=".")
-#points(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red")
-#lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),col="red",lwd=2)
-#a<-scan()
-
-         intp<-do_intersect(p1,p2,bnd)
-
          # if there are any intersections of the line p1p2 with 
          # any boundary side
+         intp<-do_intersect(p1,p2,bnd)
          if(any(intp)){
 
             # call the Wood algorithm
             path<-wood_path(p1,p2,bnd)
-
 
             # find the length of the path
             D[i,j]<-hull_length(path)
@@ -50,12 +41,9 @@ create_distance_matrix<-function(x,y,bnd,res=100){
          }else{
             # insert the distance
             D[i,j]<-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
-
          }
       }
    }
-
-
    # create the lower triangle of the matrix
    # NB. diagonal should be 0
    D<-D+t(D) 
