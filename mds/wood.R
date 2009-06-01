@@ -6,9 +6,8 @@ wood_path<-function(p1,p2,bnd){
    # return:
    #  path        set of points on the path
 
-
-   # HACKHACKHACK this may or may not be a fix to the
-   # paths joining the wrong points
+   # HACK:make sure that the points are defined from the left,
+   # this may or may not be a fix to the paths joining the wrong points
    if(p2$x<p1$x){
       tmp<-p1
       p1<-p2
@@ -223,15 +222,11 @@ delete_step<-function(path, bnd){
                        (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
             path<-pe(path,-i)
          }
-   
          i<-i+1
       }
    }
    return(path)
 }
-
-
-# remove path elements outside the 
 
 
 # alter the path

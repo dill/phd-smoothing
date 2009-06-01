@@ -61,7 +61,6 @@ intersection_point<-function(p1,p2,edge){
 
 }
 
-
 # calculate the length of the convex hull
 hull_length<-function(hull){
    # args:
@@ -74,12 +73,8 @@ hull_length<-function(hull){
    for (i in 1:(length(hull$x)-1)){
       hullen<-hullen+sqrt((hull$x[i+1]-hull$x[i])^2+(hull$y[i+1]-hull$y[i])^2)
    }
-
    return(hullen)
-
 }
-
-
 
 # do two points and the boundary intersect?
 do_intersect<-function(p1,p2,bnd){
@@ -190,12 +185,6 @@ facing<-function(p1,p2,bnd){
 
    if(sum(doint)>1){
 
-# DEBUG
-#text(p1,labels="1",col="green")
-#text(p2,labels="2",col="green")
-#lines(x=c(p1$x,p2$x),y=c(p1$y,p2$y),lwd=2,col="green")
-
-
       # find intersections & sort by distance
       bbindex<-c(1:(length(bnd$x)-1))[doint]
       # hold distances and intersection points temporarily
@@ -211,26 +200,14 @@ facing<-function(p1,p2,bnd){
          dists<-c(dists,sqrt((p1$x-ip$x)^2+(p1$y-ip$y)^2))
       }
 
-#### DEBUG
-#points(ips,col="red")
-#a<-scan()
-#
-#      # pick non-zero elements
-##      nonzero<-dists!=0
-if(length(ips$x)>3){
-      p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
-      p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
-      nonzero<-c(p1.ind,p2.ind)
-      dists<-dists[-nonzero]
-      bbindex<-bbindex[-nonzero]
-      ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
-}
-
-### DEBUG
-#points(ips,col="red")
-#cat("bb:",bbindex[order(dists)],"\n")
-#cat("dists=",dists,"\n")
-#a<-scan()
+      if(length(ips$x)>3){
+            p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
+            p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
+            nonzero<-c(p1.ind,p2.ind)
+            dists<-dists[-nonzero]
+            bbindex<-bbindex[-nonzero]
+            ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
+      }
 
       # find first intersection between p1 and bnd
       p1.int<-pe(ips,order(dists)[1])
@@ -242,19 +219,9 @@ if(length(ips$x)>3){
       # midpoint between p2 and first intersection 
       p2.mp<-list(x=(p2.int$x+p2$x)/2,y=(p2.int$y+p2$y)/2)
  
-### DEBUG
-points(p1.mp,col="orange",cex=3)
-points(p2.mp,col="orange",cex=3)
-a<-scan()
-
- 
       # are the midpoints inside?
       ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
    }
-
-### DEBUG
-#cat("face inside:",ret,"\n")
-
    return(ret)   
 }
 
@@ -272,44 +239,4 @@ on_line<-function(p1,this.line){
    }else{
       return(FALSE)
    }
-}
-
-
-# find if a point is on a line
-on_line_2<-function(p1,this.line){
-# from http://local.wasp.uwa.edu.au/~pbourke/geometry/pointline/
-
-   eps<-1e-16   
-
-   u<-(p1$x-this.line$x[1])*(this.line$x[2]-this.line$x[1])+(p1$y-this.line$y[1])*(this.line$y[2]-this.line$y[1])/((this.line$x[2]-this.line$x[1])^2+(this.line$y[2]-this.line$y[1])^2)
-
-   np<-list(x=c(),y=c())
-   np$x<-this.line$x[1]+u*(this.line$x[2]-this.line$x[1])
-   np$y<-this.line$y[1]+u*(this.line$y[2]-this.line$y[1])
-   
-   np.dist<-sqrt((np$x-p1$x)^2+(np$y-p1$y)^2)
-
-   if(np.dist<eps){
-       return(TRUE)
-   }else{
-      return(FALSE)
-   }
-}
-
-
-
-
-
-
-# find which boundary side a point is on
-which_side<-function(p1,bnd){
-
-   logical.response<-c(TRUE,(length(bnd$x)-1))
-
-   for(i in 1:(length(bnd$x)-1)){
-      logical.response[i]<-on_line(p1,pe(bnd,i:(i+1)))
-   }
-
-   return(c(1:(length(bnd$x)-1))[logical.response])
-
 }
