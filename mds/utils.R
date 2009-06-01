@@ -135,7 +135,6 @@ do_intersect<-function(p1,p2,bnd){
 
    }
    return(ret)
-
 }
 
 # special do_intersect, thinks that points that start/end at the same

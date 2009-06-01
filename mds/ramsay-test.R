@@ -15,7 +15,7 @@ z <- z + rnorm(n)*.3 ## add noise
 
 
 source("mds.R")
-source("convexhull.R")
+source("wood.R")
 
 # instead, creating a set of test points
 x<-c(1.4784634,1.0423811,2.0319526,3.1473170,3.1137722,-0.5845415,-0.6767896)
