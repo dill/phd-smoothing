@@ -83,7 +83,6 @@ do_intersect<-function(p1,p2,bnd){
 
    eps<-1e-16
 
-
    # returns a string of T/F values
    ret<-rep(TRUE,(length(bnd$x)-1))
 
@@ -180,8 +179,15 @@ facing<-function(p1,p2,bnd){
    # care of it
    ret<-rep(FALSE,2)
 
+points(p1,pch=23,col="red",cex=2)
+points(p2,pch=23,col="red",cex=2)
+### DEBUG
+cat("p1=",p1$x,p1$y,"\n")
+cat("p2=",p2$x,p2$y,"\n")
+
    doint<-do_intersect(p1,p2,bnd)
 
+cat("doint=",doint,"\n")
    if(sum(doint)>1){
 
       # find intersections & sort by distance
@@ -221,6 +227,9 @@ facing<-function(p1,p2,bnd){
       # midpoint between p2 and first intersection 
       p2.mp<-list(x=(p2.int$x+p2$x)/2,y=(p2.int$y+p2$y)/2)
  
+points(p1.mp)
+points(p2.mp)
+
       # are the midpoints inside?
       ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
    }
@@ -230,15 +239,27 @@ facing<-function(p1,p2,bnd){
 # find if a point is on a line
 on_line<-function(p1,this.line){
 
-   eps<-1e-15
+   eps<-1e-10
    # left hand side of equation
    leftside<-(p1$y-this.line$y[1])/(this.line$y[2]-this.line$y[1])
    #right hand side of equation
    rightside<-(p1$x-this.line$x[1])/(this.line$x[2]-this.line$x[1])
 
    if(abs(leftside-rightside)<eps){
+### DEBUG
+#cat("On line\n")
+#a<-scan()
        return(TRUE)
    }else{
+### DEBUG
+#lines(this.line,col="green",lwd=2)
+#points(p1)
+#cat("Off line\n")
+#cat("leftside=(",p1$y,"-",this.line$y[1],")/(",this.line$y[2],"-",this.line$y[1],")\n")
+#cat("rightside=(",p1$x,"-",this.line$x[1],")/(",this.line$x[2],"-",this.line$x[1],")\n")
+#cat("l=",leftside,"r=",rightside,"\n")
+#cat("l-r=",leftside-rightside,"\n")
+#a<-scan()
       return(FALSE)
    }
 }
