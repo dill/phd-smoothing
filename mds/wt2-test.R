@@ -5,6 +5,9 @@ library(soap)
 bnd <- read.csv("wt2-verts.csv",header=FALSE) 
 names(bnd)<-c("x","y")
 
+bnd$x<--bnd$x
+bnd$y<--bnd$y
+
 ## Simulate some fitting data, inside boundary...
 n<-50
 x <- runif(n)*6-3; y<-runif(n)*6-3

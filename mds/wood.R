@@ -14,6 +14,12 @@ wood_path<-function(p1,p2,bnd){
       p2<-tmp
    }
 
+### DEBUG
+plot(bnd,type="l",asp=1)
+cat("new point:\n")
+cat("x=c(",p1$x,p2$x,")\n")
+cat("y=c(",p1$y,p2$y,")\n")
+
    # create the initial path:
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    these.paths<-make_bnd_path(p1,p2,bnd)
@@ -37,12 +43,24 @@ wood_path<-function(p1,p2,bnd){
       # save previous path
       prev.path<-my.path
 
+### DEBUG
+lines(my.path,lwd=2,col="orange")
+
+
       # delete step, remove anything that doesn't need to be there
       my.path<-delete_step(my.path,bnd)
 
+### DEBUG
+lines(my.path,lwd=2,col="red")
       # add new vertices
       my.path<-alter_step(my.path,bnd)
+
+### DEBUG
+lines(my.path,lwd=2,col="blue")
    }
+### DEBUG
+lines(my.path,lwd=2,col="green")
+a<-scan()
    return(my.path)
 }
 
