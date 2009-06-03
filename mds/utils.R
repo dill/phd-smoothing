@@ -238,14 +238,30 @@ facing<-function(p1,p2,bnd){
 # find if a point is on a line
 on_line<-function(p1,this.line){
 
+#points(p1)
+#lines(this.line,col="green",lwd=2)
+
    eps<-1e-10
+
+#   if(abs(this.line$y[2]-this.line$y[1])<eps) tly1<-0 else tly1<-this.line$y[1]
+#   if(abs(this.line$x[2]-this.line$x[1])<eps) tlx1<-0 else tlx1<-this.line$x[1]
+
+
    # left hand side of equation
+#   leftside<-(p1$y-this.line$y[1])/(this.line$y[2]-tly1)
    leftside<-(p1$y-this.line$y[1])/(this.line$y[2]-this.line$y[1])
+
    #right hand side of equation
+#   rightside<-(p1$x-this.line$x[1])/(this.line$x[2]-tlx1)
    rightside<-(p1$x-this.line$x[1])/(this.line$x[2]-this.line$x[1])
 
+#cat("right=(",p1$x,"-",this.line$x[1],")/(",this.line$x[2],"-",this.line$x[1],")\n")
+
+#cat("l=",leftside,"r=",rightside,"\n")
+#cat("abs=",abs(leftside-rightside),"\n")
+
    if(abs(leftside-rightside)<eps){
-       return(TRUE)
+      return(TRUE)
    }else{
       return(FALSE)
    }

@@ -16,6 +16,8 @@ wood_path<-function(p1,p2,bnd){
 
 ### DEBUG
 plot(bnd,type="l",asp=1)
+points(p1)
+points(p2)
 cat("new point:\n")
 cat("x=c(",p1$x,",",p2$x,")\n")
 cat("y=c(",p1$y,",",p2$y,")\n")

@@ -29,8 +29,8 @@ source("utils.R")
 # error in on_line
 #Error in if (abs(leftside - rightside) < eps) { : 
 #  missing value where TRUE/FALSE needed
-x=c( 0.7658698 , 2.48065 )
-y=c( 1.297623 , -2.287551 )
+#x=c( 0.7658698 , 2.48065 )
+#y=c( 1.297623 , -2.287551 )
 
 
 
