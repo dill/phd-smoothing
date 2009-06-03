@@ -90,6 +90,14 @@ do_intersect<-function(p1,p2,bnd){
    p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
                 y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
 
+### DEBUG
+# same
+#cat("p1=",p1$x,p1$y,"\n")
+#cat("p2=",p2$x,p2$y,"\n")
+#cat("p.bbox$x=",p.bbox$x,"\n")
+#cat("p.bbox$y=",p.bbox$y,"\n")
+
+
    # iterate over sides (ie vertex pairs)
    # NB the last vertex should be the first
    for (i in 1:(length(bnd$x)-1)){
@@ -98,6 +106,11 @@ do_intersect<-function(p1,p2,bnd){
       e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
                    y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
 
+### DEBUG
+# same
+#cat("e.bbox$x=",e.bbox$x,"\n")
+#cat("e.bbox$y=",e.bbox$y,"\n")
+ 
       # establish whether the bounding boxes intersect
       if(e.bbox$x[1]+eps < p.bbox$x[2]) ret[i]<-FALSE
       if(p.bbox$x[1]+eps < e.bbox$x[2]) ret[i]<-FALSE
@@ -111,23 +124,46 @@ do_intersect<-function(p1,p2,bnd){
          # first find the intersection point
          ip<-intersection_point(p1,p2,list(x=bnd$x[c(i,i+1)],y=bnd$y[c(i,i+1)]))
 
+cat("ip=",ip$x,ip$y,"\n")
+
+
          # first need to handle the horizontal and vertical line cases
          # then handle whether the intersection point lies within the
          # the bounding box
          if(abs(e.bbox$x[1]-e.bbox$x[2])>eps){
-            if(ip$x>e.bbox$x[1] | ip$x<e.bbox$x[2]) ret[i]<-FALSE
+
+cat("1a\n")
+cat("abs(ebbox)",abs(e.bbox$x[1]-e.bbox$x[2]),"\n\n")
+cat(ip$x,">",e.bbox$x[1]," | ",ip$x,"<",e.bbox$x[2],"\n")
+            if(ip$x>e.bbox$x[1] | ip$x<e.bbox$x[2]){
+               ret[i]<-FALSE
+cat("1b\n")
+cat("ip>",ip$x>e.bbox$x[1],"   ip<",ip$x<e.bbox$x[2],"\n")
+            }
          }
 
          if(abs(p.bbox$x[1]-p.bbox$x[2])>eps){
-            if(ip$x>p.bbox$x[1] | ip$x<p.bbox$x[2]) ret[i]<-FALSE
+#cat("2a\n")
+            if(ip$x>p.bbox$x[1] | ip$x<p.bbox$x[2]){
+               ret[i]<-FALSE
+#cat("2b\n")
+            }
          }
 
          if(abs(e.bbox$y[1]-e.bbox$y[2])>eps){
-            if(ip$y>e.bbox$y[1] | ip$y<e.bbox$y[2]) ret[i]<-FALSE
+#cat("3a\n")
+            if(ip$y>e.bbox$y[1] | ip$y<e.bbox$y[2]){
+#cat("3b\n")
+               ret[i]<-FALSE
+            }
          }
 
          if(abs(p.bbox$y[1]-p.bbox$y[2])>eps){
-            if(ip$y>p.bbox$y[1] | ip$y<p.bbox$y[2]) ret[i]<-FALSE
+#cat("4a\n")
+            if(ip$y>p.bbox$y[1] | ip$y<p.bbox$y[2]){
+#cat("4b\n")
+               ret[i]<-FALSE
+            }
          }
 
       }
@@ -179,15 +215,8 @@ facing<-function(p1,p2,bnd){
    # care of it
    ret<-rep(FALSE,2)
 
-points(p1,pch=23,col="red",cex=2)
-points(p2,pch=23,col="red",cex=2)
-### DEBUG
-cat("p1=",p1$x,p1$y,"\n")
-cat("p2=",p2$x,p2$y,"\n")
-
    doint<-do_intersect(p1,p2,bnd)
 
-cat("doint=",doint,"\n")
    if(sum(doint)>1){
 
       # find intersections & sort by distance
@@ -207,29 +236,26 @@ cat("doint=",doint,"\n")
 
       # remove duplicates (ie when dist is zero)
       if(length(ips$x)>3){
-            p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
-            p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
-            nonzero<-c(p1.ind,p2.ind)
-            if(length(nonzero)!=0){
-               dists<-dists[-nonzero]
-               bbindex<-bbindex[-nonzero]
-               ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
-            }
+         p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
+         p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
+         nonzero<-c(p1.ind,p2.ind)
+         if(length(nonzero)!=0 & length(nonzero)!=length(dists)){
+            dists<-dists[-nonzero]
+            bbindex<-bbindex[-nonzero]
+            ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
+         }
       }
 
       # find first intersection between p1 and bnd
       p1.int<-pe(ips,order(dists)[1])
       # find first intersection between p2 and bnd
       p2.int<-pe(ips,order(dists,decreasing=TRUE)[1])
-  
+
       # midpoint between p1 and first intersection 
       p1.mp<-list(x=(p1.int$x+p1$x)/2,y=(p1.int$y+p1$y)/2)
       # midpoint between p2 and first intersection 
       p2.mp<-list(x=(p2.int$x+p2$x)/2,y=(p2.int$y+p2$y)/2)
  
-points(p1.mp)
-points(p2.mp)
-
       # are the midpoints inside?
       ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
    }

@@ -16,7 +16,7 @@ wood_path<-function(p1,p2,bnd){
 
 ### DEBUG
 plot(bnd,type="l",asp=1)
-cat("new point:\n")
+cat("###########################\n#######################\nnew point:\n")
 cat("x=c(",p1$x,",",p2$x,")\n")
 cat("y=c(",p1$y,",",p2$y,")\n")
 
@@ -266,7 +266,10 @@ alter_step<-function(path,bnd){
 #cat("ep2=",ep2$x,ep2$y,"\n")
 points(ep1,col="orange",pch=25)
 points(ep2,col="orange",pch=25)
+
+cat("### INTERESTING BIT ###\n")
 cat("face:",all(facing(ep1,ep2,bnd)),"\n")
+cat("### UNINTERESTING BIT ###\n")
 
          # does it go inside-outside-inside?
          if(all(facing(ep1,ep2,bnd))){
