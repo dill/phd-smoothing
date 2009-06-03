@@ -16,7 +16,7 @@ wood_path<-function(p1,p2,bnd){
 
 ### DEBUG
 plot(bnd,type="l",asp=1)
-cat("###########################\n#######################\nnew point:\n")
+cat("new point:\n")
 cat("x=c(",p1$x,",",p2$x,")\n")
 cat("y=c(",p1$y,",",p2$y,")\n")
 
@@ -44,7 +44,7 @@ cat("y=c(",p1$y,",",p2$y,")\n")
       prev.path<-my.path
 
 ### DEBUG
-lines(my.path,lwd=2,col="orange")
+#lines(my.path,lwd=2,col="orange")
 #a<-scan()
 
 
@@ -52,13 +52,13 @@ lines(my.path,lwd=2,col="orange")
       my.path<-delete_step(my.path,bnd)
 
 ### DEBUG
-lines(my.path,lwd=2,col="red")
+#lines(my.path,lwd=2,col="red")
 #a<-scan()
       # add new vertices
       my.path<-alter_step(my.path,bnd)
 
 ### DEBUG
-lines(my.path,lwd=2,col="blue")
+#lines(my.path,lwd=2,col="blue")
 #a<-scan()
    }
 ### DEBUG
@@ -168,16 +168,6 @@ make_bnd_path<-function(p1,p2,bnd){
                        y=rev(bnd.2.sort$y))
    }
 
-### DEBUG
-### This is for the upside down debugging! REMOVE
-#      bnd.1.sort<-list(x=rev(bnd.1.sort$x),
-#                       y=rev(bnd.1.sort$y))
-#      bnd.2.sort<-list(x=rev(bnd.2.sort$x),
-#                       y=rev(bnd.2.sort$y))
-#
-
-##################################
-
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    bnd.1.sort<-list(x=c(ip1$x,rev(bnd.1.sort$x),ip2$x),
                     y=c(ip1$y,rev(bnd.1.sort$y),ip2$y))
@@ -236,10 +226,6 @@ alter_step<-function(path,bnd){
    # Return:
    #           revised path with added/ammended vertices
 
-### DEBUG
-#cat("path$x=",path$x,"\n")
-#cat("path$y=",path$y,"\n")
-
    prev.path<-list(x=Inf,y=Inf)
    # iterate over the points in the path:
    # alter the path, until on two(?) consecutive runs there are
@@ -252,24 +238,9 @@ alter_step<-function(path,bnd){
       while((i+1)<=length(path$x)){
          # for each point i, look at the line i-1 to i+1
          my.trip<-pe(path,c(i-1,i,i+1))
-### DEBUG these are correct
-#cat(i-1,i,i+1,"\n")
-#cat("my.trip 1=",my.trip$x[1],my.trip$y[1],"\n")
-#cat("my.trip 2=",my.trip$x[2],my.trip$y[2],"\n")
-#cat("my.trip 3=",my.trip$x[3],my.trip$y[3],"\n")
 
          ep1<-pe(my.trip,1)
          ep2<-pe(my.trip,3)
-
-### DEBUG
-#cat("ep1=",ep1$x,ep1$y,"\n")
-#cat("ep2=",ep2$x,ep2$y,"\n")
-points(ep1,col="orange",pch=25)
-points(ep2,col="orange",pch=25)
-
-cat("### INTERESTING BIT ###\n")
-cat("face:",all(facing(ep1,ep2,bnd)),"\n")
-cat("### UNINTERESTING BIT ###\n")
 
          # does it go inside-outside-inside?
          if(all(facing(ep1,ep2,bnd))){
@@ -287,10 +258,6 @@ cat("### UNINTERESTING BIT ###\n")
             }else{
                new.path<-these.paths$path.2
             }
-
-### DEBUG
-#lines(new.path,col="grey",lwd=2)
-#a<-scan()
 
             # create new path, compare complete new path with old one, if the
             # new one is better then keep it.

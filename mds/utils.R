@@ -90,14 +90,6 @@ do_intersect<-function(p1,p2,bnd){
    p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
                 y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
 
-### DEBUG
-# same
-#cat("p1=",p1$x,p1$y,"\n")
-#cat("p2=",p2$x,p2$y,"\n")
-#cat("p.bbox$x=",p.bbox$x,"\n")
-#cat("p.bbox$y=",p.bbox$y,"\n")
-
-
    # iterate over sides (ie vertex pairs)
    # NB the last vertex should be the first
    for (i in 1:(length(bnd$x)-1)){
@@ -106,11 +98,6 @@ do_intersect<-function(p1,p2,bnd){
       e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
                    y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
 
-### DEBUG
-# same
-#cat("e.bbox$x=",e.bbox$x,"\n")
-#cat("e.bbox$y=",e.bbox$y,"\n")
- 
       # establish whether the bounding boxes intersect
       if(e.bbox$x[1]+eps < p.bbox$x[2]) ret[i]<-FALSE
       if(p.bbox$x[1]+eps < e.bbox$x[2]) ret[i]<-FALSE
@@ -124,44 +111,30 @@ do_intersect<-function(p1,p2,bnd){
          # first find the intersection point
          ip<-intersection_point(p1,p2,list(x=bnd$x[c(i,i+1)],y=bnd$y[c(i,i+1)]))
 
-cat("ip=",ip$x,ip$y,"\n")
-
-
          # first need to handle the horizontal and vertical line cases
          # then handle whether the intersection point lies within the
          # the bounding box
-         if(abs(e.bbox$x[1]-e.bbox$x[2])>eps){
+         if(abs(e.bbox$x[1]-e.bbox$x[2])>=eps){
 
-cat("1a\n")
-cat("abs(ebbox)",abs(e.bbox$x[1]-e.bbox$x[2]),"\n\n")
-cat(ip$x,">",e.bbox$x[1]," | ",ip$x,"<",e.bbox$x[2],"\n")
-            if(ip$x>e.bbox$x[1] | ip$x<e.bbox$x[2]){
-               ret[i]<-FALSE
-cat("1b\n")
-cat("ip>",ip$x>e.bbox$x[1],"   ip<",ip$x<e.bbox$x[2],"\n")
-            }
-         }
-
-         if(abs(p.bbox$x[1]-p.bbox$x[2])>eps){
-#cat("2a\n")
-            if(ip$x>p.bbox$x[1] | ip$x<p.bbox$x[2]){
-               ret[i]<-FALSE
-#cat("2b\n")
-            }
-         }
-
-         if(abs(e.bbox$y[1]-e.bbox$y[2])>eps){
-#cat("3a\n")
-            if(ip$y>e.bbox$y[1] | ip$y<e.bbox$y[2]){
-#cat("3b\n")
+            if(ip$x>=e.bbox$x[1] | ip$x<=e.bbox$x[2]){
                ret[i]<-FALSE
             }
          }
 
-         if(abs(p.bbox$y[1]-p.bbox$y[2])>eps){
-#cat("4a\n")
-            if(ip$y>p.bbox$y[1] | ip$y<p.bbox$y[2]){
-#cat("4b\n")
+         if(abs(p.bbox$x[1]-p.bbox$x[2])>=eps){
+            if(ip$x>=p.bbox$x[1] | ip$x<=p.bbox$x[2]){
+               ret[i]<-FALSE
+            }
+         }
+
+         if(abs(e.bbox$y[1]-e.bbox$y[2])>=eps){
+            if(ip$y>=e.bbox$y[1] | ip$y<=e.bbox$y[2]){
+               ret[i]<-FALSE
+            }
+         }
+
+         if(abs(p.bbox$y[1]-p.bbox$y[2])>=eps){
+            if(ip$y>=p.bbox$y[1] | ip$y<=p.bbox$y[2]){
                ret[i]<-FALSE
             }
          }
@@ -272,20 +245,8 @@ on_line<-function(p1,this.line){
    rightside<-(p1$x-this.line$x[1])/(this.line$x[2]-this.line$x[1])
 
    if(abs(leftside-rightside)<eps){
-### DEBUG
-#cat("On line\n")
-#a<-scan()
        return(TRUE)
    }else{
-### DEBUG
-#lines(this.line,col="green",lwd=2)
-#points(p1)
-#cat("Off line\n")
-#cat("leftside=(",p1$y,"-",this.line$y[1],")/(",this.line$y[2],"-",this.line$y[1],")\n")
-#cat("rightside=(",p1$x,"-",this.line$x[1],")/(",this.line$x[2],"-",this.line$x[1],")\n")
-#cat("l=",leftside,"r=",rightside,"\n")
-#cat("l-r=",leftside-rightside,"\n")
-#a<-scan()
       return(FALSE)
    }
 }
