@@ -5,8 +5,8 @@ library(soap)
 bnd <- read.csv("wt2-verts.csv",header=FALSE) 
 names(bnd)<-c("x","y")
 
-bnd$x<--bnd$x
-bnd$y<--bnd$y
+#bnd$x<--bnd$x
+#bnd$y<--bnd$y
 
 ## Simulate some fitting data, inside boundary...
 n<-50
@@ -26,12 +26,22 @@ source("utils.R")
 #x<-c(-2.4688416, -1.1883870, -2.0504753,  0.0540343,  0.7386338,  1.7021442,  2.7163657)
 #y<-c(2.1441334, 1.8962821, -1.8345328, -2.4867731, -0.6213657, -1.0127099, -2.5519972)
 
+
 # error in on_line
 #Error in if (abs(leftside - rightside) < eps) { : 
 #  missing value where TRUE/FALSE needed
 #x=c( 0.7658698 , 2.48065 )
 #y=c( 1.297623 , -2.287551 )
 
+# wrong ends together
+#x=c( -2.062566 , 1.342784 )
+#y=c( 0.6159817 , -1.828496 )
+
+#x=c( -0.2009848 , 2.955289 )
+#y=c( 0.5534861 , -1.686168 )
+
+x=c( -2.030210 , 2.236427 )
+y=c( 2.535541 , -0.5834729 )
 
 
 D<-create_distance_matrix(x,y,bnd)

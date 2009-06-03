@@ -232,8 +232,8 @@ alter_step<-function(path,bnd){
    # iterate over the points in the path:
    # alter the path, until on two(?) consecutive runs there are
    # no changes to the path
-#   while(length(prev.path$x)!=length(path$x) & length(prev.path$y)!=length(path$y)){
-   while(all(prev.path$x!=path$x) & all(prev.path$y!=path$y)){
+   while(length(prev.path$x)!=length(path$x) & length(prev.path$y)!=length(path$y)){
+#   while(all(prev.path$x!=path$x) & all(prev.path$y!=path$y)){
       # save the previous path for comparison
       prev.path<-path
       i<-2 # start point

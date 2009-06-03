@@ -115,32 +115,21 @@ do_intersect<-function(p1,p2,bnd){
          # then handle whether the intersection point lies within the
          # the bounding box
          if(abs(e.bbox$x[1]-e.bbox$x[2])>=eps){
-
-            if(ip$x>=e.bbox$x[1] | ip$x<=e.bbox$x[2]){
-               ret[i]<-FALSE
-            }
+            if(ip$x>=e.bbox$x[1] | ip$x<=e.bbox$x[2]) ret[i]<-FALSE
          }
 
          if(abs(p.bbox$x[1]-p.bbox$x[2])>=eps){
-            if(ip$x>=p.bbox$x[1] | ip$x<=p.bbox$x[2]){
-               ret[i]<-FALSE
-            }
+            if(ip$x>=p.bbox$x[1] | ip$x<=p.bbox$x[2]) ret[i]<-FALSE
          }
 
          if(abs(e.bbox$y[1]-e.bbox$y[2])>=eps){
-            if(ip$y>=e.bbox$y[1] | ip$y<=e.bbox$y[2]){
-               ret[i]<-FALSE
-            }
+            if(ip$y>=e.bbox$y[1] | ip$y<=e.bbox$y[2]) ret[i]<-FALSE
          }
 
          if(abs(p.bbox$y[1]-p.bbox$y[2])>=eps){
-            if(ip$y>=p.bbox$y[1] | ip$y<=p.bbox$y[2]){
-               ret[i]<-FALSE
-            }
+            if(ip$y>=p.bbox$y[1] | ip$y<=p.bbox$y[2]) ret[i]<-FALSE
          }
-
       }
-
    }
    return(ret)
 }
@@ -246,23 +235,34 @@ on_line<-function(p1,this.line){
 #   if(abs(this.line$y[2]-this.line$y[1])<eps) tly1<-0 else tly1<-this.line$y[1]
 #   if(abs(this.line$x[2]-this.line$x[1])<eps) tlx1<-0 else tlx1<-this.line$x[1]
 
+   if(abs(this.line$y[2]-this.line$y[1])<eps) this.line$y[1]<-0
+   if(abs(this.line$x[2]-this.line$x[1])<eps) this.line$x[1]<-0
 
    # left hand side of equation
-#   leftside<-(p1$y-this.line$y[1])/(this.line$y[2]-tly1)
-   leftside<-(p1$y-this.line$y[1])/(this.line$y[2]-this.line$y[1])
+   # first handle if it's a horizontal line
+   if(abs(this.line$y[2]-this.line$y[1])<eps){
+      leftside<-this.line$y[2]
+   }else{
+      leftside<-(p1$y-this.line$y[1])/(this.line$y[2]-this.line$y[1])
+   }
 
    #right hand side of equation
-#   rightside<-(p1$x-this.line$x[1])/(this.line$x[2]-tlx1)
-   rightside<-(p1$x-this.line$x[1])/(this.line$x[2]-this.line$x[1])
-
+   # first handle if it's a vertical line
+   if(abs(this.line$x[2]-this.line$x[1])<eps){
+      rightside<-this.line$x[1]
+   }else{
+      rightside<-(p1$x-this.line$x[1])/(this.line$x[2]-this.line$x[1])
+   }
+   
 #cat("right=(",p1$x,"-",this.line$x[1],")/(",this.line$x[2],"-",this.line$x[1],")\n")
 
 #cat("l=",leftside,"r=",rightside,"\n")
-#cat("abs=",abs(leftside-rightside),"\n")
-
+cat("abs=",abs(leftside-rightside),"\n")
+cat("res=",abs(leftside-rightside)<eps,"\n")
    if(abs(leftside-rightside)<eps){
       return(TRUE)
    }else{
       return(FALSE)
    }
 }
+
