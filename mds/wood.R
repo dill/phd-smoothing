@@ -40,13 +40,13 @@ cat("y=c(",p1$y,",",p2$y,")\n")
    prev.path<-list(x=c(Inf),y=c(Inf))
 
    # keep going until we don't remove any more points.
-   while(length(prev.path$x)!=length(my.path$x) & 
-         length(prev.path$y)!=length(my.path$y)){
+   while(!has_converged(prev.path,my.path)){
       # save previous path
       prev.path<-my.path
 
 ### DEBUG
 #lines(my.path,lwd=2,col="orange")
+#text(my.path,labels=1:length(my.path$x))
 #a<-scan()
 
 
@@ -111,6 +111,7 @@ make_bnd_path<-function(p1,p2,bnd){
    ip1.index<-bbindex[order(dists)] 
    ip2.index<-bbindex[order(dists,decreasing=TRUE)] 
 
+
    # This is quite horrible code.
    # What we do is: take the ordering that makes sense first
    # eg 1:5 not 5:1, make that set of edges, then take the difference
@@ -123,6 +124,7 @@ make_bnd_path<-function(p1,p2,bnd){
    # make sure we aren't adding a superfluous vertex (not both end of a side
    # that we don't need)
    # ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
+
    if(length(picker)>1){
 
       if(on_line(ip1,pe(bnd.1.sort,1:2))){
@@ -192,7 +194,7 @@ delete_step<-function(path, bnd){
    prev.path<-list(x=c(Inf),y=c(Inf))
 
    # keep going until we don't remove any more points.
-   while(length(prev.path$x)!=length(path$x) & length(prev.path$y)!=length(path$y)){
+   while(!has_converged(prev.path,path)){
       # save the previous path to compare, above
       prev.path<-path
       # start point for triplet selection
@@ -232,8 +234,7 @@ alter_step<-function(path,bnd){
    # iterate over the points in the path:
    # alter the path, until on two(?) consecutive runs there are
    # no changes to the path
-   while(length(prev.path$x)!=length(path$x) & length(prev.path$y)!=length(path$y)){
-#   while(all(prev.path$x!=path$x) & all(prev.path$y!=path$y)){
+   while(!has_converged(prev.path,path)){
       # save the previous path for comparison
       prev.path<-path
       i<-2 # start point
@@ -251,8 +252,9 @@ alter_step<-function(path,bnd){
             these.paths<-make_bnd_path(ep1,ep2,bnd)
 
             # make sure that the new paths are as short as possible
-            these.paths$path.1<-delete_step(these.paths$path.1,bnd)
-            these.paths$path.2<-delete_step(these.paths$path.2,bnd)
+### IS THIS NEEDED?
+#            these.paths$path.1<-delete_step(these.paths$path.1,bnd)
+#            these.paths$path.2<-delete_step(these.paths$path.2,bnd)
 
             # pick the shorter path 
             if(hull_length(these.paths$path.1)<hull_length(these.paths$path.2)){
@@ -282,3 +284,16 @@ alter_step<-function(path,bnd){
    # return the path
    return(path)
 }
+
+# check convergence
+has_converged<-function(prev.path,path){
+# check if the new and old paths are the same, first check length
+# then their contents
+   if(length(prev.path$x)==length(path$x) & length(prev.path$y)==length(path$y)){
+      if(all(prev.path$x==path$x) & all(prev.path$y==path$y)){
+         return(TRUE)
+      }else return(FALSE)
+   }else return(FALSE)
+}
+
+

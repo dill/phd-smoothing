@@ -81,7 +81,7 @@ do_intersect<-function(p1,p2,bnd){
    # we do this by seeing if the bounding boxes intersect
    # from Mastering Algorithms with Perl, p 451
 
-   eps<-1e-16
+   eps<-1e-10
 
    # returns a string of T/F values
    ret<-rep(TRUE,(length(bnd$x)-1))
@@ -227,38 +227,31 @@ facing<-function(p1,p2,bnd){
 # find if a point is on a line
 on_line<-function(p1,this.line){
 
-#points(p1)
-#lines(this.line,col="green",lwd=2)
-
    eps<-1e-10
 
-#   if(abs(this.line$y[2]-this.line$y[1])<eps) tly1<-0 else tly1<-this.line$y[1]
-#   if(abs(this.line$x[2]-this.line$x[1])<eps) tlx1<-0 else tlx1<-this.line$x[1]
-
-   if(abs(this.line$y[2]-this.line$y[1])<eps) this.line$y[1]<-0
-   if(abs(this.line$x[2]-this.line$x[1])<eps) this.line$x[1]<-0
-
    # left hand side of equation
-   # first handle if it's a horizontal line
    if(abs(this.line$y[2]-this.line$y[1])<eps){
-      leftside<-this.line$y[2]
+      # first handle if it's a horizontal line
+      xsort<-sort(this.line$x)
+      if((abs(this.line$y[2]-p1$y)<eps) &
+         ((p1$x<xsort[2])&(p1$x>xsort[1]))) return(TRUE)
+      else return(FALSE)
+
    }else{
       leftside<-(p1$y-this.line$y[1])/(this.line$y[2]-this.line$y[1])
    }
 
    #right hand side of equation
-   # first handle if it's a vertical line
    if(abs(this.line$x[2]-this.line$x[1])<eps){
-      rightside<-this.line$x[1]
+      # first handle if it's a vertical line
+      ysort<-sort(this.line$y)
+      if((abs(this.line$x[2]-p1$x)<eps) &
+         ((p1$y<ysort[2])&(p1$y>ysort[1]))) return(TRUE)
+      else return(FALSE)
    }else{
       rightside<-(p1$x-this.line$x[1])/(this.line$x[2]-this.line$x[1])
    }
    
-#cat("right=(",p1$x,"-",this.line$x[1],")/(",this.line$x[2],"-",this.line$x[1],")\n")
-
-#cat("l=",leftside,"r=",rightside,"\n")
-cat("abs=",abs(leftside-rightside),"\n")
-cat("res=",abs(leftside-rightside)<eps,"\n")
    if(abs(leftside-rightside)<eps){
       return(TRUE)
    }else{

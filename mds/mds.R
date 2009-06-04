@@ -2,6 +2,7 @@
 
 # let's see what happens
 source("utils.R")
+library(soap)
 
 # create the distance matrix
 create_distance_matrix<-function(x,y,bnd){
