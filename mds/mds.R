@@ -50,3 +50,5 @@ create_distance_matrix<-function(x,y,bnd){
    D<-D+t(D) 
    return(D)
 }
+
+

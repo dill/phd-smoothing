@@ -15,9 +15,9 @@ wood_path<-function(p1,p2,bnd){
    }
 
 ### DEBUG
-plot(bnd,type="l",asp=1)
-points(p1)
-points(p2)
+#plot(bnd,type="l",asp=1)
+#points(p1)
+#points(p2)
 cat("new point:\n")
 cat("x=c(",p1$x,",",p2$x,")\n")
 cat("y=c(",p1$y,",",p2$y,")\n")
@@ -66,9 +66,9 @@ cat("y=c(",p1$y,",",p2$y,")\n")
 #a<-scan()
    }
 ### DEBUG
-lines(my.path,lwd=2,col="green")
-cat("########## END ############\n")
-a<-scan()
+#lines(my.path,lwd=2,col="green")
+#cat("########## END ############\n")
+#a<-scan()
 
    return(my.path)
 }
