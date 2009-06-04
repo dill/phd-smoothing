@@ -15,6 +15,15 @@ gendata<- list(x=gendata$x[gendata$inside==1],
                y=gendata$y[gendata$inside==1],
                z=gendata$z[gendata$inside==1])
 
+# attempt to get around the inside bug
+bnd.neg<-list(x=-bnd$x,y=-bnd$y)
+onoff<-inSide(gendata$x,gendata$y,bnd.neg)
+
+gendata<- list(x=gendata$x[onoff],
+               y=gendata$y[onoff],
+               z=gendata$z[onoff])
+
+
 samp.ind<-sample(1:length(gendata$x),250)
 
 x<-gendata$x[samp.ind]

@@ -30,7 +30,7 @@ create_distance_matrix<-function(x,y,bnd){
          # if there are any intersections of the line p1p2 with 
          # any boundary side
          intp<-do_intersect(p1,p2,bnd)
-         if(any(intp)){
+         if(sum(intp)>1){
 
             # call the Wood algorithm
             path<-wood_path(p1,p2,bnd)
