@@ -21,6 +21,7 @@ points(p2)
 cat("new point:\n")
 cat("x=c(",p1$x,",",p2$x,")\n")
 cat("y=c(",p1$y,",",p2$y,")\n")
+#cat("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n")
 
    # create the initial path:
    # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
@@ -46,7 +47,8 @@ cat("y=c(",p1$y,",",p2$y,")\n")
 
 ### DEBUG
 #lines(my.path,lwd=2,col="orange")
-#text(my.path,labels=1:length(my.path$x))
+##text(my.path,labels=1:length(my.path$x))
+#cat("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n")
 #a<-scan()
 
 
@@ -84,11 +86,18 @@ make_bnd_path<-function(p1,p2,bnd){
    for(i in bbindex){
       # calculate and save the intersection
       ip<-intersection_point(p1,p2,pe(bnd,c(i,i+1)))
+
+#cat("ip=",ip$x,ip$y,"\n")
+#cat("bnd section=",i,(i+1),"\n")
+
       ips$x<-c(ips$x,ip$x)      
       ips$y<-c(ips$y,ip$y)      
       # find the distance and save
       dists<-c(dists,sqrt((p1$x-ip$x)^2+(p1$y-ip$y)^2))
    }
+
+
+#cat("len ips=",length(ips$x),"\n")
 
    # remove duplicates (ie when dist is zero)
    if(length(ips$x)>3){
@@ -102,6 +111,10 @@ make_bnd_path<-function(p1,p2,bnd){
          ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
       }
    }
+
+#points(ips,pch=23,cex=2,col="red")
+#text(ips,labels=1:length(ips$x))
+
 
    # the two intersection points
    ip1<-pe(ips,order(dists)[1])

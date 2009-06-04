@@ -129,6 +129,28 @@ do_intersect<-function(p1,p2,bnd){
          if(abs(p.bbox$y[1]-p.bbox$y[2])>=eps){
             if(ip$y>=p.bbox$y[1] | ip$y<=p.bbox$y[2]) ret[i]<-FALSE
          }
+
+         if(ret[i]){
+
+         if(abs(e.bbox$x[1]-e.bbox$x[2])<=eps){
+            if(ip$y>=e.bbox$y[1] | ip$y<=e.bbox$y[2]) ret[i]<-FALSE
+         }
+
+         if(abs(p.bbox$x[1]-p.bbox$x[2])<=eps){
+            if(ip$y>=p.bbox$y[1] | ip$y<=p.bbox$y[2]) ret[i]<-FALSE
+         }
+
+         if(abs(e.bbox$y[1]-e.bbox$y[2])<=eps){
+            if(ip$x>=e.bbox$x[1] | ip$x<=e.bbox$x[2]) ret[i]<-FALSE
+         }
+
+         if(abs(p.bbox$y[1]-p.bbox$y[2])<=eps){
+            if(ip$x>=p.bbox$x[1] | ip$x<=p.bbox$x[2]) ret[i]<-FALSE
+         }
+
+         }
+
+
       }
    }
    return(ret)
