@@ -17,7 +17,7 @@ gendata<- list(x=gendata$x[gendata$inside==1],
 
 # attempt to get around the inside bug
 bnd.neg<-list(x=-bnd$x,y=-bnd$y)
-onoff<-inSide(gendata$x,gendata$y,bnd.neg)
+onoff<-inSide(bnd.neg,gendata$x,gendata$y)
 
 gendata<- list(x=gendata$x[onoff],
                y=gendata$y[onoff],
@@ -38,6 +38,10 @@ data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=gendata$z[samp.ind])
 ### mapping
 b.mapped<-gam(z~s(x,y,k=49),data=data.mapped)
 fv <- predict(b.mapped,newdata=data.mapped)
+
+
+
+
 
 ### normal tprs
 b.tprs<-gam(z~s(x,y,k=49),data=samp.data)
