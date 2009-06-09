@@ -28,12 +28,19 @@ samp.ind<-sample(1:length(gendata$x),250)
 
 x<-gendata$x[samp.ind]
 y<-gendata$y[samp.ind]
+z<-gendata$z[samp.ind]
 
 D<-create_distance_matrix(x,y,bnd)
 
 new.coords<-cmdscale(D)
 
-data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=gendata$z[samp.ind])
+data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=z)
+
+# write this out to file, so we don't have to do it again
+write.csv(data.mapped,file="wt2-mapped.csv")
+write.csv(cbind(x,y,z),file="wt2-unmapped.csv")
+
+
 
 ### mapping
 b.mapped<-gam(z~s(x,y,k=49),data=data.mapped)
