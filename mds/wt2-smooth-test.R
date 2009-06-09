@@ -44,8 +44,8 @@ fv <- predict(b.mapped,newdata=data.mapped)
 
 
 ### normal tprs
-b.tprs<-gam(z~s(x,y,k=49),data=samp.data)
-fv.tprs <- predict(b.tprs,newdata=data.frame(x=true.vals$x[true.vals$inside==1],y=true.vals$y[true.vals$inside==1]))
+#b.tprs<-gam(z~s(x,y,k=49),data=samp.data)
+#fv.tprs <- predict(b.tprs,newdata=data.frame(x=true.vals$x[true.vals$inside==1],y=true.vals$y[true.vals$inside==1]))
 
 
 
