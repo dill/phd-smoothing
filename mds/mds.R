@@ -2,7 +2,7 @@
 
 # let's see what happens
 source("utils.R")
-library(soap)
+source("wood.R")
 
 # create the distance matrix
 create_distance_matrix<-function(x,y,bnd){
@@ -16,6 +16,10 @@ create_distance_matrix<-function(x,y,bnd){
    if(length(x)!=length(y)){
       return(FALSE)
    }
+
+
+### DEBUG
+#cat("debugging!\ninput length=",length(x),"\n")
 
    # create a matrix to hold the distances
    D<-matrix(0,length(x),length(x))
@@ -43,7 +47,11 @@ create_distance_matrix<-function(x,y,bnd){
             # insert the distance
             D[i,j]<-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
          }
+### DEBUG
+#cat(".")
       }
+### DEBUG
+#cat("done",i,"!\n")
    }
    # create the lower triangle of the matrix
    # NB. diagonal should be 0
