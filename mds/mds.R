@@ -51,7 +51,7 @@ create_distance_matrix<-function(x,y,bnd){
 #cat(".")
       }
 ### DEBUG
-#cat("done",i,"!\n")
+#cat("\ndone",i,"!\n")
    }
    # create the lower triangle of the matrix
    # NB. diagonal should be 0

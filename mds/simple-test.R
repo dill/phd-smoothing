@@ -60,28 +60,33 @@ bnd$y<-Im(polyvertices)
 
 
 # find the inside points
-inside.points<-inSide(bnd,xx,yy)
-surf$z[!inside.points]<-NA
-
+inside.points.1<-inSide(bnd,xx,yy)
 # attempt to get around the inside bug
 bnd.neg<-list(x=-bnd$x,y=-bnd$y)
-inside.points<-inSide(bnd.neg,-xx,-yy)
-surf$z[!inside.points]<-NA
+inside.points.2<-inSide(bnd.neg,-xx,-yy)
+surf$z[inside.points.1&inside.points.2]<-NA
 
 # check that it looks okay...
-axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
-image(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,resolution))
-contour(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,resolution),add=TRUE)
+#axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
+#image(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,resolution))
+#contour(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,resolution),add=TRUE)
 
 # take a sample
-poss.samp<-c(1:length(surf$z))[!is.na(surf$z)]
-samp.ind<-sample(poss.samp,250)
+#poss.samp<-c(1:length(surf$z))[!is.na(surf$z)]
+#samp.ind<-sample(poss.samp,250)
 
-x<-xx[samp.ind]
-y<-yy[samp.ind]
-z<-surf$z[samp.ind]
+#x<-xx[samp.ind]
+#y<-yy[samp.ind]
+#z<-surf$z[samp.ind]
 
-plot(x,y,type="p")
+# just map everything
+x<-xx[inside.points.1&inside.points.2]
+y<-yy[inside.points.1&inside.points.2]
+z<-surf$z
+
+
+#plot(x,y,type="p")
+#a<-scan()
 
 D<-create_distance_matrix(x,y,bnd)
 
@@ -89,10 +94,11 @@ new.coords<-cmdscale(D)
 
 data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=z)
 
+write.csv(data.mapped,file="simple.complete.csv")
 
 
 ### mapping
-b.mapped<-gam(z~s(x,y,k=49),data=data.mapped)
-fv <- predict(b.mapped,newdata=data.mapped)
+#b.mapped<-gam(z~s(x,y,k=49),data=data.mapped)
+#fv <- predict(b.mapped,newdata=data.mapped)
 
 
