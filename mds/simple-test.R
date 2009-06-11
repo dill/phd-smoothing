@@ -24,7 +24,7 @@ require(MASS)
 
 # things that will eventually be args
 lims<-c(-2.5,3.5,-0.5,3)
-resolution<-50 # number of points in the kernel density estimate
+resolution<-20 # number of points in the kernel density estimate
 
 ### generate first MV normal
 # this is for the "leg"
@@ -64,12 +64,15 @@ inside.points.1<-inSide(bnd,xx,yy)
 # attempt to get around the inside bug
 bnd.neg<-list(x=-bnd$x,y=-bnd$y)
 inside.points.2<-inSide(bnd.neg,-xx,-yy)
-surf$z[inside.points.1&inside.points.2]<-NA
+surf$z[!(inside.points.1&inside.points.2)]<-NA
 
 # check that it looks okay...
-#axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
-#image(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,resolution))
-#contour(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,resolution),add=TRUE)
+axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
+image(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,resolution))
+contour(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,resolution),add=TRUE)
+
+
+#a<-scan()
 
 # take a sample
 #poss.samp<-c(1:length(surf$z))[!is.na(surf$z)]
