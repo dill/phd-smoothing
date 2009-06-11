@@ -74,34 +74,55 @@ contour(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,resolution),add=TRUE)
 
 #a<-scan()
 
-# take a sample
-#poss.samp<-c(1:length(surf$z))[!is.na(surf$z)]
-#samp.ind<-sample(poss.samp,250)
-
-#x<-xx[samp.ind]
-#y<-yy[samp.ind]
-#z<-surf$z[samp.ind]
+#################### MESSY CODE ############################
 
 # just map everything
 x<-xx[inside.points.1&inside.points.2]
 y<-yy[inside.points.1&inside.points.2]
 z<-surf$z
-
-
-#plot(x,y,type="p")
-#a<-scan()
-
 D<-create_distance_matrix(x,y,bnd)
-
 new.coords<-cmdscale(D)
-
 data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=z)
-
 write.csv(data.mapped,file="simple.complete.csv")
 
+# take a sample
+data.mapped<-read.csv(file="simple-mapped.csv")
+samp.ind<-sample(1:length(data.mapped$z),250)
+
+x<-data.mapped$x[samp.ind]
+y<-data.mapped$y[samp.ind]
+z<-data.mapped$z[samp.ind]
+samp.data<-data.frame(x=x,y=y,z=z)
+
+# plot the results
+par(mfrow=c(1,3))
+surf<-read.csv(file="simple-truth.csv")
+res<-20
+axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
+image(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,res),main="truth",asp=1)
+contour(axis.vals$x,axis.vals$y,matrix(surf$z,resolution,res),add=TRUE)
+
+#onoff<-inSide(bnd,surf$x,surf$y)&inSide(bnd.neg,-surf$x,-surf$y)
 
 ### mapping
-#b.mapped<-gam(z~s(x,y,k=49),data=data.mapped)
-#fv <- predict(b.mapped,newdata=data.mapped)
+b.mapped<-gam(z~s(x,y,k=49),data=samp.data)
+fv <- predict(b.mapped,newdata=data.mapped)
+
+pred.mat<-matrix(NA,res,res)
+pred.mat[onoff]<-fv
+
+image(axis.vals$x,axis.vals$y,pred.mat,main="transform+tprs",asp=1)
+contour(axis.vals$x,axis.vals$y,pred.mat,add=T)
+
+
+# tprs
+b.tprs <- gam(z~s(x,y,k=49),data=data.frame(x=surf$x[samp.ind],y=surf$y[samp.ind],z=surf$z[samp.ind]))
+fv.tprs <- predict(b.tprs,newdata=data.frame(x=surf$x,y=surf$y))
+
+pred.mat<-matrix(fv.tprs,20,20)
+pred.mat[!onoff]<-NA
+
+image(axis.vals$x,axis.vals$y,pred.mat,main="thin plate",asp=1)
+contour(axis.vals$x,axis.vals$y,pred.mat,add=T)
 
 
