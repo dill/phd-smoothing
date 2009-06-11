@@ -24,7 +24,7 @@ gendata<- list(x=gendata$x[onoff],
                z=gendata$z[onoff])
 
 
-samp.ind<-sample(1:length(gendata$x),250)
+samp.ind<-sample(1:length(gendata$x),100)
 
 x<-gendata$x[samp.ind]
 y<-gendata$y[samp.ind]
@@ -37,8 +37,8 @@ new.coords<-cmdscale(D)
 data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=z)
 
 # write this out to file, so we don't have to do it again
-write.csv(data.mapped,file="wt2-mapped.csv")
-write.csv(cbind(x,y,z),file="wt2-unmapped.csv")
+#write.csv(data.mapped,file="wt2-mapped.csv")
+#write.csv(cbind(x,y,z),file="wt2-unmapped.csv")
 
 
 
