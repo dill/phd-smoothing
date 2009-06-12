@@ -33,9 +33,6 @@ complete.sample.data<-data.frame(x=samp.data$x,y=samp.data$y,
 write.csv(complete.sample.data,file="ramsay-sample.csv")
 
 
-x=c( -0.1923077 , 1.076923 )
-y=c( 0.4736842 , -0.7894737 )
-
 
 
 
