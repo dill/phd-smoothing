@@ -23,17 +23,26 @@ new.coords<-cmdscale(D)
 
 data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=z)
 
-# write this out to file, so we don't have to do it again
-#write.csv(data.mapped,file="ramsay-mapped.csv")
-#write.csv(cbind(x,y,z),file="ramsay-unmapped.csv")
+
+
+
+# write to file
+complete.sample.data<-data.frame(x=samp.data$x,y=samp.data$y,
+                                 xmds=data.mapped$x,ymds=data.mapped$y,
+                                 z=samp.data$z)
+write.csv(complete.sample.data,file="ramsay-sample.csv")
+
+
+
+
 
 ### predict over a grid
-m<-50;n<-50
+m<-50;n<-20
 xm <- seq(-1,3.5,length=m);yn<-seq(-1,1,length=n)
 xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 
 # create the prediction grid
-new.data<-data.frame(x=xm,y=yn,z=fs.test(xm,yn))
+new.data<-data.frame(x=xx,y=yy,z=fs.test(xx,yy))
 
 onoff<-inSide(bnd,xx,yy)
 xx<-xx[onoff];yy<-yy[onoff]
@@ -41,7 +50,17 @@ xx<-xx[onoff];yy<-yy[onoff]
 # map the prediction grid
 D<-create_distance_matrix(xx,yy,bnd)
 new.coords<-cmdscale(D)
-new.data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=fs.test(xm,yn))
+new.data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=new.data$z)
+
+
+# write to file
+complete.data<-data.frame(x=new.data$x,y=new.data$y,
+                          xmds=new.data.mapped$x,ymds=new.data.mapped$y,
+                          z=new.data.mapped$z)
+write.csv(complete.sample.data,file="ramsay-sample.csv")
+
+
+### probably want to add some noise at this point
 
 
 

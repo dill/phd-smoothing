@@ -14,8 +14,14 @@ create_distance_matrix<-function(xpoints,ypoints,bnd){
 
    # make sure that x and y are the same length
    if(length(xpoints)!=length(ypoints)){
+      cat("ERROR: Vector lengths not the same!\n")
       return(FALSE)
    }
+   if(any(is.na(xpoints))|any(is.na(ypoints))){
+      cat("ERROR: Some elements are NA!\n")
+      return(FALSE)
+   }
+
 
    # create a matrix to hold the distances
    D<-matrix(0,length(xpoints),length(xpoints))
