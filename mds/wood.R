@@ -40,8 +40,12 @@ wood_path<-function(p1,p2,bnd){
 
    prev.path<-list(x=c(Inf),y=c(Inf))
 
+   # convergence stop
+   conv<-0
+   conv_stop<-10
+
    # keep going until we don't remove any more points.
-   while(!has_converged(prev.path,my.path)){
+   while(!has_converged(prev.path,my.path) & (conv<conv_stop)){
       # save previous path
       prev.path<-my.path
 
@@ -62,10 +66,18 @@ wood_path<-function(p1,p2,bnd){
       # add new vertices
       my.path<-alter_step(my.path,bnd)
 
+
+      # increment convergence stopper 
+      conv<-conv+1
+
 ### DEBUG
 #lines(my.path,lwd=2,col="blue")
 #a<-scan()
    }
+
+## need this?
+#   if(conv==conv_stop) my.path<-NA
+
 ### DEBUG
 #lines(my.path,lwd=2,col="green")
 #cat("########## END ############\n")

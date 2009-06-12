@@ -33,22 +33,31 @@ complete.sample.data<-data.frame(x=samp.data$x,y=samp.data$y,
 write.csv(complete.sample.data,file="ramsay-sample.csv")
 
 
+x=c( -0.1923077 , 1.076923 )
+y=c( 0.4736842 , -0.7894737 )
+
 
 
 
 ### predict over a grid
-m<-50;n<-20
+m<-45;n<-25
 xm <- seq(-1,3.5,length=m);yn<-seq(-1,1,length=n)
 xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
-
-# create the prediction grid
-new.data<-data.frame(x=xx,y=yy,z=fs.test(xx,yy))
 
 onoff<-inSide(bnd,xx,yy)
 xx<-xx[onoff];yy<-yy[onoff]
 
+
+# create the prediction grid
+new.data<-data.frame(x=xx,y=yy,z=fs.test(xx,yy))
+
 # map the prediction grid
 D<-create_distance_matrix(xx,yy,bnd)
+
+
+
+
+
 new.coords<-cmdscale(D)
 new.data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=new.data$z)
 

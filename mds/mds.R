@@ -42,8 +42,12 @@ cat("i=",i,"j=",j,"\n")
             # call the Wood algorithm
             path<-wood_path(p1,p2,bnd)
 
-            # find the length of the path
-            D[i,j]<-hull_length(path)
+            if(any(is.na(path))){
+               D[i,j]<-NA
+            }else{
+               # find the length of the path
+               D[i,j]<-hull_length(path)
+            }
 
          # if the line p1p2 doesn't intersect any sides
          }else{
