@@ -5,34 +5,31 @@ source("utils.R")
 source("wood.R")
 
 # create the distance matrix
-create_distance_matrix<-function(x,y,bnd){
+create_distance_matrix<-function(xpoints,ypoints,bnd){
    # requires the library soap   
    # args:
-   #  x,y      data points
-   #  bnd      boundary list(x=c(),y=c())
-   #  res      resolution to test if line is inside
+   #  xpoints,ypoints      data points
+   #  bnd                  boundary list(x=c(),y=c())
+   #  res                  resolution to test if line is inside
 
    # make sure that x and y are the same length
-   if(length(x)!=length(y)){
+   if(length(xpoints)!=length(ypoints)){
       return(FALSE)
    }
 
-
-### DEBUG
-#cat("debugging!\ninput length=",length(x),"\n")
-
    # create a matrix to hold the distances
-   D<-matrix(0,length(x),length(x))
+   D<-matrix(0,length(xpoints),length(xpoints))
 
    # iterate over all of the pairs of points, only calculate the
    # upper diagonal of the matrix, since it's symmetric
-   for(i in 1:(length(x)-1)){
-      p1<-list(x=x[i],y=y[i])
-      for(j in (i+1):length(y)){
-         p2<-list(x=x[j],y=y[j])
+   for(i in 1:(length(xpoints)-1)){
+      p1<-list(x=xpoints[i],y=ypoints[i])
+      for(j in (i+1):length(ypoints)){
+         p2<-list(x=xpoints[j],y=ypoints[j])
 
          # if there are any intersections of the line p1p2 with 
          # any boundary side
+cat("i=",i,"j=",j,"\n")
          intp<-do_intersect(p1,p2,bnd)
          if(sum(intp)>1){
 
@@ -48,10 +45,10 @@ create_distance_matrix<-function(x,y,bnd){
             D[i,j]<-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
          }
 ### DEBUG
-#cat(".")
+cat(".")
       }
 ### DEBUG
-#cat("\ndone",i,"!\n")
+cat("\ndone",i,"!\n")
    }
    # create the lower triangle of the matrix
    # NB. diagonal should be 0
