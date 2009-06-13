@@ -210,8 +210,11 @@ delete_step<-function(path, bnd){
    #           revised path with dropped vertices
    prev.path<-list(x=c(Inf),y=c(Inf))
 
+   # convergence stop
+   conv<-0
+   conv_stop<-10
    # keep going until we don't remove any more points.
-   while(!has_converged(prev.path,path)){
+   while(!has_converged(prev.path,path)&(conv<conv_stop)){
       # save the previous path to compare, above
       prev.path<-path
       # start point for triplet selection
@@ -234,6 +237,7 @@ delete_step<-function(path, bnd){
          }
          i<-i+1
       }
+   conv<-conv+1
    }
    return(path)
 }
@@ -251,7 +255,10 @@ alter_step<-function(path,bnd){
    # iterate over the points in the path:
    # alter the path, until on two(?) consecutive runs there are
    # no changes to the path
-   while(!has_converged(prev.path,path)){
+   # convergence stop
+   conv<-0
+   conv_stop<-10
+   while(!has_converged(prev.path,path)&(conv<conv_stop)){
       # save the previous path for comparison
       prev.path<-path
       i<-2 # start point
@@ -297,6 +304,7 @@ alter_step<-function(path,bnd){
          }
          i<-i+1
       }
+      conv<-conv+1
    }
    # return the path
    return(path)
