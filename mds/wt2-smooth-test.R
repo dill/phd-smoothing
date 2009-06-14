@@ -39,7 +39,7 @@ gendata$z<-gendata$z[seq(1,len,2)]
 
 #plot(gendata$x,gendata$y)
 
-D<-create_distance_matrix(gendata$x,gendata$y,bnd)
+D<-create_distance_matrix(gendata$x,gendata$y,bnd,logfile="wt2-logfile.txt")
 
 
 

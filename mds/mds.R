@@ -5,7 +5,7 @@ source("utils.R")
 source("wood.R")
 
 # create the distance matrix
-create_distance_matrix<-function(xpoints,ypoints,bnd){
+create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
    # requires the library soap   
    # args:
    #  xpoints,ypoints      data points
@@ -35,7 +35,7 @@ create_distance_matrix<-function(xpoints,ypoints,bnd){
 
          # if there are any intersections of the line p1p2 with 
          # any boundary side
-cat("i=",i,"j=",j,"\n")
+#cat("i=",i,"j=",j,"\n")
          intp<-do_intersect(p1,p2,bnd)
          if(sum(intp)>1){
 
@@ -55,10 +55,16 @@ cat("i=",i,"j=",j,"\n")
             D[i,j]<-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
          }
 ### DEBUG
-cat(".")
+#cat(".")
+
+   
+      }
+      # if asked to we write out a log file at each line
+      if(!is.na(logfile)){
+         write.csv(D,file=logfile)
       }
 ### DEBUG
-cat("\ndone",i,"!\n")
+#cat("\ndone",i,"!\n")
    }
    # create the lower triangle of the matrix
    # NB. diagonal should be 0
