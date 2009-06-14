@@ -17,7 +17,7 @@ ind <- inSide(bnd,x=x,y=y) ## remove outsiders
 x<-x[ind];y <- y[ind];z <- z[ind]
 samp.data<-data.frame(x=x,y=y,z=z)
 
-D<-create_distance_matrix(x,y,bnd)
+D<-create_distance_matrix(x,y,bnd,logfile="ramsey-small-log.txt")
 
 new.coords<-cmdscale(D)
 
@@ -49,7 +49,7 @@ xx<-xx[onoff];yy<-yy[onoff]
 new.data<-data.frame(x=xx,y=yy,z=fs.test(xx,yy))
 
 # map the prediction grid
-D<-create_distance_matrix(xx,yy,bnd)
+D<-create_distance_matrix(xx,yy,bnd,logfile="ramsey-big-log.txt")
 
 
 
