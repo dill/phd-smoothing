@@ -53,6 +53,12 @@ D<-create_distance_matrix(xx,yy,bnd,logfile="ramsey-big-log.txt")
 
 
 
+### doesn't work
+x=c( -0.2840909 , 1.556818 )
+y=c( 0.08333333 , -0.75 )
+
+
+
 
 
 new.coords<-cmdscale(D)
