@@ -44,10 +44,14 @@ D<-create_distance_matrix(gendata$x,gendata$y,bnd,logfile="wt2-logfile.txt")
 
 
 
+# construct the distance matrix
+D<-read.csv(file="wt2-logfile.txt",header=T)
+D<-D[,-1]
+D<-D+t(D)
 
-
+# do the PCO and construct the data frame
 new.coords<-cmdscale(D)
-data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=z)
+data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=gendata$z)
 
 
 
@@ -58,28 +62,48 @@ data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=z)
 
 samp.ind<-sample(1:length(gendata$x),100)
 
-x<-gendata$x[samp.ind]
-y<-gendata$y[samp.ind]
-z<-gendata$z[samp.ind]
 
+# mapped sample data
+samp.data<-list(x=c(),y=c(),z=c())
+samp.data$x<-data.mapped$x[samp.ind]
+samp.data$y<-data.mapped$y[samp.ind]
+samp.data$z<-data.mapped$z[samp.ind]
 
-# write this out to file, so we don't have to do it again
-#write.csv(data.mapped,file="wt2-mapped.csv")
-#write.csv(cbind(x,y,z),file="wt2-unmapped.csv")
+# non-mapped sample data
+nsamp.data<-list(x=c(),y=c(),z=c())
+nsamp.data$x<-gendata$x[samp.ind]
+nsamp.data$y<-gendata$y[samp.ind]
+nsamp.data$z<-gendata$z[samp.ind]
+
 
 
 
 ### mapping
-b.mapped<-gam(z~s(x,y,k=49),data=data.mapped)
+b.mapped<-gam(z~s(x,y,k=49),data=samp.data)
 fv <- predict(b.mapped,newdata=data.mapped)
 
 
+# create the image
+gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
+ind<-c(1:length(gendata.ind$x))
+pred.mat<-rep(NA,length(gendata.ind$x))
 
+ind<-ind[gendata.ind$inside==1]
+na.ind<-!(is.na(gendata.ind$x[gendata.ind$inside==1])&is.na(gendata.ind$y[gendata.ind$inside==1])&is.na(gendata.ind$z[gendata.ind$inside==1]))
+ind<-ind[na.ind]
+ind<-ind[onoff]
+ind<-ind[seq(1,len,2)]
+
+pred.mat[ind]<-fv
+
+pred.mat<-matrix(pred.mat,50,50)
+
+image(pred.mat)
 
 
 ### normal tprs
-#b.tprs<-gam(z~s(x,y,k=49),data=samp.data)
-#fv.tprs <- predict(b.tprs,newdata=data.frame(x=true.vals$x[true.vals$inside==1],y=true.vals$y[true.vals$inside==1]))
+b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
+fv.tprs <- predict(b.tprs,newdata=gendata)
 
 
 
