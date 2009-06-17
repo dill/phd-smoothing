@@ -253,6 +253,8 @@ on_line<-function(p1,this.line){
 
    eps<-1e-10
 
+### DEBUG
+#cat(this.line$y[2],this.line$y[1],"\n")
    # left hand side of equation
    if(abs(this.line$y[2]-this.line$y[1])<eps){
       # first handle if it's a horizontal line

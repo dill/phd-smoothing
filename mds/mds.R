@@ -32,10 +32,13 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
       p1<-list(x=xpoints[i],y=ypoints[i])
       for(j in (i+1):length(ypoints)){
          p2<-list(x=xpoints[j],y=ypoints[j])
+### DEBUG
+#cat("x=c(",p1$x,",",p2$x,")\n")
+#cat("y=c(",p1$y,",",p2$y,")\n")
+
 
          # if there are any intersections of the line p1p2 with 
          # any boundary side
-#cat("i=",i,"j=",j,"\n")
          intp<-do_intersect(p1,p2,bnd)
          if(sum(intp)>1){
 
@@ -55,7 +58,7 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
             D[i,j]<-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
          }
 ### DEBUG
-#cat(".")
+cat(".")
 
    
       }
@@ -64,7 +67,7 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
          write.csv(D,file=logfile)
       }
 ### DEBUG
-#cat("\ndone",i,"!\n")
+cat("\ndone",i,"!\n")
    }
    # create the lower triangle of the matrix
    # NB. diagonal should be 0

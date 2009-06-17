@@ -19,8 +19,8 @@ wood_path<-function(p1,p2,bnd){
 #points(p1)
 #points(p2)
 #cat("new point:\n")
-cat("x=c(",p1$x,",",p2$x,")\n")
-cat("y=c(",p1$y,",",p2$y,")\n")
+#cat("x=c(",p1$x,",",p2$x,")\n")
+#cat("y=c(",p1$y,",",p2$y,")\n")
 #cat("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n")
 
    # create the initial path:
@@ -142,7 +142,8 @@ make_bnd_path<-function(p1,p2,bnd){
    # that we don't need)
    # ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
 
-   if(length(picker)>1){
+# increased to 2, maybe this fixes things...
+   if(length(picker)>2){
 
       if(on_line(ip1,pe(bnd.1.sort,1:2))){
          bnd.1.sort<-pe(bnd.1.sort,-1)
@@ -150,11 +151,19 @@ make_bnd_path<-function(p1,p2,bnd){
       }
       ep.1<-length(bnd.1.sort$x)
 
+
+pee<-pe(bnd.1.sort,(ep.1-1):ep.1)
+cat("ep.1=",ep.1,"\n")
+pex<-pee$x;pey<-pee$y
+
+cat("out=",ip2$x,ip2$y,pex,pey,"\n")
+
       if(on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1))){
          bnd.1.sort<-pe(bnd.1.sort,-ep.1)
          picker<-picker[-ep.1]
       }
    }
+
 
    bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)-1))),setdiff(c(1:(length(bnd$x)-1)),picker))
    bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),length(bnd.2.sort$x):picker[1]))
