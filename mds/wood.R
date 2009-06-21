@@ -152,11 +152,11 @@ make_bnd_path<-function(p1,p2,bnd){
       ep.1<-length(bnd.1.sort$x)
 
 
-pee<-pe(bnd.1.sort,(ep.1-1):ep.1)
-cat("ep.1=",ep.1,"\n")
-pex<-pee$x;pey<-pee$y
-
-cat("out=",ip2$x,ip2$y,pex,pey,"\n")
+#pee<-pe(bnd.1.sort,(ep.1-1):ep.1)
+#cat("ep.1=",ep.1,"\n")
+#pex<-pee$x;pey<-pee$y
+#
+#cat("out=",ip2$x,ip2$y,pex,pey,"\n")
 
       if(on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1))){
          bnd.1.sort<-pe(bnd.1.sort,-ep.1)
