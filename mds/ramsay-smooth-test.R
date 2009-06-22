@@ -60,11 +60,15 @@ samp.data.t<-data.frame(x=new.data.mapped$x[samp.ind],y=new.data.mapped$y[samp.i
 # plot
 par(mfrow=c(2,2))
 
+# boundary, only for drawing the line around the outside
+fsb <- fs.boundary()
+
 # truth
-z.truth<-matrix(NA,m,yn)
+z.truth<-matrix(NA,m,n)
 z.truth[onoff]<-new.data$z
-image(xm,yn,z.truth,col=heat.colors(100),xlab="x",ylab="y",main="truth")
+image(xm,yn,z.truth,col=heat.colors(100),xlab="x",ylab="y",main="truth",las=1)
 contour(xm,yn,z.truth,levels=seq(-5,5,by=.25),add=TRUE)
+lines(fsb,lwd=2)
 
 ### mapping
 b.mapped<-gam(z~s(x,y,k=49),data=samp.data.t)
@@ -73,8 +77,9 @@ fv.mapped <- predict(b.mapped,newdata=new.data.mapped)
 pred.mat<-matrix(NA,m,n)
 pred.mat[onoff]<-fv.mapped
 
-image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="MDS")
+image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="MDS",las=1)
 contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
+lines(fsb,lwd=2)
 
 
 ### normal tprs
@@ -84,8 +89,9 @@ fv.tprs <- predict(b.tprs,newdata=new.data)
 pred.mat<-matrix(NA,m,n)
 pred.mat[onoff]<-fv.tprs
 
-image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tprs")
+image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tprs",las=1)
 contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
+lines(fsb,lwd=2)
 
 
 ### soap
@@ -94,14 +100,15 @@ knots <- data.frame(x=rep(seq(-.5,3,by=.5),4),
                     y=rep(c(-.6,-.3,.3,.6),rep(8,4)))
 knots.ind<-inSide(bnd,x=knots$x,y=knots$y)
 knots<-list(x=knots$x[knots.ind],y=knots$y[knots.ind])
-b.soap<-gam(z~s(x,y,k=20,bs="so",xt=list(bnd=fsb)),knots=knots,data=samp.data.n)
+b.soap<-gam(z~s(x,y,k=20,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data.n)
 fv.soap<-predict(b.soap,newdata=new.data,block.size=-1)
 
 pred.mat<-matrix(NA,m,n)
 pred.mat[onoff]<-fv.soap
 
-image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="soap")
+image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="soap",las=1)
 contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
+lines(fsb,lwd=2)
 
 
 ### calculate MSEs

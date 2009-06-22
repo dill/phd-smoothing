@@ -8,10 +8,7 @@ names(bnd)<-c("x","y")
 
 ## Simulate some fitting data, inside boundary...
 
-
 gendata <- read.csv("wt2truth.csv",header=TRUE) 
-
-
 
 gendata<- list(x=gendata$x[gendata$inside==1],
                y=gendata$y[gendata$inside==1],
@@ -31,36 +28,17 @@ gendata<- list(x=gendata$x[onoff],
                y=gendata$y[onoff],
                z=gendata$z[onoff])
 
-len<-length(gendata$x)
-
-# don't do this, bad things happen
-#gendata$x<-gendata$x[seq(1,len,2)]
-#gendata$y<-gendata$y[seq(1,len,2)]
-#gendata$z<-gendata$z[seq(1,len,2)]
-
-#plot(gendata$x,gendata$y)
 
 D<-create_distance_matrix(gendata$x,gendata$y,bnd,logfile="wt2-logfile.txt")
 
-
-
-# construct the distance matrix
-#D<-read.csv(file="wt2-logfile.txt",header=T)
-#D<-D[,-1]
-#D<-D+t(D)
-
 # do the PCO and construct the data frame
+D<-D+t(D)
 new.coords<-cmdscale(D)
 data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=gendata$z)
 
-
-
-
-
-
 ##########################################
 
-samp.ind<-sample(1:length(gendata$x),100)
+samp.ind<-sample(1:length(gendata$x),250)
 
 # add noise
 #> summary(gendata$z)
@@ -89,9 +67,16 @@ fv <- predict(b.mapped,newdata=data.mapped)
 b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
 fv.tprs <- predict(b.tprs,newdata=gendata)
 
-### calculate MSEs
-cat("mds MSE=",mean((fv-gendata$z)^2,na.rm=T),"\n")
-cat("tprs MSE=",mean((fv.tprs-gendata$z)^2,na.rm=T),"\n")
+### soap
+knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
+knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
+insideknots<-inSide(bnd,knots.x,knots.y)
+insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE
+knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
+b.soap<-gam(z~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=nsamp.data)
+fv.soap <- predict(b.soap,newdata=gendata)
+
+
 
 
 # create the image
@@ -102,22 +87,39 @@ ind<-ind[gendata.ind$inside==1]
 na.ind<-!(is.na(gendata.ind$x[gendata.ind$inside==1])&is.na(gendata.ind$y[gendata.ind$inside==1])&is.na(gendata.ind$z[gendata.ind$inside==1]))
 ind<-ind[na.ind]
 ind<-ind[onoff]
-ind<-ind[seq(1,len,2)]
 
-# plot for truth, mds and tprs
-par(mfrow=c(1,3))
+# plot for truth, mds, tprs and soap
+par(mfrow=c(2,2))
+
+# axis scales
+xscale<-seq(min(gendata$x),max(gendata$x),length.out=50)
+yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
+
+
+
 pred.mat[ind]<-gendata$z
 pred.mat<-matrix(pred.mat,50,50)
-image(pred.mat,main="truth")
+image(xscale,yscale,pred.mat,main="truth",asp=1,las=1,xlab="x",ylab="y")
+contour(xscale,yscale,pred.mat,add=T)
 
 pred.mat[ind]<-fv
 pred.mat<-matrix(pred.mat,50,50)
-image(pred.mat,main="mds")
+image(xscale,yscale,pred.mat,main="mds",asp=1,las=1,xlab="x",ylab="y")
+contour(xscale,yscale,pred.mat,add=T)
 
 pred.mat[ind]<-fv.tprs
 pred.mat<-matrix(pred.mat,50,50)
-image(pred.mat,main="tprs")
+image(xscale,yscale,pred.mat,main="tprs",asp=1,las=1,xlab="x",ylab="y")
+contour(xscale,yscale,pred.mat,add=T)
 
+pred.mat[ind]<-fv.soap
+pred.mat<-matrix(pred.mat,50,50)
+image(xscale,yscale,pred.mat,main="soap",asp=1,las=1,xlab="x",ylab="y")
+contour(xscale,yscale,pred.mat,add=T)
 
+### calculate MSEs
+cat("mds MSE=",mean((fv-gendata$z)^2,na.rm=T),"\n")
+cat("tprs MSE=",mean((fv.tprs-gendata$z)^2,na.rm=T),"\n")
+cat("soap MSE=",mean((fv.soap-gendata$z)^2,na.rm=T),"\n")
 
 
