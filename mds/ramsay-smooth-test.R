@@ -48,7 +48,7 @@ write.csv(complete.sample.data,file="ramsay-sample.csv")
 ## Simulate some fitting data, inside boundary...
 n.samp<-250
 samp.ind<-sample(1:length(xx),n.samp)
-noise<-rnorm(n.samp)*2
+noise<-rnorm(n.samp)*0.3
 samp.data.n<-data.frame(x=xx[samp.ind],y=yy[samp.ind],z=new.data$z[samp.ind]+noise)
 samp.data.t<-data.frame(x=new.data.mapped$x[samp.ind],y=new.data.mapped$y[samp.ind],z=new.data.mapped$z[samp.ind]+noise)
 
@@ -66,7 +66,7 @@ fsb <- fs.boundary()
 # truth
 z.truth<-matrix(NA,m,n)
 z.truth[onoff]<-new.data$z
-image(xm,yn,z.truth,col=heat.colors(100),xlab="x",ylab="y",main="truth",las=1)
+image(xm,yn,z.truth,col=heat.colors(100),xlab="x",ylab="y",main="truth",las=1,asp=1)
 contour(xm,yn,z.truth,levels=seq(-5,5,by=.25),add=TRUE)
 lines(fsb,lwd=2)
 
@@ -77,7 +77,7 @@ fv.mapped <- predict(b.mapped,newdata=new.data.mapped)
 pred.mat<-matrix(NA,m,n)
 pred.mat[onoff]<-fv.mapped
 
-image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="MDS",las=1)
+image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="MDS",las=1,asp=1)
 contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
 lines(fsb,lwd=2)
 
@@ -89,7 +89,7 @@ fv.tprs <- predict(b.tprs,newdata=new.data)
 pred.mat<-matrix(NA,m,n)
 pred.mat[onoff]<-fv.tprs
 
-image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tprs",las=1)
+image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tprs",las=1,asp=1)
 contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
 lines(fsb,lwd=2)
 
@@ -106,7 +106,7 @@ fv.soap<-predict(b.soap,newdata=new.data,block.size=-1)
 pred.mat<-matrix(NA,m,n)
 pred.mat[onoff]<-fv.soap
 
-image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="soap",las=1)
+image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="soap",las=1,asp=1)
 contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
 lines(fsb,lwd=2)
 
