@@ -123,3 +123,26 @@ cat("tprs MSE=",mean((fv.tprs-gendata$z)^2,na.rm=T),"\n")
 cat("soap MSE=",mean((fv.soap-gendata$z)^2,na.rm=T),"\n")
 
 
+#### MDS explanatory plot
+par(mfrow=c(1,2))
+red.points<-data.mapped$x < -2
+green.points<-data.mapped$y>1 & data.mapped$x<0
+blue.points<-data.mapped$y>-0.5 & data.mapped$x>2
+orange.points<-gendata$y>-1 & gendata$x>-0.5 & gendata$x<1
+
+plot(gendata$x,gendata$y,asp=1,las=1,xlab="x",ylab="y",cex=0.5,pch=20)
+points(gendata$x[red.points],gendata$y[red.points],cex=0.5,pch=20,col="red")
+points(gendata$x[green.points],gendata$y[green.points],cex=0.5,pch=20,col="green")
+points(gendata$x[blue.points],gendata$y[blue.points],cex=0.5,pch=20,col="blue")
+points(gendata$x[orange.points],gendata$y[orange.points],cex=0.5,pch=20,col="orange")
+
+plot(data.mapped$x,data.mapped$y,asp=1,las=1,xlab="x",ylab="y",cex=0.5,pch=20)
+points(data.mapped$x[red.points],data.mapped$y[red.points],cex=0.5,pch=20,col="red")
+points(data.mapped$x[green.points],data.mapped$y[green.points],cex=0.5,pch=20,col="green")
+points(data.mapped$x[blue.points],data.mapped$y[blue.points],cex=0.5,pch=20,col="blue")
+points(data.mapped$x[orange.points],data.mapped$y[orange.points],cex=0.5,pch=20,col="orange")
+
+
+dev.copy2pdf(file="wt2-mds-coloured.pdf")
+
+
