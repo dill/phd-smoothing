@@ -29,7 +29,11 @@ gendata<- list(x=gendata$x[onoff],
                z=gendata$z[onoff])
 
 
-D<-create_distance_matrix(gendata$x,gendata$y,bnd,logfile="wt2-logfile.txt")
+#D<-create_distance_matrix(gendata$x,gendata$y,bnd,logfile="wt2-logfile.txt")
+# load the data rather than doing the computation
+D<-read.csv(file="wt2-logfile.txt")
+D<-D[,-1]
+
 
 # do the PCO and construct the data frame
 D<-D+t(D)
