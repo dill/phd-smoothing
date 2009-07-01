@@ -24,17 +24,11 @@
    Xt<-t(X)
 
    # finally d
-   d<-diag(X%*%Xt)-
+   d<-diag(X%*%Xt)-new.dist^2
 
-   
+   # finally construct the product
+   ret<-1/2*(lambda.inverse%*%Xt%*%d)
 
-
-
-
-
-
-
-
-
-
+   # return the result
+   return(ret)
 }
