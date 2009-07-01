@@ -40,8 +40,12 @@ wood_path<-function(p1,p2,bnd){
 
    prev.path<-list(x=c(Inf),y=c(Inf))
 
+   # convergence stop
+   conv<-0
+   conv_stop<-10
+
    # keep going until we don't remove any more points.
-   while(!has_converged(prev.path,my.path)){
+   while(!has_converged(prev.path,my.path) & (conv<conv_stop)){
       # save previous path
       prev.path<-my.path
 
@@ -62,10 +66,18 @@ wood_path<-function(p1,p2,bnd){
       # add new vertices
       my.path<-alter_step(my.path,bnd)
 
+
+      # increment convergence stopper 
+      conv<-conv+1
+
 ### DEBUG
 #lines(my.path,lwd=2,col="blue")
 #a<-scan()
    }
+
+## need this?
+#   if(conv==conv_stop) my.path<-NA
+
 ### DEBUG
 #lines(my.path,lwd=2,col="green")
 #cat("########## END ############\n")
@@ -130,7 +142,8 @@ make_bnd_path<-function(p1,p2,bnd){
    # that we don't need)
    # ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
 
-   if(length(picker)>1){
+# increased to 2, maybe this fixes things...
+   if(length(picker)>2){
 
       if(on_line(ip1,pe(bnd.1.sort,1:2))){
          bnd.1.sort<-pe(bnd.1.sort,-1)
@@ -138,11 +151,19 @@ make_bnd_path<-function(p1,p2,bnd){
       }
       ep.1<-length(bnd.1.sort$x)
 
+
+#pee<-pe(bnd.1.sort,(ep.1-1):ep.1)
+#cat("ep.1=",ep.1,"\n")
+#pex<-pee$x;pey<-pee$y
+#
+#cat("out=",ip2$x,ip2$y,pex,pey,"\n")
+
       if(on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1))){
          bnd.1.sort<-pe(bnd.1.sort,-ep.1)
          picker<-picker[-ep.1]
       }
    }
+
 
    bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)-1))),setdiff(c(1:(length(bnd$x)-1)),picker))
    bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),length(bnd.2.sort$x):picker[1]))
@@ -198,8 +219,11 @@ delete_step<-function(path, bnd){
    #           revised path with dropped vertices
    prev.path<-list(x=c(Inf),y=c(Inf))
 
+   # convergence stop
+   conv<-0
+   conv_stop<-10
    # keep going until we don't remove any more points.
-   while(!has_converged(prev.path,path)){
+   while(!has_converged(prev.path,path)&(conv<conv_stop)){
       # save the previous path to compare, above
       prev.path<-path
       # start point for triplet selection
@@ -222,6 +246,7 @@ delete_step<-function(path, bnd){
          }
          i<-i+1
       }
+   conv<-conv+1
    }
    return(path)
 }
@@ -239,7 +264,10 @@ alter_step<-function(path,bnd){
    # iterate over the points in the path:
    # alter the path, until on two(?) consecutive runs there are
    # no changes to the path
-   while(!has_converged(prev.path,path)){
+   # convergence stop
+   conv<-0
+   conv_stop<-10
+   while(!has_converged(prev.path,path)&(conv<conv_stop)){
       # save the previous path for comparison
       prev.path<-path
       i<-2 # start point
@@ -285,6 +313,7 @@ alter_step<-function(path,bnd){
          }
          i<-i+1
       }
+      conv<-conv+1
    }
    # return the path
    return(path)

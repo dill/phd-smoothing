@@ -5,7 +5,7 @@ source("utils.R")
 source("wood.R")
 
 # create the distance matrix
-create_distance_matrix<-function(xpoints,ypoints,bnd){
+create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
    # requires the library soap   
    # args:
    #  xpoints,ypoints      data points
@@ -32,18 +32,25 @@ create_distance_matrix<-function(xpoints,ypoints,bnd){
       p1<-list(x=xpoints[i],y=ypoints[i])
       for(j in (i+1):length(ypoints)){
          p2<-list(x=xpoints[j],y=ypoints[j])
+### DEBUG
+#cat("x=c(",p1$x,",",p2$x,")\n")
+#cat("y=c(",p1$y,",",p2$y,")\n")
+
 
          # if there are any intersections of the line p1p2 with 
          # any boundary side
-cat("i=",i,"j=",j,"\n")
          intp<-do_intersect(p1,p2,bnd)
          if(sum(intp)>1){
 
             # call the Wood algorithm
             path<-wood_path(p1,p2,bnd)
 
-            # find the length of the path
-            D[i,j]<-hull_length(path)
+            if(any(is.na(path))){
+               D[i,j]<-NA
+            }else{
+               # find the length of the path
+               D[i,j]<-hull_length(path)
+            }
 
          # if the line p1p2 doesn't intersect any sides
          }else{
@@ -52,6 +59,12 @@ cat("i=",i,"j=",j,"\n")
          }
 ### DEBUG
 cat(".")
+
+   
+      }
+      # if asked to we write out a log file at each line
+      if(!is.na(logfile)){
+         write.csv(D,file=logfile)
       }
 ### DEBUG
 cat("\ndone",i,"!\n")
