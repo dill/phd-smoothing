@@ -3,6 +3,7 @@
 # let's see what happens
 source("utils.R")
 source("wood.R")
+source("insert.mds.R")
 
 # create the distance matrix
 create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){

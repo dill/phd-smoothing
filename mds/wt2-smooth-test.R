@@ -37,6 +37,15 @@ D<-D[,-1]
 
 # do the PCO and construct the data frame
 D<-D+t(D)
+
+
+# here need to run the PCA for the sample and then use the inser.mds routine 
+# to add the additional points into the 
+
+
+
+
+
 new.coords<-cmdscale(D)
 data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=gendata$z)
 
