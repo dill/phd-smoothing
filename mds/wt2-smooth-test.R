@@ -47,6 +47,9 @@ samp.ind<-sample(1:length(gendata$x),250)
 
 # take the sample of D
 D.samp<-D[samp.ind,samp.ind]
+# the rest : distances from those not in the sample 
+# to those in the sample.
+D.pred<-D[-samp.ind,samp.ind]
 
 # perform mds on the sample matrix
 # options needed for insertion to work
@@ -73,11 +76,14 @@ nsamp.data$z<-gendata$z[samp.ind]+noise
 
 # now do the insertion for the prediction points
 pred.data<-list(x=c(),y=c(),z=c())
-pred.mds<-insert.mds(,samp.mds)
+# also need the sample coords
+samp.coords<-cbind(nsamp.data$x,nsamp.data$y)
+pred.mds<-insert.mds(D.pred,samp.mds,samp.coords)
 
-pred.data$x<-samp.mds$x[samp.ind]
-pred.data$y<-samp.mds$y[samp.ind]
-pred.data$z<-gendata$z[samp.ind]+noise
+pred.data$x<-c(pred.mds[,1])
+pred.data$y<-c(pred.mds[,2])
+#pred.data$z<-gendata$z[samp.ind]+noise
+
 
 
 ##########################################
