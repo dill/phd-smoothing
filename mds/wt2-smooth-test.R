@@ -39,19 +39,18 @@ D<-D[,-1]
 D<-D+t(D)
 
 
-# here need to run the PCA for the sample and then use the inser.mds routine 
+# here need to run the PCA for the sample and then use the insert.mds routine 
 # to add the additional points into the 
 
 
-
-
-
-new.coords<-cmdscale(D)
-data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=gendata$z)
-
-##########################################
-
 samp.ind<-sample(1:length(gendata$x),250)
+
+# take the sample of D
+D.samp<-D[samp.ind,samp.ind]
+
+# perform mds on the sample matrix
+# options needed for insertion to work
+samp.mds<-cmdscale(D.samp,eig=TRUE,x.ret=TRUE)
 
 # add noise
 #> summary(gendata$z)
@@ -62,9 +61,9 @@ noise<-noise*rnorm(length(samp.ind))
 
 # mapped sample data
 samp.data<-list(x=c(),y=c(),z=c())
-samp.data$x<-data.mapped$x[samp.ind]
-samp.data$y<-data.mapped$y[samp.ind]
-samp.data$z<-data.mapped$z[samp.ind]+noise
+samp.data$x<-samp.mds$points[,1]
+samp.data$y<-samp.mds$points[,2]
+samp.data$z<-gendata$z[samp.ind]+noise
 
 # non-mapped sample data
 nsamp.data<-list(x=c(),y=c(),z=c())
@@ -72,9 +71,21 @@ nsamp.data$x<-gendata$x[samp.ind]
 nsamp.data$y<-gendata$y[samp.ind]
 nsamp.data$z<-gendata$z[samp.ind]+noise
 
+# now do the insertion for the prediction points
+pred.data<-list(x=c(),y=c(),z=c())
+pred.mds<-insert.mds(,samp.mds)
+
+pred.data$x<-samp.mds$x[samp.ind]
+pred.data$y<-samp.mds$y[samp.ind]
+pred.data$z<-gendata$z[samp.ind]+noise
+
+
+##########################################
+
+
 ### mapping
 b.mapped<-gam(z~s(x,y,k=49),data=samp.data)
-fv <- predict(b.mapped,newdata=data.mapped)
+fv <- predict(b.mapped,newdata=pred.data)
 
 ### normal tprs
 b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
