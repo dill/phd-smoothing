@@ -18,6 +18,8 @@ xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 onoff<-inSide(bnd,xx,yy)
 xx<-xx[onoff];yy<-yy[onoff]
 
+onoff<-inSide(list(x=-bnd$x,y=-bnd$y),-xx,-yy)
+xx<-xx[onoff];yy<-yy[onoff]
 
 # create the prediction grid
 new.data<-data.frame(x=xx,y=yy,z=fs.test(xx,yy))
@@ -27,32 +29,44 @@ new.data<-data.frame(x=xx,y=yy,z=fs.test(xx,yy))
 
 
 # map the prediction grid
-D<-create_distance_matrix(xx,yy,bnd,logfile="ramsay-big-log.txt")
+#D<-create_distance_matrix(xx,yy,bnd,logfile="ramsay-big-log.txt")
+D<-read.csv(file="ramsay-big-log.txt")
+D<-D[,-1]
+D<-D+t(D)
 
 
-
-
-
-new.coords<-cmdscale(D)
-new.data.mapped<-data.frame(x=new.coords[,1],y=new.coords[,2],z=new.data$z)
-
-
-# write to file
-complete.data<-data.frame(x=new.data$x,y=new.data$y,
-                          xmds=new.data.mapped$x,ymds=new.data.mapped$y,
-                          z=new.data.mapped$z)
-write.csv(complete.sample.data,file="ramsay-sample.csv")
-
-
-### probably want to add some noise at this point
-## Simulate some fitting data, inside boundary...
 n.samp<-250
-samp.ind<-sample(1:length(xx),n.samp)
 noise<-rnorm(n.samp)*0.3
+samp.ind<-sample(1:length(xx),n.samp)
+
+# take the sample of D
+D.samp<-D[samp.ind,samp.ind]
+# the rest : distances from those not in the sample 
+# to those in the sample.
+D.pred<-D[-samp.ind,samp.ind]
+
+
+samp.mds<-cmdscale(D.samp,eig=TRUE,x.ret=TRUE)
+
+
 samp.data.n<-data.frame(x=xx[samp.ind],y=yy[samp.ind],z=new.data$z[samp.ind]+noise)
-samp.data.t<-data.frame(x=new.data.mapped$x[samp.ind],y=new.data.mapped$y[samp.ind],z=new.data.mapped$z[samp.ind]+noise)
+samp.data.t<-data.frame(x=samp.mds$points[,1],y=samp.mds$points[,2],z=new.data.z[samp.ind]+noise)
 
 
+
+pred.data<-list(x=c(),y=c())#,z=c())
+
+
+# also need the sample coords
+samp.coords<-cbind(samp.data.n$x,samp.data.n$y)
+# centre them first
+samp.coords[,1]<-samp.coords[,1]-mean(samp.coords[,1])
+samp.coords[,2]<-samp.coords[,2]-mean(samp.coords[,2])
+
+pred.mds<-insert.mds(D.pred,samp.mds,samp.coords)
+
+pred.data$x<-c(pred.mds[,1])
+pred.data$y<-c(pred.mds[,2])
 
 
 ####

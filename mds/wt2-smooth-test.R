@@ -75,14 +75,40 @@ nsamp.data$y<-gendata$y[samp.ind]
 nsamp.data$z<-gendata$z[samp.ind]+noise
 
 # now do the insertion for the prediction points
-pred.data<-list(x=c(),y=c(),z=c())
+pred.data<-list(x=c(),y=c())#,z=c())
+
+
+rm(insert.mds)
+source("insert.mds.R")
+
+
+
 # also need the sample coords
 samp.coords<-cbind(nsamp.data$x,nsamp.data$y)
+# centre them first
+samp.coords[,1]<-samp.coords[,1]-mean(samp.coords[,1])
+samp.coords[,2]<-samp.coords[,2]-mean(samp.coords[,2])
+
 pred.mds<-insert.mds(D.pred,samp.mds,samp.coords)
 
 pred.data$x<-c(pred.mds[,1])
 pred.data$y<-c(pred.mds[,2])
 #pred.data$z<-gendata$z[samp.ind]+noise
+
+# non-mapped prediction data
+npred.data<-list(x=c(),y=c(),z=c())
+npred.data$x<-gendata$x[-samp.ind]
+npred.data$y<-gendata$y[-samp.ind]
+#npred.data$z<-gendata$z[-samp.ind]+noise
+
+# check to see how it's gone
+par(mfrow=c(1,2))
+plot(nsamp.data$x,nsamp.data$y)
+points(npred.data$x,npred.data$y,col="blue",pch=25)
+plot(samp.data$x,samp.data$y)
+points(t(pred.mds),col="blue",pch=25)
+
+
 
 
 

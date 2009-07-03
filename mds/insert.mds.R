@@ -28,7 +28,7 @@
    Xt<-t(orig.coords)
 
    # finally d
-   d<-diag(X%*%Xt)-t(new.dist)^2
+   d<-diag(X%*%Xt)-new.dist^2
 
    # finally construct the product
    ret<-1/2*(lambda.inverse%*%Xt%*%d)
