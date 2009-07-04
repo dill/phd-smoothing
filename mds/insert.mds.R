@@ -10,10 +10,7 @@
    # ret
    # coordinates of new points in the mds?
    
-
-
-   # want to calculate 1/2 * lambda^(-)1 * X' * d
-
+   # want to calculate 1/2 * lambda^(-1) * X' * d
 
    # first lambda
    nrow<-dim(cmd.object$points)[2]

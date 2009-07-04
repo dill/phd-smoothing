@@ -39,17 +39,13 @@ D<-D[,-1]
 D<-D+t(D)
 
 
-# here need to run the PCA for the sample and then use the insert.mds routine 
-# to add the additional points into the 
-
-
 samp.ind<-sample(1:length(gendata$x),250)
 
 # take the sample of D
 D.samp<-D[samp.ind,samp.ind]
 # the rest : distances from those not in the sample 
 # to those in the sample.
-D.pred<-D[-samp.ind,samp.ind]
+D.pred<-D[samp.ind,-samp.ind]
 
 # perform mds on the sample matrix
 # options needed for insertion to work
@@ -103,9 +99,9 @@ npred.data$y<-gendata$y[-samp.ind]
 
 # check to see how it's gone
 par(mfrow=c(1,2))
-plot(nsamp.data$x,nsamp.data$y)
+plot(nsamp.data$x,nsamp.data$y,asp=1)
 points(npred.data$x,npred.data$y,col="blue",pch=25)
-plot(samp.data$x,samp.data$y)
+plot(samp.data$x,samp.data$y,asp=1)
 points(t(pred.mds),col="blue",pch=25)
 
 
