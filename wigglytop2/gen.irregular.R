@@ -47,29 +47,22 @@ require(MASS)
 lims<-c(-3,3.5,-3,3)
 resolution<-50 # number of points in the kernel density estimate
 
-### generate first MV normal
-# this is for the "leg"
-bivn.1 <- mvrnorm(2500, mu = c(-2.3, 2.2), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
-bivn.kde.1 <- kde2d(bivn.1[,1], bivn.1[,2], n =resolution, lims=lims)
-bivn.2 <- mvrnorm(2500, mu = c(-2.84, 0.71), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
-bivn.kde.2 <- kde2d(bivn.2[,1], bivn.2[,2], n =resolution, lims=lims)
-bivn.3 <- mvrnorm(2500, mu = c(-2.2, -0.699), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
-bivn.kde.3 <- kde2d(bivn.3[,1], bivn.3[,2], n =resolution, lims=lims)
-
-# add them...
 surf<-list(x=c(),y=c(),z=c())
-surf$x<-bivn.kde.1$x
-surf$y<-bivn.kde.1$y
-surf$z<-bivn.kde.1$z+bivn.kde.2$z+bivn.kde.3$z
+surf$x<-seq(lims[1],lims[2],length=50)
+surf$y<-seq(lims[3],lims[4],length=50)
+surf$z<-rep(0,2500)
+
+surf$z[xx > -1.5 & xx < -0.5]<-surf$z[xx > -1.5 & xx < -0.5]+seq(0,4,length.out=length(surf$z[xx > -1.5 & xx < -0.5]))
+surf$z[xx < -1.5]<-surf$z[xx < -1.5]+seq(0,-4,length.out=length(surf$z[xx < -1.5]))
 
 # two extra bits
 bivn.4 <- mvrnorm(2500, mu = c(0.244, -0.425), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
 bivn.kde.4 <- kde2d(bivn.4[,1], bivn.4[,2], n =resolution, lims=lims)
 bivn.5 <- mvrnorm(2500, mu = c(2.247, -1.91), Sigma = matrix(c(1, 0, 0, 1), 2))
 bivn.kde.5 <- kde2d(bivn.5[,1], bivn.5[,2], n =resolution, lims=lims)
-bivn.kde.5$z<-bivn.kde.5$z*5
+#bivn.kde.5$z<-bivn.kde.5$z*5
 
-surf$z<-surf$z+bivn.kde.4$z+bivn.kde.5$z
+surf$z<-surf$z+8*bivn.kde.4$z+16*bivn.kde.5$z
 
 
 # find the inside points...
@@ -84,8 +77,6 @@ bnd$y<-Im(polyvertices)
 xn<-length(surf$x); yn<-length(surf$y)
 xx<-rep(surf$x,yn); yy<-rep(surf$y,rep(xn,yn))
 
-# blank out the other "leg"
-surf$z[xx > -1.5 & xx < -0.5]<-0
 
 
 # find the inside points, make it 0/1 rather than T/F
@@ -99,7 +90,7 @@ ind[inside.points]<-1
 #z[!inside.points]<-NA
 ## axis values
 #axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
-#image(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution))
+#image(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution),col=heat.colors(100))
 #contour(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution),add=TRUE)
 
 # write out truth to a file
