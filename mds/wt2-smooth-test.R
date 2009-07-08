@@ -1,5 +1,11 @@
 library(soap)
 
+# set sample size and noise level here
+samp.size<-250
+noise.level<-0.5
+
+
+
 source("mds.R")
 
 ## create a boundary...
@@ -39,7 +45,7 @@ D<-D[,-1]
 D<-D+t(D)
 
 
-samp.ind<-sample(1:length(gendata$x),250)
+samp.ind<-sample(1:length(gendata$x),samp.size)
 
 # take the sample of D
 D.samp<-D[samp.ind,samp.ind]
@@ -55,7 +61,7 @@ samp.mds<-cmdscale(D.samp,eig=TRUE,x.ret=TRUE)
 #> summary(gendata$z)
 #    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 #0.000000 0.000236 0.269300 0.276300 0.479600 0.850000 
-noise<-0.2 # set to zero for no noise
+noise<-noise.level # set to zero for no noise
 noise<-noise*rnorm(length(samp.ind))
 
 # mapped sample data
@@ -70,26 +76,9 @@ nsamp.data$x<-gendata$x[samp.ind]
 nsamp.data$y<-gendata$y[samp.ind]
 nsamp.data$z<-gendata$z[samp.ind]+noise
 
-# now do the insertion for the prediction points
-pred.data<-list(x=c(),y=c())#,z=c())
-
 
 rm(insert.mds)
 source("insert.mds.R")
-
-
-
-# also need the sample coords
-samp.coords<-cbind(nsamp.data$x,nsamp.data$y)
-# centre them first
-samp.coords[,1]<-samp.coords[,1]-mean(samp.coords[,1])
-samp.coords[,2]<-samp.coords[,2]-mean(samp.coords[,2])
-
-pred.mds<-insert.mds(D.pred,samp.mds,samp.coords)
-
-pred.data$x<-c(pred.mds[,1])
-pred.data$y<-c(pred.mds[,2])
-#pred.data$z<-gendata$z[samp.ind]+noise
 
 # non-mapped prediction data
 npred.data<-list(x=c(),y=c(),z=c())
@@ -98,14 +87,43 @@ npred.data$y<-gendata$y[-samp.ind]
 #npred.data$z<-gendata$z[-samp.ind]+noise
 
 # check to see how it's gone
-par(mfrow=c(1,2))
-plot(nsamp.data$x,nsamp.data$y,asp=1)
-points(npred.data$x,npred.data$y,col="blue",pch=25)
-plot(samp.data$x,samp.data$y,asp=1)
-points(t(pred.mds),col="blue",pch=25)
+#par(mfrow=c(2,2))
+#plot(nsamp.data$x,nsamp.data$y,asp=1,main="original domain")
+#points(npred.data$x,npred.data$y,col="blue",pch=25)
+#plot(samp.data$x,samp.data$y,asp=1,main="point by point")
 
 
+#for (i in 1:dim(D.pred)[1]) {
+#
+#   pred.mds<-insert.mds(D.pred[,i],samp.mds)
+#
+#   # now do the insertion for the prediction points
+#   pred.data<-list(x=c(),y=c())#,z=c())
+#   pred.data$x<-c(pred.mds[1,])
+#   pred.data$y<-c(pred.mds[2,])
+#   #pred.data$z<-gendata$z[samp.ind]+noise
+#
+#
+#   points(pred.data,col="blue",pch=25)
+#}
 
+
+#plot(samp.data$x,samp.data$y,asp=1,main="at once")
+pred.mds<-insert.mds(D.pred,samp.mds)
+
+# now do the insertion for the prediction points
+pred.data<-list(x=rep(0,dim(D)[2]),y=rep(0,dim(D)[2]))
+pred.data$x[samp.ind]<-samp.data$x  # need to add in the sample points too
+pred.data$x[-samp.ind]<-pred.mds[1,]
+pred.data$y[samp.ind]<-samp.data$y  # need to add in the sample points too
+pred.data$y[-samp.ind]<-pred.mds[2,]
+#points(pred.data,col="blue",pch=25)
+
+#total.mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
+#pred.data<-list(x=c(),y=c())#,z=c())
+#pred.data$x<-c(total.mds$points[,1])
+#pred.data$y<-c(total.mds$points[,2])
+#plot(pred.data$x,pred.data$y,asp=1,main="full mds")
 
 
 ##########################################
@@ -151,22 +169,22 @@ yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
 
 pred.mat[ind]<-gendata$z
 pred.mat<-matrix(pred.mat,50,50)
-image(xscale,yscale,pred.mat,main="truth",asp=1,las=1,xlab="x",ylab="y")
+image(xscale,yscale,pred.mat,main="truth",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
 contour(xscale,yscale,pred.mat,add=T)
 
 pred.mat[ind]<-fv
 pred.mat<-matrix(pred.mat,50,50)
-image(xscale,yscale,pred.mat,main="mds",asp=1,las=1,xlab="x",ylab="y")
+image(xscale,yscale,pred.mat,main="mds",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
 contour(xscale,yscale,pred.mat,add=T)
 
 pred.mat[ind]<-fv.tprs
 pred.mat<-matrix(pred.mat,50,50)
-image(xscale,yscale,pred.mat,main="tprs",asp=1,las=1,xlab="x",ylab="y")
+image(xscale,yscale,pred.mat,main="tprs",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
 contour(xscale,yscale,pred.mat,add=T)
 
 pred.mat[ind]<-fv.soap
 pred.mat<-matrix(pred.mat,50,50)
-image(xscale,yscale,pred.mat,main="soap",asp=1,las=1,xlab="x",ylab="y")
+image(xscale,yscale,pred.mat,main="soap",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
 contour(xscale,yscale,pred.mat,add=T)
 
 ### calculate MSEs

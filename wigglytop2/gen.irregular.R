@@ -37,7 +37,8 @@ polyvertices[29]<-polyvertices[1]
 # write the vertives out to file
 #write.csv(list(x=Re(polyvertices),y=Im(polyvertices)),"figverts.csv",row.names=FALSE)
 
-# now generate some data
+
+### now generate some data
 
 # Generate bivariate normal distribution
 # load MASS
@@ -52,19 +53,6 @@ surf$x<-seq(lims[1],lims[2],length=50)
 surf$y<-seq(lims[3],lims[4],length=50)
 surf$z<-rep(0,2500)
 
-surf$z[xx > -1.5 & xx < -0.5]<-surf$z[xx > -1.5 & xx < -0.5]+seq(0,4,length.out=length(surf$z[xx > -1.5 & xx < -0.5]))
-surf$z[xx < -1.5]<-surf$z[xx < -1.5]+seq(0,-4,length.out=length(surf$z[xx < -1.5]))
-
-# two extra bits
-bivn.4 <- mvrnorm(2500, mu = c(0.244, -0.425), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
-bivn.kde.4 <- kde2d(bivn.4[,1], bivn.4[,2], n =resolution, lims=lims)
-bivn.5 <- mvrnorm(2500, mu = c(2.247, -1.91), Sigma = matrix(c(1, 0, 0, 1), 2))
-bivn.kde.5 <- kde2d(bivn.5[,1], bivn.5[,2], n =resolution, lims=lims)
-#bivn.kde.5$z<-bivn.kde.5$z*5
-
-surf$z<-surf$z+8*bivn.kde.4$z+16*bivn.kde.5$z
-
-
 # find the inside points...
 library(soap)
 
@@ -77,21 +65,32 @@ bnd$y<-Im(polyvertices)
 xn<-length(surf$x); yn<-length(surf$y)
 xx<-rep(surf$x,yn); yy<-rep(surf$y,rep(xn,yn))
 
-
-
 # find the inside points, make it 0/1 rather than T/F
 inside.points<-inSide(bnd,xx,yy)
 ind<-rep(0,length(inside.points))
 ind[inside.points]<-1
 
+surf$z[xx > -1.5 & xx < -0.5]<-surf$z[xx > -1.5 & xx < -0.5]+seq(0,4,length.out=length(surf$z[xx > -1.5 & xx < -0.5]))
+surf$z[xx < -1.5]<-surf$z[xx < -1.5]+seq(0,-4,length.out=length(surf$z[xx < -1.5]))
+
+# two extra bits
+bivn.4 <- mvrnorm(2500, mu = c(0.244, -0.425), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
+bivn.kde.4 <- kde2d(bivn.4[,1], bivn.4[,2], n =resolution, lims=lims)
+bivn.5 <- mvrnorm(2500, mu = c(2.247, -1.91), Sigma = matrix(c(1, 0, 0, 1), 2))
+bivn.kde.5 <- kde2d(bivn.5[,1], bivn.5[,2], n =resolution, lims=lims)
+#bivn.kde.5$z<-bivn.kde.5$z*5
+
+surf$z<-surf$z+0*bivn.kde.4$z-20*bivn.kde.5$z
+
+
 
 # check that it looks okay...
-#z=as.vector(surf$z)
-#z[!inside.points]<-NA
-## axis values
-#axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
-#image(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution),col=heat.colors(100))
-#contour(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution),add=TRUE)
+z=as.vector(surf$z)
+z[!inside.points]<-NA
+# axis values
+axis.vals<-list(x=sort(unique(surf$x)),y=sort(unique(surf$y)))
+image(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution),col=heat.colors(300))
+contour(axis.vals$x,axis.vals$y,matrix(z,resolution,resolution),add=TRUE)
 
 # write out truth to a file
 write.csv(list(x=xx,y=yy,z=as.vector(surf$z),inside=ind),"wt2truth.csv",row.names=FALSE)
