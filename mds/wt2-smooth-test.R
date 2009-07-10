@@ -92,24 +92,29 @@ npred.data$y<-gendata$y[-samp.ind]
 #points(npred.data$x,npred.data$y,col="blue",pch=25)
 #plot(samp.data$x,samp.data$y,asp=1,main="point by point")
 
+#D.pred<-D.pred[,1:20]
 
-#for (i in 1:dim(D.pred)[1]) {
-#
+
+#for (i in 1:ncol(D.pred)) {#
+
 #   pred.mds<-insert.mds(D.pred[,i],samp.mds)
-#
-#   # now do the insertion for the prediction points
+
+   # now do the insertion for the prediction points
 #   pred.data<-list(x=c(),y=c())#,z=c())
 #   pred.data$x<-c(pred.mds[1,])
 #   pred.data$y<-c(pred.mds[2,])
-#   #pred.data$z<-gendata$z[samp.ind]+noise
-#
-#
-#   points(pred.data,col="blue",pch=25)
+   #pred.data$z<-gendata$z[samp.ind]+noise
+
+   #cat("x=",pred.mds[1,],"y=",pred.mds[2,],"\n")
+   
+
+#   points(pred.data,col="blue",pch=19)
 #}
 
 
 #plot(samp.data$x,samp.data$y,asp=1,main="at once")
 pred.mds<-insert.mds(D.pred,samp.mds)
+#cat("x=",pred.mds[1,],"y=",pred.mds[2,],"\n")
 
 # now do the insertion for the prediction points
 pred.data<-list(x=rep(0,dim(D)[2]),y=rep(0,dim(D)[2]))
@@ -117,7 +122,7 @@ pred.data$x[samp.ind]<-samp.data$x  # need to add in the sample points too
 pred.data$x[-samp.ind]<-pred.mds[1,]
 pred.data$y[samp.ind]<-samp.data$y  # need to add in the sample points too
 pred.data$y[-samp.ind]<-pred.mds[2,]
-#points(pred.data,col="blue",pch=25)
+#points(pred.data,col="blue",pch=19)
 
 #total.mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
 #pred.data<-list(x=c(),y=c())#,z=c())

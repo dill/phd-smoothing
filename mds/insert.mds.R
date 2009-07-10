@@ -10,24 +10,18 @@
    
    # want to calculate 1/2 * lambda^(-1) * X' * d
 
-   # first lambda
-   nrow<-dim(cmd.object$points)[2]
-   lambda<-matrix(0,nrow=nrow,ncol=nrow)
-   diag(lambda)<-cmd.object$eig
-   
    # find lambda^(-1)
-   lambda.inverse<-solve(lambda)
+   lambda.inverse<-1/cmd.object$eig
 
    # take the original MDS coordinates and their transpose
    X<-cmd.object$points
-   Xt<-t(X)
    
    # finally d
    # the ith element of d is d_i^2-d_{i,n+1}^2
-   d<-diag(X%*%Xt)-new.dist^2
-
+   # d<-diag(X%*%Xt)-new.dist^2
+   d <- rowSums(X*X) - new.dist^2 # efficient version of above
    # finally construct the product
-   ret<-1/2*(lambda.inverse %*% Xt %*% d)
+   ret<-1/2*((lambda.inverse * t(X)) %*% d)
 
    # return the result
    return(ret)
