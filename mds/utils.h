@@ -6,8 +6,156 @@
 double *twosort(double[2]);
 int online(double[2],double[2][2]);
 //int facing(double[2], double[2] , int, double[][2])
+point intpoint(double[2], double[2],double[2][2]);
 
 
+
+// do two points and the boundary intersect?
+int dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
+{
+   // we do this by seeing if the bounding boxes intersect
+   // from Mastering Algorithms with Perl, p 451
+
+   double eps;
+
+   int i;
+
+   double pbbox[2][2], ebbox[2][2];
+
+
+   eps=1e-10;
+
+   // returns a string of T/F values
+   int ret[(nbnd-1)];
+   for(i=0;i<(nbnd-1);i++){
+      ret[i]=1;
+   }
+
+   // bounding box around the points p1,p2
+   //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
+   //             y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
+   double xarr[2] = {p1[0],p2[0]};
+   double yarr[2] = {p1[1],p2[1]};
+   pbbox[0][0]=maxarr(xarr);
+   pbbox[0][1]=maxarr(yarr);
+   pbbox[1][0]=minarr(xarr);
+   pbbox[1][1]=minarr(yarr);
+
+   // iterate over sides (ie vertex pairs)
+   // NB the last vertex should be the first
+   for (i=0;i<(nbnd-1);i++){
+
+      edge[]
+
+
+      // bounding box for the edge
+      //e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
+      //             y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
+      double xarr[2] = {p1[0],p2[0]};
+      double yarr[2] = {p1[1],p2[1]};
+      pbbox[0][0]=maxarr(xarr);
+      pbbox[0][1]=maxarr(yarr);
+      pbbox[1][0]=minarr(xarr);
+      pbbox[1][1]=minarr(yarr);
+
+
+
+      # establish whether the bounding boxes intersect
+      if(e.bbox$x[1]+eps < p.bbox$x[2]) ret[i]<-FALSE
+      if(p.bbox$x[1]+eps < e.bbox$x[2]) ret[i]<-FALSE
+      if(e.bbox$y[1]+eps < p.bbox$y[2]) ret[i]<-FALSE
+      if(p.bbox$y[1]+eps < e.bbox$y[2]) ret[i]<-FALSE
+
+      # if the bounding boxes do intersect, check that the
+      # intersection of the two lines lies within the bounding
+      # boxes.
+      if(ret[i]){
+         # first find the intersection point
+         ip<-intersection_point(p1,p2,list(x=bnd$x[c(i,i+1)],y=bnd$y[c(i,i+1)]))
+
+         if(is.na(ip$x)|is.na(ip$y)){
+            ret[i]<-FALSE
+         }else{
+
+            # first need to handle the horizontal and vertical line cases
+            # then handle whether the intersection point lies within the
+            # the bounding box
+            if(abs(e.bbox$x[1]-e.bbox$x[2])>=eps){
+               if(ip$x>=e.bbox$x[1] | ip$x<=e.bbox$x[2]) ret[i]<-FALSE
+            }
+            if(abs(p.bbox$x[1]-p.bbox$x[2])>=eps){
+               if(ip$x>=p.bbox$x[1] | ip$x<=p.bbox$x[2]) ret[i]<-FALSE
+            }
+
+            if(abs(e.bbox$y[1]-e.bbox$y[2])>=eps){
+               if(ip$y>=e.bbox$y[1] | ip$y<=e.bbox$y[2]) ret[i]<-FALSE
+            }
+
+            if(abs(p.bbox$y[1]-p.bbox$y[2])>=eps){
+               if(ip$y>=p.bbox$y[1] | ip$y<=p.bbox$y[2]) ret[i]<-FALSE
+            }
+
+
+
+
+
+      if(ret[i]){
+
+               if(abs(e.bbox$x[1]-e.bbox$x[2])<=eps){
+                  if(ip$y>=e.bbox$y[1] | ip$y<=e.bbox$y[2]) ret[i]<-FALSE
+               }
+
+               if(abs(p.bbox$x[1]-p.bbox$x[2])<=eps){
+                  if(ip$y>=p.bbox$y[1] | ip$y<=p.bbox$y[2]) ret[i]<-FALSE
+               }
+
+               if(abs(e.bbox$y[1]-e.bbox$y[2])<=eps){
+                  if(ip$x>=e.bbox$x[1] | ip$x<=e.bbox$x[2]) ret[i]<-FALSE
+               }
+
+               if(abs(p.bbox$y[1]-p.bbox$y[2])<=eps){
+                  if(ip$x>=p.bbox$x[1] | ip$x<=p.bbox$x[2]) ret[i]<-FALSE
+               }
+             }
+         }
+      }
+   }
+      return(ret)
+}
+
+
+
+// find the maximum in an array
+double maxarr(int narr, double arr[narr])
+{
+
+   int i;
+   double maxval=arr[0];
+
+   for(i=1;i<narr;i++){
+      if(arr[i]>maxval){
+         maxval=arr[i];
+      }
+   }
+
+   return maxval;
+}
+
+// find the minimum in an array
+double minarr(int narr, double arr[narr])
+{
+
+   int i;
+   double minval=arr[0];
+
+   for(i=1;i<narr;i++){
+      if(arr[i]<minval){
+         minval=arr[i];
+      }
+   }
+
+   return minval;
+}
 
 
 
@@ -91,7 +239,6 @@ typedef struct
 } point;
 
 
-point intpoint(double[2], double[2],double[2][2]);
 // find the intersection point between two points and a line
 point intpoint(double p1[2], double p2[2],double edge[2][2])
 {

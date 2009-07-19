@@ -84,8 +84,13 @@ int main(void)
    point intpointret;
    intpointret=intpoint(p1,p2,thisline);
 
-   printf("(0,0)=(%d,%d)\n",intpointret.x,intpointret.y);
+   printf("(0,0)=(%f, %f)\n",intpointret.x,intpointret.y);
    
+// more tests
+
+
+
+
 
    return 0;
 }
