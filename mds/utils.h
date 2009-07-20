@@ -12,11 +12,15 @@ typedef struct
 // some prototypes
 double *twosort(double[2]);
 int online(double[2],double[2][2]);
-int facing(double[2], double[2] , int nbnd, double[nbnd][2],int[nbnd])
+int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]);
 point intpoint(double[2], double[2],double[2][2]);
-int dointersect(double[2], double[2], int nbnd, double[nbnd][2]);
+void *dointersect(double[2], double[2], int nbnd, double[nbnd][2],int bndint[nbnd-1]);
 double minarr(int narr, double arr[narr]);
 double maxarr(int narr, double arr[narr]);
+int compare_doubles (const void *a, const void *b);
+int crapfind(int narr, double[narr], double);
+int iarrsum(int narr, int arr[narr]);
+
 
 
 
@@ -27,8 +31,7 @@ double maxarr(int narr, double arr[narr]);
 
 
 // do two points and the boundary intersect?
-int *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
-                 int bndint[nbnd-1])
+void *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
 {
    /*
     * p1,p2    points we wish to test
@@ -83,63 +86,57 @@ int *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       ebbox[1][1]=minarr(2,yarr);
 
       // establish whether the bounding boxes intersect
-      if(ebbox[1][0]+eps < pbbox[2][0]) ret[i]=0;
-      if(pbbox[1][0]+eps < ebbox[2][0]) ret[i]=0;
-      if(ebbox[1][1]+eps < pbbox[2][1]) ret[i]=0;
-      if(pbbox[1][1]+eps < ebbox[2][1]) ret[i]=0;
+      if(ebbox[1][0]+eps < pbbox[2][0]) bndint[i]=0;
+      if(pbbox[1][0]+eps < ebbox[2][0]) bndint[i]=0;
+      if(ebbox[1][1]+eps < pbbox[2][1]) bndint[i]=0;
+      if(pbbox[1][1]+eps < ebbox[2][1]) bndint[i]=0;
 
       // if the bounding boxes do intersect, check that the
       // intersection of the two lines lies within the bounding
       // boxes.
-      if(ret[i]){
+      if(bndint[i]){
          // first find the intersection point
          ip=intpoint(p1,p2,thisedge);
 
 // NEED TO DO SOME ERROR CHECKING HERE!
 //         if(is.na(ip$x)|is.na(ip$y)){
-//            ret[i]<-FALSE
+//            bndint[i]<-FALSE
 //         }else{
 
             // first need to handle the horizontal and vertical line cases
             // then handle whether the intersection point lies within the
             // the bounding box
             if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
-               if(ip.x>=ebbox[1][0] | ip.x<=ebbox[2][0]) ret[i]=0;
+               if(ip.x>=ebbox[1][0] | ip.x<=ebbox[2][0]) bndint[i]=0;
             }
             if(fabs(pbbox[0][0]-pbbox[1][0])>=eps){
-               if(ip.x>=pbbox[0][0] | ip.x<=pbbox[1][0]) ret[i]=0;
+               if(ip.x>=pbbox[0][0] | ip.x<=pbbox[1][0]) bndint[i]=0;
             }
-
             if(fabs(ebbox[0][1]-ebbox[1][1])>=eps){
-               if(ip.y>=ebbox[0][1] | ip.y<=ebbox[1][1]) ret[i]=0;
+               if(ip.y>=ebbox[0][1] | ip.y<=ebbox[1][1]) bndint[i]=0;
             }
-
             if(fabs(pbbox[0][1]-pbbox[1][1])>=eps){
-               if(ip.y>=pbbox[0][1] | ip.y<=pbbox[1][1]) ret[i]=0;
+               if(ip.y>=pbbox[0][1] | ip.y<=pbbox[1][1]) bndint[i]=0;
             }
 
-      if(ret[i]){
+      if(bndint[i]){
                if(fabs(ebbox[0][0]-ebbox[1][0])<=eps){
-                  if(ip.y>=ebbox[0][1] | ip.y<=ebbox[1][1]) ret[i]=0;
+                  if(ip.y>=ebbox[0][1] | ip.y<=ebbox[1][1]) bndint[i]=0;
                }
-
                if(fabs(pbbox[0][0]-pbbox[1][0])<=eps){
-                  if(ip.y>=pbbox[0][1] | ip.y<=pbbox[1][1]) ret[i]=0;
+                  if(ip.y>=pbbox[0][1] | ip.y<=pbbox[1][1]) bndint[i]=0;
                }
-
                if(fabs(ebbox[0][1]-ebbox[1][1])<=eps){
-                  if(ip.x>=ebbox[0][0] | ip.x<=ebbox[1][0]) ret[i]=0;
+                  if(ip.x>=ebbox[0][0] | ip.x<=ebbox[1][0]) bndint[i]=0;
                }
-
                if(fabs(pbbox[0][1]-pbbox[1][1])<=eps){
-                  if(ip.x>=pbbox[0][0] | ip.x<=pbbox[1][0]) ret[i]=0;
+                  if(ip.x>=pbbox[0][0] | ip.x<=pbbox[1][0]) bndint[i]=0;
                }
              }
          }
 // error checking end brace!
 //      }
    }
-      return ret;
 }
 
 
@@ -148,7 +145,8 @@ int *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 
 
 /* determine whether the line between two points is facing inside or outside */
-int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]){
+int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
+{
    /*
    Args:
       p1, p2      the points
@@ -159,35 +157,25 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]){
                                   FALSE= facing outside
    */
 
-   int ret,i;
+   int ret,i,lbbindex;
    double thisedge[2][2];
 
-
-   /*
-   there might be no intersections, so if there aren't
-   then just return FALSE and let the delete step take 
-   care of it 
-   */
-   ret=0; 
+   // this is what we will return
+   int in[2]={0,0};
 
    // returns a string of T/F values
    // default set to true
-   int retint*[nbnd-1];
+   int *retint[nbnd-1];
    for(i=0;i<(nbnd-1);i++){
-      retint[i]=1;
+      *retint[i]=1;
    }
 
-
-
-   doint=dointersect(p1,p2,bnd,nbnd,retint);
-
-
+   dointersect(p1,p2,nbnd,bnd,*retint);
 
    // length of the bounding box index
-   lbbindex=iarrsum(doint,(nbnd-1));
+   lbbindex=iarrsum((nbnd-1),*retint);
 
    if(lbbindex>1){
-
       // find intersections & sort by distance
       // bbindex=c(1:(length(bnd$x)-1))[doint]
       int bbindex[lbbindex];
@@ -200,31 +188,31 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]){
          }
       }
 
-
       // hold distances and intersection points temporarily
       double dists[lbbindex];
+      double sortdists[lbbindex];
       double ips[lbbindex][2];
       point ip;
 
-      for(j=0;j<(lbbindex-1);j++){
+      for(i=0;i<(lbbindex-1);i++){
 
-         thisedge[0][0]=bnd[j][0];
-         thisedge[1][0]=bnd[j+1][0];
-         thisedge[0][1]=bnd[j][1];
-         thisedge[1][1]=bnd[j+1][1];
+         thisedge[0][0]=bnd[i][0];
+         thisedge[1][0]=bnd[i+1][0];
+         thisedge[0][1]=bnd[i][1];
+         thisedge[1][1]=bnd[i+1][1];
 
          // calculate and save the intersection
          ip=intpoint(p1,p2,thisedge);
-         ips[j][0]=ip.x;
-         ips[j][1]=ip.y;
+         ips[i][0]=ip.x;
+         ips[i][1]=ip.y;
 
          // find the distance and save
-         dists[j]=sqrt((p1[0]-ip[0])^2+(p1[1]-ip[1])^2);
+         dists[i]=sqrt(pow(p1[0]-ip.x,2)+pow(p1[1]-ip.y,2));
+         // also copy for sorting
+         sortdists[i]=dists[i];
       }
 
-
 // SORT THIS OUT!!!!
-
       // remove duplicates (ie when dist is zero)
 //      if(length(ips$x)>3){
 //         p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
@@ -236,7 +224,6 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]){
 //            ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
 //         }
 //      }
-
 /////////////////////////////////////////////
 
       // prototype from stdlib.h
@@ -244,7 +231,6 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]){
       // The qsort function sorts the array array. 
       // The array contains count elements, each of which is of size size.
       // The compare function is used to perform the comparison on the array elements. 
-      double sortdists[lbbindex]={dists};
       qsort(sortdists,lbbindex,sizeof(double),compare_doubles);
 
       // find first intersection between p1 and bnd
@@ -257,16 +243,40 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]){
       int lastel = crapfind(lbbindex,dists,sortdists[(lbbindex-1)]);
       double p2int[2]={ips[lastel][0],ips[lastel][1]};
 
-
       // midpoint between p1 and first intersection 
-      double p1mp={(p1int[0]+p1[0])/2,(p1int[1]+p1[1])/2};
+      double p1mp[2]={(p1int[0]+p1[0])/2,(p1int[1]+p1[1])/2};
       // midpoint between p2 and first intersection 
-      double p2mp={(p2int[0]+p2[0])/2,(p2int[1]+p2[1])/2};
+      double p2mp[2]={(p2int[0]+p2[0])/2,(p2int[1]+p2[1])/2};
 
       // are the midpoints inside?
-      ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
+      // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
+      // call the in_out routine from soap. Need to make sure that things are
+      // in the right format
+      //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
+
+      double bx[nbnd];
+      double by[nbnd];
+      for(i=0;i<(nbnd-1);i++){
+         bx[i]=bnd[i][0]; 
+         by[i]=bnd[i][1];
+      }
+
+      double x[2];
+      double y[2];
+
+      // find the midpoints between p1, p2 their first intersections
+      // store in x and y blocks
+      double xmp[2]={(p1int[0]+p1[0])/2,(p2int[0]+p2[0])/2};
+      double ymp[2]={(p1int[1]+p2[1])/2,(p2int[1]+p2[1])/2};
+
+
+      // to handle holes, multiple boundaries
+      // don't handle this at the moment
+      double break_code=1.0e6;
+
+      in_out(bx, by, break_code, xmp, ymp, in, nbnd, 2);
+
    }
-   return(ret)
 }
 
 
@@ -469,7 +479,7 @@ double minarr(int narr, double arr[])
 
 
 // sum an array of integers 
-double iarrsum(int narr, int arr[])
+int iarrsum(int narr, int arr[])
 {
    int i;
    int val=0;
