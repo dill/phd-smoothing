@@ -85,8 +85,25 @@ int main(void)
    intpointret=intpoint(p1,p2,thisline);
 
    printf("(0,0)=(%f, %f)\n",intpointret.x,intpointret.y);
+ 
+   // NB does not detect if you don't intersect  
+   // should fail
    
-// more tests
+   
+   
+
+   // dointersect 
+   printf("*** dointersect\n");
+   p1[0]=-1;p1[1]=0;
+
+//void *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
+   dointersect(p1,p2, thisline);
+
+   printf("(0,0)=(%f, %f)\n",intpointret.x,intpointret.y);
+
+
+
+
 
 
 
