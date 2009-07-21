@@ -6,8 +6,10 @@
 int main(void)
 {
 
+   int i;
+
    printf("**********************\n");
-   printf("utils.c check script\n");
+   printf("utils.h check script\n");
    printf("**********************\n");
 
 
@@ -97,13 +99,77 @@ int main(void)
    p1[0]=-1;p1[1]=0;
 
 //void *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
-   dointersect(p1,p2, thisline);
+   
+   // create a simple boundary
+   // just the unit square
+   double bnd[5][2];
+   bnd[0][0]=-1;bnd[0][1]=1;
+   bnd[1][0]=1;bnd[1][1]=1;
+   bnd[2][0]=1;bnd[2][1]=-1;
+   bnd[3][0]=-1;bnd[3][1]=-1;
+   bnd[4][0]=bnd[0][0];bnd[4][1]=bnd[0][1];
+   int nbnd =5;
 
-   printf("(0,0)=(%f, %f)\n",intpointret.x,intpointret.y);
+   int bndint[(nbnd-1)];
+
+   // first off, something totally in the box
+   p1[1]=-0.5;p1[0]=-0.5;
+   p2[1]=0.5;p2[0]=0.5;
+ 
+   do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(0,0,0,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(")\n");
+
+
+   // horizontal 
+   p1[1]=0;p1[0]=-5;
+   p2[1]=0;p2[0]=5;
+ 
+   do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(0,1,0,1)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (horiz)\n");
+
+
+   // general 
+   p1[0]=-0.5;p1[1]=-2;
+   p2[0]=0.5;p2[1]=2;
+ 
+   do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(1,0,1,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (general)\n");
+
+   // vertical 
+   p1[1]=-5;p1[0]=0;
+   p2[1]=5;p2[0]=0;
+ 
+   do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(1,0,1,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (vert)\n");
+
+   // hull_length
+   printf("*** hull_length\n");
+   printf("8=%f\n",hull_length(5,bnd));
 
 
 
-
+   // facing
+   printf("*** facing\n");
 
 
 

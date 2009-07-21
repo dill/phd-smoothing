@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 // typedefs
 typedef struct
@@ -14,12 +15,14 @@ double *twosort(double[2]);
 int online(double[2],double[2][2]);
 int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]);
 point intpoint(double[2], double[2],double[2][2]);
-void *dointersect(double[2], double[2], int nbnd, double[nbnd][2],int bndint[nbnd-1]);
+void *do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int bndint[nbnd-1]);
 double minarr(int narr, double arr[narr]);
 double maxarr(int narr, double arr[narr]);
 int compare_doubles (const void *a, const void *b);
 int crapfind(int narr, double[narr], double);
 int iarrsum(int narr, int arr[narr]);
+double hull_length(int nhull, double hull[nhull][2]);
+void *sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
 
 
 
@@ -31,7 +34,7 @@ int iarrsum(int narr, int arr[narr]);
 
 
 // do two points and the boundary intersect?
-void *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
+void *do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
 {
    /*
     * p1,p2    points we wish to test
@@ -52,7 +55,6 @@ void *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 
    eps=1e-10;
 
-
    // bounding box around the points p1,p2
    //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
    //             y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
@@ -66,6 +68,9 @@ void *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
    for (i=0;i<(nbnd-1);i++){
+
+      // set true to begin with
+      bndint[i]=1;
 
       // create the edge
       thisedge[0][0]=bnd[i][0];
@@ -86,10 +91,10 @@ void *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
       ebbox[1][1]=minarr(2,yarr);
 
       // establish whether the bounding boxes intersect
-      if(ebbox[1][0]+eps < pbbox[2][0]) bndint[i]=0;
-      if(pbbox[1][0]+eps < ebbox[2][0]) bndint[i]=0;
-      if(ebbox[1][1]+eps < pbbox[2][1]) bndint[i]=0;
-      if(pbbox[1][1]+eps < ebbox[2][1]) bndint[i]=0;
+      if(ebbox[0][0]+eps < pbbox[1][0]) bndint[i]=0;
+      if(pbbox[0][0]+eps < ebbox[1][0]) bndint[i]=0;
+      if(ebbox[0][1]+eps < pbbox[1][1]) bndint[i]=0;
+      if(pbbox[0][1]+eps < ebbox[1][1]) bndint[i]=0;
 
       // if the bounding boxes do intersect, check that the
       // intersection of the two lines lies within the bounding
@@ -107,7 +112,7 @@ void *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
             // then handle whether the intersection point lies within the
             // the bounding box
             if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
-               if(ip.x>=ebbox[1][0] | ip.x<=ebbox[2][0]) bndint[i]=0;
+               if(ip.x>=ebbox[0][0] | ip.x<=ebbox[1][0]) bndint[i]=0;
             }
             if(fabs(pbbox[0][0]-pbbox[1][0])>=eps){
                if(ip.x>=pbbox[0][0] | ip.x<=pbbox[1][0]) bndint[i]=0;
@@ -140,6 +145,46 @@ void *dointersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 }
 
 
+// special do_intersect, thinks that points that start/end at the same
+// place don't intersect. Neither do exactly overlapping lines.
+void *sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
+{
+
+   int i, tmpnbnd, tmpbndint[1];
+   double tmpbnd[2][2];
+
+   // iterate over sides (ie vertex pairs)
+   // NB the last vertex should be the first
+   for(i=0;i<(nbnd-1);i++){
+      // set true to begin with
+      bndint[i]=1;
+
+      // case where the lines are exactly overlapping
+      if((p1[0]==bnd[i][0] & p2[0]==bnd[i+1][0] &
+          p1[1]==bnd[i][1] & p2[1]==bnd[i+1][1])|
+         (p2[0]==bnd[i][0] & p1[0]==bnd[i+1][0] &
+          p2[1]==bnd[i][1] & p1[1]==bnd[i+1][1])) bndint[i]=0;
+
+      // start/end points the same
+      if((p1[0]==bnd[i][0]   & p1[1]==bnd[i][1])|
+         (p2[0]==bnd[i][0]   & p2[1]==bnd[i][1])|
+         (p1[0]==bnd[i+1][0] & p1[1]==bnd[i+1][1]) |
+         (p2[0]==bnd[i+1][0] & p2[1]==bnd[i+1][1])) bndint[i]=0;
+
+      // call original routine if this doesn't work
+      if(bndint[i]){
+         tmpbnd[0][0]=bnd[i][0]; tmpbnd[0][1]=bnd[i][1];
+         tmpbnd[1][0]=bnd[i+1][0]; tmpbnd[1][1]=bnd[i+1][1];
+         tmpnbnd=2;
+
+         tmpbndint[0]=bndint[i];
+
+         do_intersect(p1, p2, tmpnbnd, tmpbnd, tmpbndint);
+         bndint[i]=tmpbndint[0];
+      }
+   }
+}
+
 
 
 
@@ -170,10 +215,14 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
       *retint[i]=1;
    }
 
-   dointersect(p1,p2,nbnd,bnd,*retint);
+   do_intersect(p1,p2,nbnd,bnd,*retint);
 
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),*retint);
+
+// DEBUG
+   printf("lbbindex=%d\n",lbbindex);
+
 
    if(lbbindex>1){
       // find intersections & sort by distance
@@ -194,7 +243,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
       double ips[lbbindex][2];
       point ip;
 
-      for(i=0;i<(lbbindex-1);i++){
+      for(i=0;i<lbbindex;i++){
 
          thisedge[0][0]=bnd[i][0];
          thisedge[1][0]=bnd[i+1][0];
@@ -207,7 +256,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
          ips[i][1]=ip.y;
 
          // find the distance and save
-         dists[i]=sqrt(pow(p1[0]-ip.x,2)+pow(p1[1]-ip.y,2));
+         dists[i]=hypot((p1[0]-ip.x),(p1[1]-ip.y));
          // also copy for sorting
          sortdists[i]=dists[i];
       }
@@ -273,6 +322,10 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
       // to handle holes, multiple boundaries
       // don't handle this at the moment
       double break_code=1.0e6;
+
+ // DEBUG
+ printf("xmp=(%f,%f)\n",xmp[0],xmp[1]);
+ printf("ymp=(%f,%f)\n",ymp[0],ymp[1]);
 
       in_out(bx, by, break_code, xmp, ymp, in, nbnd, 2);
 
@@ -423,6 +476,26 @@ int online(double p1[],double thisline[][2])
    }
 
 }
+
+
+// calculate the length of the hull
+double hull_length(int nhull, double hull[nhull][2])
+{
+   // args:
+   //  nhull      # elements in hull
+   //  hull       hull (list(x=,y=))
+   // return      its length
+
+   int i;
+   double hullen=0;
+
+   for (i=0; i<(nhull-1);i++){
+      hullen=hullen+hypot((hull[i+1][0]-hull[i][0]),(hull[i+1][1]-hull[i][1]));
+   }
+   return(hullen);
+}
+
+
 
 
 
