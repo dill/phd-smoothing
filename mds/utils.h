@@ -15,7 +15,7 @@ double *twosort(double[2]);
 int online(double[2],double[2][2]);
 int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]);
 point intpoint(double[2], double[2],double[2][2]);
-void *do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int bndint[nbnd-1]);
+void do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int bndint[nbnd-1]);
 double minarr(int narr, double arr[narr]);
 double maxarr(int narr, double arr[narr]);
 int compare_doubles (const void *a, const void *b);
@@ -34,7 +34,7 @@ void *sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1
 
 
 // do two points and the boundary intersect?
-void *do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
+void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
 {
    /*
     * p1,p2    points we wish to test
@@ -310,14 +310,10 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
          by[i]=bnd[i][1];
       }
 
-      double x[2];
-      double y[2];
-
       // find the midpoints between p1, p2 their first intersections
       // store in x and y blocks
       double xmp[2]={(p1int[0]+p1[0])/2,(p2int[0]+p2[0])/2};
       double ymp[2]={(p1int[1]+p2[1])/2,(p2int[1]+p2[1])/2};
-
 
       // to handle holes, multiple boundaries
       // don't handle this at the moment
