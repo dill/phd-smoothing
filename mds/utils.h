@@ -222,6 +222,12 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 // DEBUG
    printf("lbbindex=%d\n",lbbindex);
 
+
+   double ip1[2],ip2[2];
+
+   first_last_ips(nbnd, bnd, ip1,ip2,);
+
+
    // if lbbindex == 0 then skip to the return, see bottom
    if(lbbindex>1){
       // find intersections & sort by distance
