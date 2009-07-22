@@ -99,189 +99,128 @@
 // create a path between p1 and p2 using the boundary
 void make_bnd_path(double p1, double p2, int nbnd, double bnd) /// MORE  STUFF!
 {
-   // find the first intersection between p1, p2 and the boundary
-   // for each point
+   // find the first intersection between p1, p2 and the boundary side that 
+   // each point intersects
+   double ip1[2],ip2[2];
+   int indind[2],i,j;
 
+   err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
-   // do the bounding box check first, for speed
-   // do_intersect returns a string of T/F values
-   // default set to true
-   int *retint[nbnd-1];
-   for(i=0;i<(nbnd-1);i++){
-     *retint[i]=1;
-   }
+   if(err>0){
+
+      // This is quite horrible code.
+      // What we do is: take the ordering that makes sense first
+      // eg 1:5 not 5:1, make that set of edges, then take the difference
+      // between that set and the complete set of vertices.
+
+      // first sort the intersection indices
+      intind=twosort(intind);
+
+      // want elements intind[0] to intind[1]-1
+      //picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
+      //picker<-c(picker[1]:picker[2])
+      //bnd.1.sort<-pe(bnd,picker)
+      nbnd1=intind[1]-intind[0]-1; // number of elements
+      double **bnd1 = malloc(nbnd1 * sizeof(double));
+      j=0;
    
-   do_intersect(p1,p2,nbnd,bnd,*retint);
+      for(i=intind[0];i<(intind[1]-1);i++){
+         bnd1[j] = malloc(2 * sizeof(double));
+         bnd1[j][0]=*path[i][0];
+         bnd1[j][1]=*path[i][1];
+         j++;
+      }
+
+// Hope this doesn't happen at the moment   
+//      // make sure we aren't adding a superfluous vertex (not both end of a side
+//      // that we don't need)
+//      // ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
+//   
+//   // increased to 2, maybe this fixes things...
+//      if(length(picker)>2){
+//   
+//         if(on_line(ip1,pe(bnd.1.sort,1:2))){
+//            bnd.1.sort<-pe(bnd.1.sort,-1)
+//            picker<-picker[-1]
+//         }
+//         ep.1<-length(bnd.1.sort$x)
+//   
+//         if(on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1))){
+//            bnd.1.sort<-pe(bnd.1.sort,-ep.1)
+//            picker<-picker[-ep.1]
+//         }
+//      }
    
 
-   // length of the bounding box index
-   lbbindex=iarrsum((nbnd-1),*retint);
- 
-// DEBUG
-printf("lbbindex=%d\n",lbbindex);
- 
+      // create the second boundary segment
+      // bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)-1))),
+      //       setdiff(c(1:(length(bnd$x)-1)),picker))
+      // bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),
+      //       length(bnd.2.sort$x):picker[1]))
+      nbnd2=nbnd-nbnd1; // number of elements
+      double **bnd2 = malloc(nbnd2 * sizeof(double));
+      j=0;
 
-   // probably don't need to worry about what happens if lbbindex <1 
-   if(lbbindex>1){
-      // find intersections & sort by distance
-      // bbindex=c(1:(length(bnd$x)-1))[doint]
-      int bbindex[lbbindex];
-      int j=0;
- 
-      for(i=0;i<(nbnd-1);i++){
-         if(retint[i]){
-            bbindex[j]=i;
-            j++;
+     // some if clause to handle a 1:1 situation 
+
+
+      for(i=intind[0];i<(intind[1]-1);i++){
+         bnd1[j] = malloc(2 * sizeof(double));
+         bnd1[j][0]=*path[i][0];
+         bnd1[j][1]=*path[i][1];
+         j++;
+      }
+      
+
+
+
+
+
+
+
+   
+   
+      // make sure we aren't adding a superfluous vertex (not both end of a side
+      // that we don't need)
+      if(length(picker)>1){
+         if(on_line(ip1,pe(bnd.2.sort,1:2))){
+            bnd.2.sort<-pe(bnd.2.sort,-1)
+         }
+         ep.1<-length(bnd.2.sort$x)
+         if(on_line(ip2,pe(bnd.2.sort,(ep.1-1):ep.1))){
+            bnd.2.sort<-pe(bnd.2.sort,-ep.1)
          }
       }
    
-
-   }else{
-      // let the Robot warn us...
-      printf("DANGER, WILL ROBINSON! make_bnd_path: lbbindex<1\n");
-   }
-
-
-
-      // hold distances and intersection points temporarily
-      double dists[lbbindex];
-      double sortdists[lbbindex];
-      double ips[lbbindex][2];
-      point ip;
-      
-      for(i=0;i<lbbindex;i++){
-      
-         thisedge[0][0]=bnd[i][0];
-         thisedge[1][0]=bnd[i+1][0];
-         thisedge[0][1]=bnd[i][1];
-         thisedge[1][1]=bnd[i+1][1];
-         
-         // calculate and save the intersection
-         ip=intpoint(p1,p2,thisedge);
-         ips[i][0]=ip.x;
-         ips[i][1]=ip.y;
-         
-         // find the distance and save
-         dists[i]=hypot((p1[0]-ip.x),(p1[1]-ip.y));
-         // also copy for sorting
-         sortdists[i]=dists[i];
-      }
-
-
-
-
-   bbindex<-c(1:(length(bnd$x)-1))[do_intersect(p1,p2,bnd)]
-   // hold distances and intersection points temporarily
-   dists<-c(); ips<-list(x=c(),y=c())
-
-   for(i in bbindex){
-      // calculate and save the intersection
-      ip<-intersection_point(p1,p2,pe(bnd,c(i,i+1)))
-
-      ips$x<-c(ips$x,ip$x)      
-      ips$y<-c(ips$y,ip$y)      
-      // find the distance and save
-      dists<-c(dists,sqrt((p1$x-ip$x)^2+(p1$y-ip$y)^2))
-   }
-
-
-   // remove duplicates (ie when dist is zero)
-   if(length(ips$x)>3){
-      p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
-      p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
+      // tackle the index going out of range, ugly but necessary without 
+      // a stack structure
+      pickend<-picker[length(picker)]
+      if(pickend==(length(bnd$x))) pickend<-1
+      pickendp<-pickend+1
    
-      if(length(p1.ind)!=0&length(p1.ind)!=0){
-         nonzero<-c(p1.ind,p2.ind)
-         dists<-dists[-nonzero]
-         bbindex<-bbindex[-nonzero]
-         ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
+      pickstart<-picker[1]
+      pickstartm<-pickstart-1
+      if(pickstart==1) pickstartm<-length(bnd$x)-1
+         
+      if(on_line(ip2,pe(bnd,pickend:pickendp))&
+         on_line(ip1,pe(bnd,pickstartm:pickstart))){
+         bnd.1.sort<-list(x=rev(bnd.1.sort$x),
+                          y=rev(bnd.1.sort$y))
+         bnd.2.sort<-list(x=rev(bnd.2.sort$x),
+                          y=rev(bnd.2.sort$y))
       }
-   }
-
-   // the two intersection points
-   ip1<-pe(ips,order(dists)[1])
-   ip2<-pe(ips,order(dists,decreasing=TRUE)[1])
-
-   // sort the intersections by their distances from p1 and p2
-   ip1.index<-bbindex[order(dists)] 
-   ip2.index<-bbindex[order(dists,decreasing=TRUE)] 
-
-
-
-
-
-
-
-   // This is quite horrible code.
-   // What we do is: take the ordering that makes sense first
-   // eg 1:5 not 5:1, make that set of edges, then take the difference
-   // between that set and the complete set of vertices.
-   picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
-   picker<-c(picker[1]:picker[2])
-
-   bnd.1.sort<-pe(bnd,picker)
-
-   // make sure we aren't adding a superfluous vertex (not both end of a side
-   // that we don't need)
-   // ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
-
-// increased to 2, maybe this fixes things...
-   if(length(picker)>2){
-
-      if(on_line(ip1,pe(bnd.1.sort,1:2))){
-         bnd.1.sort<-pe(bnd.1.sort,-1)
-         picker<-picker[-1]
-      }
-      ep.1<-length(bnd.1.sort$x)
-
-      if(on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1))){
-         bnd.1.sort<-pe(bnd.1.sort,-ep.1)
-         picker<-picker[-ep.1]
-      }
-   }
-
-
-   bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)-1))),setdiff(c(1:(length(bnd$x)-1)),picker))
-   bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),length(bnd.2.sort$x):picker[1]))
-
-   // make sure we aren't adding a superfluous vertex (not both end of a side
-   // that we don't need)
-   if(length(picker)>1){
-      if(on_line(ip1,pe(bnd.2.sort,1:2))){
-         bnd.2.sort<-pe(bnd.2.sort,-1)
-      }
-      ep.1<-length(bnd.2.sort$x)
-      if(on_line(ip2,pe(bnd.2.sort,(ep.1-1):ep.1))){
-         bnd.2.sort<-pe(bnd.2.sort,-ep.1)
-      }
-   }
-
-   // tackle the index going out of range, ugly but necessary without 
-   // a stack structure
-   pickend<-picker[length(picker)]
-   if(pickend==(length(bnd$x))) pickend<-1
-   pickendp<-pickend+1
-
-   pickstart<-picker[1]
-   pickstartm<-pickstart-1
-   if(pickstart==1) pickstartm<-length(bnd$x)-1
-      
-   if(on_line(ip2,pe(bnd,pickend:pickendp))&
-      on_line(ip1,pe(bnd,pickstartm:pickstart))){
-      bnd.1.sort<-list(x=rev(bnd.1.sort$x),
-                       y=rev(bnd.1.sort$y))
-      bnd.2.sort<-list(x=rev(bnd.2.sort$x),
-                       y=rev(bnd.2.sort$y))
-   }
-
-   // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   bnd.1.sort<-list(x=c(ip1$x,rev(bnd.1.sort$x),ip2$x),
-                    y=c(ip1$y,rev(bnd.1.sort$y),ip2$y))
-   bnd.2.sort<-list(x=c(ip1$x,rev(bnd.2.sort$x),ip2$x),
-                    y=c(ip1$y,rev(bnd.2.sort$y),ip2$y))
-
+   
+      // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
+      bnd.1.sort<-list(x=c(ip1$x,rev(bnd.1.sort$x),ip2$x),
+                       y=c(ip1$y,rev(bnd.1.sort$y),ip2$y))
+      bnd.2.sort<-list(x=c(ip1$x,rev(bnd.2.sort$x),ip2$x),
+                       y=c(ip1$y,rev(bnd.2.sort$y),ip2$y))
+   
    // return both paths
    return(list(path.1=bnd.1.sort,path.2=bnd.2.sort))
+
+   } // end of error if()
+
 }
 
 
@@ -315,14 +254,12 @@ void delete_step(int npath, double *path[npath][2], int nbnd, double bnd[nbnd][2
    // to handle holes, multiple boundaries
    // don't handle this at the moment
    double break_code=1.0e6;
-   //////
 
    // use prevpath to keep a copy of the previous path for comparison            
    //prev.path<-list(x=c(Inf),y=c(Inf))
    double **prevpath = malloc(npath * sizeof(double));
 
    int nprevpath=npath;
-   // move everything down
    for(i=0;i<npath;i++){
       prevpath[i] = malloc(2 * sizeof(double));
       prevpath[i][0]=*path[i][0];

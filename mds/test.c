@@ -83,10 +83,10 @@ int main(void)
    thisline[1][0]=-1;
    thisline[1][1]=-1;
 
-   point intpointret;
-   intpointret=intpoint(p1,p2,thisline);
+   double intpointret[2];
+   intpoint(p1,p2,thisline,intpointret);
 
-   printf("(0,0)=(%f, %f)\n",intpointret.x,intpointret.y);
+   printf("(0,0)=(%f, %f)\n",intpointret[0],intpointret[1]);
  
    // NB does not detect if you don't intersect  
    // should fail
