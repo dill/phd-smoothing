@@ -22,7 +22,7 @@ int compare_doubles (const void *a, const void *b);
 int crapfind(int narr, double[narr], double);
 int iarrsum(int narr, int arr[narr]);
 double hull_length(int nhull, double hull[nhull][2]);
-void *sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
+void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
 
 
 
@@ -147,7 +147,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 
 // special do_intersect, thinks that points that start/end at the same
 // place don't intersect. Neither do exactly overlapping lines.
-void *sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
+void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
 {
 
    int i, tmpnbnd, tmpbndint[1];
@@ -202,13 +202,12 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
                                   FALSE= facing outside
    */
 
-   int ret,i,lbbindex;
+   int ret=0;
+   int i,lbbindex;
    double thisedge[2][2];
 
-   // this is what we will return
-   int in[2]={0,0};
 
-   // returns a string of T/F values
+   // do_intersect returns a string of T/F values
    // default set to true
    int *retint[nbnd-1];
    for(i=0;i<(nbnd-1);i++){
@@ -223,7 +222,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 // DEBUG
    printf("lbbindex=%d\n",lbbindex);
 
-
+   // if lbbindex == 0 then skip to the return, see bottom
    if(lbbindex>1){
       // find intersections & sort by distance
       // bbindex=c(1:(length(bnd$x)-1))[doint]
@@ -323,9 +322,16 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
  printf("xmp=(%f,%f)\n",xmp[0],xmp[1]);
  printf("ymp=(%f,%f)\n",ymp[0],ymp[1]);
 
+      int in[2]={0,0};
       in_out(bx, by, break_code, xmp, ymp, in, nbnd, 2);
 
-   }
+      // if they are both inside, return true
+      if(in[0] && in[1]) ret=1;
+
+   } // end of lbbindex if()
+
+   return(ret);
+
 }
 
 
