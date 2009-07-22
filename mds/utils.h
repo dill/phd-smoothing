@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 // some prototypes
-double *twosort(double[2]);
+void twosort(double[2]);
 int online(double[2],double[2][2]);
 int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]);
 void intpoint(double[2], double[2],double[2][2],double[2]);
@@ -17,9 +17,8 @@ int crapfind(int narr, double[narr], double);
 int iarrsum(int narr, int arr[narr]);
 double hull_length(int nhull, double hull[nhull][2]);
 void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
-void first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2], 
-               double[2], double[2],int);
-
+int first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2], 
+               double[2], double[2], int[2]);
 
 
 
@@ -335,7 +334,7 @@ int online(double p1[],double thisline[][2])
 
    /* So here we just use an n by 2 matrix to represent
       the points, first col is x, second y, obv.*/
-   double eps, *xsort, *ysort, leftside, rightside,xarr[2],yarr[2];
+   double eps, leftside, rightside,xarr[2],yarr[2];
    
    /* Take this global at some point*/
    eps=1.0e-10;
@@ -349,12 +348,12 @@ int online(double p1[],double thisline[][2])
 
       xarr[0]=thisline[0][0];
       xarr[1]=thisline[1][0];
-      xsort=twosort(xarr);
+      twosort(xarr);
       // need to make sure this kind of thing makes sense
        
 
       if((fabs(thisline[1][1]-p1[1])<eps) &&
-         ((p1[0]<xsort[1])&&(p1[0]>xsort[0]))){
+         ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
          return 1;
       }else{ 
          return 0;
@@ -371,10 +370,10 @@ int online(double p1[],double thisline[][2])
 
       yarr[0]=thisline[0][1];
       yarr[1]=thisline[1][1];
-      ysort=twosort(yarr);
+      twosort(yarr);
 
       if((fabs(thisline[1][0]-p1[0])<eps) &&
-         ((p1[1]<ysort[1])&&(p1[1]>ysort[0]))){
+         ((p1[1]<yarr[1])&&(p1[1]>yarr[0]))){
          return 1;
       }else{
          return 0;
@@ -548,11 +547,9 @@ printf("lbbindex=%d\n",lbbindex);
 
 /*
  * Real utility stuff below here!
- *
- *
  */
 
-double *twosort(double twovec[2])
+void twosort(double *twovec[2])
 {
    // see if two vectors are small->large
  
