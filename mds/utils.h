@@ -20,6 +20,7 @@ void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]
 int first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2], 
                double[2], double[2], int[2]);
 
+void Push(struct node**, double[2]);
 
 
 
@@ -540,6 +541,38 @@ printf("lbbindex=%d\n",lbbindex);
    return(err);
 
 }
+
+
+/*
+ * Linked list code here
+ * mostly modified from http://cslibrary.stanford.edu/
+ */
+
+// definition of linked list
+struct node
+{
+   double data[2];  // space for x and y
+   struct node* next; // pointer
+};
+
+
+/*
+ *   Takes a list and a data value.
+ *   Creates a new link with the given data and pushes
+ *   it onto the front of the list.
+ *   The list is not passed in by its head pointer.
+ *   Instead the list is passed in as a "reference" pointer
+ *   to the head pointer -- this allows us
+ *   to modify the caller's memory.
+ */
+void Push(struct node** headRef, double data[2]) {
+    struct node* newNode = malloc(sizeof(struct node));
+    newNode->data = data;
+    newNode->next = *headRef;  // The '*' to dereferences back to the real head
+    *headRef = newNode;        // ditto
+}
+
+
 
 
 

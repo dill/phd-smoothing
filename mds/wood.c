@@ -32,18 +32,7 @@
 //
 //   # create the initial path:
 //   # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-//   these.paths<-make_bnd_path(p1,p2,bnd)
-//   this.path.1<-list(x=c(p1$x,these.paths$path.1$x,p2$x),
-//                     y=c(p1$y,these.paths$path.1$y,p2$y))
-//   this.path.2<-list(x=c(p1$x,these.paths$path.2$x,p2$x),
-//                     y=c(p1$y,these.paths$path.2$y,p2$y))
-//
-//   # pick the shorter path 
-//   if(hull_length(this.path.1)<hull_length(this.path.2)){
-//      my.path<-this.path.1
-//   }else{
-//      my.path<-this.path.2
-//   }
+//   my.path<-make_bnd_path(p1,p2,bnd)
 //
 //   prev.path<-list(x=c(Inf),y=c(Inf))
 //
@@ -97,12 +86,20 @@
 
 
 // create a path between p1 and p2 using the boundary
-void make_bnd_path(double p1, double p2, int nbnd, double bnd) /// MORE  STUFF!
+struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
 {
+   /* Args:
+    *  p1, p2           points
+    *  nbnd             length of boundary
+    *  bnd              boundary
+    * Return:
+    *          head node of the linked list
+    */
+
    // find the first intersection between p1, p2 and the boundary side that 
    // each point intersects
-   double ip1[2],ip2[2];
-   int indind[2],i,j;
+   double ip1[2],ip2[2], curr_insert[2];
+   int indind[2],i,j nbnd1, nbnd2;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
@@ -120,16 +117,22 @@ void make_bnd_path(double p1, double p2, int nbnd, double bnd) /// MORE  STUFF!
       //picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
       //picker<-c(picker[1]:picker[2])
       //bnd.1.sort<-pe(bnd,picker)
+
+
+      // initialize a linked list, first the head
+      struct node* bnd1 = NULL;
+      bnd1 = malloc(sizeof(struct node));
+
       nbnd1=intind[1]-intind[0]-1; // number of elements
-      double **bnd1 = malloc(nbnd1 * sizeof(double));
-      j=0;
-   
+
+      // push everything in
       for(i=intind[0];i<(intind[1]-1);i++){
-         bnd1[j] = malloc(2 * sizeof(double));
-         bnd1[j][0]=*path[i][0];
-         bnd1[j][1]=*path[i][1];
-         j++;
+         curr_insert[0]=bnd[i][0];
+         curr_insert[1]=bnd[i][1];
+         Push(bnd1**,curr_insert);
       }
+
+
 
 // Hope this doesn't happen at the moment   
 //      // make sure we aren't adding a superfluous vertex (not both end of a side
@@ -157,25 +160,32 @@ void make_bnd_path(double p1, double p2, int nbnd, double bnd) /// MORE  STUFF!
       //       setdiff(c(1:(length(bnd$x)-1)),picker))
       // bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),
       //       length(bnd.2.sort$x):picker[1]))
+
+
+
+      // initialize a linked list, first the head
+      struct node* bnd2 = NULL;
+      bnd2 = malloc(sizeof(struct node));
+
       nbnd2=nbnd-nbnd1; // number of elements
-      double **bnd2 = malloc(nbnd2 * sizeof(double));
-      j=0;
+
+
+
 
      // some if clause to handle a 1:1 situation 
 
-
+      // push everything in
       for(i=intind[0];i<(intind[1]-1);i++){
-         bnd1[j] = malloc(2 * sizeof(double));
-         bnd1[j][0]=*path[i][0];
-         bnd1[j][1]=*path[i][1];
-         j++;
+         curr_insert[0]=bnd[i][0];
+         curr_insert[1]=bnd[i][1];
+         Push(bnd1**,curr_insert);
       }
-      
 
 
 
 
 
+/////////////////////////////////////
 
 
    
@@ -216,8 +226,19 @@ void make_bnd_path(double p1, double p2, int nbnd, double bnd) /// MORE  STUFF!
       bnd.2.sort<-list(x=c(ip1$x,rev(bnd.2.sort$x),ip2$x),
                        y=c(ip1$y,rev(bnd.2.sort$y),ip2$y))
    
-   // return both paths
-   return(list(path.1=bnd.1.sort,path.2=bnd.2.sort))
+//   this.path.1<-list(x=c(p1$x,these.paths$path.1$x,p2$x),
+//                     y=c(p1$y,these.paths$path.1$y,p2$y))
+//   this.path.2<-list(x=c(p1$x,these.paths$path.2$x,p2$x),
+//                     y=c(p1$y,these.paths$path.2$y,p2$y))
+//
+//   # pick the shorter path 
+//   if(hull_length(this.path.1)<hull_length(this.path.2)){
+//      my.path<-this.path.1
+//   }else{
+//      my.path<-this.path.2
+//   }
+   // return path
+   return(my.path)
 
    } // end of error if()
 
@@ -423,23 +444,9 @@ void delete_step(int npath, double *path[npath][2], int nbnd, double bnd[nbnd][2
 //
 ////////////////// MAKE THIS HAPPEN!
 //            // create a new path
-//            these.paths<-make_bnd_path(ep1,ep2,bnd)
+//            new.path<-make_bnd_path(ep1,ep2,bnd)
 ///////////////////////
 //
-//
-//
-//
-////            # make sure that the new paths are as short as possible
-////### IS THIS NEEDED?
-////#            these.paths$path.1<-delete_step(these.paths$path.1,bnd)
-////#            these.paths$path.2<-delete_step(these.paths$path.2,bnd)
-//
-//            // pick the shorter path 
-//            if(hull_length(these.paths$path.1)<hull_length(these.paths$path.2)){
-//               new.path<-these.paths$path.1
-//            }else{
-//               new.path<-these.paths$path.2
-//            }
 //
 //            // create new path, compare complete new path with old one, if the
 //            // new one is better then keep it.
