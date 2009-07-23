@@ -352,11 +352,12 @@ void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
          // the boundary then keep it, else get rid of it 
          }else{
 
-            p1[0]=mytrip[0][0];p1[1]=mytrip[0][1];
-            p2[0]=mytrip[2][0];p2[1]=mytrip[2][1];
+            // start and end points of the trip in p1 and p2
+            p1[0]=mytrip[0][0];  p1[1]=mytrip[0][1];
+            p2[0]=mytrip[2][0];  p2[1]=mytrip[2][1];
 
+            // see if the line between p1 and p2 intersects the boundary
             sp_do_intersect(p1,p2, nbnd, bnd,intbnd);
-
 
             // midpoints
             xmp=(mytrip[2][0]+mytrip[0][0])/2;
@@ -366,22 +367,20 @@ void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
             //if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
             //  inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
             //             (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
-            if(iarrsum(nbnd-1,intbnd)<(nbnd-1) &
-               in_out(bx,by,break_code,xmp,ymp,in, nbnd,1)){
+            in_out(bx,by,break_code,xmp,ymp,in, nbnd,1);
+            tmpinout=in[0];
+            if( (iarrsum(nbnd-1,intbnd)<(nbnd-1)) & tmpinout){
 
-            //path<-pe(path,-i)
-            // move everything down
-            for(j=i;j<(npath-1);j++){
-               path[j][0]=path[j+1][0];
-               path[j][1]=path[j+1][1];
-            }
+               //path<-pe(path,-i)
+               // move everything down
+               for(j=i;j<(npath-1);j++){
+                  path[j][0]=path[j+1][0];
+                  path[j][1]=path[j+1][1];
+               }
 
-            // maybe want some error handling here?
-            path=realloc(path,npath-1);
-
-            }
+            } // end if on del middle, 
          }
-      }
+      } // end iteration over path
       conv++; // increment run counter
 
    }while(!has_converged(nprevpath,prevpath,npath,path)&
