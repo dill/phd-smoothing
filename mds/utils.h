@@ -4,6 +4,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// definition of linked list
+struct node
+{
+   double data[2];  // space for x and y
+   struct node* next; // pointer to next item
+   struct node* prev; // pointer to previous item
+};
+
 // some prototypes
 void twosort(double[2]);
 int online(double[2],double[2][2]);
@@ -15,7 +23,7 @@ double maxarr(int narr, double arr[narr]);
 int compare_doubles (const void *a, const void *b);
 int crapfind(int narr, double[narr], double);
 int iarrsum(int narr, int arr[narr]);
-double hull_length(int nhull, double hull[nhull][2]);
+double hull_length(struct node* hull);
 void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
 int first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2], 
                double[2], double[2], int[2]);
@@ -396,14 +404,18 @@ int online(double p1[],double thisline[][2])
 
 // calculate the length of the hull by iterating over
 // the list object
-double hull_length(struct node* head) {
+double hull_length(struct node* hull) {
 
-   int hull_len;
-   struct node* current = head;
+   double hullen;
+   struct node* current = hull;
+   double curr_hull[2];
 
+   // this is a bit ugly
    while (current != NULL) {
-      hullen=hullen+hypot((hull[i+1][0]-hull[i][0]),(hull[i+1][1]-hull[i][1]));
-      current = current->next
+      curr_hull[0]=current->data[0]; curr_hull[1]=current->data[1];
+      current = current->next;
+      hullen=hullen+hypot((current->data[0]-curr_hull[0]),
+                           (current->data[1]-curr_hull[1]));
    }
    return(hullen);
 }
@@ -544,13 +556,6 @@ printf("lbbindex=%d\n",lbbindex);
  * mostly modified from http://cslibrary.stanford.edu/
  */
 
-// definition of linked list
-struct node
-{
-   double data[2];  // space for x and y
-   struct node* next; // pointer
-};
-
 
 /*
  *   Takes a list and a data value.
@@ -565,8 +570,18 @@ void Push(struct node** headRef, double data[2]) {
    struct node* newNode = malloc(sizeof(struct node));
    newNode->data[0] = data[0];
    newNode->data[1] = data[1];
+
+   // make prev of head the new node
+   *headRef->prev = newNode; 
+
+   // next element of the new node will be the head
    newNode->next = *headRef;  // The '*' to dereferences back to the real head
+   // previous element of new node will be NULL
+   newNode->prev = NULL;  // The '*' to dereferences back to the real head
    *headRef = newNode;        // ditto
+
+
+
 }
 
 //struct node* AppendNode(struct node** headRef, double data[2]) {
@@ -586,10 +601,30 @@ void AppendNode(struct node** headRef, double data[2]) {
       while (current->next != NULL) {
          current = current->next;
       }
+      newNode->prev = current;
       current->next = newNode;
+
 //   }
 }
 
+
+// Variant of CopyList() that uses Push()
+struct node* CopyList(struct node* head) {
+   struct node* current = head;      // used to iterate over the original list
+   struct node* newList = NULL;      // head of the new list
+   struct node* tail = NULL; // kept pointing to the last node in the new list
+   while (current != NULL) {
+      if (newList == NULL) { // special case for the first new node
+         Push(&newList, current->data);
+         tail = newList;
+      }else{
+         Push(&(tail->next), current->data);     // add each node at the tail
+         tail = tail->next;    // advance the tail to the new last node
+      }
+      current = current->next;
+   }
+   return(newList);
+}
 
 
 ////////////////////////////
@@ -598,7 +633,7 @@ void AppendNode(struct node** headRef, double data[2]) {
  * Real utility stuff below here!
  */
 
-void twosort(double *twovec[2])
+void twosort(double twovec[2])
 {
    // see if two vectors are small->large
  
@@ -611,7 +646,7 @@ void twosort(double *twovec[2])
       twovec[1]=tmp;
    }
 
-   return(twovec);
+//   return(twovec);
 }
 
 

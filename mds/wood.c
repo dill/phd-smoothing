@@ -111,7 +111,7 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
       // between that set and the complete set of vertices.
 
       // first sort the intersection indices
-      intind=twosort(intind);
+      twosort(intind);
 
       // want elements intind[0]-1 to intind[1 ](inclusive)
       //picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
@@ -268,10 +268,9 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
 // iterate over the points in the path:
 // delete as many points as possible, making sure that the
 // path is still outside
-void delete_step(int npath, double *path[npath][2], int nbnd, double bnd[nbnd][2])
+void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
 {
    // Args:
-   //  npath    # elements of current path
    //  path     the current path
    //  nbnd     # elements of boundary
    //  bnd      the boundary
@@ -281,6 +280,7 @@ void delete_step(int npath, double *path[npath][2], int nbnd, double bnd[nbnd][2
    int i,j, intbnd[nbnd-1];
    double mytrip[3][2], p1[2], p2[2], xmp, ymp;
 
+   struct node* first, third;
 
    ////// needed later on for the in_out() call
    double bx[nbnd];
@@ -293,50 +293,35 @@ void delete_step(int npath, double *path[npath][2], int nbnd, double bnd[nbnd][2
    int in[1];
 
    // to handle holes, multiple boundaries
-   // don't handle this at the moment
+   // ignore this at the moment
    double break_code=1.0e6;
-
-   // use prevpath to keep a copy of the previous path for comparison            
-   //prev.path<-list(x=c(Inf),y=c(Inf))
-   double **prevpath = malloc(npath * sizeof(double));
-
-   int nprevpath=npath;
-   for(i=0;i<npath;i++){
-      prevpath[i] = malloc(2 * sizeof(double));
-      prevpath[i][0]=*path[i][0];
-      prevpath[i][1]=*path[i][1];
-   }
-
 
    // convergence stop
    int conv=0;
    int conv_stop=10;
 
    // keep going until we don't remove any more points.
-   while(!has_converged(nprevpath,prevpath,npath,path)&
-         (conv<conv_stop)){
+   do{
 
-      // save the previous path to compare, above
+      // use prevpath to keep a copy of the previous path for comparison            
       //prev.path<-path
-      nprevpath=npath;
-      // move everything down
-      for(i=0;i<npath;i++){
-         prevpath[i][0]=*path[i][0];
-         prevpath[i][1]=*path[i][1];
-      }
-      // maybe want some error handling here?
-      prevpath=realloc(prevpath,nprevpath);
-
+      prevpath=CopyList(path);
 
       // start point for triplet selection
+      struct node* current = path;   // iterator
+
       //i<-2
       //while((i+1)<=length(path$x)){
-      for(i=2; i<(npath-1); i++){
+      while(current!=NULL){
+      //for(i=2; i<(npath-1); i++){
+
          // create the current triplet to inspect
          //my.trip<-pe(path,c(i-1,i,i+1))
-         mytrip[0][0]=*path[i-1][0]; mytrip[0][1]=*path[i-1][1];
-         mytrip[1][0]=*path[i][0]; mytrip[1][1]=*path[i][1];
-         mytrip[2][0]=*path[i+1][0]; mytrip[2][1]=*path[i+1][1];
+         for(i=0;i<3;i++){ 
+            mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
+            current=current->next; 
+         }
+
 
 
          // if we are going forward and back again, just
@@ -345,15 +330,24 @@ void delete_step(int npath, double *path[npath][2], int nbnd, double bnd[nbnd][2
          if(mytrip[0][0]==mytrip[2][0] & 
             mytrip[0][1]==mytrip[2][1]){
 
-            // move everything down
-            for(j=i;j<(npath-2);j++){
-               path[j][0]=path[j+2][0];
-               path[j][1]=path[j+2][1];
-            }
+            // current is sitting at the 3rd entry
+            // create a pointer to that
+            third=current;
 
-            // maybe want some error handling here?
-            path=realloc(path,npath-2);
-        
+            // go back twice
+            current=current->prev;
+            current=current->prev;
+
+            // change where next points to
+            current->next=third;
+            first=current;
+
+            // go forward again (remember next has changed
+            current=current->next;
+            
+            // change previous
+            current->prev=first;
+            
          // if deleting the middle point makes the resulting line cross the
          // the boundary then keep it, else get rid of it 
          }else{
@@ -388,8 +382,12 @@ void delete_step(int npath, double *path[npath][2], int nbnd, double bnd[nbnd][2
             }
          }
       }
-      conv++;
-   }
+      conv++; // increment run counter
+
+   }while(!has_converged(nprevpath,prevpath,npath,path)&
+         (conv<conv_stop));
+   // end of do loop
+
    free(prevpath);
    prevpath = NULL;
 }           
