@@ -394,23 +394,19 @@ int online(double p1[],double thisline[][2])
 }
 
 
-// calculate the length of the hull
-double hull_length(int nhull, double hull[nhull][2])
-{
-   // args:
-   //  nhull      # elements in hull
-   //  hull       hull (list(x=,y=))
-   // return      its length
+// calculate the length of the hull by iterating over
+// the list object
+double hull_length(struct node* head) {
 
-   int i;
-   double hullen=0;
+   int hull_len;
+   struct node* current = head;
 
-   for (i=0; i<(nhull-1);i++){
+   while (current != NULL) {
       hullen=hullen+hypot((hull[i+1][0]-hull[i][0]),(hull[i+1][1]-hull[i][1]));
+      current = current->next
    }
    return(hullen);
 }
-
 
 ///////////////////////////////////
 // find the first intersection points of p1 and p2
@@ -566,13 +562,33 @@ struct node
  *   to modify the caller's memory.
  */
 void Push(struct node** headRef, double data[2]) {
-    struct node* newNode = malloc(sizeof(struct node));
-    newNode->data = data;
-    newNode->next = *headRef;  // The '*' to dereferences back to the real head
-    *headRef = newNode;        // ditto
+   struct node* newNode = malloc(sizeof(struct node));
+   newNode->data[0] = data[0];
+   newNode->data[1] = data[1];
+   newNode->next = *headRef;  // The '*' to dereferences back to the real head
+   *headRef = newNode;        // ditto
 }
 
-
+//struct node* AppendNode(struct node** headRef, double data[2]) {
+// think this will work
+void AppendNode(struct node** headRef, double data[2]) {
+   struct node* current = *headRef;
+   struct node* newNode;
+   newNode = malloc(sizeof(struct node));
+   newNode->data[0] = data[0];
+   newNode->data[1] = data[1];
+   newNode->next = NULL;
+//   // special case for length 0
+//   if (current == NULL) {
+//      *headRef = newNode;
+//   }else{
+      // Locate the last node
+      while (current->next != NULL) {
+         current = current->next;
+      }
+      current->next = newNode;
+//   }
+}
 
 
 

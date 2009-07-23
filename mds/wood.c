@@ -99,7 +99,7 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
    // find the first intersection between p1, p2 and the boundary side that 
    // each point intersects
    double ip1[2],ip2[2], curr_insert[2];
-   int indind[2],i,j nbnd1, nbnd2;
+   int indind[2],i,j nbnd1, nbnd2, start;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
@@ -113,20 +113,25 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
       // first sort the intersection indices
       intind=twosort(intind);
 
-      // want elements intind[0] to intind[1]-1
+      // want elements intind[0]-1 to intind[1 ](inclusive)
       //picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
       //picker<-c(picker[1]:picker[2])
       //bnd.1.sort<-pe(bnd,picker)
-
 
       // initialize a linked list, first the head
       struct node* bnd1 = NULL;
       bnd1 = malloc(sizeof(struct node));
 
-      nbnd1=intind[1]-intind[0]-1; // number of elements
+      nbnd1=intind[1]-intind[0]-1-1; // number of elements
+      // remember bnd is of size nbnd, but first and last elements
+      // are the same.
+
+      // since we ordered intind first, we don't need to worry too
+      // much about 
 
       // push everything in
-      for(i=intind[0];i<(intind[1]-1);i++){
+      //                     vvvvvvvvvv <- since we want it to be inclusive
+      for(i=(intind[0]+1);i<(intind[1]+1);i++){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
          Push(bnd1**,curr_insert);
@@ -156,12 +161,11 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
    
 
       // create the second boundary segment
+      // want intind[1]+1:intind[0]
       // bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)-1))),
       //       setdiff(c(1:(length(bnd$x)-1)),picker))
       // bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),
       //       length(bnd.2.sort$x):picker[1]))
-
-
 
       // initialize a linked list, first the head
       struct node* bnd2 = NULL;
@@ -169,76 +173,92 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
 
       nbnd2=nbnd-nbnd1; // number of elements
 
+      // handle the case where start is actually the end
+      if(intind[1]!=(nbnd-1)){
+         start=intind[1];
+      }else{
+         start=1;
+      }
 
-
-
-     // some if clause to handle a 1:1 situation 
-
-      // push everything in
-      for(i=intind[0];i<(intind[1]-1);i++){
+      // insert until we hit the end 
+      for(i=start;i<(nbnd-1);i++){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
-         Push(bnd1**,curr_insert);
+         Push(bnd2**,curr_insert);
+      }
+
+      // insert from the end back to intend[0] 
+      //             vvvvvvv don't include intend[0] twice
+      for(i=(nbnd-1);i>=intend[0];i--){
+         curr_insert[0]=bnd[i][0];
+         curr_insert[1]=bnd[i][1];
+         Push(bnd2**,curr_insert);
       }
 
 
 
+// AGAIN hope this doesn't happen at the moment   
+//      // make sure we aren't adding a superfluous vertex (not both end of a side
+//      // that we don't need)
+//      if(length(picker)>1){
+//         if(on_line(ip1,pe(bnd.2.sort,1:2))){
+//            bnd.2.sort<-pe(bnd.2.sort,-1)
+//         }
+//         ep.1<-length(bnd.2.sort$x)
+//         if(on_line(ip2,pe(bnd.2.sort,(ep.1-1):ep.1))){
+//            bnd.2.sort<-pe(bnd.2.sort,-ep.1)
+//         }
+//      }
 
 
-/////////////////////////////////////
-
-
-   
-   
-      // make sure we aren't adding a superfluous vertex (not both end of a side
-      // that we don't need)
-      if(length(picker)>1){
-         if(on_line(ip1,pe(bnd.2.sort,1:2))){
-            bnd.2.sort<-pe(bnd.2.sort,-1)
-         }
-         ep.1<-length(bnd.2.sort$x)
-         if(on_line(ip2,pe(bnd.2.sort,(ep.1-1):ep.1))){
-            bnd.2.sort<-pe(bnd.2.sort,-ep.1)
-         }
-      }
-   
-      // tackle the index going out of range, ugly but necessary without 
-      // a stack structure
-      pickend<-picker[length(picker)]
-      if(pickend==(length(bnd$x))) pickend<-1
-      pickendp<-pickend+1
-   
-      pickstart<-picker[1]
-      pickstartm<-pickstart-1
-      if(pickstart==1) pickstartm<-length(bnd$x)-1
+//////////////// This should be handled above   
+//      // tackle the index going out of range, ugly but necessary without 
+//      // a stack structure
+//      pickend<-picker[length(picker)]
+//      if(pickend==(length(bnd$x))) pickend<-1
+//      pickendp<-pickend+1
+//   
+//      pickstart<-picker[1]
+//      pickstartm<-pickstart-1
+//      if(pickstart==1) pickstartm<-length(bnd$x)-1
          
-      if(on_line(ip2,pe(bnd,pickend:pickendp))&
-         on_line(ip1,pe(bnd,pickstartm:pickstart))){
-         bnd.1.sort<-list(x=rev(bnd.1.sort$x),
-                          y=rev(bnd.1.sort$y))
-         bnd.2.sort<-list(x=rev(bnd.2.sort$x),
-                          y=rev(bnd.2.sort$y))
-      }
-   
+//      if(on_line(ip2,pe(bnd,pickend:pickendp))&
+//         on_line(ip1,pe(bnd,pickstartm:pickstart))){
+//         bnd.1.sort<-list(x=rev(bnd.1.sort$x),
+//                          y=rev(bnd.1.sort$y))
+//         bnd.2.sort<-list(x=rev(bnd.2.sort$x),
+//                          y=rev(bnd.2.sort$y))
+//      }
+////////////////////////////////////   
+
+      // just going by the order in the R code here, don't need to 
+      // reverse, since we used push for the insertion
+      
+
       // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-      bnd.1.sort<-list(x=c(ip1$x,rev(bnd.1.sort$x),ip2$x),
-                       y=c(ip1$y,rev(bnd.1.sort$y),ip2$y))
-      bnd.2.sort<-list(x=c(ip1$x,rev(bnd.2.sort$x),ip2$x),
-                       y=c(ip1$y,rev(bnd.2.sort$y),ip2$y))
-   
-//   this.path.1<-list(x=c(p1$x,these.paths$path.1$x,p2$x),
-//                     y=c(p1$y,these.paths$path.1$y,p2$y))
-//   this.path.2<-list(x=c(p1$x,these.paths$path.2$x,p2$x),
-//                     y=c(p1$y,these.paths$path.2$y,p2$y))
-//
-//   # pick the shorter path 
-//   if(hull_length(this.path.1)<hull_length(this.path.2)){
-//      my.path<-this.path.1
-//   }else{
-//      my.path<-this.path.2
-//   }
-   // return path
-   return(my.path)
+      curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+      Push(**bnd1,curr_insert);
+      Push(**bnd2,curr_insert); // pushed ip1 into both
+
+      curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+      Push(**bnd1,curr_insert);
+      Push(**bnd2,curr_insert); // pushed p1 into both
+
+      curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+      AppendNode(**bnd1,curr_insert);
+      AppendNode(**bnd2,curr_insert); // append ip1 for both
+
+      curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+      AppendNode(**bnd1,curr_insert);
+      AppendNode(**bnd2,curr_insert); // append p1 for both
+
+
+      // pick the shorter path return path
+      if(hull_length(bnd1)<hull_length(bnd2)){
+         return bnd1;
+      }else{
+         return bnd2;
+      }
 
    } // end of error if()
 
