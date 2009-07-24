@@ -98,7 +98,9 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       // between that set and the complete set of vertices.
 
       // first sort the intersection indices
-      twosort(intind);
+      //
+      //  IGNORE AT THE MOMENT
+      //twosort(intind);
 
       // want elements intind[0]-1 to intind[1 ](inclusive)
       //picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
@@ -399,7 +401,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
       } // end iteration over path
       conv++; // increment run counter
 
-   }while(!has_converged(*prevpath,*path)&
+   }while(!has_converged(prevpath,*path)&
          (conv<conv_stop)); // end of do loop
   
    // free some memory? 
@@ -507,7 +509,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
             delete_step(path, nbnd, bnd);
 
             // if there was no improvement, then ignore what we did.
-            if(hull_length(*pathcopy)<hull_length(*path)){
+            if(hull_length(pathcopy)<hull_length(*path)){
                free(path);
                node* path=pathcopy;
             }
@@ -516,7 +518,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
       }
       conv++;
 
-   } while(!has_converged(prevpath,path)&
+   } while(!has_converged(prevpath,*path)&
          (conv<conv_stop)); //end of main do
 }
 
