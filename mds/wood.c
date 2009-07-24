@@ -280,7 +280,7 @@ void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
    int i,j, intbnd[nbnd-1];
    double mytrip[3][2], p1[2], p2[2], xmp, ymp;
 
-   struct node* first, third;
+   struct node* start_ptr, end_ptr;
 
    ////// needed later on for the in_out() call
    double bx[nbnd];
@@ -326,27 +326,29 @@ void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
 
          // if we are going forward and back again, just
          // remove the point
+         // in this case we remove the ith and (i+1)th entries, point (i-1)th
+         // to the (i+2)th.
          // path<-pe(path,-c(i,i+1))
          if(mytrip[0][0]==mytrip[2][0] & 
             mytrip[0][1]==mytrip[2][1]){
 
             // current is sitting at the 3rd entry
             // create a pointer to that
-            third=current;
+            end_ptr=current->next; // pointer to i+2
 
             // go back twice
-            current=current->prev;
-            current=current->prev;
+            current=current->prev; // pointer now at i
+            current=current->prev; // pointer at i-1
 
             // change where next points to
-            current->next=third;
-            first=current;
+            current->next=end_ptr; // point i-1 next to i+2
+            start_ptr=current; // pointer to i-1
 
-            // go forward again (remember next has changed
-            current=current->next;
+            // go forward again (remember next has changed)
+            current=current->next; // back to i+2
             
             // change previous
-            current->prev=first;
+            current->prev=first; //set i+2 prev to i-1
             
          // if deleting the middle point makes the resulting line cross the
          // the boundary then keep it, else get rid of it 
