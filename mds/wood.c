@@ -5,82 +5,69 @@
 #include <math.h>
 
 
+double wood_path(double[2], double[2], int nbnd, double[nbnd][2]);
+struct node* make_bnd_path(double[2], double[2], int nbnd, double[nbnd][2]);
+void delete_step(struct node**, int nbnd, double[nbnd][2]);
+void alter_step(struct node**, int nbnd, double[nbnd][2]);
+int has_converged(struct node*, struct node*);
 
-//wood_path<-function(p1,p2,bnd){
-//   # args:
-//   #  p1, p2      the two points to find the path between
-//   #  bnd         the boundary that got in the way
-//   # return:
-//   #  path        set of points on the path
-//
-//   # HACK:make sure that the points are defined from the left,
-//   # this may or may not be a fix to the paths joining the wrong points
-//   if(p2$x<p1$x){
-//      tmp<-p1
-//      p1<-p2
-//      p2<-tmp
-//   }
-//
-//### DEBUG
-//#plot(bnd,type="l",asp=1)
-//#points(p1)
-//#points(p2)
-//#cat("new point:\n")
-//#cat("x=c(",p1$x,",",p2$x,")\n")
-//#cat("y=c(",p1$y,",",p2$y,")\n")
-//#cat("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n")
-//
-//   # create the initial path:
-//   # p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-//   my.path<-make_bnd_path(p1,p2,bnd)
-//
-//   prev.path<-list(x=c(Inf),y=c(Inf))
-//
-//   # convergence stop
-//   conv<-0
-//   conv_stop<-10
-//
-//   # keep going until we don't remove any more points.
-//   while(!has_converged(prev.path,my.path) & (conv<conv_stop)){
-//      # save previous path
-//      prev.path<-my.path
-//
-//### DEBUG
-//#lines(my.path,lwd=2,col="orange")
-//#text(my.path,labels=1:length(my.path$x))
-//#cat("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n")
-//#a<-scan()
-//#cat("1\n")
-//
-//      # delete step, remove anything that doesn't need to be there
-//      my.path<-delete_step(my.path,bnd)
-//
-//### DEBUG
-//#lines(my.path,lwd=2,col="red")
-//#a<-scan()
-//#cat("2\n")
-//      # add new vertices
-//      my.path<-alter_step(my.path,bnd)
-//
-//
-//      # increment convergence stopper 
-//      conv<-conv+1
-//
-//### DEBUG
-//#lines(my.path,lwd=2,col="blue")
-//#a<-scan()
-//   }
-//
-//## need this?
-//#   if(conv==conv_stop) my.path<-NA
-//
-//### DEBUG
-//#lines(my.path,lwd=2,col="green")
-//#cat("########## END ############\n")
-//#a<-scan()
-//
-//   return(my.path)
-//}
+double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
+{
+   // args:
+   //   p1, p2      the two points to find the path between
+   //   nbnd        length of bnd
+   //   bnd         the boundary that got in the way
+   //  return:
+   //   length of the path
+
+   double arr[2], tmp;
+
+   int conv, conv_stop;
+
+   struct node* prevpath=NULL;
+   struct node* mypath=NULL;
+
+   // HACK:make sure that the points are defined from the left,
+   // this may or may not be a fix to the paths joining the wrong points
+   arr[0]=p1[0]; arr[1]=p1[1];
+   
+   twosort(arr);
+   if(arr[0]!=p1[0]){ 
+      p1[0]=p2[0];
+      p2[0]=arr[1];
+      tmp=p1[1];
+      p1[1]=p2[1];
+      p2[1]=tmp;
+   }
+
+   // create the initial path:
+   // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
+   mypath=make_bnd_path(p1,p2,nbnd,bnd);
+
+   // convergence stop
+   conv=0;
+   conv_stop=10;
+
+   do{
+   // keep going until we don't remove any more points.
+      // save previous path
+      //prev.path<-my.path
+      prevpath=CopyList(*mypath);
+
+      // delete step, remove anything that doesn't need to be there
+      mypath=delete_step(**mypath,nbnd,bnd);
+
+      // add new vertices
+      mypath=alter_step(**mypath,nbnd,bnd);
+
+      // increment convergence stopper 
+      conv++;
+
+   } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
+
+   // return the length of the path
+   return(hull_length(mypath));
+}
 
 
 
@@ -133,8 +120,8 @@ struct node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd
       // push everything in
       //                     vvvvvvvvvv <- since we want it to be inclusive
       for(i=(intind[0]+1);i<(intind[1]+1);i++){
-         curr_insert->data[0]=bnd[i][0];
-         curr_insert->data[1]=bnd[i][1];
+         curr_insert[0]=bnd[i][0];
+         curr_insert[1]=bnd[i][1];
          Push(&bnd1,curr_insert);
       }
 
@@ -184,16 +171,16 @@ struct node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd
 
       // insert until we hit the end 
       for(i=start;i<(nbnd-1);i++){
-         curr_insert->data[0]=bnd[i][0];
-         curr_insert->data[1]=bnd[i][1];
+         curr_insert[0]=bnd[i][0];
+         curr_insert[1]=bnd[i][1];
          Push(&bnd2,curr_insert);
       }
 
       // insert from the end back to intend[0] 
       //             vvvvvvv don't include intend[0] twice
       for(i=(nbnd-1);i>=intind[0];i--){
-         curr_insert->data[0]=bnd[i][0];
-         curr_insert->data[1]=bnd[i][1];
+         curr_insert[0]=bnd[i][0];
+         curr_insert[1]=bnd[i][1];
          Push(&bnd2,curr_insert);
       }
 
@@ -238,7 +225,7 @@ struct node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd
       
 
       // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-      curr_insert->data[0]=ip1[0]; curr_insert->data[1]=ip1[1];
+      curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
       Push(&bnd1,curr_insert);
       Push(&bnd2,curr_insert); // pushed ip1 into both
 
@@ -282,12 +269,12 @@ void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
    int i,j, intbnd[nbnd-1],tmpinout;
    double mytrip[3][2], p1[2], p2[2], xmp, ymp;
 
-   struct node* current;   // iterator
-   struct node* prevpath;
+   struct node* current=NULL;   // iterator
+   struct node* prevpath=NULL;
 
    // needed for deletion
-   struct node* start_ptr;
-   struct node* end_ptr;
+   struct node* start_ptr=NULL;
+   struct node* end_ptr=NULL;
 
    ////// needed later on for the in_out() call
    double bx[nbnd];
@@ -315,7 +302,7 @@ void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
       prevpath=CopyList(path);
 
       // start point for triplet selection
-      current = path;   // iterator
+      current = *path;   // iterator
 
       //i<-2
       //while((i+1)<=length(path$x)){
@@ -414,7 +401,12 @@ void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
 
    }while(!has_converged(prevpath,path)&
          (conv<conv_stop)); // end of do loop
-   
+  
+   // free some memory? 
+   free(current); 
+   free(prevpath);
+   free(start_ptr);
+   free(end_ptr);
 }           
 
 // alter the path
@@ -450,7 +442,7 @@ void alter_step(struct node** path, int nbnd, double bnd[nbnd][2])
 
       // use prevpath to keep a copy of the previous path for comparison            
       //prev.path<-path
-      prevpath=CopyList(path);
+      prevpath=CopyList(&path);
 
       // start point for triplet selection
       //i<-2
@@ -516,7 +508,8 @@ void alter_step(struct node** path, int nbnd, double bnd[nbnd][2])
 
             // if there was no improvement, then ignore what we did.
             if(hull_length(pathcopy)<hull_length(path)){
-               path=pathcopy;
+               free(path);
+               struct node* path=pathcopy;
             }
          }
          i<-i+1;
