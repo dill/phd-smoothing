@@ -29,8 +29,9 @@ int first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2],
                double[2], double[2], int[2]);
 
 void Push(struct node**, double[2]);
-
-
+void AppendNode(struct node**, double[2]);
+struct node* CopyList(struct node*);
+int Length(struct node*);
 
 
 
@@ -568,11 +569,12 @@ printf("lbbindex=%d\n",lbbindex);
  */
 void Push(struct node** headRef, double data[2]) {
    struct node* newNode = malloc(sizeof(struct node));
+   struct node* head = *headRef; 
    newNode->data[0] = data[0];
    newNode->data[1] = data[1];
 
    // make prev of head the new node
-   *headRef->prev = newNode; 
+   head->prev = newNode; 
 
    // next element of the new node will be the head
    newNode->next = *headRef;  // The '*' to dereferences back to the real head
@@ -593,10 +595,11 @@ void AppendNode(struct node** headRef, double data[2]) {
    newNode->data[0] = data[0];
    newNode->data[1] = data[1];
    newNode->next = NULL;
-//   // special case for length 0
-//   if (current == NULL) {
-//      *headRef = newNode;
-//   }else{
+   // special case for length 0
+   if (current == NULL) {
+      newNode->prev = NULL;
+      *headRef = newNode;
+   }else{
       // Locate the last node
       while (current->next != NULL) {
          current = current->next;
@@ -604,7 +607,7 @@ void AppendNode(struct node** headRef, double data[2]) {
       newNode->prev = current;
       current->next = newNode;
 
-//   }
+   }
 }
 
 
@@ -625,6 +628,23 @@ struct node* CopyList(struct node* head) {
    }
    return(newList);
 }
+
+
+/*
+ *   Given a linked list head pointer, compute
+ *     and return the number of nodes in the list.
+ *     */
+int Length(struct node* head) {
+    struct node* current = head;
+    int count = 0;
+    while (current != NULL) {
+       count++;
+       current = current->next;
+    }
+    return count;
+}
+
+
 
 
 ////////////////////////////

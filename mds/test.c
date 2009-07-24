@@ -163,8 +163,8 @@ int main(void)
    printf(") (vert)\n");
 
    // hull_length
-   printf("*** hull_length\n");
-   printf("8=%f\n",hull_length(5,bnd));
+//   printf("*** hull_length\n");
+//   printf("8=%f\n",hull_length(5,bnd));
 
 
 

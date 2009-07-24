@@ -86,7 +86,7 @@
 
 
 // create a path between p1 and p2 using the boundary
-struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
+struct node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 {
    /* Args:
     *  p1, p2           points
@@ -99,7 +99,7 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
    // find the first intersection between p1, p2 and the boundary side that 
    // each point intersects
    double ip1[2],ip2[2], curr_insert[2];
-   int indind[2],i,j nbnd1, nbnd2, start;
+   int intind[2],i,j, nbnd1, nbnd2, start, err;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
@@ -120,7 +120,8 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
 
       // initialize a linked list, first the head
       struct node* bnd1 = NULL;
-      bnd1 = malloc(sizeof(struct node));
+      //bnd1 = malloc(sizeof(struct node*));
+      // ^^^^^^^^^^^^ needed?
 
       nbnd1=intind[1]-intind[0]-1-1; // number of elements
       // remember bnd is of size nbnd, but first and last elements
@@ -132,9 +133,9 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
       // push everything in
       //                     vvvvvvvvvv <- since we want it to be inclusive
       for(i=(intind[0]+1);i<(intind[1]+1);i++){
-         curr_insert[0]=bnd[i][0];
-         curr_insert[1]=bnd[i][1];
-         Push(bnd1**,curr_insert);
+         curr_insert->data[0]=bnd[i][0];
+         curr_insert->data[1]=bnd[i][1];
+         Push(&bnd1,curr_insert);
       }
 
 
@@ -169,7 +170,8 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
 
       // initialize a linked list, first the head
       struct node* bnd2 = NULL;
-      bnd2 = malloc(sizeof(struct node));
+      //bnd2 = malloc(sizeof(struct node*));
+      // ^^^ need this?
 
       nbnd2=nbnd-nbnd1; // number of elements
 
@@ -182,17 +184,17 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
 
       // insert until we hit the end 
       for(i=start;i<(nbnd-1);i++){
-         curr_insert[0]=bnd[i][0];
-         curr_insert[1]=bnd[i][1];
-         Push(bnd2**,curr_insert);
+         curr_insert->data[0]=bnd[i][0];
+         curr_insert->data[1]=bnd[i][1];
+         Push(&bnd2,curr_insert);
       }
 
       // insert from the end back to intend[0] 
       //             vvvvvvv don't include intend[0] twice
-      for(i=(nbnd-1);i>=intend[0];i--){
-         curr_insert[0]=bnd[i][0];
-         curr_insert[1]=bnd[i][1];
-         Push(bnd2**,curr_insert);
+      for(i=(nbnd-1);i>=intind[0];i--){
+         curr_insert->data[0]=bnd[i][0];
+         curr_insert->data[1]=bnd[i][1];
+         Push(&bnd2,curr_insert);
       }
 
 
@@ -236,21 +238,21 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
       
 
       // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-      curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-      Push(**bnd1,curr_insert);
-      Push(**bnd2,curr_insert); // pushed ip1 into both
+      curr_insert->data[0]=ip1[0]; curr_insert->data[1]=ip1[1];
+      Push(&bnd1,curr_insert);
+      Push(&bnd2,curr_insert); // pushed ip1 into both
 
       curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-      Push(**bnd1,curr_insert);
-      Push(**bnd2,curr_insert); // pushed p1 into both
+      Push(&bnd1,curr_insert);
+      Push(&bnd2,curr_insert); // pushed p1 into both
 
       curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-      AppendNode(**bnd1,curr_insert);
-      AppendNode(**bnd2,curr_insert); // append ip1 for both
+      AppendNode(&bnd1,curr_insert);
+      AppendNode(&bnd2,curr_insert); // append ip1 for both
 
       curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-      AppendNode(**bnd1,curr_insert);
-      AppendNode(**bnd2,curr_insert); // append p1 for both
+      AppendNode(&bnd1,curr_insert);
+      AppendNode(&bnd2,curr_insert); // append p1 for both
 
 
       // pick the shorter path return path
@@ -268,7 +270,7 @@ struct node* make_bnd_path(double p1, double p2, int nbnd, double bnd)
 // iterate over the points in the path:
 // delete as many points as possible, making sure that the
 // path is still outside
-void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
+void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
 {
    // Args:
    //  path     the current path
@@ -277,10 +279,15 @@ void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
    // Return:
    //           revised path with dropped vertices
    
-   int i,j, intbnd[nbnd-1];
+   int i,j, intbnd[nbnd-1],tmpinout;
    double mytrip[3][2], p1[2], p2[2], xmp, ymp;
 
-   struct node* start_ptr, end_ptr;
+   struct node* current;   // iterator
+   struct node* prevpath;
+
+   // needed for deletion
+   struct node* start_ptr;
+   struct node* end_ptr;
 
    ////// needed later on for the in_out() call
    double bx[nbnd];
@@ -308,7 +315,7 @@ void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
       prevpath=CopyList(path);
 
       // start point for triplet selection
-      struct node* current = path;   // iterator
+      current = path;   // iterator
 
       //i<-2
       //while((i+1)<=length(path$x)){
@@ -327,7 +334,7 @@ void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
          // if we are going forward and back again, just
          // remove the point
          // in this case we remove the ith and (i+1)th entries, point (i-1)th
-         // to the (i+2)th.
+         // next to the (i+2)th.
          // path<-pe(path,-c(i,i+1))
          if(mytrip[0][0]==mytrip[2][0] & 
             mytrip[0][1]==mytrip[2][1]){
@@ -348,11 +355,11 @@ void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
             current=current->next; // back to i+2
             
             // change previous
-            current->prev=first; //set i+2 prev to i-1
+            current->prev=start_ptr; //set i+2 prev to i-1
             
-         // if deleting the middle point makes the resulting line cross the
-         // the boundary then keep it, else get rid of it 
          }else{
+
+            //// This is all setup for the next if() vvvvv
 
             // start and end points of the trip in p1 and p2
             p1[0]=mytrip[0][0];  p1[1]=mytrip[0][1];
@@ -371,134 +378,172 @@ void delete_step(struct node* path, int nbnd, double bnd[nbnd][2])
             //             (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
             in_out(bx,by,break_code,xmp,ymp,in, nbnd,1);
             tmpinout=in[0];
+
+            ///// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+            // if deleting point i makes the resulting line cross the
+            // the boundary then keep it in the path, else get rid of it 
+            //path<-pe(path,-i)
             if( (iarrsum(nbnd-1,intbnd)<(nbnd-1)) & tmpinout){
 
-               //path<-pe(path,-i)
-               // move everything down
-               for(j=i;j<(npath-1);j++){
-                  path[j][0]=path[j+1][0];
-                  path[j][1]=path[j+1][1];
-               }
+               // remove point i by setting next pointer from i-1 to 
+               // i+1, and prev from i+1 to i-1
 
-            } // end if on del middle, 
-         }
+               // current is sitting at the 3rd entry
+               // create a pointer to that
+               end_ptr=current; // pointer to i+1
+
+               // go back twice
+               current=current->prev; // pointer now at i
+               current=current->prev; // pointer at i-1
+
+               // change where next points to
+               current->next=end_ptr; // point i-1 next to i+1
+               start_ptr=current; // pointer to i-1
+
+               // go forward again (remember next has changed)
+               current=current->next; // back to i+1
+               
+               // change previous
+               current->prev=start_ptr; //set i+2 prev to i-1
+
+            } // end if on del middle
+         } // end of if del back-and-forth
       } // end iteration over path
       conv++; // increment run counter
 
-   }while(!has_converged(nprevpath,prevpath,npath,path)&
-         (conv<conv_stop));
-   // end of do loop
-
-   free(prevpath);
-   prevpath = NULL;
+   }while(!has_converged(prevpath,path)&
+         (conv<conv_stop)); // end of do loop
+   
 }           
 
 // alter the path
-//void alter_step(int npath, double *path[npath][2], int nbnd, double bnd[nbnd][2])
-//{
-//   // Args:
-//   //  npath    # elements of current path
-//   //  path     the current path
-//   //  nbnd     # elements of boundary
-//   //  bnd      the boundary
-//   // Return:
-//   //           revised path with added/ammended vertices
-//
-//   // use prevpath to keep a copy of the previous path for comparison            
-//   //prev.path<-list(x=c(Inf),y=c(Inf))
-//   double **prevpath = malloc(npath * sizeof(double));
-//
-//   int nprevpath=npath;
-//   // move everything down
-//   for(i=0;i<npath;i++){
-//      prevpath[i] = malloc(2 * sizeof(double));
-//      prevpath[i][0]=*path[i][0];
-//      prevpath[i][1]=*path[i][1];
-//   }
-//
-//   
-//   // convergence stop
-//   int conv=0;
-//   int conv_stop=10;
-//
-//   // iterate over the points in the path:
-//   // alter the path, until on two(?) consecutive runs there are
-//   // no changes to the path
-//   while(!has_converged(nprevpath,prevpath,npath,path)&
-//         (conv<conv_stop)){
-//
-//      // save the previous path to compare, above
-//      //prev.path<-path
-//      nprevpath=npath;
-//      // move everything down
-//      for(i=0;i<npath;i++){
-//         prevpath[i][0]=*path[i][0];
-//         prevpath[i][1]=*path[i][1];
-//      }
-//      // maybe want some error handling here?
-//      prevpath=realloc(prevpath,nprevpath);
-//
-//
-//      // start point for triplet selection
-//      //i<-2
-//      //while((i+1)<=length(path$x)){
-//      for(i=2; i<(npath-1); i++){
-//         // for each point i, look at the line i-1 to i+1
-//
-//         //my.trip<-pe(path,c(i-1,i,i+1))
-//         mytrip[0][0]=*path[i-1][0]; mytrip[0][1]=*path[i-1][1];
-//         mytrip[1][0]=*path[i][0];   mytrip[1][1]=*path[i][1];
-//         mytrip[2][0]=*path[i+1][0]; mytrip[2][1]=*path[i+1][1];
-//
-//         //ep1<-pe(my.trip,1)
-//         //ep2<-pe(my.trip,3)
-//         ep1[0]=*path[i-1][0]; ep1[1]=*path[i-1][1];
-//         ep2[0]=*path[i+1][0]; ep2[1]=*path[i+1][1];
-//
-//
-//         // does it go inside-outside-inside?
-//         if(facing(ep1, ep2, nbnd, bnd)){
-//
-//
-//
-////////////////// MAKE THIS HAPPEN!
-//            // create a new path
-//            new.path<-make_bnd_path(ep1,ep2,bnd)
-///////////////////////
-//
-//
-//            // create new path, compare complete new path with old one, if the
-//            // new one is better then keep it.
-//            new.path<-delete_step(list(
-//                    x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
-//                    y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)])),bnd)
-//            my.trip<-delete_step(list(
-//                    x=c(path$x[1:(i-1)],my.trip$x,path$x[(i+1):length(path$x)]),
-//                    y=c(path$y[1:(i-1)],my.trip$y,path$y[(i+1):length(path$y)])),bnd)
-//
-//            if(hull_length(new.path)<hull_length(my.trip)){
-//               path<-new.path
-//            }else{
-//               path<-my.trip
-//            }
-//         }
-//         i<-i+1
-//      }
-//      conv++;
-//   }
-//   // return the path
-//   return(path)
-//}
+void alter_step(struct node** path, int nbnd, double bnd[nbnd][2])
+{
+   // Args:
+   //  path     the current path
+   //  nbnd     # elements of boundary
+   //  bnd      the boundary
+   // Return:
+   //           revised path with added/ammended vertices
+   
+   int i;
+   double ep1[2], ep2[2], mytrip[3][2];
+
+   struct node* prevpath=NULL;
+   struct node* newpath=NULL;
+   struct node* pathcopy=NULL;
+   struct node* end_ptr=NULL;
+   struct node* current=NULL;
+
+   // convergence stop
+   int conv=0;
+   int conv_stop=10;
+
+   // iterate over the points in the path:
+   // alter the path, until on two(?) consecutive runs there are
+   // no changes to the path
+   do{
+
+      // iterator
+      current = *path;
+
+      // use prevpath to keep a copy of the previous path for comparison            
+      //prev.path<-path
+      prevpath=CopyList(path);
+
+      // start point for triplet selection
+      //i<-2
+      //while((i+1)<=length(path$x)){
+      while(current!=NULL){
+         // for each point i, look at the line i-1 to i+1
+
+         // copy the path for comparison
+         pathcopy=CopyList(*path);
+
+         // create the current triplet to inspect
+         //my.trip<-pe(path,c(i-1,i,i+1))
+         for(i=0;i<3;i++){
+            mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
+            current=current->next;
+         }
+                                             
+         //ep1<-pe(my.trip,1)
+         //ep2<-pe(my.trip,3)
+         // correct format for facing() call
+         ep1[0]=mytrip[0][0]; ep1[1]=mytrip[0][1];
+         ep2[0]=mytrip[2][0]; ep2[1]=mytrip[2][1];
+
+         // does it go inside-outside-inside?
+         if(facing(ep1, ep2, nbnd, bnd)){
+
+            // create a new path
+            newpath=make_bnd_path(ep1,ep2,nbnd,bnd);
+
+            // create new path, compare complete new path with old one, if the
+            // new one is better then keep it.
+            //new.path<-delete_step(list(
+            //   x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
+            //   y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)])),bnd)
+            
+            // modify path
+            // from i-1, stitch in newpath up to i+1
+            // current is at i+1 now
+            
+            // create a pointer to that
+            end_ptr=current; // pointer to i+1
+            
+            // go back twice
+            current=current->prev; // pointer now at i
+            current=current->prev; // pointer at i-1
+            
+            // change where next points to
+            newpath->prev=current; // point head of newpath back 
+            current->next=newpath; // point i-1 next to the head of newpath
+   
+            // set current back to i+1
+            // fast forward to the end of newpath
+            while(current->next!=NULL){
+               current=current->next;
+            }
+
+            // point the end of newpath to i+1
+            end_ptr->prev=current; // set previous of i+1 to be the end of newpath
+            current->next=end_ptr;
+            
+            // cut out anything silly
+            delete_step(path, nbnd, bnd);
+
+            // if there was no improvement, then ignore what we did.
+            if(hull_length(pathcopy)<hull_length(path)){
+               path=pathcopy;
+            }
+         }
+         i<-i+1;
+      }
+      conv++;
+
+   } while(!has_converged(prevpath,path)&
+         (conv<conv_stop)); //end of main do
+}
 
 // check convergence
-int has_converged(int nprevpath, double prevpath[nprevpath][2], int npath, double path[npath][2])
+int has_converged(struct node* path1, struct node* path2)
 {
    int i;
-   // check if the new and old paths are the same, first check length
-   // then their contents
-   if(nprevpath==npath){
-      for(i=0;i<npath;i++){
-         if((prevpath[i][0]!=path[i][0]) & (prevpath[i][1]!=path[i][1])) return 0;
+   int path1_len, path2_len;
+
+   struct node* current1 = path1;
+   struct node* current2 = path2;
+
+   // first check length then their contents
+   if(Length(path1)==Length(path2)){
+      // check if the new and old paths are the same
+      while(current1!=NULL){
+         if((current1->data[0]!=current2->data[0]) & 
+            (current1->data[1]!=current2->data[1])) return 0;
+         current1=current1->next;
+         current2=current2->next;
       }
    }else return 0;
 
