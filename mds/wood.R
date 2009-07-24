@@ -301,14 +301,9 @@ alter_step<-function(path,bnd){
             new.path<-delete_step(list(
                     x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
                     y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)])),bnd)
-            my.trip<-delete_step(list(
-                    x=c(path$x[1:(i-1)],my.trip$x,path$x[(i+1):length(path$x)]),
-                    y=c(path$y[1:(i-1)],my.trip$y,path$y[(i+1):length(path$y)])),bnd)
 
-            if(hull_length(new.path)<hull_length(my.trip)){
+            if(hull_length(new.path)<hull_length(path)){
                path<-new.path
-            }else{
-               path<-my.trip
             }
          }
          i<-i+1
