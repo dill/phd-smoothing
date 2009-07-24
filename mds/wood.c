@@ -52,13 +52,13 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    // keep going until we don't remove any more points.
       // save previous path
       //prev.path<-my.path
-      prevpath=CopyList(*mypath);
+      prevpath=CopyList(&mypath);
 
       // delete step, remove anything that doesn't need to be there
-      mypath=delete_step(**mypath,nbnd,bnd);
+      delete_step(&&mypath,nbnd,bnd);
 
       // add new vertices
-      mypath=alter_step(**mypath,nbnd,bnd);
+      alter_step(&&mypath,nbnd,bnd);
 
       // increment convergence stopper 
       conv++;
@@ -299,7 +299,7 @@ void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
 
       // use prevpath to keep a copy of the previous path for comparison            
       //prev.path<-path
-      prevpath=CopyList(path);
+      prevpath=CopyList(&path);
 
       // start point for triplet selection
       current = *path;   // iterator
@@ -399,7 +399,7 @@ void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
       } // end iteration over path
       conv++; // increment run counter
 
-   }while(!has_converged(prevpath,path)&
+   }while(!has_converged(*prevpath,*path)&
          (conv<conv_stop)); // end of do loop
   
    // free some memory? 
@@ -516,16 +516,13 @@ void alter_step(struct node** path, int nbnd, double bnd[nbnd][2])
       }
       conv++;
 
-   } while(!has_converged(prevpath,path)&
+   } while(!has_converged(*prevpath,*path)&
          (conv<conv_stop)); //end of main do
 }
 
 // check convergence
 int has_converged(struct node* path1, struct node* path2)
 {
-   int i;
-   int path1_len, path2_len;
-
    struct node* current1 = path1;
    struct node* current2 = path2;
 
@@ -533,8 +530,8 @@ int has_converged(struct node* path1, struct node* path2)
    if(Length(path1)==Length(path2)){
       // check if the new and old paths are the same
       while(current1!=NULL){
-         if((current1->data[0]!=current2->data[0]) & 
-            (current1->data[1]!=current2->data[1])) return 0;
+         if(( (current1->data[0]) != (current2->data[0]) ) & 
+            ( (current1->data[1]) != (current2->data[1]) )) return 0;
          current1=current1->next;
          current2=current2->next;
       }

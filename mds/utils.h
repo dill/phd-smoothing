@@ -633,7 +633,7 @@ struct node* CopyList(struct node* head) {
 /*
  *   Given a linked list head pointer, compute
  *     and return the number of nodes in the list.
- *     */
+ */
 int Length(struct node* head) {
     struct node* current = head;
     int count = 0;
