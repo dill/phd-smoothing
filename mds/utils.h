@@ -5,12 +5,12 @@
 #include <stdio.h>
 
 // definition of linked list
-struct node
+typedef struct node
 {
    double data[2];  // space for x and y
    struct node* next; // pointer to next item
    struct node* prev; // pointer to previous item
-};
+} node;
 
 // some prototypes
 void twosort(double[2]);
@@ -23,15 +23,15 @@ double maxarr(int narr, double arr[narr]);
 int compare_doubles (const void *a, const void *b);
 int crapfind(int narr, double[narr], double);
 int iarrsum(int narr, int arr[narr]);
-double hull_length(struct node* hull);
+double hull_length(node* hull);
 void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
 int first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2], 
                double[2], double[2], int[2]);
 
-void Push(struct node**, double[2]);
-void AppendNode(struct node**, double[2]);
-struct node* CopyList(struct node*);
-int Length(struct node*);
+void Push(node**, double[2]);
+void AppendNode(node**, double[2]);
+node* CopyList(node*);
+int Length(node*);
 
 
 
@@ -405,10 +405,10 @@ int online(double p1[],double thisline[][2])
 
 // calculate the length of the hull by iterating over
 // the list object
-double hull_length(struct node* hull) {
+double hull_length(node* hull) {
 
    double hullen;
-   struct node* current = hull;
+   node* current = hull;
    double curr_hull[2];
 
    // this is a bit ugly
@@ -567,9 +567,9 @@ printf("lbbindex=%d\n",lbbindex);
  *   to the head pointer -- this allows us
  *   to modify the caller's memory.
  */
-void Push(struct node** headRef, double data[2]) {
-   struct node* newNode = malloc(sizeof(struct node));
-   struct node* head = *headRef; 
+void Push(node** headRef, double data[2]) {
+   node* newNode = malloc(sizeof(node));
+   node* head = *headRef; 
    newNode->data[0] = data[0];
    newNode->data[1] = data[1];
 
@@ -588,10 +588,10 @@ void Push(struct node** headRef, double data[2]) {
 
 //struct node* AppendNode(struct node** headRef, double data[2]) {
 // think this will work
-void AppendNode(struct node** headRef, double data[2]) {
-   struct node* current = *headRef;
-   struct node* newNode;
-   newNode = malloc(sizeof(struct node));
+void AppendNode(node** headRef, double data[2]) {
+   node* current = *headRef;
+   node* newNode;
+   newNode = malloc(sizeof(node));
    newNode->data[0] = data[0];
    newNode->data[1] = data[1];
    newNode->next = NULL;
@@ -612,10 +612,11 @@ void AppendNode(struct node** headRef, double data[2]) {
 
 
 // Variant of CopyList() that uses Push()
-struct node* CopyList(struct node* head) {
-   struct node* current = head;      // used to iterate over the original list
-   struct node* newList = NULL;      // head of the new list
-   struct node* tail = NULL; // kept pointing to the last node in the new list
+node* CopyList(node* head)
+{
+   node* current = head;      // used to iterate over the original list
+   node* newList = NULL;      // head of the new list
+   node* tail = NULL; // kept pointing to the last node in the new list
    while (current != NULL) {
       if (newList == NULL) { // special case for the first new node
          Push(&newList, current->data);
@@ -634,8 +635,8 @@ struct node* CopyList(struct node* head) {
  *   Given a linked list head pointer, compute
  *     and return the number of nodes in the list.
  */
-int Length(struct node* head) {
-    struct node* current = head;
+int Length(node* head) {
+    node* current = head;
     int count = 0;
     while (current != NULL) {
        count++;

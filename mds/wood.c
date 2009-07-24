@@ -3,13 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
+#include "utils.h"
 
 double wood_path(double[2], double[2], int nbnd, double[nbnd][2]);
-struct node* make_bnd_path(double[2], double[2], int nbnd, double[nbnd][2]);
-void delete_step(struct node**, int nbnd, double[nbnd][2]);
-void alter_step(struct node**, int nbnd, double[nbnd][2]);
-int has_converged(struct node*, struct node*);
+node* make_bnd_path(double[2], double[2], int nbnd, double[nbnd][2]);
+void delete_step(node**, int nbnd, double[nbnd][2]);
+void alter_step(node**, int nbnd, double[nbnd][2]);
+int has_converged(node*, node*);
 
 double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 {
@@ -24,8 +24,8 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
    int conv, conv_stop;
 
-   struct node* prevpath=NULL;
-   struct node* mypath=NULL;
+   node* prevpath=NULL;
+   node* mypath=NULL;
 
    // HACK:make sure that the points are defined from the left,
    // this may or may not be a fix to the paths joining the wrong points
@@ -52,13 +52,13 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    // keep going until we don't remove any more points.
       // save previous path
       //prev.path<-my.path
-      prevpath=CopyList(&mypath);
+      prevpath=CopyList(mypath);
 
       // delete step, remove anything that doesn't need to be there
-      delete_step(&&mypath,nbnd,bnd);
+      delete_step(&mypath,nbnd,bnd);
 
       // add new vertices
-      alter_step(&&mypath,nbnd,bnd);
+      alter_step(&mypath,nbnd,bnd);
 
       // increment convergence stopper 
       conv++;
@@ -73,7 +73,7 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
 
 // create a path between p1 and p2 using the boundary
-struct node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
+node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 {
    /* Args:
     *  p1, p2           points
@@ -106,7 +106,7 @@ struct node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd
       //bnd.1.sort<-pe(bnd,picker)
 
       // initialize a linked list, first the head
-      struct node* bnd1 = NULL;
+      node* bnd1 = NULL;
       //bnd1 = malloc(sizeof(struct node*));
       // ^^^^^^^^^^^^ needed?
 
@@ -156,7 +156,7 @@ struct node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd
       //       length(bnd.2.sort$x):picker[1]))
 
       // initialize a linked list, first the head
-      struct node* bnd2 = NULL;
+      node* bnd2 = NULL;
       //bnd2 = malloc(sizeof(struct node*));
       // ^^^ need this?
 
@@ -257,7 +257,7 @@ struct node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd
 // iterate over the points in the path:
 // delete as many points as possible, making sure that the
 // path is still outside
-void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
+void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 {
    // Args:
    //  path     the current path
@@ -269,12 +269,12 @@ void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
    int i,j, intbnd[nbnd-1],tmpinout;
    double mytrip[3][2], p1[2], p2[2], xmp, ymp;
 
-   struct node* current=NULL;   // iterator
-   struct node* prevpath=NULL;
+   node* current=NULL;   // iterator
+   node* prevpath=NULL;
 
    // needed for deletion
-   struct node* start_ptr=NULL;
-   struct node* end_ptr=NULL;
+   node* start_ptr=NULL;
+   node* end_ptr=NULL;
 
    ////// needed later on for the in_out() call
    double bx[nbnd];
@@ -299,7 +299,7 @@ void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
 
       // use prevpath to keep a copy of the previous path for comparison            
       //prev.path<-path
-      prevpath=CopyList(&path);
+      prevpath=CopyList(*path);
 
       // start point for triplet selection
       current = *path;   // iterator
@@ -410,7 +410,7 @@ void delete_step(struct node** path, int nbnd, double bnd[nbnd][2])
 }           
 
 // alter the path
-void alter_step(struct node** path, int nbnd, double bnd[nbnd][2])
+void alter_step(node** path, int nbnd, double bnd[nbnd][2])
 {
    // Args:
    //  path     the current path
@@ -422,11 +422,11 @@ void alter_step(struct node** path, int nbnd, double bnd[nbnd][2])
    int i;
    double ep1[2], ep2[2], mytrip[3][2];
 
-   struct node* prevpath=NULL;
-   struct node* newpath=NULL;
-   struct node* pathcopy=NULL;
-   struct node* end_ptr=NULL;
-   struct node* current=NULL;
+   node* prevpath=NULL;
+   node* newpath=NULL;
+   node* pathcopy=NULL;
+   node* end_ptr=NULL;
+   node* current=NULL;
 
    // convergence stop
    int conv=0;
@@ -442,7 +442,7 @@ void alter_step(struct node** path, int nbnd, double bnd[nbnd][2])
 
       // use prevpath to keep a copy of the previous path for comparison            
       //prev.path<-path
-      prevpath=CopyList(&path);
+      prevpath=CopyList(*path);
 
       // start point for triplet selection
       //i<-2
@@ -507,24 +507,24 @@ void alter_step(struct node** path, int nbnd, double bnd[nbnd][2])
             delete_step(path, nbnd, bnd);
 
             // if there was no improvement, then ignore what we did.
-            if(hull_length(pathcopy)<hull_length(path)){
+            if(hull_length(*pathcopy)<hull_length(*path)){
                free(path);
-               struct node* path=pathcopy;
+               node* path=pathcopy;
             }
          }
          i<-i+1;
       }
       conv++;
 
-   } while(!has_converged(*prevpath,*path)&
+   } while(!has_converged(prevpath,path)&
          (conv<conv_stop)); //end of main do
 }
 
 // check convergence
-int has_converged(struct node* path1, struct node* path2)
+int has_converged(node* path1, node* path2)
 {
-   struct node* current1 = path1;
-   struct node* current2 = path2;
+   node* current1 = path1;
+   node* current2 = path2;
 
    // first check length then their contents
    if(Length(path1)==Length(path2)){
