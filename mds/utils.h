@@ -211,8 +211,14 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
    double ip1[2],ip2[2];
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+//DEBUG
+printf("first_ips error=%d\n",err);
+printf("ip1=(%f,%f)\n",ip1[0],ip1[1]);
+printf("ip2=(%f,%f)\n",ip2[0],ip2[1]);
 
-   if(err>0){
+
+   // if there are no errors, go ahead
+   if(err==0){
       // midpoint between p1 and first intersection 
       double p1mp[2]={(ip1[0]+p1[0])/2,(ip1[1]+p1[1])/2};
       // midpoint between p2 and first intersection 
@@ -245,7 +251,9 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
  printf("ymp=(%f,%f)\n",ymp[0],ymp[1]);
 
       int in[2]={0,0};
-      in_out(bx, by, break_code, xmp, ymp, in, nbnd, 2);
+      int tmpinout=2;
+
+      in_out(bx, by, break_code, xmp, ymp, in, nbnd, tmpinout);
 
       // if they are both inside, return true
       if(in[0] && in[1]) ret=1;
@@ -323,6 +331,10 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 
       ip[0]=(b1*c2-b2*c1)/(a1*b2-a2*b1);
       ip[1]=(c1*a2-a1*c2)/(a1*b2-b1*a2);
+
+// DEBUG
+printf("intpoint ip=(%f,%f)\n",ip[0],ip[1]);
+
 
 //   }else{
 //      ret<-list(x=Inf,y=Inf)
@@ -469,14 +481,14 @@ printf("lbbindex=%d\n",lbbindex);
       // bbindex=c(1:(length(bnd$x)-1))[doint]
       int bbindex[lbbindex];
       int j=0;
-   
+
+      // populate bbindex   
       for(i=0;i<(nbnd-1);i++){
          if(retint[i]){
             bbindex[j]=i;
             j++;
          }
       }
-
 
       // hold distances and intersection points temporarily
       double dists[lbbindex];
@@ -487,6 +499,7 @@ printf("lbbindex=%d\n",lbbindex);
 
          // get current index
          j=bbindex[i];
+printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
 
          thisedge[0][0]=bnd[j][0];
          thisedge[1][0]=bnd[j+1][0];
@@ -495,13 +508,22 @@ printf("lbbindex=%d\n",lbbindex);
 
          // calculate and save the intersection
          intpoint(p1,p2,thisedge,ip);
+// DEBUG
+printf("first_ips: ip=c(%f,%f)\n",ip[0],ip[1]);
+printf("first_ips: p1=c(%f,%f)\n",p1[0],p1[1]);
+printf("first_ips: p2=c(%f,%f)\n",p2[0],p2[1]);
+printf("first_ips: edge0=c(%f,%f)\n",thisedge[0][0],thisedge[0][1]);
+printf("first_ips: edge1=c(%f,%f)\n",thisedge[1][0],thisedge[1][1]);
+
          ips[i][0]=ip[0];
          ips[i][1]=ip[1];
 
          // find the distance and save
-         dists[i]=hypot((p1[0]-ip[0]),(p1[1]-ip[1]));
+         dists[i]=hypot(p1[0]-ip[0],p1[1]-ip[1]);
          // also copy for sorting
          sortdists[i]=dists[i];
+// DEBUG
+printf("dists[%d]=%f\n",i,dists[i]);
       }
 
 // SORT THIS OUT!!!!
@@ -523,7 +545,7 @@ printf("lbbindex=%d\n",lbbindex);
       // The qsort function sorts the array array. 
       // The array contains count elements, each of which is of size size.
       // The compare function is used to perform the comparison on the array elements. 
-      qsort(sortdists,lbbindex,sizeof(double),compare_doubles);
+      qsort(&sortdists,lbbindex,sizeof(double),compare_doubles);
 
       // find first intersection between p1 and bnd
       // p1.int<-pe(ips,order(dists)[1])
@@ -541,9 +563,14 @@ printf("lbbindex=%d\n",lbbindex);
       intind[0]=bbindex[firstel];
       intind[1]=bbindex[lastel];
 
+// DEBUG
+printf("ip1=(%f,%f)\n",ip1[0],ip1[1]);
+printf("ip2=(%f,%f)\n",ip2[0],ip2[1]);
+
+
    }else{
       // let the Robot warn us...
-      printf("DANGER, WILL ROBINSON! make_bnd_path: lbbindex<1\n");
+      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
       err++;
    }
 

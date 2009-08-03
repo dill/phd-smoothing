@@ -48,7 +48,17 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    conv=0;
    conv_stop=10;
 
+
+// DEBUG
+printf("***got to do loop\n");
+// DEBUG
+int i=0;
+
    do{
+
+// DEBUG
+printf("run %d\n",i);
+i++;
    // keep going until we don't remove any more points.
       // save previous path
       //prev.path<-my.path
@@ -56,14 +66,26 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
+// DEBUG
+printf("***got past delete_step \n");
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
+// DEBUG
+printf("***got past alter_step \n");
 
       // increment convergence stopper 
       conv++;
 
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
+
+
+   node* current=mypath;
+   while(current!=NULL){
+      printf("path$x<-c(path$x,%f)\n",current->data[0]);
+      printf("path$y<-c(path$y,%f)\n",current->data[1]);
+      current=current->next;
+   }
 
    // return the length of the path
    return(hull_length(mypath));
@@ -310,6 +332,15 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
       //i<-2
       //while((i+1)<=length(path$x)){
       while(current!=NULL){
+
+         // equivalent of some ANDs in the above, but doesn't cause a memory
+         // problem since the while() evaluates all of the conditions.
+         if(current->next!=NULL){
+            break;
+         }else if(current->next->next!=NULL){
+            break;
+         }
+
       //for(i=2; i<(npath-1); i++){
 
          // create the current triplet to inspect
@@ -396,7 +427,9 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
                current=current->next; // back to i+1
                
                // change previous
-               current->prev=start_ptr; //set i+2 prev to i-1
+               current->prev=start_ptr; //set i+1 prev to i-1
+
+               current=current->next; // back to i+2
 
             } // end if on del middle
          } // end of if del back-and-forth
@@ -452,6 +485,13 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
       //i<-2
       //while((i+1)<=length(path$x)){
       while(current!=NULL){
+         // equivalent of some ANDs in the above, but doesn't cause a memory
+         // problem since the while() evaluates all of the conditions.
+         if(current->next!=NULL){
+            break;
+         }else if(current->next->next!=NULL){
+            break;
+         }
          // for each point i, look at the line i-1 to i+1
 
          // copy the path for comparison
@@ -470,11 +510,21 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          ep1[0]=mytrip[0][0]; ep1[1]=mytrip[0][1];
          ep2[0]=mytrip[2][0]; ep2[1]=mytrip[2][1];
 
+// DEBUG
+printf("***********************debug: pre facing\n");
+printf("ep1=c(%f,%f)\n",ep1[0],ep1[1]);
+printf("ep2=c(%f,%f)\n",ep2[0],ep2[1]);
+
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
+// DEBUG
+printf("***********************debug: after facing\n");
 
             // create a new path
             newpath=make_bnd_path(ep1,ep2,nbnd,bnd);
+
+// DEBUG
+printf("***********************debug: after make_bnd_path\n");
 
             // create new path, compare complete new path with old one, if the
             // new one is better then keep it.
@@ -522,6 +572,9 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
 
    } while(!has_converged(prevpath,*path)&
          (conv<conv_stop)); //end of main do
+   
+   free(pathcopy);
+
 }
 
 // check convergence
