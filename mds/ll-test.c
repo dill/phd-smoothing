@@ -55,6 +55,25 @@ int main(void)
    	current = current->next;
 	}
 
-	return 0;
 
+
+   // test intpoint
+
+	printf("------\n");
+   
+   double p1[2] = {1,1};
+   double p2[2] = {-1,-1};
+   double edge[2][2];
+   double ip[2];
+
+   edge[0][0]=-1;
+   edge[0][1]=1;
+   edge[1][0]=1;
+   edge[1][1]=-1;
+
+   intpoint(p1,p2,edge,ip);
+   printf("ip= %f, %f\n",ip[0],ip[1]);
+
+
+	return 0;
 }

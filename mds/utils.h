@@ -213,8 +213,8 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 //DEBUG
 printf("first_ips error=%d\n",err);
-printf("ip1=(%f,%f)\n",ip1[0],ip1[1]);
-printf("ip2=(%f,%f)\n",ip2[0],ip2[1]);
+printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+printf("ip2=(x=%f,y=%f)\n",ip2[0],ip2[1]);
 
 
    // if there are no errors, go ahead
@@ -289,12 +289,12 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
    //   the line between the points
    a1=-1/(p2[0]-p1[0]);
    b1=1/(p2[1]-p1[1]);
-   c1=p1[0]/(p2[0]-p1[0])-p1[1]/(p2[1]-p1[1]);
+   c1=p1[0]/(p2[0]-p1[0]) - p1[1]/(p2[1]-p1[1]);
 
    // the edge
    a2=-1/(edge[1][0]-edge[0][0]);
    b2=1/(edge[1][1]-edge[0][1]);
-   c2= edge[0][0]/(edge[1][0]-edge[0][0])-edge[0][1]/(edge[1][1]-edge[0][1]);
+   c2= edge[0][0]/(edge[1][0]-edge[0][0]) - edge[0][1]/(edge[1][1]-edge[0][1]);
 
    // handle the horizontal/vertical line case...
 
@@ -473,7 +473,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    lbbindex=iarrsum((nbnd-1),retint);
    
 // DEBUG
-printf("lbbindex=%d\n",lbbindex);
+//printf("lbbindex=%d\n",lbbindex);
    
    // if lbbindex < 1 increment err
    if(lbbindex>1){
@@ -499,7 +499,7 @@ printf("lbbindex=%d\n",lbbindex);
 
          // get current index
          j=bbindex[i];
-printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
+//printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
 
          thisedge[0][0]=bnd[j][0];
          thisedge[1][0]=bnd[j+1][0];
@@ -509,11 +509,16 @@ printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
          // calculate and save the intersection
          intpoint(p1,p2,thisedge,ip);
 // DEBUG
-printf("first_ips: ip=c(%f,%f)\n",ip[0],ip[1]);
-printf("first_ips: p1=c(%f,%f)\n",p1[0],p1[1]);
-printf("first_ips: p2=c(%f,%f)\n",p2[0],p2[1]);
-printf("first_ips: edge0=c(%f,%f)\n",thisedge[0][0],thisedge[0][1]);
-printf("first_ips: edge1=c(%f,%f)\n",thisedge[1][0],thisedge[1][1]);
+//printf("****************\n");
+//printf("plot(bnd,type=\"l\")\n");
+//printf("ip=list(x=%f,y=%f)\n",ip[0],ip[1]);
+//printf("p1=list(x=%f,y=%f)\n",p1[0],p1[1]);
+//printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
+//printf("edge=list(x=c(%f,%f),y=c(%f,%f))\n",thisedge[0][0],thisedge[1][0],
+//                                            thisedge[0][1],thisedge[1][1]);
+//printf("lines(edge,col=\"red\",lwd=2);\n");
+//printf("points(p1,col=\"red\",pch=24); points(p2,col=\"red\",pch=24);\n"); 
+//printf("****************\n");
 
          ips[i][0]=ip[0];
          ips[i][1]=ip[1];
@@ -522,8 +527,6 @@ printf("first_ips: edge1=c(%f,%f)\n",thisedge[1][0],thisedge[1][1]);
          dists[i]=hypot(p1[0]-ip[0],p1[1]-ip[1]);
          // also copy for sorting
          sortdists[i]=dists[i];
-// DEBUG
-printf("dists[%d]=%f\n",i,dists[i]);
       }
 
 // SORT THIS OUT!!!!
@@ -547,6 +550,22 @@ printf("dists[%d]=%f\n",i,dists[i]);
       // The compare function is used to perform the comparison on the array elements. 
       qsort(&sortdists,lbbindex,sizeof(double),compare_doubles);
 
+// DEBUG
+//printf("**************qsort debug ************\n");
+//int k;
+//for(k=0;k<lbbindex;k++){
+//   printf("%f,",dists[k]);
+//}
+//printf("\n");
+//for(k=0;k<lbbindex;k++){
+//   printf("%f,",sortdists[k]);
+//}
+//printf("\n");
+//printf("**************END qsort debug ************\n");
+///////////////////////////////////
+
+
+
       // find first intersection between p1 and bnd
       // p1.int<-pe(ips,order(dists)[1])
       firstel = crapfind(lbbindex,dists,sortdists[0]);
@@ -562,11 +581,6 @@ printf("dists[%d]=%f\n",i,dists[i]);
       // calculate intind
       intind[0]=bbindex[firstel];
       intind[1]=bbindex[lastel];
-
-// DEBUG
-printf("ip1=(%f,%f)\n",ip1[0],ip1[1]);
-printf("ip2=(%f,%f)\n",ip2[0],ip2[1]);
-
 
    }else{
       // let the Robot warn us...

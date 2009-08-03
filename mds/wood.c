@@ -44,21 +44,33 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    mypath=make_bnd_path(p1,p2,nbnd,bnd);
 
+// DEBUG
+printf("--------------------------\n");
+printf("plot(bnd,type=\"l\")\n");
+
+   node* current=mypath;
+   while(current!=NULL){
+      printf("path$x<-c(path$x,%f)\n",current->data[0]);
+      printf("path$y<-c(path$y,%f)\n",current->data[1]);
+      current=current->next;
+   }
+
+printf("lines(path,lwd=2,col=\"red\")\n");
+printf("--------------------------\n");
+
    // convergence stop
    conv=0;
    conv_stop=10;
 
 
 // DEBUG
-printf("***got to do loop\n");
-// DEBUG
 int i=0;
 
    do{
 
 // DEBUG
-printf("run %d\n",i);
-i++;
+//printf("run %d\n",i);
+//i++;
    // keep going until we don't remove any more points.
       // save previous path
       //prev.path<-my.path
@@ -67,25 +79,27 @@ i++;
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
 // DEBUG
-printf("***got past delete_step \n");
+//printf("***got past delete_step \n");
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
 // DEBUG
-printf("***got past alter_step \n");
+//printf("***got past alter_step \n");
 
       // increment convergence stopper 
       conv++;
 
+// DEBUG
+//current=mypath;
+//while(current!=NULL){
+//   printf("path$x<-c(path$x,%f)\n",current->data[0]);
+//   printf("path$y<-c(path$y,%f)\n",current->data[1]);
+//   current=current->next;
+//}
+
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
 
-   node* current=mypath;
-   while(current!=NULL){
-      printf("path$x<-c(path$x,%f)\n",current->data[0]);
-      printf("path$y<-c(path$y,%f)\n",current->data[1]);
-      current=current->next;
-   }
 
    // return the length of the path
    return(hull_length(mypath));
@@ -110,7 +124,18 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    double ip1[2],ip2[2], curr_insert[2];
    int intind[2],i,j, nbnd1, nbnd2, start, err;
 
+// DEBUG
+printf("make_bnd_path\n");
+printf("p1=c(%f,%f)\n",p1[0],p1[1]);
+printf("p2=c(%f,%f)\n",p2[0],p2[1]);
+
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+
+// DEBUG
+//printf("make_bnd_path\n");
+//printf("ip1=c(%f,%f)\n",ip1[0],ip1[1]);
+//printf("ip2=c(%f,%f)\n",ip2[0],ip2[1]);
+
 
 	// if there are no errors
    if(err==0){
@@ -248,6 +273,31 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       // just going by the order in the R code here, don't need to 
       // reverse, since we used push for the insertion
       
+// DEBUG
+printf("-----------bnd1 and bnd2-----------\n");
+printf("plot(bnd,type=\"l\")\n");
+
+printf("bnd1<-list(x=c(),y=c())\n");   
+   node* currrrent=bnd1;
+   while(currrrent!=NULL){
+      printf("bnd1$x<-c(bnd1$x,%f)\n",currrrent->data[0]);
+      printf("bnd1$y<-c(bnd1$y,%f)\n",currrrent->data[1]);
+      currrrent=currrrent->next;
+   }
+printf("lines(bnd1,lwd=2,col=\"green\")\n");
+
+printf("bnd2<-list(x=c(),y=c())\n");   
+   currrrent=bnd2;
+   while(currrrent!=NULL){
+      printf("bnd2$x<-c(bnd2$x,%f)\n",currrrent->data[0]);
+      printf("bnd2$y<-c(bnd2$y,%f)\n",currrrent->data[1]);
+      currrrent=currrrent->next;
+   }
+printf("lines(bnd2,lwd=2,col=\"red\")\n");
+printf("END-----------bnd1 and bnd2-----------END\n");
+
+printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
 
       // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
       curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
