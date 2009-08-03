@@ -47,6 +47,7 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 // DEBUG
 printf("--------------------------\n");
 printf("plot(bnd,type=\"l\")\n");
+printf("path<-list(x=c(),y=c())\n");
 
    node* current=mypath;
    while(current!=NULL){
@@ -66,12 +67,13 @@ printf("--------------------------\n");
 // DEBUG
 int i=0;
 
+   // keep going until we don't remove any more points.
    do{
 
 // DEBUG
-//printf("run %d\n",i);
-//i++;
-   // keep going until we don't remove any more points.
+printf("run %d\n",i);
+i++;
+
       // save previous path
       //prev.path<-my.path
       prevpath=CopyList(mypath);
@@ -79,23 +81,28 @@ int i=0;
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
 // DEBUG
-//printf("***got past delete_step \n");
+printf("***got past delete_step \n");
+
+
+printf("delete change? %d\n",has_converged(prevpath,mypath));
+
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
 // DEBUG
-//printf("***got past alter_step \n");
+printf("***got past alter_step \n");
+printf("alter change? %d\n",has_converged(prevpath,mypath));
 
       // increment convergence stopper 
       conv++;
 
 // DEBUG
-//current=mypath;
-//while(current!=NULL){
-//   printf("path$x<-c(path$x,%f)\n",current->data[0]);
-//   printf("path$y<-c(path$y,%f)\n",current->data[1]);
-//   current=current->next;
-//}
+current=mypath;
+while(current!=NULL){
+   printf("path$x<-c(path$x,%f)\n",current->data[0]);
+   printf("path$y<-c(path$y,%f)\n",current->data[1]);
+   current=current->next;
+}
 
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
@@ -124,18 +131,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    double ip1[2],ip2[2], curr_insert[2];
    int intind[2],i,j, nbnd1, nbnd2, start, err;
 
-// DEBUG
-printf("make_bnd_path\n");
-printf("p1=c(%f,%f)\n",p1[0],p1[1]);
-printf("p2=c(%f,%f)\n",p2[0],p2[1]);
-
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
-
-// DEBUG
-//printf("make_bnd_path\n");
-//printf("ip1=c(%f,%f)\n",ip1[0],ip1[1]);
-//printf("ip2=c(%f,%f)\n",ip2[0],ip2[1]);
-
 
 	// if there are no errors
    if(err==0){
@@ -294,45 +290,45 @@ printf("p2=c(%f,%f)\n",p2[0],p2[1]);
 
 
 // DEBUG
-printf("-----------bnd1 and bnd2-----------\n");
-printf("plot(bnd,type=\"l\")\n");
-
-printf("bnd1<-list(x=c(),y=c())\n");   
-   node* currrrent=bnd1;
-   while(currrrent!=NULL){
-      printf("bnd1$x<-c(bnd1$x,%f)\n",currrrent->data[0]);
-      printf("bnd1$y<-c(bnd1$y,%f)\n",currrrent->data[1]);
-      currrrent=currrrent->next;
-   }
-printf("lines(bnd1,lwd=2,col=\"green\")\n");
-
-printf("bnd2<-list(x=c(),y=c())\n");   
-   currrrent=bnd2;
-   while(currrrent!=NULL){
-      printf("bnd2$x<-c(bnd2$x,%f)\n",currrrent->data[0]);
-      printf("bnd2$y<-c(bnd2$y,%f)\n",currrrent->data[1]);
-      currrrent=currrrent->next;
-   }
-printf("lines(bnd2,lwd=2,col=\"red\")\n");
-printf("END-----------bnd1 and bnd2-----------END\n");
-
-printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//printf("-----------bnd1 and bnd2-----------\n");
+//printf("plot(bnd,type=\"l\")\n");
+//
+//printf("bnd1<-list(x=c(),y=c())\n");   
+//   node* currrrent=bnd1;
+//   while(currrrent!=NULL){
+//      printf("bnd1$x<-c(bnd1$x,%f)\n",currrrent->data[0]);
+//      printf("bnd1$y<-c(bnd1$y,%f)\n",currrrent->data[1]);
+//      currrrent=currrrent->next;
+//   }
+//printf("lines(bnd1,lwd=2,col=\"green\")\n");
+//
+//printf("bnd2<-list(x=c(),y=c())\n");   
+//   currrrent=bnd2;
+//   while(currrrent!=NULL){
+//      printf("bnd2$x<-c(bnd2$x,%f)\n",currrrent->data[0]);
+//      printf("bnd2$y<-c(bnd2$y,%f)\n",currrrent->data[1]);
+//      currrrent=currrrent->next;
+//   }
+//printf("lines(bnd2,lwd=2,col=\"red\")\n");
+//printf("END-----------bnd1 and bnd2-----------END\n");
+//
+//printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
 ///////////////////////////////////////////////////////////
 
 
 
 
-printf("length bnd1=%f\n",hull_length(bnd1));
-printf("length bnd2=%f\n",hull_length(bnd2));
+//printf("length bnd1=%f\n",hull_length(bnd1));
+//printf("length bnd2=%f\n",hull_length(bnd2));
 
 
       // pick the shorter path return path
       if(hull_length(bnd1)<hull_length(bnd2)){
-printf("bnd1\n");
+//printf("bnd1\n");
          return bnd1;
       }else{
-printf("bnd2\n");
+//printf("bnd2\n");
          return bnd2;
       }
 
@@ -422,6 +418,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
          if(mytrip[0][0]==mytrip[2][0] & 
             mytrip[0][1]==mytrip[2][1]){
 
+printf("###same stuff\n");
             // current is sitting at the 3rd entry
             // create a pointer to that
             end_ptr=current->next; // pointer to i+2
@@ -459,9 +456,11 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             //if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
             //  inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
             //             (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
-				int inout_n=0;
+				int inout_n=1;
             in_out(&bx,&by,&break_code,&xmp,&ymp,&in, &nbnd,&inout_n);
             tmpinout=in[0];
+printf("###in_out=%d\n",tmpinout);
+
 
             ///// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -498,9 +497,11 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
       } // end iteration over path
       conv++; // increment run counter
 
-   }while(!has_converged(prevpath,*path)&
-         (conv<conv_stop)); // end of do loop
+   }while(!has_converged(prevpath,*path) &
+         (conv<conv_stop) ); // end of do loop
   
+printf("conv=%d\n",conv);
+
    // free some memory? 
    free(current); 
    free(prevpath);
@@ -518,6 +519,8 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
    // Return:
    //           revised path with added/ammended vertices
    
+
+
    int i;
    double ep1[2], ep2[2], mytrip[3][2];
 
@@ -549,9 +552,9 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
       while(current!=NULL){
          // equivalent of some ANDs in the above, but doesn't cause a memory
          // problem since the while() evaluates all of the conditions.
-         if(current->next!=NULL){
+         if(current->next==NULL){
             break;
-         }else if(current->next->next!=NULL){
+         }else if(current->next->next==NULL){
             break;
          }
          // for each point i, look at the line i-1 to i+1

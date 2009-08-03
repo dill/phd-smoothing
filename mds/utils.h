@@ -332,10 +332,6 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
       ip[0]=(b1*c2-b2*c1)/(a1*b2-a2*b1);
       ip[1]=(c1*a2-a1*c2)/(a1*b2-b1*a2);
 
-// DEBUG
-printf("intpoint ip=(%f,%f)\n",ip[0],ip[1]);
-
-
 //   }else{
 //      ret<-list(x=Inf,y=Inf)
 //   }
