@@ -273,6 +273,26 @@ printf("p2=c(%f,%f)\n",p2[0],p2[1]);
       // just going by the order in the R code here, don't need to 
       // reverse, since we used push for the insertion
       
+
+      // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
+      curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+      AppendNode(&bnd1,curr_insert);
+      AppendNode(&bnd2,curr_insert); // pushed ip1 into both
+
+      curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+      AppendNode(&bnd1,curr_insert);
+      AppendNode(&bnd2,curr_insert); // pushed p1 into both
+
+      curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+      Push(&bnd1,curr_insert);
+      Push(&bnd2,curr_insert); // append ip1 for both
+
+      curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+      Push(&bnd1,curr_insert);
+      Push(&bnd2,curr_insert); // append p1 for both
+
+
+
 // DEBUG
 printf("-----------bnd1 and bnd2-----------\n");
 printf("plot(bnd,type=\"l\")\n");
@@ -298,29 +318,21 @@ printf("END-----------bnd1 and bnd2-----------END\n");
 
 printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
 printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+///////////////////////////////////////////////////////////
 
-      // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-      curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-      Push(&bnd1,curr_insert);
-      Push(&bnd2,curr_insert); // pushed ip1 into both
 
-      curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-      Push(&bnd1,curr_insert);
-      Push(&bnd2,curr_insert); // pushed p1 into both
 
-      curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-      AppendNode(&bnd1,curr_insert);
-      AppendNode(&bnd2,curr_insert); // append ip1 for both
 
-      curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-      AppendNode(&bnd1,curr_insert);
-      AppendNode(&bnd2,curr_insert); // append p1 for both
+printf("length bnd1=%f\n",hull_length(bnd1));
+printf("length bnd2=%f\n",hull_length(bnd2));
 
 
       // pick the shorter path return path
       if(hull_length(bnd1)<hull_length(bnd2)){
+printf("bnd1\n");
          return bnd1;
       }else{
+printf("bnd2\n");
          return bnd2;
       }
 
