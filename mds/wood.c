@@ -90,7 +90,8 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
-   if(err>0){
+	// if there are no errors
+   if(err==0){
 
       // This is quite horrible code.
       // What we do is: take the ordering that makes sense first
@@ -299,7 +300,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
    // keep going until we don't remove any more points.
    do{
 
-      // use prevpath to keep a copy of the previous path for comparison            
+      // use prevpath to keep a copy of the previous path for comparison
       //prev.path<-path
       prevpath=CopyList(*path);
 
@@ -365,7 +366,8 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             //if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
             //  inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
             //             (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
-            in_out(bx,by,break_code,xmp,ymp,in, nbnd,1);
+				int inout_n=0;
+            in_out(&bx,&by,&break_code,&xmp,&ymp,&in, &nbnd,&inout_n);
             tmpinout=in[0];
 
             ///// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

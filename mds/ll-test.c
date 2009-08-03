@@ -8,6 +8,8 @@ int main(void)
 
    node* mypath=NULL;
 
+	// test AppendNode and Push
+
 	double data[2];
 
 	data[0]=3;
@@ -26,8 +28,6 @@ int main(void)
 	data[1]=2;
    Push(&mypath, data);
 
-
-
 	node* current=mypath;
 
 	int i=0;
@@ -38,6 +38,22 @@ int main(void)
    	current = current->next;
 	}
 
+
+	// test CopyList
+	printf("------\n");
+
+   node* copyoflist=NULL;
+
+	copyoflist=CopyList(mypath);
+	current=copyoflist;
+
+	i=0;
+
+	while (current != NULL) {
+		i++;
+   	printf("%d:(%f,%f)\n",i,current->data[0],current->data[1]);
+   	current = current->next;
+	}
 
 	return 0;
 

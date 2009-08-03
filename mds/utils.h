@@ -414,9 +414,9 @@ double hull_length(node* hull) {
    // this is a bit ugly
    while (current != NULL) {
       curr_hull[0]=current->data[0]; curr_hull[1]=current->data[1];
-      current = current->next;
       hullen=hullen+hypot((current->data[0]-curr_hull[0]),
                            (current->data[1]-curr_hull[1]));
+      current = current->next;
    }
    return(hullen);
 }
@@ -569,20 +569,29 @@ printf("lbbindex=%d\n",lbbindex);
  */
 void Push(node** headRef, double data[2]) {
    node* newNode = malloc(sizeof(node));
-   node* head = *headRef; 
+   //node* head = *headRef; 
    newNode->data[0] = data[0];
    newNode->data[1] = data[1];
 
    // make prev of head the new node
-   head->prev = newNode; 
+   //*headRef->prev = newNode; 
 
    // next element of the new node will be the head
-   newNode->next = *headRef;  // The '*' to dereferences back to the real head
+   newNode->next = *headRef;  // The '*' to dereferences back 
+								 		// to the real head
+
+
+	if(newNode->next !=NULL){
+	   newNode->next->prev = newNode;
+   	//*headRef->prev = newNode;
+	}
+
+
+  
    // previous element of new node will be NULL
-   newNode->prev = NULL;  // The '*' to dereferences back to the real head
+   newNode->prev = NULL;  // The '*' to dereferences back to 
+								  // the real head
    *headRef = newNode;        // ditto
-
-
 
 }
 
