@@ -363,7 +363,6 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 
    node* current=NULL;   // iterator
    node* prevpath=NULL;
-
    // needed for deletion
    node* start_ptr=NULL;
    node* end_ptr=NULL;
@@ -399,7 +398,6 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
       // start point for triplet selection
       current = *path;   // iterator
 
-      //i<-2
       //while((i+1)<=length(path$x)){
       while(current!=NULL){
 
@@ -411,16 +409,12 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             break;
          }
 
-      //for(i=2; i<(npath-1); i++){
-
          // create the current triplet to inspect
          //my.trip<-pe(path,c(i-1,i,i+1))
          for(i=0;i<3;i++){ 
             mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
             current=current->next; 
          }
-
-
 
          // if we are going forward and back again, just
          // remove the point
@@ -463,10 +457,6 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             xmp[0]=(mytrip[2][0]+mytrip[0][0])/2;
             ymp[0]=(mytrip[2][1]+mytrip[0][1])/2;
 
-printf("mp<-list(x=c(%f),y=c(%f))\n",xmp[0],ymp[0]);
-printf("points(mp,pch=19)\n");
-
-
             //if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
             //  inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
             //             (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
@@ -474,20 +464,14 @@ printf("points(mp,pch=19)\n");
             in[0]=1;
             in_out(&bx,&by,&break_code,&xmp,&ymp,&in, &nbnd,&inout_n);
 
-// DEBUG
-//printf("break_code: %f\n",break_code);
-//printf("inout: %d\n",in[0]);
-//printf("iarrsum: %d == 0 \n",iarrsum(nbnd-1,intbnd));
-
             // if deleting point i makes the resulting line cross the
             // the boundary then keep it in the path, else get rid of it 
             //path<-pe(path,-i)
             
             // first part asks if there are any intersections, if there are
             // none then that's okay. Second part asks if midpoints are inside.
-            if( (iarrsum(nbnd-1,intbnd)==0) & in[0]){
+            if((iarrsum(nbnd-1,intbnd)==0) & in[0]){
 
-printf("in!\n");
                // remove point i by setting next pointer from i-1 to 
                // i+1, and prev from i+1 to i-1
 
@@ -509,10 +493,32 @@ printf("in!\n");
                // change previous
                current->prev=start_ptr; //set i+1 prev to i-1
 
-               current=current->next; // back to i+2
+               //current=current->next;
+               // now current is sitting at i+2
 
             } // end if on del middle
          } // end of if del back-and-forth
+
+
+
+printf("###part\n");
+printf("path<-list(x=c(),y=c())\n");
+while(current!=NULL){
+   printf("path$x<-c(path$x,%f)\n",current->data[0]);
+   printf("path$y<-c(path$y,%f)\n",current->data[1]);
+   current=current->next;
+}
+printf("lines(path,lwd=2,col=\"green\")\n");
+printf("###ENDpart\n");
+
+
+
+
+
+
+
+
+
       } // end iteration over path
       conv++; // increment run counter
 
@@ -520,10 +526,10 @@ printf("in!\n");
          (conv<conv_stop) ); // end of do loop
   
    // free some memory? 
-   free(current); 
-   free(prevpath);
-   free(start_ptr);
-   free(end_ptr);
+   //free(current); 
+   //free(prevpath);
+   //free(start_ptr);
+   //free(end_ptr);
 }           
 
 // alter the path
