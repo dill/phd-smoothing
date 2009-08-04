@@ -84,7 +84,16 @@ i++;
 printf("***got past delete_step \n");
 
 
-printf("delete change? %d\n",has_converged(prevpath,mypath));
+// DEBUG
+if(!has_converged(prevpath,mypath)){
+   printf("*************************\ndelete change!\n");
+   current=mypath;
+   while(current!=NULL){
+      printf("path$x<-c(path$x,%f)\n",current->data[0]);
+      printf("path$y<-c(path$y,%f)\n",current->data[1]);
+      current=current->next;
+   }
+}
 
 
       // add new vertices
@@ -349,8 +358,8 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
    // Return:
    //           revised path with dropped vertices
    
-   int i,j, intbnd[nbnd-1],tmpinout;
-   double mytrip[3][2], p1[2], p2[2], xmp, ymp;
+   int i,j, intbnd[nbnd-1];
+   double mytrip[3][2], p1[2], p2[2], xmp[1], ymp[1];
 
    node* current=NULL;   // iterator
    node* prevpath=NULL;
@@ -362,7 +371,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
    ////// needed later on for the in_out() call
    double bx[nbnd];
    double by[nbnd];
-   for(i=0;i<(nbnd-1);i++){
+   for(i=0;i<nbnd;i++){
       bx[i]=bnd[i][0];
       by[i]=bnd[i][1];
    }
@@ -371,7 +380,10 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 
    // to handle holes, multiple boundaries
    // ignore this at the moment
-   double break_code=1.0e6;
+   double xmin=minarr(nbnd,bx);
+   double ymin=minarr(nbnd,by);
+   double mina[2] = {xmin, ymin};
+   double break_code=minarr(2,mina)-1;
 
    // convergence stop
    int conv=0;
@@ -393,9 +405,9 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 
          // equivalent of some ANDs in the above, but doesn't cause a memory
          // problem since the while() evaluates all of the conditions.
-         if(current->next!=NULL){
+         if(current->next==NULL){
             break;
-         }else if(current->next->next!=NULL){
+         }else if(current->next->next==NULL){
             break;
          }
 
@@ -418,7 +430,6 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
          if(mytrip[0][0]==mytrip[2][0] & 
             mytrip[0][1]==mytrip[2][1]){
 
-printf("###same stuff\n");
             // current is sitting at the 3rd entry
             // create a pointer to that
             end_ptr=current->next; // pointer to i+2
@@ -449,26 +460,34 @@ printf("###same stuff\n");
             sp_do_intersect(p1,p2, nbnd, bnd,intbnd);
 
             // midpoints
-            xmp=(mytrip[2][0]+mytrip[0][0])/2;
-            ymp=(mytrip[2][1]+mytrip[0][1])/2;
+            xmp[0]=(mytrip[2][0]+mytrip[0][0])/2;
+            ymp[0]=(mytrip[2][1]+mytrip[0][1])/2;
 
-      
+printf("mp<-list(x=c(%f),y=c(%f))\n",xmp[0],ymp[0]);
+printf("points(mp,pch=19)\n");
+
+
             //if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
             //  inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
             //             (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
 				int inout_n=1;
+            in[0]=1;
             in_out(&bx,&by,&break_code,&xmp,&ymp,&in, &nbnd,&inout_n);
-            tmpinout=in[0];
-printf("###in_out=%d\n",tmpinout);
 
-
-            ///// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// DEBUG
+//printf("break_code: %f\n",break_code);
+//printf("inout: %d\n",in[0]);
+//printf("iarrsum: %d == 0 \n",iarrsum(nbnd-1,intbnd));
 
             // if deleting point i makes the resulting line cross the
             // the boundary then keep it in the path, else get rid of it 
             //path<-pe(path,-i)
-            if( (iarrsum(nbnd-1,intbnd)<(nbnd-1)) & tmpinout){
+            
+            // first part asks if there are any intersections, if there are
+            // none then that's okay. Second part asks if midpoints are inside.
+            if( (iarrsum(nbnd-1,intbnd)==0) & in[0]){
 
+printf("in!\n");
                // remove point i by setting next pointer from i-1 to 
                // i+1, and prev from i+1 to i-1
 
@@ -500,8 +519,6 @@ printf("###in_out=%d\n",tmpinout);
    }while(!has_converged(prevpath,*path) &
          (conv<conv_stop) ); // end of do loop
   
-printf("conv=%d\n",conv);
-
    // free some memory? 
    free(current); 
    free(prevpath);
@@ -518,8 +535,6 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
    //  bnd      the boundary
    // Return:
    //           revised path with added/ammended vertices
-   
-
 
    int i;
    double ep1[2], ep2[2], mytrip[3][2];
@@ -576,20 +591,22 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          ep2[0]=mytrip[2][0]; ep2[1]=mytrip[2][1];
 
 // DEBUG
-printf("***********************debug: pre facing\n");
-printf("ep1=c(%f,%f)\n",ep1[0],ep1[1]);
-printf("ep2=c(%f,%f)\n",ep2[0],ep2[1]);
+//printf("***********************debug: pre facing\n");
+//printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
+//printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
+//
+//printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
 
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
 // DEBUG
-printf("***********************debug: after facing\n");
+//printf("***********************debug: after facing\n");
 
             // create a new path
             newpath=make_bnd_path(ep1,ep2,nbnd,bnd);
 
 // DEBUG
-printf("***********************debug: after make_bnd_path\n");
+//printf("***********************debug: after make_bnd_path\n");
 
             // create new path, compare complete new path with old one, if the
             // new one is better then keep it.
@@ -638,13 +655,21 @@ printf("***********************debug: after make_bnd_path\n");
    } while(!has_converged(prevpath,*path)&
          (conv<conv_stop)); //end of main do
    
-   free(pathcopy);
-
+   // free some memory
+   //free(pathcopy);
+   //free(prevpath);
+   //free(newpath);
+   //free(end_ptr);
+   //free(current);
 }
 
 // check convergence
 int has_converged(node* path1, node* path2)
 {
+   // args
+   //    path1, path2      the two paths to compare
+   // return
+   //    1 if the paths are the same, 0 otherwise
    node* current1 = path1;
    node* current2 = path2;
 

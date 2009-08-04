@@ -202,8 +202,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
       nbnd        length of the boundary
       bnd         the boundary
       Return:
-            logical, TRUE= facing inside
-                                  FALSE= facing outside
+            1 if facing inside, 0 otherwise
    */
 
    int ret=0;
@@ -212,9 +211,9 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 //DEBUG
-printf("first_ips error=%d\n",err);
-printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-printf("ip2=(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//printf("first_ips error=%d\n",err);
+//printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//printf("ip2=(x=%f,y=%f)\n",ip2[0],ip2[1]);
 
 
    // if there are no errors, go ahead
@@ -247,8 +246,8 @@ printf("ip2=(x=%f,y=%f)\n",ip2[0],ip2[1]);
       double break_code=1.0e6;
 
  // DEBUG
- printf("xmp=(%f,%f)\n",xmp[0],xmp[1]);
- printf("ymp=(%f,%f)\n",ymp[0],ymp[1]);
+//printf("xmp=(%f,%f)\n",xmp[0],xmp[1]);
+//printf("ymp=(%f,%f)\n",ymp[0],ymp[1]);
 
       int in[2]={0,0};
       int tmpinout=2;
@@ -465,7 +464,15 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
-   
+
+// DEBUG
+//printf("retint=");
+//int k;
+//for(k=0;k<(nbnd-1);k++){
+//   printf(" %d,",retint[k]);
+//}
+//printf("\n");
+
 // DEBUG
 //printf("lbbindex=%d\n",lbbindex);
    
@@ -510,8 +517,9 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 //printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
 //printf("edge=list(x=c(%f,%f),y=c(%f,%f))\n",thisedge[0][0],thisedge[1][0],
 //                                            thisedge[0][1],thisedge[1][1]);
-//printf("lines(edge,col=\"red\",lwd=2);\n");
-//printf("points(p1,col=\"red\",pch=24); points(p2,col=\"red\",pch=24);\n"); 
+//printf("lines(edge,col=\"green\",lwd=2);\n");
+//printf("points(p1); points(p2);\n"); 
+//printf("points(ip,col=\"red\",pch=24)\n"); 
 //printf("****************\n");
 
          ips[i][0]=ip[0];
