@@ -115,10 +115,8 @@ while(current!=NULL){
 
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
-
-
    // return the length of the path
-   return(hull_length(mypath));
+   return(hull_length(&mypath));
 }
 
 
@@ -294,7 +292,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       Push(&bnd2,curr_insert); // append p1 for both
 
       // pick the shorter path return path
-      if(hull_length(bnd1)<hull_length(bnd2)){
+      if(hull_length(&bnd1)<hull_length(&bnd2)){
          return bnd1;
       }else{
          return bnd2;
@@ -367,11 +365,6 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
          }else if(current->next->next==NULL){
             break;
          }
-
-
-// DEBUG
-//printf("mytrip<-list(x=c(),y=c())\n");
-
 
          // create the current triplet to inspect
          //my.trip<-pe(path,c(i-1,i,i+1))
@@ -595,7 +588,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
             delete_step(path, nbnd, bnd);
 
             // if there was no improvement, then ignore what we did.
-            if(hull_length(pathcopy)<hull_length(*path)){
+            if(hull_length(&pathcopy)<hull_length(path)){
                free(path);
                node* path=pathcopy;
             }
