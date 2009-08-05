@@ -239,8 +239,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
          Push(&bnd2,curr_insert);
       }
 
-
-
 // AGAIN hope this doesn't happen at the moment   
 //      // make sure we aren't adding a superfluous vertex (not both end of a side
 //      // that we don't need)
@@ -277,7 +275,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
       // just going by the order in the R code here, don't need to 
       // reverse, since we used push for the insertion
-      
 
       // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
       curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
@@ -296,48 +293,10 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       Push(&bnd1,curr_insert);
       Push(&bnd2,curr_insert); // append p1 for both
 
-
-
-// DEBUG
-//printf("-----------bnd1 and bnd2-----------\n");
-//printf("plot(bnd,type=\"l\")\n");
-//
-//printf("bnd1<-list(x=c(),y=c())\n");   
-//   node* currrrent=bnd1;
-//   while(currrrent!=NULL){
-//      printf("bnd1$x<-c(bnd1$x,%f)\n",currrrent->data[0]);
-//      printf("bnd1$y<-c(bnd1$y,%f)\n",currrrent->data[1]);
-//      currrrent=currrrent->next;
-//   }
-//printf("lines(bnd1,lwd=2,col=\"green\")\n");
-//
-//printf("bnd2<-list(x=c(),y=c())\n");   
-//   currrrent=bnd2;
-//   while(currrrent!=NULL){
-//      printf("bnd2$x<-c(bnd2$x,%f)\n",currrrent->data[0]);
-//      printf("bnd2$y<-c(bnd2$y,%f)\n",currrrent->data[1]);
-//      currrrent=currrrent->next;
-//   }
-//printf("lines(bnd2,lwd=2,col=\"red\")\n");
-//printf("END-----------bnd1 and bnd2-----------END\n");
-//
-//printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-//printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-///////////////////////////////////////////////////////////
-
-
-
-
-//printf("length bnd1=%f\n",hull_length(bnd1));
-//printf("length bnd2=%f\n",hull_length(bnd2));
-
-
       // pick the shorter path return path
       if(hull_length(bnd1)<hull_length(bnd2)){
-//printf("bnd1\n");
          return bnd1;
       }else{
-//printf("bnd2\n");
          return bnd2;
       }
 
@@ -411,22 +370,18 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 
 
 // DEBUG
-printf("mytrip<-list(x=c(),y=c())\n");
+//printf("mytrip<-list(x=c(),y=c())\n");
 
 
          // create the current triplet to inspect
          //my.trip<-pe(path,c(i-1,i,i+1))
          for(i=0;i<3;i++){ 
             mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
-// DEBUG
-printf("mytrip$x<-c(mytrip$x,%f);mytrip$y<-c(mytrip$y,%f);\n",
-			mytrip[i][0], mytrip[i][1]);
-
-            current=current->next; 
+				// don't go to far...
+				if(i!=2){
+	            current=current->next; 
+				}
          }
-
-			// we go a bit too far here, so go back one...
-         current=current->prev; 
 
          // if we are going forward and back again, just
          // remove the point
@@ -435,8 +390,6 @@ printf("mytrip$x<-c(mytrip$x,%f);mytrip$y<-c(mytrip$y,%f);\n",
          // path<-pe(path,-c(i,i+1))
          if(mytrip[0][0]==mytrip[2][0] & 
             mytrip[0][1]==mytrip[2][1]){
-// DEBUG
-printf("###back and forward\n");
 
             // current is sitting at the 3rd entry
             // create a pointer to that
@@ -486,9 +439,6 @@ printf("###back and forward\n");
             // none then that's okay. Second part asks if midpoints are inside.
             if((iarrsum(nbnd-1,intbnd)==0) & in[0]){
 
-// DEBUG
-printf("###real delete\n");
-
                // remove point i by setting next pointer from i-1 to 
                // i+1, and prev from i+1 to i-1
 
@@ -512,33 +462,9 @@ printf("###real delete\n");
 
                //current=current->next;
                // now current is sitting at i+2
-// DEBUG
-printf("###end of real delete\n");
 
             } // end if on del middle
          } // end of if del back-and-forth
-
-
-node* cur =NULL;
-cur=*path;
-printf("###part\n");
-printf("path<-list(x=c(),y=c())\n");
-while(cur!=NULL){
-   printf("path$x<-c(path$x,%f)\n",cur->data[0]);
-   printf("path$y<-c(path$y,%f)\n",cur->data[1]);
-   cur=cur->next;
-}
-printf("lines(path,lwd=2,col=\"green\")\n");
-printf("###ENDpart\n");
-
-
-
-
-
-
-
-
-
       } // end iteration over path
       conv++; // increment run counter
 
