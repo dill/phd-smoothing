@@ -409,12 +409,24 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             break;
          }
 
+
+// DEBUG
+printf("mytrip<-list(x=c(),y=c())\n");
+
+
          // create the current triplet to inspect
          //my.trip<-pe(path,c(i-1,i,i+1))
          for(i=0;i<3;i++){ 
             mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
+// DEBUG
+printf("mytrip$x<-c(mytrip$x,%f);mytrip$y<-c(mytrip$y,%f);\n",
+			mytrip[i][0], mytrip[i][1]);
+
             current=current->next; 
          }
+
+			// we go a bit too far here, so go back one...
+         current=current->prev; 
 
          // if we are going forward and back again, just
          // remove the point
@@ -423,6 +435,8 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
          // path<-pe(path,-c(i,i+1))
          if(mytrip[0][0]==mytrip[2][0] & 
             mytrip[0][1]==mytrip[2][1]){
+// DEBUG
+printf("###back and forward\n");
 
             // current is sitting at the 3rd entry
             // create a pointer to that
@@ -472,6 +486,9 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             // none then that's okay. Second part asks if midpoints are inside.
             if((iarrsum(nbnd-1,intbnd)==0) & in[0]){
 
+// DEBUG
+printf("###real delete\n");
+
                // remove point i by setting next pointer from i-1 to 
                // i+1, and prev from i+1 to i-1
 
@@ -495,18 +512,21 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 
                //current=current->next;
                // now current is sitting at i+2
+// DEBUG
+printf("###end of real delete\n");
 
             } // end if on del middle
          } // end of if del back-and-forth
 
 
-
+node* cur =NULL;
+cur=*path;
 printf("###part\n");
 printf("path<-list(x=c(),y=c())\n");
-while(current!=NULL){
-   printf("path$x<-c(path$x,%f)\n",current->data[0]);
-   printf("path$y<-c(path$y,%f)\n",current->data[1]);
-   current=current->next;
+while(cur!=NULL){
+   printf("path$x<-c(path$x,%f)\n",cur->data[0]);
+   printf("path$y<-c(path$y,%f)\n",cur->data[1]);
+   cur=cur->next;
 }
 printf("lines(path,lwd=2,col=\"green\")\n");
 printf("###ENDpart\n");

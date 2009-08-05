@@ -194,6 +194,17 @@ int main(void)
    bnd[7][1]=0; 
    bnd[8][1]=bnd[0][0]; 
 
+
+	int i;
+	printf("bnd<-list(x=c(),y=c())\n");
+	for(i=1;i<9;i++){
+		printf("bnd$x<-c(bnd$x,%f)\n",bnd[i][0]);
+	}
+	for(i=1;i<9;i++){
+		printf("bnd$y<-c(bnd$y,%f)\n",bnd[i][1]);
+	}
+
+
    double p1[2], p2[2];
 
    p1[0]=0.5;
