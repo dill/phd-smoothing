@@ -11,6 +11,7 @@ void delete_step(node**, int nbnd, double[nbnd][2]);
 void alter_step(node**, int nbnd, double[nbnd][2]);
 int has_converged(node*, node*);
 
+
 double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 {
    // args:
@@ -21,7 +22,6 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    //   length of the path
 
    double arr[2], tmp;
-
    int conv, conv_stop;
 
    node* prevpath=NULL;
@@ -118,8 +118,6 @@ while(current!=NULL){
    // return the length of the path
    return(hull_length(&mypath));
 }
-
-
 
 
 // create a path between p1 and p2 using the boundary

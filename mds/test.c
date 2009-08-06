@@ -209,7 +209,10 @@ int main(void)
    p2[0]=0.4;
    p2[1]=0.2;
 
-   printf("ret=%f \n",wood_path(p1,p2,nbnd,bnd));
+   double ret=0;
+   ret=wood_path(p1,p2,nbnd,bnd);
+
+   printf("path length is %f\n",ret);
 
    return 0;
 }
