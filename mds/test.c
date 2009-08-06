@@ -171,36 +171,41 @@ int main(void)
 //   printf("*** facing\n");
 //
    //////////// EVERYTHING
-   int nbnd=9;
-   double bnd[nbnd][2];
+   int nbnd;
+   nbnd=9;
+   double xbnd[nbnd];
+   double ybnd[nbnd];
 
-   bnd[0][0]=0; 
-   bnd[1][0]=0; 
-   bnd[2][0]=1; 
-   bnd[3][0]=1; 
-   bnd[4][0]=0.3; 
-   bnd[5][0]=0.3; 
-   bnd[6][0]=1; 
-   bnd[7][0]=1; 
-   bnd[8][0]=bnd[0][0]; 
 
-   bnd[0][1]=0; 
-   bnd[1][1]=1; 
-   bnd[2][1]=1; 
-   bnd[3][1]=0.6; 
-   bnd[4][1]=0.6; 
-   bnd[5][1]=0.3; 
-   bnd[6][1]=0.3; 
-   bnd[7][1]=0; 
-   bnd[8][1]=bnd[0][0]; 
 
-	int i;
+   xbnd[0]=0; 
+   xbnd[1]=0; 
+   xbnd[2]=1; 
+   xbnd[3]=1; 
+   xbnd[4]=0.3; 
+   xbnd[5]=0.3; 
+   xbnd[6]=1; 
+   xbnd[7]=1; 
+   xbnd[8]=xbnd[0]; 
+
+   ybnd[0]=0; 
+   ybnd[1]=1; 
+   ybnd[2]=1; 
+   ybnd[3]=0.6; 
+   ybnd[4]=0.6; 
+   ybnd[5]=0.3; 
+   ybnd[6]=0.3; 
+   ybnd[7]=0; 
+   ybnd[8]=ybnd[0]; 
+
+   int i;
+
 	printf("bnd<-list(x=c(),y=c())\n");
-	for(i=1;i<9;i++){
-		printf("bnd$x<-c(bnd$x,%f)\n",bnd[i][0]);
+	for(i=0;i<9;i++){
+		printf("bnd$x<-c(bnd$x,%f)\n",xbnd[i]);
 	}
-	for(i=1;i<9;i++){
-		printf("bnd$y<-c(bnd$y,%f)\n",bnd[i][1]);
+	for(i=0;i<9;i++){
+		printf("bnd$y<-c(bnd$y,%f)\n",ybnd[i]);
 	}
 
    double p1[2], p2[2];
@@ -210,7 +215,7 @@ int main(void)
    p2[1]=0.2;
 
    double ret=0;
-   ret=wood_path(p1,p2,nbnd,bnd);
+   wood_path(&p1,&p2,&nbnd,&xbnd,&ybnd,&ret);
 
    printf("path length is %f\n",ret);
 

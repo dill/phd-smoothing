@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 // definition of linked list
 typedef struct node
 {
@@ -23,7 +24,7 @@ double maxarr(int narr, double arr[narr]);
 int compare_doubles (const void *a, const void *b);
 int crapfind(int narr, double[narr], double);
 int iarrsum(int narr, int arr[narr]);
-double hull_length(node** hull);
+double hull_length(node**);
 void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
 int first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2], 
                double[2], double[2], int[2]);

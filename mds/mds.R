@@ -2,8 +2,9 @@
 
 # let's see what happens
 source("utils.R")
-source("wood.R")
-source("insert.mds.R")
+source("mds-wrap.R")
+#source("wood.R")
+#source("insert.mds.R")
 
 # create the distance matrix
 create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
@@ -44,14 +45,18 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
          if(sum(intp)>1){
 
             # call the Wood algorithm
-            path<-wood_path(p1,p2,bnd)
+            #path<-wood_path(p1,p2,bnd)
+            
+            # C version
+            D[i,j]<-woodpath(p1,p2,bnd)
 
-            if(any(is.na(path))){
-               D[i,j]<-NA
-            }else{
-               # find the length of the path
-               D[i,j]<-hull_length(path)
-            }
+
+#            if(any(is.na(path))){
+#               D[i,j]<-NA
+#            }else{
+#               # find the length of the path
+#               D[i,j]<-hull_length(path)
+#            }
 
          # if the line p1p2 doesn't intersect any sides
          }else{

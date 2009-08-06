@@ -1,7 +1,7 @@
 # load soap
 library(soap)
 
-library(debug)
+#library(debug)
 
 ## create a boundary...
 bnd <- read.csv("doubleyuh-verts.csv",header=FALSE) 
@@ -37,7 +37,7 @@ y<-c(2.9465388,1.6504505,0.6649949,1.0934539,0.7399752,1.9396603,3.8355911,0.686
 
 
 source("mds.R")
-source("wood.R")
+#source("wood.R")
 source("utils.R")
 
 #x=c(-1.439891,  -3.971544 )

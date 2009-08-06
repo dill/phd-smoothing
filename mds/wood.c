@@ -5,14 +5,14 @@
 #include <math.h>
 #include "utils.h"
 
-double wood_path(double[2], double[2], int nbnd, double[nbnd][2]);
+//void wood_path(double[2], double[2], int , double[],double[], double);
 node* make_bnd_path(double[2], double[2], int nbnd, double[nbnd][2]);
 void delete_step(node**, int nbnd, double[nbnd][2]);
 void alter_step(node**, int nbnd, double[nbnd][2]);
 int has_converged(node*, node*);
 
 
-double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
+void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,double *pathlen)
 {
    // args:
    //   p1, p2      the two points to find the path between
@@ -21,11 +21,18 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    //  return:
    //   length of the path
 
-   double arr[2], tmp;
-   int conv, conv_stop;
+   double arr[2], tmp, bnd[*nbnd][2];
+   int conv, conv_stop, i;
 
    node* prevpath=NULL;
    node* mypath=NULL;
+
+   // HACK: put things in the right format
+   for(i=0; i<*nbnd; i++){
+printf("%d\n",i);
+      bnd[i][0]=xbnd[i];
+      bnd[i][1]=ybnd[i];
+   }
 
    // HACK:make sure that the points are defined from the left,
    // this may or may not be a fix to the paths joining the wrong points
@@ -42,7 +49,7 @@ double wood_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   mypath=make_bnd_path(p1,p2,nbnd,bnd);
+   mypath=make_bnd_path(p1,p2,*nbnd,bnd);
 
 // DEBUG
 printf("--------------------------\n");
@@ -65,7 +72,7 @@ printf("--------------------------\n");
 
 
 // DEBUG
-int i=0;
+i=0;
 
    // keep going until we don't remove any more points.
    do{
@@ -79,7 +86,7 @@ i++;
       prevpath=CopyList(mypath);
 
       // delete step, remove anything that doesn't need to be there
-      delete_step(&mypath,nbnd,bnd);
+      delete_step(&mypath,*nbnd,bnd);
 // DEBUG
 printf("***got past delete_step \n");
 
@@ -97,7 +104,7 @@ if(!has_converged(prevpath,mypath)){
 
 
       // add new vertices
-      alter_step(&mypath,nbnd,bnd);
+      alter_step(&mypath,*nbnd,bnd);
 // DEBUG
 printf("***got past alter_step \n");
 printf("alter change? %d\n",has_converged(prevpath,mypath));
@@ -116,7 +123,7 @@ while(current!=NULL){
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
    // return the length of the path
-   return(hull_length(&mypath));
+   *pathlen=hull_length(&mypath);
 }
 
 
