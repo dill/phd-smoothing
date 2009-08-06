@@ -29,7 +29,6 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    // HACK: put things in the right format
    for(i=0; i<*nbnd; i++){
-printf("%d\n",i);
       bnd[i][0]=xbnd[i];
       bnd[i][1]=ybnd[i];
    }
@@ -141,7 +140,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    // find the first intersection between p1, p2 and the boundary side that 
    // each point intersects
    double ip1[2],ip2[2], curr_insert[2];
-   int intind[2],i,j, nbnd1, nbnd2, start, err;
+   int intind[2],i, nbnd1, nbnd2, start, err;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
@@ -337,7 +336,6 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
       by[i]=bnd[i][1];
    }
    
-   int in[1];
 
    // to handle holes, multiple boundaries
    // ignore this at the moment
@@ -426,6 +424,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             //  inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
             //             (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
 				int inout_n=1;
+            int in[1];
             in[0]=1;
             in_out(&bx,&by,&break_code,&xmp,&ymp,&in, &nbnd,&inout_n);
 

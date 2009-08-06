@@ -28,15 +28,13 @@ double hull_length(node**);
 void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
 int first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2], 
                double[2], double[2], int[2]);
-
 void Push(node**, double[2]);
 void AppendNode(node**, double[2]);
 node* CopyList(node*);
 int Length(node*);
 
-
-
-
+// for in_out in separate file
+void in_out(double *, double *, double *,double *,double *,int *, int *, int * );
 
 
 // do two points and the boundary intersect?
@@ -253,7 +251,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
       int in[2]={0,0};
       int tmpinout=2;
 
-      in_out(bx, by, break_code, xmp, ymp, in, nbnd, tmpinout);
+      in_out(&bx, &by, &break_code, &xmp, &ymp, &in, &nbnd, &tmpinout);
 
       // if they are both inside, return true
       if(in[0] && in[1]) ret=1;

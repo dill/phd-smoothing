@@ -4,6 +4,7 @@
    then be loaded by dyn.load("soap.so") and called with .C() */
 
 /* SNIPSNIPSNIP */
+//void in_out(double *, double *, double *,double *,double *,int *, int *, int * );
 
 void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
 /* finds out whether points in arrays x,y are inside boundary or outside, by counting boundary 
