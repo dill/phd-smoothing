@@ -530,7 +530,10 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          //my.trip<-pe(path,c(i-1,i,i+1))
          for(i=0;i<3;i++){
             mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
-            current=current->next;
+				// don't go to far...
+				if(i!=2){
+            	current=current->next;
+				}
          }
                                              
          //ep1<-pe(my.trip,1)

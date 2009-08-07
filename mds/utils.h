@@ -461,6 +461,15 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    // find intersections 
    do_intersect(p1,p2,nbnd,bnd,retint);
    
+// DEBUG
+printf("retint=");
+int k;
+for(k=0;k<(nbnd-1);k++){
+	printf("%d ",retint[k]);
+}
+printf("\n");
+
+
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
 
