@@ -176,8 +176,6 @@ int main(void)
    double xbnd[nbnd];
    double ybnd[nbnd];
 
-
-
    xbnd[0]=0; 
    xbnd[1]=0; 
    xbnd[2]=1; 
@@ -209,10 +207,10 @@ int main(void)
 	}
 
    double p1[2], p2[2];
-   p1[0]=0.5;
-   p1[1]=0.7;
-   p2[0]=0.4;
-   p2[1]=0.2;
+   p2[0]=0.5;
+   p2[1]=0.7;
+   p1[0]=0.4;
+   p1[1]=0.2;
 
    double ret=0;
    wood_path(&p1,&p2,&nbnd,&xbnd,&ybnd,&ret);

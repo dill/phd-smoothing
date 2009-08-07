@@ -220,14 +220,14 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       nbnd2=nbnd-nbnd1; // number of elements
 
       // handle the case where start is actually the end
-      if(intind[1]!=(nbnd-1)){
+      if(intind[1]!=nbnd){
          start=intind[1];
       }else{
          start=1;
       }
 
       // insert until we hit the end 
-      for(i=start;i<(nbnd-1);i++){
+      for(i=start;i<nbnd;i++){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
          Push(&bnd2,curr_insert);
@@ -235,7 +235,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
       // insert from the end back to intend[0] 
       //             vvvvvvv don't include intend[0] twice
-      for(i=(nbnd-1);i>=intind[0];i--){
+      for(i=nbnd;i>=intind[0];i--){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
          Push(&bnd2,curr_insert);
@@ -319,7 +319,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
    // Return:
    //           revised path with dropped vertices
    
-   int i,j, intbnd[nbnd-1];
+   int i,j, intbnd[nbnd];
    double mytrip[3][2], p1[2], p2[2], xmp[1], ymp[1];
 
    node* current=NULL;   // iterator
@@ -434,7 +434,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             
             // first part asks if there are any intersections, if there are
             // none then that's okay. Second part asks if midpoints are inside.
-            if((iarrsum(nbnd-1,intbnd)==0) & in[0]){
+            if((iarrsum(nbnd,intbnd)==0) & in[0]){
 
                // remove point i by setting next pointer from i-1 to 
                // i+1, and prev from i+1 to i-1
