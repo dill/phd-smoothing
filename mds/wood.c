@@ -143,6 +143,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    int intind[2],i,start, err;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+      printf("intind=%d, %d\n",intind[0],intind[1]);
 
 	// if there are no errors
    if(err==0){
@@ -155,7 +156,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       // first sort the intersection indices
       //
       //  IGNORE AT THE MOMENT
-      twosort(intind);
+      itwosort(intind);
 
       // want elements intind[0]-1 to intind[1 ](inclusive)
       //picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
@@ -164,11 +165,12 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
       // initialize a linked list, first the head
       node* bnd1 = NULL;
-      //bnd1 = malloc(sizeof(struct node*));
-      // ^^^^^^^^^^^^ needed?
 
       // since we ordered intind first, we don't need to worry too
       // much about 
+
+
+      printf("intind=%d, %d\n",intind[0],intind[1]);
 
       // push everything in
       //                     vvvvvvvvvv <- since we want it to be inclusive
@@ -208,8 +210,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
       // initialize a linked list, first the head
       node* bnd2 = NULL;
-      //bnd2 = malloc(sizeof(struct node*));
-      // ^^^ need this?
 
       // handle the case where start is actually the end
       if(intind[1]!=nbnd){
@@ -230,7 +230,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       for(i=nbnd;i>=intind[0];i--){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
-         Push(&bnd2,curr_insert);
+         AppendNode(&bnd2,curr_insert);
       }
 
 // AGAIN hope this doesn't happen at the moment   
@@ -286,6 +286,38 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
       Push(&bnd1,curr_insert);
       Push(&bnd2,curr_insert); // append p1 for both
+
+
+
+
+
+// DEBUG
+node* current = NULL;
+current=bnd1;
+printf("bnd1<-list(x=c(),y=c())\n");
+while(current!=NULL){
+   printf("bnd1$x<-c(bnd1$x,%f)\n",current->data[0]);
+   printf("bnd1$y<-c(bnd1$y,%f)\n",current->data[1]);
+   current=current->next;
+}
+
+
+
+current=bnd2;
+printf("bnd2<-list(x=c(),y=c())\n");
+while(current!=NULL){
+   printf("bnd2$x<-c(bnd2$x,%f)\n",current->data[0]);
+   printf("bnd2$y<-c(bnd2$y,%f)\n",current->data[1]);
+   current=current->next;
+}
+
+printf("lines(bnd1,col=\"orange\")\n");
+printf("lines(bnd2,col=\"purple\")\n");
+
+
+
+
+
 
       // pick the shorter path return path
       if(hull_length(&bnd1)<hull_length(&bnd2)){

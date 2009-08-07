@@ -14,7 +14,7 @@ typedef struct node
 } node;
 
 // some prototypes
-void twosort(double[2]);
+void twosort(double *);
 int online(double[2],double[2][2]);
 int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]);
 void intpoint(double[2], double[2],double[2][2],double[2]);
@@ -714,10 +714,9 @@ int Length(node* head) {
  * Real utility stuff below here!
  */
 
-void twosort(double twovec[2])
+void twosort(double *twovec)
 {
    // see if two vectors are small->large
- 
    double tmp;  
 
    if(twovec[1]<twovec[0])
@@ -726,10 +725,21 @@ void twosort(double twovec[2])
       twovec[0]=twovec[1];
       twovec[1]=tmp;
    }
-
-//   return(twovec);
 }
 
+// integer version of the above
+void itwosort(int *twovec)
+{
+   // see if two vectors are small->large
+   int tmp;  
+
+   if(twovec[1]<twovec[0])
+   {
+      tmp=twovec[0];
+      twovec[0]=twovec[1];
+      twovec[1]=tmp;
+   }
+}
 
 // find the maximum in an array
 double maxarr(int narr, double arr[])
