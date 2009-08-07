@@ -182,8 +182,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
          Push(&bnd1,curr_insert);
       }
 
-
-
 // Hope this doesn't happen at the moment   
 //      // make sure we aren't adding a superfluous vertex (not both end of a side
 //      // that we don't need)
