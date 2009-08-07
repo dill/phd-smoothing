@@ -140,7 +140,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    // find the first intersection between p1, p2 and the boundary side that 
    // each point intersects
    double ip1[2],ip2[2], curr_insert[2];
-   int intind[2],i, nbnd1, nbnd2, start, err;
+   int intind[2],i,start, err;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
@@ -155,7 +155,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       // first sort the intersection indices
       //
       //  IGNORE AT THE MOMENT
-      //twosort(intind);
+      twosort(intind);
 
       // want elements intind[0]-1 to intind[1 ](inclusive)
       //picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
@@ -166,10 +166,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       node* bnd1 = NULL;
       //bnd1 = malloc(sizeof(struct node*));
       // ^^^^^^^^^^^^ needed?
-
-      nbnd1=intind[1]-intind[0]-1-1; // number of elements
-      // remember bnd is of size nbnd, but first and last elements
-      // are the same.
 
       // since we ordered intind first, we don't need to worry too
       // much about 
@@ -214,8 +210,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       node* bnd2 = NULL;
       //bnd2 = malloc(sizeof(struct node*));
       // ^^^ need this?
-
-      nbnd2=nbnd-nbnd1; // number of elements
 
       // handle the case where start is actually the end
       if(intind[1]!=nbnd){
