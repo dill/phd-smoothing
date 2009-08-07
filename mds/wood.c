@@ -53,6 +53,10 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 // DEBUG
 printf("--------------------------\n");
 printf("plot(bnd,type=\"l\")\n");
+printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+printf("points(p1)\n");
+printf("points(p2)\n");
 printf("path<-list(x=c(),y=c())\n");
 
    node* current=mypath;
@@ -270,6 +274,17 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       // just going by the order in the R code here, don't need to 
       // reverse, since we used push for the insertion
 
+node* current = NULL;
+current=bnd1;
+while(current->next!=NULL){
+   current=current->next;
+}
+double testnode[2];
+testnode[0]=current->data[0];
+testnode[1]=current->data[1];
+
+
+
       // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
       curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
       AppendNode(&bnd1,curr_insert);
@@ -281,18 +296,14 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
       curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
       Push(&bnd1,curr_insert);
-      Push(&bnd2,curr_insert); // append ip1 for both
+      Push(&bnd2,curr_insert); // append ip2 for both
 
       curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
       Push(&bnd1,curr_insert);
-      Push(&bnd2,curr_insert); // append p1 for both
-
-
-
+      Push(&bnd2,curr_insert); // append p2 for both
 
 
 // DEBUG
-node* current = NULL;
 current=bnd1;
 printf("bnd1<-list(x=c(),y=c())\n");
 while(current!=NULL){
@@ -300,9 +311,6 @@ while(current!=NULL){
    printf("bnd1$y<-c(bnd1$y,%f)\n",current->data[1]);
    current=current->next;
 }
-
-
-
 current=bnd2;
 printf("bnd2<-list(x=c(),y=c())\n");
 while(current!=NULL){
@@ -310,13 +318,8 @@ while(current!=NULL){
    printf("bnd2$y<-c(bnd2$y,%f)\n",current->data[1]);
    current=current->next;
 }
-
 printf("lines(bnd1,col=\"orange\")\n");
 printf("lines(bnd2,col=\"purple\")\n");
-
-
-
-
 
 
       // pick the shorter path return path
@@ -326,8 +329,10 @@ printf("lines(bnd2,col=\"purple\")\n");
          return bnd2;
       }
 
-   } // end of error if()
+   }else{ // end of error if()
 
+      printf("ERROR: Error returned from first_ips\n");
+   }
 }
 
 
