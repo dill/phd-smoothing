@@ -493,7 +493,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 				int inout_n=1;
             int in[1];
             in[0]=1;
-            in_out(&bx,&by,&break_code,&xmp,&ymp,&in, &nbnd,&inout_n);
+            in_out(bx,by,&break_code,xmp,ymp,in, &nbnd,&inout_n);
 
             // if deleting point i makes the resulting line cross the
             // the boundary then keep it in the path, else get rid of it 
@@ -657,18 +657,18 @@ printf("***********************debug: after facing\n");
             
          }
          
-        	current=current->prev;
+        	current=current->prev; // go back to i, need this to catch all triplets
       } // end of iteration over the path
 
 
 ////////////////// 
-            // cut out anything silly
-            delete_step(path, nbnd, bnd);
-
-            // if there was no improvement, then ignore what we did.
+//            // cut out anything silly
+//            delete_step(path, nbnd, bnd);
+//
+//            // if there was no improvement, then ignore what we did.
 //            if(hull_length(&pathcopy)<hull_length(path)){
-// DEBUG
-//printf("pathcopy<path\n");
+//// DEBUG
+////printf("pathcopy<path\n");
 //               free(path);
 //               node* path=pathcopy;
 //            }

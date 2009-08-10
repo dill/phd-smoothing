@@ -207,7 +207,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 //DEBUG
-//printf("first_ips error=%d\n",err);
+printf("first_ips error=%d\n",err);
 //printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
 //printf("ip2=(x=%f,y=%f)\n",ip2[0],ip2[1]);
 
@@ -243,14 +243,17 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
       // don't handle this at the moment
       double break_code=1.0e6;
 
- // DEBUG
-//printf("xmp=(%f,%f)\n",xmp[0],xmp[1]);
-//printf("ymp=(%f,%f)\n",ymp[0],ymp[1]);
+printf("xmp<-list(x=%f,y=%f)\n",xmp[0],xmp[1]);
+printf("ymp<-list(x=%f,y=%f)\n",ymp[0],ymp[1]);
 
       int in[2]={0,0};
       int tmpinout=2;
 
-      in_out(&bx, &by, &break_code, &xmp, &ymp, &in, &nbnd, &tmpinout);
+      in_out(bx, by, &break_code, xmp, ymp, *in, &nbnd, &tmpinout);
+
+// DEBUG
+printf("in=%d,%d\n",in[0],in[1]);
+
 
       // if they are both inside, return true
       if(in[0] && in[1]) ret=1;
