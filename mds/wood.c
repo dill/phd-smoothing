@@ -271,36 +271,72 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 //      }
 ////////////////////////////////////   
 
-      // just going by the order in the R code here, don't need to 
-      // reverse, since we used push for the insertion
+      // check to work out the order of Push/AppendNodes
+      node* current = NULL;
+      current=bnd1;
 
-node* current = NULL;
-current=bnd1;
-while(current->next!=NULL){
-   current=current->next;
-}
-double testnode[2];
-testnode[0]=current->data[0];
-testnode[1]=current->data[1];
+      double testnode[2];
+      int ints[nbnd];
 
+      // check if the line between ip2 and the first element of
+      // bnd1 and bnd2 are inside...
 
+      // first element of bnd1
+      testnode[0]=current->data[0];
+      testnode[1]=current->data[1];
+
+      sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
+//printf("arr1:%d\n",iarrsum(nbnd,ints));
+
+      if(iarrsum(nbnd,ints)==0){
+         // first element of bnd2
+         current=bnd2;
+         testnode[0]=current->data[0];
+         testnode[1]=current->data[1];
+         sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
+//printf("arr2:%d\n",iarrsum(nbnd,ints));
+      }
 
       // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-      curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-      AppendNode(&bnd1,curr_insert);
-      AppendNode(&bnd2,curr_insert); // pushed ip1 into both
 
-      curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-      AppendNode(&bnd1,curr_insert);
-      AppendNode(&bnd2,curr_insert); // pushed p1 into both
+      if(iarrsum(nbnd,ints)==0){
 
-      curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
-      Push(&bnd1,curr_insert);
-      Push(&bnd2,curr_insert); // append ip2 for both
+         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+         AppendNode(&bnd1,curr_insert);
+         AppendNode(&bnd2,curr_insert); // pushed ip1 into both
+   
+         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+         AppendNode(&bnd1,curr_insert);
+         AppendNode(&bnd2,curr_insert); // pushed p1 into both
+   
+         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+         Push(&bnd1,curr_insert);
+         Push(&bnd2,curr_insert); // append ip2 for both
+   
+         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+         Push(&bnd1,curr_insert);
+         Push(&bnd2,curr_insert); // append p2 for both
 
-      curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-      Push(&bnd1,curr_insert);
-      Push(&bnd2,curr_insert); // append p2 for both
+      }else{
+
+         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+         Push(&bnd1,curr_insert);
+         Push(&bnd2,curr_insert); // pushed ip1 into both
+   
+         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+         Push(&bnd1,curr_insert);
+         Push(&bnd2,curr_insert); // pushed p1 into both
+   
+         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+         AppendNode(&bnd1,curr_insert);
+         AppendNode(&bnd2,curr_insert); // append ip2 for both
+   
+         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+         AppendNode(&bnd1,curr_insert);
+         AppendNode(&bnd2,curr_insert); // append p2 for both
+
+      }
+
 
 
 // DEBUG
