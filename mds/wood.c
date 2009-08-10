@@ -51,23 +51,23 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    mypath=make_bnd_path(p1,p2,*nbnd,bnd);
 
 // DEBUG
-printf("--------------------------\n");
-printf("plot(bnd,type=\"l\")\n");
-printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
-printf("points(p1)\n");
-printf("points(p2)\n");
-printf("path<-list(x=c(),y=c())\n");
+//printf("--------------------------\n");
+//printf("plot(bnd,type=\"l\")\n");
+//printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+//printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+//printf("points(p1)\n");
+//printf("points(p2)\n");
+//printf("path<-list(x=c(),y=c())\n");
 
-   node* current=mypath;
-   while(current!=NULL){
-      printf("path$x<-c(path$x,%f)\n",current->data[0]);
-      printf("path$y<-c(path$y,%f)\n",current->data[1]);
-      current=current->next;
-   }
+//   node* current=mypath;
+//   while(current!=NULL){
+//      printf("path$x<-c(path$x,%f)\n",current->data[0]);
+//      printf("path$y<-c(path$y,%f)\n",current->data[1]);
+//      current=current->next;
+//   }
 
-printf("lines(path,lwd=2,col=\"red\")\n");
-printf("--------------------------\n");
+//printf("lines(path,lwd=2,col=\"red\")\n");
+//printf("--------------------------\n");
 
    // convergence stop
    conv=0;
@@ -75,14 +75,14 @@ printf("--------------------------\n");
 
 
 // DEBUG
-i=0;
+//i=0;
 
    // keep going until we don't remove any more points.
    do{
 
 // DEBUG
-printf("run %d\n",i);
-i++;
+//printf("run %d\n",i);
+//i++;
 
       // save previous path
       //prev.path<-my.path
@@ -95,33 +95,33 @@ printf("***got past delete_step \n");
 
 
 // DEBUG
-if(!has_converged(prevpath,mypath)){
-   printf("*************************\ndelete change!\n");
-   current=mypath;
-   while(current!=NULL){
-      printf("path$x<-c(path$x,%f)\n",current->data[0]);
-      printf("path$y<-c(path$y,%f)\n",current->data[1]);
-      current=current->next;
-   }
-}
+//if(!has_converged(prevpath,mypath)){
+//   printf("*************************\ndelete change!\n");
+//   current=mypath;
+//   while(current!=NULL){
+//      printf("path$x<-c(path$x,%f)\n",current->data[0]);
+//      printf("path$y<-c(path$y,%f)\n",current->data[1]);
+//      current=current->next;
+//   }
+//}
 
 
       // add new vertices
       alter_step(&mypath,*nbnd,bnd);
 // DEBUG
 printf("***got past alter_step \n");
-printf("alter change? %d\n",has_converged(prevpath,mypath));
+//printf("alter change? %d\n",has_converged(prevpath,mypath));
 
       // increment convergence stopper 
       conv++;
 
 // DEBUG
-current=mypath;
-while(current!=NULL){
-   printf("path$x<-c(path$x,%f)\n",current->data[0]);
-   printf("path$y<-c(path$y,%f)\n",current->data[1]);
-   current=current->next;
-}
+//current=mypath;
+//while(current!=NULL){
+//   printf("path$x<-c(path$x,%f)\n",current->data[0]);
+//   printf("path$y<-c(path$y,%f)\n",current->data[1]);
+//   current=current->next;
+//}
 
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
@@ -147,7 +147,8 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    int intind[2],i,start, err;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
-      printf("intind=%d, %d\n",intind[0],intind[1]);
+// DEBUG
+//printf("intind=%d, %d\n",intind[0],intind[1]);
 
 	// if there are no errors
    if(err==0){
@@ -340,22 +341,22 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
 
 // DEBUG
-current=bnd1;
-printf("bnd1<-list(x=c(),y=c())\n");
-while(current!=NULL){
-   printf("bnd1$x<-c(bnd1$x,%f)\n",current->data[0]);
-   printf("bnd1$y<-c(bnd1$y,%f)\n",current->data[1]);
-   current=current->next;
-}
-current=bnd2;
-printf("bnd2<-list(x=c(),y=c())\n");
-while(current!=NULL){
-   printf("bnd2$x<-c(bnd2$x,%f)\n",current->data[0]);
-   printf("bnd2$y<-c(bnd2$y,%f)\n",current->data[1]);
-   current=current->next;
-}
-printf("lines(bnd1,col=\"orange\")\n");
-printf("lines(bnd2,col=\"purple\")\n");
+//current=bnd1;
+//printf("bnd1<-list(x=c(),y=c())\n");
+//while(current!=NULL){
+//   printf("bnd1$x<-c(bnd1$x,%f)\n",current->data[0]);
+//   printf("bnd1$y<-c(bnd1$y,%f)\n",current->data[1]);
+//   current=current->next;
+//}
+//current=bnd2;
+//printf("bnd2<-list(x=c(),y=c())\n");
+//while(current!=NULL){
+//   printf("bnd2$x<-c(bnd2$x,%f)\n",current->data[0]);
+//   printf("bnd2$y<-c(bnd2$y,%f)\n",current->data[1]);
+//   current=current->next;
+//}
+//printf("lines(bnd1,col=\"orange\")\n");
+//printf("lines(bnd2,col=\"purple\")\n");
 
 
       // pick the shorter path return path
@@ -532,12 +533,6 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 
    }while(!has_converged(prevpath,*path) &
          (conv<conv_stop) ); // end of do loop
-  
-   // free some memory? 
-   //free(current); 
-   //free(prevpath);
-   //free(start_ptr);
-   //free(end_ptr);
 }           
 
 // alter the path
@@ -600,6 +595,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
             	current=current->next;
 				}
          }
+         // current at i+1
                                              
          //ep1<-pe(my.trip,1)
          //ep2<-pe(my.trip,3)
@@ -608,16 +604,21 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          ep2[0]=mytrip[2][0]; ep2[1]=mytrip[2][1];
 
 // DEBUG
-//printf("***********************debug: pre facing\n");
-//printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
-//printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
-//
-//printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
+printf("***********************debug: pre facing\n");
+printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
+printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
+printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
+printf("points(ep1,pch=24)\n");
+printf("points(ep2,pch=24)\n");
 
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
 // DEBUG
-//printf("***********************debug: after facing\n");
+printf("***********************debug: after facing\n");
+//printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
+//printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
+//printf("points(ep1,pch=24)\n");
+//printf("points(ep2,pch=24)\n");
 
             // create a new path
             newpath=make_bnd_path(ep1,ep2,nbnd,bnd);
@@ -646,7 +647,6 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
             newpath->prev=current; // point head of newpath back 
             current->next=newpath; // point i-1 next to the head of newpath
    
-            // set current back to i+1
             // fast forward to the end of newpath
             while(current->next!=NULL){
                current=current->next;
@@ -655,29 +655,25 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
             // point the end of newpath to i+1
             end_ptr->prev=current; // set previous of i+1 to be the end of newpath
             current->next=end_ptr;
+
+            current=current->next; // current now at i+1
             
+         }
             // cut out anything silly
             delete_step(path, nbnd, bnd);
 
             // if there was no improvement, then ignore what we did.
             if(hull_length(&pathcopy)<hull_length(path)){
+// DEBUG
+printf("pathcopy<path\n");
                free(path);
                node* path=pathcopy;
             }
-         }
-         i<-i+1;
-      }
+      } // end of iteration over the path
       conv++;
 
    } while(!has_converged(prevpath,*path)&
          (conv<conv_stop)); //end of main do
-   
-   // free some memory
-   //free(pathcopy);
-   //free(prevpath);
-   //free(newpath);
-   //free(end_ptr);
-   //free(current);
 }
 
 // check convergence

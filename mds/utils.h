@@ -189,9 +189,6 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
 }
 
 
-
-
-
 /* determine whether the line between two points is facing inside or outside */
 int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 {
@@ -217,6 +214,8 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 
    // if there are no errors, go ahead
    if(err==0){
+//DEBUG
+printf("first_ips error=%d\n",err);
       // midpoint between p1 and first intersection 
       double p1mp[2]={(ip1[0]+p1[0])/2,(ip1[1]+p1[1])/2};
       // midpoint between p2 and first intersection 
@@ -443,7 +442,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    *                 error code, 0=okay
    */
 
-   int i, lbbindex, firstel, lastel;
+   int i, lbbindex, firstel, lastel, retint[nbnd];
    double thisedge[2][2];
    double ip[2];
 
@@ -453,10 +452,10 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    // do the bounding box check first, for speed
    // do_intersect returns a string of T/F values
    // default set to true
-   int retint[nbnd];
-   for(i=0;i<nbnd;i++){
-      retint[i]=1;
-   }
+//   int retint[nbnd];
+//   for(i=0;i<nbnd;i++){
+//      retint[i]=1;
+//   }
   
    // find intersections 
    do_intersect(p1,p2,nbnd,bnd,retint);
@@ -482,7 +481,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 //printf("\n");
 
 // DEBUG
-//printf("lbbindex=%d\n",lbbindex);
+printf("lbbindex=%d\n",lbbindex);
    
    // if lbbindex < 1 increment err
    if(lbbindex>1){
@@ -561,17 +560,17 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       qsort(&sortdists,lbbindex,sizeof(double),compare_doubles);
 
 // DEBUG
-//printf("**************qsort debug ************\n");
-//int k;
-//for(k=0;k<lbbindex;k++){
-//   printf("%f,",dists[k]);
-//}
-//printf("\n");
-//for(k=0;k<lbbindex;k++){
-//   printf("%f,",sortdists[k]);
-//}
-//printf("\n");
-//printf("**************END qsort debug ************\n");
+printf("**************qsort debug ************\n");
+int k;
+for(k=0;k<lbbindex;k++){
+   printf("%f,",dists[k]);
+}
+printf("\n");
+for(k=0;k<lbbindex;k++){
+   printf("%f,",sortdists[k]);
+}
+printf("\n");
+printf("**************END qsort debug ************\n");
 ///////////////////////////////////
 
 
