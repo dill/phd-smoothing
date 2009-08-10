@@ -215,7 +215,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
    // if there are no errors, go ahead
    if(err==0){
 //DEBUG
-printf("first_ips error=%d\n",err);
+//printf("first_ips error=%d\n",err);
       // midpoint between p1 and first intersection 
       double p1mp[2]={(ip1[0]+p1[0])/2,(ip1[1]+p1[1])/2};
       // midpoint between p2 and first intersection 
@@ -481,7 +481,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 //printf("\n");
 
 // DEBUG
-printf("lbbindex=%d\n",lbbindex);
+//printf("lbbindex=%d\n",lbbindex);
    
    // if lbbindex < 1 increment err
    if(lbbindex>1){
@@ -560,17 +560,17 @@ printf("lbbindex=%d\n",lbbindex);
       qsort(&sortdists,lbbindex,sizeof(double),compare_doubles);
 
 // DEBUG
-printf("**************qsort debug ************\n");
-int k;
-for(k=0;k<lbbindex;k++){
-   printf("%f,",dists[k]);
-}
-printf("\n");
-for(k=0;k<lbbindex;k++){
-   printf("%f,",sortdists[k]);
-}
-printf("\n");
-printf("**************END qsort debug ************\n");
+//printf("**************qsort debug ************\n");
+//int k;
+//for(k=0;k<lbbindex;k++){
+//   printf("%f,",dists[k]);
+//}
+//printf("\n");
+//for(k=0;k<lbbindex;k++){
+//   printf("%f,",sortdists[k]);
+//}
+//printf("\n");
+//printf("**************END qsort debug ************\n");
 ///////////////////////////////////
 
 
@@ -593,7 +593,7 @@ printf("**************END qsort debug ************\n");
 
    }else{
       // let the Robot warn us...
-      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
+//      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
       err++;
    }
 

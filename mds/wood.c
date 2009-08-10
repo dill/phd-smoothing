@@ -123,6 +123,7 @@ printf("***got past alter_step \n");
 //   current=current->next;
 //}
 
+printf("******* END  ********** \n");
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
    // return the length of the path
@@ -546,7 +547,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
    //           revised path with added/ammended vertices
 
    int i;
-   double ep1[2], ep2[2], mytrip[3][2];
+   double ep1[2], ep2[2];
 
    node* prevpath=NULL;
    node* newpath=NULL;
@@ -584,28 +585,24 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          // for each point i, look at the line i-1 to i+1
 
          // copy the path for comparison
-         pathcopy=CopyList(*path);
+//         pathcopy=CopyList(*path);
 
          // create the current triplet to inspect
          //my.trip<-pe(path,c(i-1,i,i+1))
-         for(i=0;i<3;i++){
-            mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
-				// don't go to far...
-				if(i!=2){
-            	current=current->next;
-				}
-         }
-         // current at i+1
-                                             
          //ep1<-pe(my.trip,1)
          //ep2<-pe(my.trip,3)
-         // correct format for facing() call
-         ep1[0]=mytrip[0][0]; ep1[1]=mytrip[0][1];
-         ep2[0]=mytrip[2][0]; ep2[1]=mytrip[2][1];
-
+   
+         ep1[0]=current->data[0];
+         ep1[1]=current->data[1];
+        	current=current->next;
+        	current=current->next;
+         ep2[0]=current->data[0];
+         ep2[1]=current->data[1];
+         // current at i+1
+                                             
 // DEBUG
 printf("***********************debug: pre facing\n");
-printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
+//printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
 printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
 printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
 printf("points(ep1,pch=24)\n");
@@ -659,17 +656,26 @@ printf("***********************debug: after facing\n");
             current=current->next; // current now at i+1
             
          }
+         
+        	current=current->prev;
+      } // end of iteration over the path
+
+
+////////////////// 
             // cut out anything silly
             delete_step(path, nbnd, bnd);
 
             // if there was no improvement, then ignore what we did.
-            if(hull_length(&pathcopy)<hull_length(path)){
+//            if(hull_length(&pathcopy)<hull_length(path)){
 // DEBUG
-printf("pathcopy<path\n");
-               free(path);
-               node* path=pathcopy;
-            }
-      } // end of iteration over the path
+//printf("pathcopy<path\n");
+//               free(path);
+//               node* path=pathcopy;
+//            }
+//////////////////////
+
+
+
       conv++;
 
    } while(!has_converged(prevpath,*path)&
