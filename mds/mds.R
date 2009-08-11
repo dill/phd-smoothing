@@ -47,9 +47,9 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
             # call the R Wood algorithm
             oldpath<-wood_path(p1,p2,bnd)
             
-plot(bnd,type="l")
-lines(oldpath,lwd=2,col="red")
-scan()
+#plot(bnd,type="l")
+#lines(oldpath,lwd=2,col="red")
+#scan()
             # C version
             D[i,j]<-woodpath(p1,p2,bnd)
 

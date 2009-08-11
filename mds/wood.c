@@ -95,6 +95,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
 
 // DEBUG
+printf("delete change? %d\n",has_converged(prevpath,mypath));
 //if(!has_converged(prevpath,mypath)){
 //   printf("*************************\ndelete change!\n");
 //   current=mypath;
@@ -110,7 +111,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       alter_step(&mypath,*nbnd,bnd);
 // DEBUG
 //printf("***got past alter_step \n");
-//printf("alter change? %d\n",has_converged(prevpath,mypath));
+printf("alter change? %d\n",has_converged(prevpath,mypath));
 
       // increment convergence stopper 
       conv++;
@@ -123,7 +124,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 //   current=current->next;
 //}
 
-   } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
+   } while(!has_converged(prevpath,mypath) & (conv<conv_stop) & (conv > 1));
 
 // DEBUG
 printf("#******* END  ********** \n");
@@ -136,6 +137,7 @@ while(current!=NULL){
    printf("path$y<-c(path$y,%f)\n",current->data[1]);
    current=current->next;
 }
+printf("lines(path,lwd=2,col=\"red\")\n");
 printf("scan()\n");
 
    // return the length of the path
@@ -595,7 +597,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          // for each point i, look at the line i-1 to i+1
 
          // copy the path for comparison
-//         pathcopy=CopyList(*path);
+         pathcopy=CopyList(*path);
 
          // create the current triplet to inspect
          //my.trip<-pe(path,c(i-1,i,i+1))
@@ -668,6 +670,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          }
          
         	current=current->prev; // go back to i, need this to catch all triplets
+delete_step(path, nbnd, bnd);
       } // end of iteration over the path
 
 
@@ -681,6 +684,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
 ////printf("pathcopy<path\n");
 //               free(path);
 //               node* path=pathcopy;
+//                *path=pathcopy;
 //            }
 //////////////////////
 
