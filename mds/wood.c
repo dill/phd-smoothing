@@ -95,7 +95,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
 
 // DEBUG
-printf("delete change? %d\n",has_converged(prevpath,mypath));
+//printf("delete change? %d\n",has_converged(prevpath,mypath));
 //if(!has_converged(prevpath,mypath)){
 //   printf("*************************\ndelete change!\n");
 //   current=mypath;
@@ -111,7 +111,7 @@ printf("delete change? %d\n",has_converged(prevpath,mypath));
       alter_step(&mypath,*nbnd,bnd);
 // DEBUG
 //printf("***got past alter_step \n");
-printf("alter change? %d\n",has_converged(prevpath,mypath));
+//printf("alter change? %d\n",has_converged(prevpath,mypath));
 
       // increment convergence stopper 
       conv++;
@@ -124,7 +124,7 @@ printf("alter change? %d\n",has_converged(prevpath,mypath));
 //   current=current->next;
 //}
 
-   } while(!has_converged(prevpath,mypath) & (conv<conv_stop) & (conv > 1));
+   } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
 // DEBUG
 printf("#******* END  ********** \n");
@@ -541,6 +541,9 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 
             } // end if on del middle
          } // end of if del back-and-forth
+
+        	current=current->prev; // go back to i, need this to catch all triplets
+
       } // end iteration over path
       conv++; // increment run counter
 
