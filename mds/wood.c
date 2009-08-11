@@ -91,7 +91,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,*nbnd,bnd);
 // DEBUG
-printf("***got past delete_step \n");
+//printf("***got past delete_step \n");
 
 
 // DEBUG
@@ -109,7 +109,7 @@ printf("***got past delete_step \n");
       // add new vertices
       alter_step(&mypath,*nbnd,bnd);
 // DEBUG
-printf("***got past alter_step \n");
+//printf("***got past alter_step \n");
 //printf("alter change? %d\n",has_converged(prevpath,mypath));
 
       // increment convergence stopper 
@@ -126,13 +126,17 @@ printf("***got past alter_step \n");
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
 // DEBUG
-printf("******* END  ********** \n");
+printf("#******* END  ********** \n");
+printf("plot(bnd,type=\"l\")\n");
+printf("path<-list(x=c(),y=c())\n");
+
 current=mypath;
 while(current!=NULL){
    printf("path$x<-c(path$x,%f)\n",current->data[0]);
    printf("path$y<-c(path$y,%f)\n",current->data[1]);
    current=current->next;
 }
+printf("scan()\n");
 
    // return the length of the path
    *pathlen=hull_length(&mypath);
@@ -617,7 +621,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
 // DEBUG
-printf("***********************debug: after facing\n");
+//printf("***********************debug: after facing\n");
 //printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
 //printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
 //printf("points(ep1,pch=24)\n");

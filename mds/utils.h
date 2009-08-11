@@ -207,7 +207,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 //DEBUG
-printf("first_ips error=%d\n",err);
+//printf("first_ips error=%d\n",err);
 //printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
 //printf("ip2=(x=%f,y=%f)\n",ip2[0],ip2[1]);
 
@@ -600,7 +600,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 
    }else{
       // let the Robot warn us...
-      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
+      //printf("DANGER, WILL ROBINSON! lbbindex<1\n");
       err++;
    }
 

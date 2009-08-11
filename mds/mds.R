@@ -3,7 +3,7 @@
 # let's see what happens
 source("utils.R")
 source("mds-wrap.R")
-#source("wood.R")
+source("wood.R")
 #source("insert.mds.R")
 
 # create the distance matrix
@@ -44,9 +44,12 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
          intp<-do_intersect(p1,p2,bnd)
          if(sum(intp)>1){
 
-            # call the Wood algorithm
-            #path<-wood_path(p1,p2,bnd)
+            # call the R Wood algorithm
+            oldpath<-wood_path(p1,p2,bnd)
             
+plot(bnd,type="l")
+lines(oldpath,lwd=2,col="red")
+scan()
             # C version
             D[i,j]<-woodpath(p1,p2,bnd)
 
@@ -54,8 +57,8 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
 #            if(any(is.na(path))){
 #               D[i,j]<-NA
 #            }else{
-#               # find the length of the path
-#               D[i,j]<-hull_length(path)
+               # find the length of the path
+               op<-hull_length(oldpath)
 #            }
 
          # if the line p1p2 doesn't intersect any sides
@@ -64,7 +67,10 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
             D[i,j]<-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
          }
 ### DEBUG
-cat(".")
+#cat(".")
+
+
+#   if(abs(D[i,j]-op)>0.01) cat("yelp!\n")
 
    
       }
@@ -73,7 +79,7 @@ cat(".")
          write.csv(D,file=logfile)
       }
 ### DEBUG
-cat("\ndone",i,"!\n")
+#cat("\ndone",i,"!\n")
    }
    # create the lower triangle of the matrix
    # NB. diagonal should be 0
