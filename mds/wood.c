@@ -59,7 +59,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 //printf("points(p2)\n");
 //printf("path<-list(x=c(),y=c())\n");
 
-//   node* current=mypath;
+   node* current=mypath;
 //   while(current!=NULL){
 //      printf("path$x<-c(path$x,%f)\n",current->data[0]);
 //      printf("path$y<-c(path$y,%f)\n",current->data[1]);
@@ -123,8 +123,16 @@ printf("***got past alter_step \n");
 //   current=current->next;
 //}
 
-printf("******* END  ********** \n");
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
+
+// DEBUG
+printf("******* END  ********** \n");
+current=mypath;
+while(current!=NULL){
+   printf("path$x<-c(path$x,%f)\n",current->data[0]);
+   printf("path$y<-c(path$y,%f)\n",current->data[1]);
+   current=current->next;
+}
 
    // return the length of the path
    *pathlen=hull_length(&mypath);
@@ -175,8 +183,8 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       // since we ordered intind first, we don't need to worry too
       // much about 
 
-
-      printf("intind=%d, %d\n",intind[0],intind[1]);
+// DEBUG
+//printf("intind=%d, %d\n",intind[0],intind[1]);
 
       // push everything in
       //                     vvvvvvvvvv <- since we want it to be inclusive
@@ -288,7 +296,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       testnode[1]=current->data[1];
 
       sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
-//printf("arr1:%d\n",iarrsum(nbnd,ints));
 
       if(iarrsum(nbnd,ints)==0){
          // first element of bnd2
@@ -296,7 +303,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
          testnode[0]=current->data[0];
          testnode[1]=current->data[1];
          sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
-//printf("arr2:%d\n",iarrsum(nbnd,ints));
       }
 
       // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
@@ -601,12 +607,12 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          // current at i+1
                                              
 // DEBUG
-printf("***********************debug: pre facing\n");
-//printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
-printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
-printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
-printf("points(ep1,pch=24)\n");
-printf("points(ep2,pch=24)\n");
+//printf("***********************debug: pre facing\n");
+////printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
+//printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
+//printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
+//printf("points(ep1,pch=24)\n");
+//printf("points(ep2,pch=24)\n");
 
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
@@ -663,7 +669,7 @@ printf("***********************debug: after facing\n");
 
 ////////////////// 
 //            // cut out anything silly
-//            delete_step(path, nbnd, bnd);
+            delete_step(path, nbnd, bnd);
 //
 //            // if there was no improvement, then ignore what we did.
 //            if(hull_length(&pathcopy)<hull_length(path)){

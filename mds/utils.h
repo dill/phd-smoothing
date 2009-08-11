@@ -240,19 +240,23 @@ printf("first_ips error=%d\n",err);
       double ymp[2]={(ip1[1]+p2[1])/2,(ip2[1]+p2[1])/2};
 
       // to handle holes, multiple boundaries
-      // don't handle this at the moment
-      double break_code=1.0e6;
+      // ignore this at the moment
+      double xmin=minarr(nbnd,bx);
+      double ymin=minarr(nbnd,by);
+      double mina[2] = {xmin, ymin};
+      double break_code=minarr(2,mina)-1;
 
-printf("xmp<-list(x=%f,y=%f)\n",xmp[0],xmp[1]);
-printf("ymp<-list(x=%f,y=%f)\n",ymp[0],ymp[1]);
+// DEBUG
+//printf("xmp<-list(x=%f,y=%f)\n",xmp[0],xmp[1]);
+//printf("ymp<-list(x=%f,y=%f)\n",ymp[0],ymp[1]);
 
       int in[2]={0,0};
       int tmpinout=2;
 
-      in_out(bx, by, &break_code, xmp, ymp, *in, &nbnd, &tmpinout);
+      in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
 
 // DEBUG
-printf("in=%d,%d\n",in[0],in[1]);
+//printf("in=%d,%d\n",in[0],in[1]);
 
 
       // if they are both inside, return true
@@ -596,7 +600,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 
    }else{
       // let the Robot warn us...
-//      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
+      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
       err++;
    }
 
