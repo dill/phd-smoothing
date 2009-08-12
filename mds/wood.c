@@ -293,6 +293,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
       double testnode[2];
       int ints[nbnd];
+      int errsum=0;
 
       // check if the line between ip2 and the first element of
       // bnd1 and bnd2 are inside...
@@ -304,6 +305,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
 
       if(iarrsum(nbnd,ints)==0){
+         errsum++;
          // first element of bnd2
          current=bnd2;
          testnode[0]=current->data[0];
@@ -313,31 +315,37 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
 /////////////////////////////////////////////
 /// NOT SURE THIS HELPS
-//      if(iarrsum(nbnd,ints)==0){
-//         // last element of bnd1
-//         current=bnd1;
-//         while(current->next!=NULL){
-//            current=current->next;
-//         }
-//         testnode[0]=current->data[0];
-//         testnode[1]=current->data[1];
-//         sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
-//      }
-//      if(iarrsum(nbnd,ints)==0){
-//         // last element of bnd2
-//         current=bnd2;
-//         while(current->next!=NULL){
-//            current=current->next;
-//         }
-//         testnode[0]=current->data[0];
-//         testnode[1]=current->data[1];
-//         sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
-//      }
+      if(iarrsum(nbnd,ints)==0){
+         errsum++;
+         // last element of bnd1
+         current=bnd1;
+         while(current->next!=NULL){
+            current=current->next;
+         }
+         testnode[0]=current->data[0];
+         testnode[1]=current->data[1];
+         sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
+      }
+      if(iarrsum(nbnd,ints)==0){
+         errsum++;
+         // last element of bnd2
+         current=bnd2;
+         while(current->next!=NULL){
+            current=current->next;
+         }
+         testnode[0]=current->data[0];
+         testnode[1]=current->data[1];
+         sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
+      }
 //////////////////////////////////////
 
       // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
 
       if(iarrsum(nbnd,ints)==0){
+         errsum++;
+      }
+   
+      if(errsum==0){
 
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
