@@ -209,7 +209,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 //DEBUG
 //printf("first_ips error=%d\n",err);
 //printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-//printf("ip2=(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
 
 
    // if there are no errors, go ahead
@@ -333,8 +333,8 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 //      intx<-det(matrix(c(b1,b2,c1,c2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
 //      inty<-det(matrix(c(c1,c2,a1,a2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
 
-      ip[0]=(b1*c2-b2*c1)/(a1*b2-a2*b1);
-      ip[1]=(c1*a2-a1*c2)/(a1*b2-b1*a2);
+      ip[0]=(b1*c2-(b2*c1))/(a1*b2-(a2*b1));
+      ip[1]=(c1*a2-(a1*c2))/(a1*b2-(b1*a2));
 
 //   }else{
 //      ret<-list(x=Inf,y=Inf)
@@ -465,7 +465,8 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 //   }
   
    // find intersections 
-   do_intersect(p1,p2,nbnd,bnd,retint);
+// NOT SURE IF THIS IS CORRECT
+   sp_do_intersect(p1,p2,nbnd,bnd,retint);
    
 // DEBUG
 //printf("retint=");
@@ -600,7 +601,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 
    }else{
       // let the Robot warn us...
-      //printf("DANGER, WILL ROBINSON! lbbindex<1\n");
+      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
       err++;
    }
 
@@ -711,6 +712,14 @@ int Length(node* head) {
     return count;
 }
 
+///*
+// * Delete the first element
+// */
+//void DelFirst(node** headRef) {
+//
+//   *headRef=headRef->next;
+//
+//}
 
 
 

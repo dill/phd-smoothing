@@ -596,11 +596,10 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
    //           revised path with added/ammended vertices
 
    int i;
-   double ep1[2], ep2[2];
+   double ep1[2], ep2[2], mid[2], triplen;
 
    node* prevpath=NULL;
    node* newpath=NULL;
-   node* pathcopy=NULL;
    node* end_ptr=NULL;
    node* current=NULL;
 
@@ -633,10 +632,8 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          }
          // for each point i, look at the line i-1 to i+1
 
-         // copy the path for comparison
-         pathcopy=CopyList(*path);
-
          // create the current triplet to inspect
+         // make a copy of it and work out its length
          //my.trip<-pe(path,c(i-1,i,i+1))
          //ep1<-pe(my.trip,1)
          //ep2<-pe(my.trip,3)
@@ -644,18 +641,25 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          ep1[0]=current->data[0];
          ep1[1]=current->data[1];
         	current=current->next;
+         mid[0]=current->data[0];
+         mid[1]=current->data[1];
         	current=current->next;
          ep2[0]=current->data[0];
          ep2[1]=current->data[1];
+
          // current at i+1
-                                             
+         
+         // calculate old trip length...
+         triplen=hypot(mid[0]-ep1[0],mid[1]-ep1[1]);
+         triplen=triplen+hypot(ep2[0]-mid[0],ep2[1]-mid[1]);
+
 // DEBUG
 //printf("***********************debug: pre facing\n");
 ////printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
-//printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
-//printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
-//printf("points(ep1,pch=24)\n");
-//printf("points(ep2,pch=24)\n");
+printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
+printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
+printf("points(ep1,pch=24)\n");
+printf("points(ep2,pch=24)\n");
 
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
@@ -669,62 +673,50 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
             // create a new path
             newpath=make_bnd_path(ep1,ep2,nbnd,bnd);
 
-// DEBUG
-//printf("***********************debug: after make_bnd_path\n");
+            // cut out anything silly
+            //delete_step(&newpath, nbnd, bnd);
 
-            // create new path, compare complete new path with old one, if the
-            // new one is better then keep it.
-            //new.path<-delete_step(list(
-            //   x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
-            //   y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)])),bnd)
-            
-            // modify path
-            // from i-1, stitch in newpath up to i+1
-            // current is at i+1 now
-            
-            // create a pointer to that
-            end_ptr=current; // pointer to i+1
-            
-            // go back twice
-            current=current->prev; // pointer now at i
-            current=current->prev; // pointer at i-1
-            
-            // change where next points to
-            newpath->prev=current; // point head of newpath back 
-            current->next=newpath; // point i-1 next to the head of newpath
+printf("h=%f, t=%f\n",hull_length(&newpath),triplen);
+            // only insert the path if it's better!
+            if(hull_length(&newpath)<=triplen){
+
+               // create new path, compare complete new path with old one, if the
+               // new one is better then keep it.
+               //new.path<-delete_step(list(
+               //   x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
+               //   y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)])),bnd)
+               
+               // modify path
+               // from i-1, stitch in newpath up to i+1
+               // current is at i+1 now
+               
+               // create a pointer to that
+               end_ptr=current; // pointer to i+1
+               
+               // go back twice
+               current=current->prev; // pointer now at i
+               current=current->prev; // pointer at i-1
+               
+               // change where next points to
+               newpath->prev=current; // point head of newpath back 
+               current->next=newpath; // point i-1 next to the head of newpath
+      
+               // fast forward to the end of newpath
+               while(current->next!=NULL){
+                  current=current->next;
+               }
    
-            // fast forward to the end of newpath
-            while(current->next!=NULL){
-               current=current->next;
-            }
-
-            // point the end of newpath to i+1
-            end_ptr->prev=current; // set previous of i+1 to be the end of newpath
-            current->next=end_ptr;
-
-            current=current->next; // current now at i+1
-            
-         }
+               // point the end of newpath to i+1
+               end_ptr->prev=current; // set previous of i+1 to be the end of newpath
+               current->next=end_ptr;
+   
+               current=current->next; // current now at i+1
+            } // end insert if short if()            
+         } // end facing
          
         	current=current->prev; // go back to i, need this to catch all triplets
 //delete_step(path, nbnd, bnd);
       } // end of iteration over the path
-
-
-////////////////// 
-//            // cut out anything silly
-            delete_step(path, nbnd, bnd);
-//
-//            // if there was no improvement, then ignore what we did.
-//            if(hull_length(&pathcopy)<hull_length(path)){
-//// DEBUG
-////printf("pathcopy<path\n");
-//               free(path);
-//                *path=pathcopy;
-//            }
-//////////////////////
-
-
 
       conv++;
 
