@@ -347,7 +347,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
          AppendNode(&bnd1,curr_insert);
       }
-      // setup for next if...
 
       // test if ip2 to the first element of bnd1 is inside
       sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
@@ -394,7 +393,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
          AppendNode(&bnd2,curr_insert);
       }
-      // setup for next if...
 
       // test if ip2 to the first element of bnd2 is inside
       sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
