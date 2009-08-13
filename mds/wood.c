@@ -114,6 +114,8 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
       // add new vertices
       alter_step(&mypath,*nbnd,bnd);
+
+
 // DEBUG
 //printf("alter change? %d\n",has_converged(prevpath,mypath));
 // DEBUG
@@ -134,6 +136,8 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       conv++;
 
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
+
+//printf("conv=%d\n",conv);
 
 // DEBUG
 printf("#******* END  ********** \n");
@@ -703,7 +707,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          }
          
         	current=current->prev; // go back to i, need this to catch all triplets
-delete_step(path, nbnd, bnd);
+//delete_step(path, nbnd, bnd);
       } // end of iteration over the path
 
 
