@@ -173,6 +173,10 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
            (fabs(p2[1]-bnd[i][1]) < eps) &
            (fabs(p1[1]-bnd[i+1][1]) <eps) )) bndint[i]=0;
 
+
+// commenting this out to the bottom gets rid of the error
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
       // start/end points the same
       if((p1[0]==bnd[i][0]   & p1[1]==bnd[i][1])|
          (p2[0]==bnd[i][0]   & p2[1]==bnd[i][1])|
@@ -187,7 +191,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
 
          tmpbndint[0]=bndint[i];
 
-         do_intersect(p1, p2, tmpnbnd, tmpbnd, tmpbndint);
+//         do_intersect(p1, p2, tmpnbnd, tmpbnd, tmpbndint);
 
          bndint[i]=tmpbndint[0];
       }
