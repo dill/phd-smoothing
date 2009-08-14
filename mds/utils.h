@@ -155,6 +155,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
 
    int i, tmpnbnd, tmpbndint[1];
    double tmpbnd[2][2];
+   double eps=1e-10;
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
@@ -163,10 +164,14 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
       bndint[i]=1;
 
       // case where the lines are exactly overlapping
-      if((p1[0]==bnd[i][0] & p2[0]==bnd[i+1][0] &
-          p1[1]==bnd[i][1] & p2[1]==bnd[i+1][1])|
-         (p2[0]==bnd[i][0] & p1[0]==bnd[i+1][0] &
-          p2[1]==bnd[i][1] & p1[1]==bnd[i+1][1])) bndint[i]=0;
+      if(( (fabs(p1[0]-bnd[i][0]) < eps) & 
+           (fabs(p2[0]-bnd[i+1][0]) < eps) &
+           (fabs(p1[1]-bnd[i][1]) < eps) & 
+           (fabs(p2[1]-bnd[i+1][1]) < eps) )|
+         ( (fabs(p2[0]-bnd[i][0]) < eps) & 
+           (fabs(p1[0]-bnd[i+1][0]) < eps) &
+           (fabs(p2[1]-bnd[i][1]) < eps) &
+           (fabs(p1[1]-bnd[i+1][1]) <eps) )) bndint[i]=0;
 
       // start/end points the same
       if((p1[0]==bnd[i][0]   & p1[1]==bnd[i][1])|
@@ -183,6 +188,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
          tmpbndint[0]=bndint[i];
 
          do_intersect(p1, p2, tmpnbnd, tmpbnd, tmpbndint);
+
          bndint[i]=tmpbndint[0];
       }
    }
@@ -466,7 +472,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
   
    // find intersections 
 // NOT SURE IF THIS IS CORRECT
-   sp_do_intersect(p1,p2,nbnd,bnd,retint);
+   do_intersect(p1,p2,nbnd,bnd,retint);
    
 // DEBUG
 //printf("retint=");
