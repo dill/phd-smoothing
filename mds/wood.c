@@ -48,7 +48,6 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-printf("--------------------------\n");
    mypath=make_bnd_path(p1,p2,*nbnd,bnd);
 
 // DEBUG
@@ -175,9 +174,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
    double ip1[2],ip2[2], curr_insert[2];
    int intind[2],i,start, err;
 
-printf("before first ips\n");
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
-printf("err: %d\n",err);
 
 	// if there are no errors
    if(err==0){
@@ -192,7 +189,6 @@ printf("err: %d\n",err);
       //  IGNORE AT THE MOMENT
       itwosort(intind);
 
-printf("before first bnd\n");
       // want elements intind[0]-1 to intind[1 ](inclusive)
       //picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
       //picker<-c(picker[1]:picker[2])
@@ -233,7 +229,6 @@ printf("before first bnd\n");
 //      }
 
 
-printf("made first bnd\n");
 
       // create the second boundary segment
       // want intind[1]+1:intind[0]
@@ -341,6 +336,7 @@ printf("made first bnd\n");
 
       sp_do_intersect(ip1,testnode,nbnd,bnd,ints);
 
+printf("passed sp_do_intersect for bnd2\n");
       int err_ind1=1;
       int err_ind2=1;
    
