@@ -153,8 +153,6 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd])
 {
 
-printf("in! nbnd=%d\n",nbnd);
-
    int j, tmpnbnd, tmpbndint[1];
    double tmpbnd[2][2];
    double eps=1e-10;
@@ -175,11 +173,6 @@ printf("in! nbnd=%d\n",nbnd);
            (fabs(p2[1]-bnd[j][1]) < eps) &
            (fabs(p1[1]-bnd[j+1][1]) <eps) )) bndint[j]=0;
 
-printf("j=%d\n",j);
-
-// commenting this out to the bottom gets rid of the error
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
       // start/end points the same
       if(( (fabs(p1[0]-bnd[j][0])  < eps) & (fabs(p1[1]-bnd[j][1])  < eps) )|
          ( (fabs(p2[0]-bnd[j][0])  < eps) & (fabs(p2[1]-bnd[j][1])  < eps) )|
@@ -195,7 +188,6 @@ printf("j=%d\n",j);
          tmpbndint[0]=bndint[j];
 
          do_intersect(p1, p2, tmpnbnd, tmpbnd, tmpbndint);
-//printf(" after i=%d\n",i);
 
          bndint[j]=tmpbndint[0];
       }
