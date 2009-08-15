@@ -153,6 +153,8 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd])
 {
 
+printf("in! nbnd=%d\n",nbnd);
+
    int i, tmpnbnd, tmpbndint[1];
    double tmpbnd[2][2];
    double eps=1e-10;
@@ -173,6 +175,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
            (fabs(p2[1]-bnd[i][1]) < eps) &
            (fabs(p1[1]-bnd[i+1][1]) <eps) )) bndint[i]=0;
 
+printf("i=%d\n",i);
 
 // commenting this out to the bottom gets rid of the error
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -192,6 +195,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
          tmpbndint[0]=bndint[i];
 
          do_intersect(p1, p2, tmpnbnd, tmpbnd, tmpbndint);
+printf(" after i=%d\n",i);
 
          bndint[i]=tmpbndint[0];
       }

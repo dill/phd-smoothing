@@ -46,12 +46,13 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       p2[1]=tmp;
    }
 
+printf("mp--------------------------\n");
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    mypath=make_bnd_path(p1,p2,*nbnd,bnd);
 
 // DEBUG
-//printf("--------------------------\n");
+printf("--------------------------\n");
 //printf("plot(bnd,type=\"l\")\n");
 //printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
 //printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
@@ -96,7 +97,7 @@ i++;
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,*nbnd,bnd);
 // DEBUG
-//   printf("delete change? %d\n",has_converged(prevpath,mypath));
+printf("delete change? %d\n",has_converged(prevpath,mypath));
 // DEBUG
 //printf("#******* END  ********** \n");
 //printf("plot(bnd,type=\"l\")\n");
@@ -117,7 +118,7 @@ i++;
 
 
 // DEBUG
-//printf("alter change? %d\n",has_converged(prevpath,mypath));
+printf("alter change? %d\n",has_converged(prevpath,mypath));
 // DEBUG
 //printf("#******* END  ********** \n");
 //printf("plot(bnd,type=\"l\")\n");
@@ -228,8 +229,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 //         }
 //      }
 
-
-
       // create the second boundary segment
       // want intind[1]+1:intind[0]
       // bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)-1))),
@@ -334,6 +333,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       testnode[0]=current->data[0];
       testnode[1]=current->data[1];
 
+// errors here vvvvvvvvvvvvvvvvvvvvvvvvvv
       sp_do_intersect(ip1,testnode,nbnd,bnd,ints);
 
 printf("passed sp_do_intersect for bnd2\n");
