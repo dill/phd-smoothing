@@ -155,51 +155,51 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
 
 printf("in! nbnd=%d\n",nbnd);
 
-   int i, tmpnbnd, tmpbndint[1];
+   int j, tmpnbnd, tmpbndint[1];
    double tmpbnd[2][2];
    double eps=1e-10;
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
-   for(i=0;i<nbnd;i++){
+   for(j=0;j<nbnd;j++){
       // set true to begin with
-      bndint[i]=1;
+      bndint[j]=1;
 
       // case where the lines are exactly overlapping
-      if(( (fabs(p1[0]-bnd[i][0]) < eps) & 
-           (fabs(p2[0]-bnd[i+1][0]) < eps) &
-           (fabs(p1[1]-bnd[i][1]) < eps) & 
-           (fabs(p2[1]-bnd[i+1][1]) < eps) )|
-         ( (fabs(p2[0]-bnd[i][0]) < eps) & 
-           (fabs(p1[0]-bnd[i+1][0]) < eps) &
-           (fabs(p2[1]-bnd[i][1]) < eps) &
-           (fabs(p1[1]-bnd[i+1][1]) <eps) )) bndint[i]=0;
+      if(( (fabs(p1[0]-bnd[j][0]) < eps) & 
+           (fabs(p2[0]-bnd[j+1][0]) < eps) &
+           (fabs(p1[1]-bnd[j][1]) < eps) & 
+           (fabs(p2[1]-bnd[j+1][1]) < eps) )|
+         ( (fabs(p2[0]-bnd[j][0]) < eps) & 
+           (fabs(p1[0]-bnd[j+1][0]) < eps) &
+           (fabs(p2[1]-bnd[j][1]) < eps) &
+           (fabs(p1[1]-bnd[j+1][1]) <eps) )) bndint[j]=0;
 
-printf("i=%d\n",i);
+printf("j=%d\n",j);
 
 // commenting this out to the bottom gets rid of the error
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
       // start/end points the same
-      if(( (fabs(p1[0]-bnd[i][0])  < eps) & (fabs(p1[1]-bnd[i][1])  < eps) )|
-         ( (fabs(p2[0]-bnd[i][0])  < eps) & (fabs(p2[1]-bnd[i][1])  < eps) )|
-         ( (fabs(p1[0]-bnd[i+1][0])< eps) & (fabs(p1[1]-bnd[i+1][1])< eps) )|
-         ( (fabs(p2[0]-bnd[i+1][0])< eps) & (fabs(p2[1]-bnd[i+1][1])< eps) ) ) bndint[i]=0;
+      if(( (fabs(p1[0]-bnd[j][0])  < eps) & (fabs(p1[1]-bnd[j][1])  < eps) )|
+         ( (fabs(p2[0]-bnd[j][0])  < eps) & (fabs(p2[1]-bnd[j][1])  < eps) )|
+         ( (fabs(p1[0]-bnd[j+1][0])< eps) & (fabs(p1[1]-bnd[j+1][1])< eps) )|
+         ( (fabs(p2[0]-bnd[j+1][0])< eps) & (fabs(p2[1]-bnd[j+1][1])< eps) ) ) bndint[j]=0;
 
       // call original routine if this doesn't work
-      if(bndint[i]){
-         tmpbnd[0][0]=bnd[i][0]; tmpbnd[0][1]=bnd[i][1];
-         tmpbnd[1][0]=bnd[i+1][0]; tmpbnd[1][1]=bnd[i+1][1];
+      if(bndint[j]){
+         tmpbnd[0][0]=bnd[j][0]; tmpbnd[0][1]=bnd[j][1];
+         tmpbnd[1][0]=bnd[j+1][0]; tmpbnd[1][1]=bnd[j+1][1];
          tmpnbnd=2;
 
-         tmpbndint[0]=bndint[i];
+         tmpbndint[0]=bndint[j];
 
          do_intersect(p1, p2, tmpnbnd, tmpbnd, tmpbndint);
-printf(" after i=%d\n",i);
+//printf(" after i=%d\n",i);
 
-         bndint[i]=tmpbndint[0];
+         bndint[j]=tmpbndint[0];
       }
-   }
+   } // end for loop
 }
 
 
