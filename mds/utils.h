@@ -252,29 +252,18 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
       double mina[2] = {xmin, ymin};
       double break_code=minarr(2,mina)-1;
 
-// DEBUG
-//printf("xmp<-list(x=%f,y=%f)\n",xmp[0],xmp[1]);
-//printf("ymp<-list(x=%f,y=%f)\n",ymp[0],ymp[1]);
-
       int in[2]={0,0};
       int tmpinout=2;
 
       in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
 
-// DEBUG
-//printf("in=%d,%d\n",in[0],in[1]);
-
-
       // if they are both inside, return true
       if(in[0] && in[1]) ret=1;
-
    }
 
    // if err returned >0 then return 0
    return(ret);
-
 }
-
 
 
 // find the intersection point between two points and a line
@@ -334,23 +323,16 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 //   if(all(c(a1,a2,b1,b2,c1,c2)!=Inf) & all(c(a1,a2,b1,b2,c1,c2)!=-Inf)){
       // calculate the intersection
 
-
 // want to calculate...
 //      intx<-det(matrix(c(b1,b2,c1,c2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
 //      inty<-det(matrix(c(c1,c2,a1,a2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
-
       ip[0]=(b1*c2-(b2*c1))/(a1*b2-(a2*b1));
       ip[1]=(c1*a2-(a1*c2))/(a1*b2-(b1*a2));
 
 //   }else{
 //      ret<-list(x=Inf,y=Inf)
 //   }
-
-// do something with return!
-//   return ret;
-
 }
-
 
 
 /* find if a point is on a line */
@@ -359,15 +341,12 @@ int online(double p1[],double thisline[][2])
    // uses: twosort
    // returns 1 if the point is on the line, 0 otherwise
 
-
    /* So here we just use an n by 2 matrix to represent
       the points, first col is x, second y, obv.*/
    double eps, leftside, rightside,xarr[2],yarr[2];
    
    /* Take this global at some point*/
    eps=1.0e-10;
-
-
 
    /* left hand side of equation */
    /* difference between y values */
@@ -378,7 +357,6 @@ int online(double p1[],double thisline[][2])
       xarr[1]=thisline[1][0];
       twosort(xarr);
       // need to make sure this kind of thing makes sense
-       
 
       if((fabs(thisline[1][1]-p1[1])<eps) &&
          ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
@@ -394,7 +372,6 @@ int online(double p1[],double thisline[][2])
    /* right hand side of equation */
    if(fabs(thisline[1][0]-thisline[0][0])<eps){
       /* first handle if it's a vertical line */
-
 
       yarr[0]=thisline[0][1];
       yarr[1]=thisline[1][1];
@@ -474,16 +451,8 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 // NOT SURE IF THIS IS CORRECT
 //   sp_do_intersect(p1,p2,nbnd,bnd,retint);
    do_intersect(p1,p2,nbnd,bnd,retint);
+// pretty sure we need the latter to avoid WILL ROBINSON errors.
    
-// DEBUG
-//printf("retint=");
-//int k;
-//for(k=0;k<nbnd;k++){
-//	printf("%d ",retint[k]);
-//}
-//printf("\n");
-
-
    // length of the bounding box index
    lbbindex=iarrsum(nbnd,retint);
 
@@ -519,7 +488,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       double ips[lbbindex][2];
 
       for(i=0;i<lbbindex;i++){
-
          // get current index
          j=bbindex[i];
 //printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
@@ -588,8 +556,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 //printf("**************END qsort debug ************\n");
 ///////////////////////////////////
 
-
-
       // find first intersection between p1 and bnd
       // p1.int<-pe(ips,order(dists)[1])
       firstel = crapfind(lbbindex,dists,sortdists[0]);
@@ -610,10 +576,14 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       // let the Robot warn us...
       printf("DANGER, WILL ROBINSON! lbbindex<1\n");
       err++;
+
+printf("p1=list(x=%f,y=%f)\n",p1[0],p1[1]);
+printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
+
+
    }
 
    return(err);
-
 }
 
 
@@ -621,7 +591,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
  * Linked list code here
  * mostly modified from http://cslibrary.stanford.edu/
  */
-
 
 /*
  *   Takes a list and a data value.
@@ -645,13 +614,10 @@ void Push(node** headRef, double data[2]) {
    newNode->next = *headRef;  // The '*' to dereferences back 
 								 		// to the real head
 
-
 	if(newNode->next !=NULL){
 	   newNode->next->prev = newNode;
    	//*headRef->prev = newNode;
 	}
-
-
   
    // previous element of new node will be NULL
    newNode->prev = NULL;  // The '*' to dereferences back to 
@@ -727,7 +693,6 @@ int Length(node* head) {
 //   *headRef=headRef->next;
 //
 //}
-
 
 
 ////////////////////////////
@@ -831,8 +796,4 @@ int crapfind(int narr, double arr[narr], double val){
    }
    return index;
 }
-
-
-
-
 

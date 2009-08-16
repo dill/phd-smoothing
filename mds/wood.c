@@ -5,7 +5,7 @@
 #include <math.h>
 #include "utils.h"
 
-//void wood_path(double[2], double[2], int , double[],double[], double);
+void wood_path(double*, double*, int*, double*, double*, double*);
 node* make_bnd_path(double[2], double[2], int nbnd, double[nbnd][2]);
 void delete_step(node**, int nbnd, double[nbnd][2]);
 void alter_step(node**, int nbnd, double[nbnd][2]);
