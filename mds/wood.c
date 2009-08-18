@@ -46,13 +46,12 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       p2[1]=tmp;
    }
 
-printf("mp--------------------------\n");
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    mypath=make_bnd_path(p1,p2,*nbnd,bnd);
 
 // DEBUG
-printf("--------------------------\n");
+//printf("--------------------------\n");
 //printf("plot(bnd,type=\"l\")\n");
 //printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
 //printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
@@ -78,7 +77,6 @@ printf("--------------------------\n");
    // convergence stop
    conv=0;
    conv_stop=10;
-
 
 // DEBUG
 i=0;
@@ -112,10 +110,8 @@ printf("delete change? %d\n",has_converged(prevpath,mypath));
 //printf("lines(path,lwd=2,col=\"red\")\n");
 //printf("scan()\n");
 
-
       // add new vertices
       alter_step(&mypath,*nbnd,bnd);
-
 
 // DEBUG
 printf("alter change? %d\n",has_converged(prevpath,mypath));
@@ -336,7 +332,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 // errors here vvvvvvvvvvvvvvvvvvvvvvvvvv
       sp_do_intersect(ip1,testnode,nbnd,bnd,ints);
 
-printf("passed sp_do_intersect for bnd2\n");
       int err_ind1=1;
       int err_ind2=1;
    
@@ -626,7 +621,7 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
       //while((i+1)<=length(path$x)){
       while(current!=NULL){
          // equivalent of some ANDs in the above, but doesn't cause a memory
-         // problem since the while() evaluates all of the conditions.
+         // problem when the while() evaluates all of the conditions.
          if(current->next==NULL){
             break;
          }else if(current->next->next==NULL){
@@ -656,8 +651,8 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          triplen=triplen+hypot(ep2[0]-mid[0],ep2[1]-mid[1]);
 
 // DEBUG
-//printf("***********************debug: pre facing\n");
-////printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
+printf("***********************debug: pre facing\n");
+printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
 printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
 printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
 printf("points(ep1,pch=24)\n");
@@ -666,7 +661,7 @@ printf("points(ep2,pch=24)\n");
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
 // DEBUG
-//printf("***********************debug: after facing\n");
+printf("***********************debug: after facing\n");
 //printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
 //printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
 //printf("points(ep1,pch=24)\n");

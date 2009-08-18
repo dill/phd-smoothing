@@ -111,40 +111,65 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 //            bndint[i]<-FALSE
 //         }else{
 
-            // first need to handle the horizontal and vertical line cases
-            // then handle whether the intersection point lies within the
-            // the bounding box
-            if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
-               if(ip[0]>=ebbox[0][0] | ip[0]<=ebbox[1][0]) bndint[i]=0;
-            }
-            if(fabs(pbbox[0][0]-pbbox[1][0])>=eps){
-               if(ip[0]>=pbbox[0][0] | ip[0]<=pbbox[1][0]) bndint[i]=0;
-            }
-            if(fabs(ebbox[0][1]-ebbox[1][1])>=eps){
+         // first need to handle the horizontal and vertical line cases
+         if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
+            if(ip[0]>=ebbox[0][0] | ip[0]<=ebbox[1][0]) bndint[i]=0;
+         }
+         if(fabs(pbbox[0][0]-pbbox[1][0])>=eps){
+            if(ip[0]>=pbbox[0][0] | ip[0]<=pbbox[1][0]) bndint[i]=0;
+         }
+         if(fabs(ebbox[0][1]-ebbox[1][1])>=eps){
+            if(ip[1]>=ebbox[0][1] | ip[1]<=ebbox[1][1]) bndint[i]=0;
+         }
+         if(fabs(pbbox[0][1]-pbbox[1][1])>=eps){
+            if(ip[1]>=pbbox[0][1] | ip[1]<=pbbox[1][1]) bndint[i]=0;
+         }
+
+         // then handle whether the intersection point lies within the
+         // the bounding box
+         if(bndint[i]){
+            if(fabs(ebbox[0][0]-ebbox[1][0])<=eps){
                if(ip[1]>=ebbox[0][1] | ip[1]<=ebbox[1][1]) bndint[i]=0;
             }
-            if(fabs(pbbox[0][1]-pbbox[1][1])>=eps){
+            if(fabs(pbbox[0][0]-pbbox[1][0])<=eps){
                if(ip[1]>=pbbox[0][1] | ip[1]<=pbbox[1][1]) bndint[i]=0;
             }
-
-      if(bndint[i]){
-               if(fabs(ebbox[0][0]-ebbox[1][0])<=eps){
-                  if(ip[1]>=ebbox[0][1] | ip[1]<=ebbox[1][1]) bndint[i]=0;
-               }
-               if(fabs(pbbox[0][0]-pbbox[1][0])<=eps){
-                  if(ip[1]>=pbbox[0][1] | ip[1]<=pbbox[1][1]) bndint[i]=0;
-               }
-               if(fabs(ebbox[0][1]-ebbox[1][1])<=eps){
-                  if(ip[0]>=ebbox[0][0] | ip[0]<=ebbox[1][0]) bndint[i]=0;
-               }
-               if(fabs(pbbox[0][1]-pbbox[1][1])<=eps){
-                  if(ip[0]>=pbbox[0][0] | ip[0]<=pbbox[1][0]) bndint[i]=0;
-               }
-             }
+            if(fabs(ebbox[0][1]-ebbox[1][1])<=eps){
+               if(ip[0]>=ebbox[0][0] | ip[0]<=ebbox[1][0]) bndint[i]=0;
+            }
+            if(fabs(pbbox[0][1]-pbbox[1][1])<=eps){
+               if(ip[0]>=pbbox[0][0] | ip[0]<=pbbox[1][0]) bndint[i]=0;
+            }
          }
-// error checking end brace!
-//      }
-   }
+      }
+////////////////////////////////
+      // case where the lines are exactly overlapping
+      if(( (fabs(p1[0]-bnd[i][0])   <= eps) & 
+           (fabs(p2[0]-bnd[i+1][0]) <= eps) &
+           (fabs(p1[1]-bnd[i][1])   <= eps) & 
+           (fabs(p2[1]-bnd[i+1][1]) <= eps) ) |
+         ( (fabs(p2[0]-bnd[i][0])   <= eps) & 
+           (fabs(p1[0]-bnd[i+1][0]) <= eps) &
+           (fabs(p2[1]-bnd[i][1])   <= eps) &
+           (fabs(p1[1]-bnd[i+1][1]) <= eps) )){
+printf("orly\n");            
+            bndint[i]=1;
+            bndint[i+1]=1;
+      }
+
+      // start/end points the same
+      if(( (fabs(p1[0]-bnd[i][0])  < eps) & (fabs(p1[1]-bnd[i][1])  <= eps) )|
+         ( (fabs(p2[0]-bnd[i][0])  < eps) & (fabs(p2[1]-bnd[i][1])  <= eps) )|
+         ( (fabs(p1[0]-bnd[i+1][0])< eps) & (fabs(p1[1]-bnd[i+1][1])<= eps) )|
+         ( (fabs(p2[0]-bnd[i+1][0])< eps) & (fabs(p2[1]-bnd[i+1][1])<= eps) ) ){ 
+            
+printf("orly 2\n");            
+            bndint[i]=1;
+            bndint[i+1]=1;
+      }
+
+/////////////////////////////////////////////////
+   }// end iterate over boundary
 }
 
 
@@ -152,7 +177,6 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 // place don't intersect. Neither do exactly overlapping lines.
 void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd])
 {
-
    int j, tmpnbnd, tmpbndint[1];
    double tmpbnd[2][2];
    double eps=1e-10;
@@ -164,20 +188,26 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
       bndint[j]=1;
 
       // case where the lines are exactly overlapping
-      if(( (fabs(p1[0]-bnd[j][0]) < eps) & 
+      if(( (fabs(p1[0]-bnd[j][0])   < eps) & 
            (fabs(p2[0]-bnd[j+1][0]) < eps) &
-           (fabs(p1[1]-bnd[j][1]) < eps) & 
-           (fabs(p2[1]-bnd[j+1][1]) < eps) )|
-         ( (fabs(p2[0]-bnd[j][0]) < eps) & 
+           (fabs(p1[1]-bnd[j][1])   < eps) & 
+           (fabs(p2[1]-bnd[j+1][1]) < eps) ) |
+         ( (fabs(p2[0]-bnd[j][0])   < eps) & 
            (fabs(p1[0]-bnd[j+1][0]) < eps) &
-           (fabs(p2[1]-bnd[j][1]) < eps) &
-           (fabs(p1[1]-bnd[j+1][1]) <eps) )) bndint[j]=0;
+           (fabs(p2[1]-bnd[j][1])   < eps) &
+           (fabs(p1[1]-bnd[j+1][1]) < eps) )){
+            
+            bndint[j]=0;
+      }
 
       // start/end points the same
       if(( (fabs(p1[0]-bnd[j][0])  < eps) & (fabs(p1[1]-bnd[j][1])  < eps) )|
          ( (fabs(p2[0]-bnd[j][0])  < eps) & (fabs(p2[1]-bnd[j][1])  < eps) )|
          ( (fabs(p1[0]-bnd[j+1][0])< eps) & (fabs(p1[1]-bnd[j+1][1])< eps) )|
-         ( (fabs(p2[0]-bnd[j+1][0])< eps) & (fabs(p2[1]-bnd[j+1][1])< eps) ) ) bndint[j]=0;
+         ( (fabs(p2[0]-bnd[j+1][0])< eps) & (fabs(p2[1]-bnd[j+1][1])< eps) ) ){ 
+            
+            bndint[j]=0;
+      }
 
       // call original routine if this doesn't work
       if(bndint[j]){
@@ -213,10 +243,9 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 //DEBUG
-//printf("first_ips error=%d\n",err);
+printf("first_ips error=%d\n",err);
 //printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
 //printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-
 
    // if there are no errors, go ahead
    if(err==0){
@@ -258,7 +287,10 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
       in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
 
       // if they are both inside, return true
-      if(in[0] && in[1]) ret=1;
+      if(in[0] && in[1]){
+         ret=1;
+         printf("in in\n");
+      }
    }
 
    // if err returned >0 then return 0
@@ -448,10 +480,8 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 //   }
   
    // find intersections 
-// NOT SURE IF THIS IS CORRECT
-//   sp_do_intersect(p1,p2,nbnd,bnd,retint);
+   // this is what is used in the R code.
    do_intersect(p1,p2,nbnd,bnd,retint);
-// pretty sure we need the latter to avoid WILL ROBINSON errors.
    
    // length of the bounding box index
    lbbindex=iarrsum(nbnd,retint);
@@ -465,7 +495,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 //printf("\n");
 
 // DEBUG
-//printf("lbbindex=%d\n",lbbindex);
+printf("lbbindex=%d\n",lbbindex);
    
    // if lbbindex < 1 increment err
    if(lbbindex>1){
@@ -490,7 +520,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       for(i=0;i<lbbindex;i++){
          // get current index
          j=bbindex[i];
-//printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
+printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
 
          thisedge[0][0]=bnd[j][0];
          thisedge[1][0]=bnd[j+1][0];
@@ -577,8 +607,15 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       printf("DANGER, WILL ROBINSON! lbbindex<1\n");
       err++;
 
+// DEBUG
 printf("p1=list(x=%f,y=%f)\n",p1[0],p1[1]);
 printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
+printf("retint=");
+int k;
+for(k=0;k<(nbnd-1);k++){
+   printf(" %d,",retint[k]);
+}
+printf("\n");
 
 
    }
