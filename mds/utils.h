@@ -56,7 +56,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2];
 
-   eps=1e-10;
+   eps=1e-16;
 
    // bounding box around the points p1,p2
    //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
@@ -70,8 +70,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
-   for (i=0;i<nbnd;i++){
-
+   for(i=0;i<nbnd;i++){
       // set true to begin with
       bndint[i]=1;
 
@@ -94,9 +93,13 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
       ebbox[1][1]=minarr(2,yarr);
 
       // establish whether the bounding boxes intersect
+      // if max edge x less than min point x
       if(ebbox[0][0]+eps < pbbox[1][0]) bndint[i]=0;
+      // if max point x less than min edge x
       if(pbbox[0][0]+eps < ebbox[1][0]) bndint[i]=0;
+      // if max edge y less than min point y
       if(ebbox[0][1]+eps < pbbox[1][1]) bndint[i]=0;
+      // if max point y less than min edge y
       if(pbbox[0][1]+eps < ebbox[1][1]) bndint[i]=0;
 
       // if the bounding boxes do intersect, check that the
@@ -105,11 +108,6 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
       if(bndint[i]){
          // first find the intersection point
          intpoint(p1,p2,thisedge,ip);
-
-// NEED TO DO SOME ERROR CHECKING HERE!
-//         if(is.na(ip$x)|is.na(ip$y)){
-//            bndint[i]<-FALSE
-//         }else{
 
          // first need to handle the horizontal and vertical line cases
          if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
@@ -123,8 +121,8 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
          }
          if(fabs(pbbox[0][1]-pbbox[1][1])>=eps){
             if(ip[1]>=pbbox[0][1] | ip[1]<=pbbox[1][1]) bndint[i]=0;
-         }
-
+         } // end of horiz/vert check
+   
          // then handle whether the intersection point lies within the
          // the bounding box
          if(bndint[i]){
@@ -140,35 +138,8 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
             if(fabs(pbbox[0][1]-pbbox[1][1])<=eps){
                if(ip[0]>=pbbox[0][0] | ip[0]<=pbbox[1][0]) bndint[i]=0;
             }
-         }
+         } // end of bounding box ip check
       }
-////////////////////////////////
-      // case where the lines are exactly overlapping
-      if(( (fabs(p1[0]-bnd[i][0])   <= eps) & 
-           (fabs(p2[0]-bnd[i+1][0]) <= eps) &
-           (fabs(p1[1]-bnd[i][1])   <= eps) & 
-           (fabs(p2[1]-bnd[i+1][1]) <= eps) ) |
-         ( (fabs(p2[0]-bnd[i][0])   <= eps) & 
-           (fabs(p1[0]-bnd[i+1][0]) <= eps) &
-           (fabs(p2[1]-bnd[i][1])   <= eps) &
-           (fabs(p1[1]-bnd[i+1][1]) <= eps) )){
-printf("orly\n");            
-            bndint[i]=1;
-            bndint[i+1]=1;
-      }
-
-      // start/end points the same
-      if(( (fabs(p1[0]-bnd[i][0])  < eps) & (fabs(p1[1]-bnd[i][1])  <= eps) )|
-         ( (fabs(p2[0]-bnd[i][0])  < eps) & (fabs(p2[1]-bnd[i][1])  <= eps) )|
-         ( (fabs(p1[0]-bnd[i+1][0])< eps) & (fabs(p1[1]-bnd[i+1][1])<= eps) )|
-         ( (fabs(p2[0]-bnd[i+1][0])< eps) & (fabs(p2[1]-bnd[i+1][1])<= eps) ) ){ 
-            
-printf("orly 2\n");            
-            bndint[i]=1;
-            bndint[i+1]=1;
-      }
-
-/////////////////////////////////////////////////
    }// end iterate over boundary
 }
 
@@ -195,19 +166,15 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
          ( (fabs(p2[0]-bnd[j][0])   < eps) & 
            (fabs(p1[0]-bnd[j+1][0]) < eps) &
            (fabs(p2[1]-bnd[j][1])   < eps) &
-           (fabs(p1[1]-bnd[j+1][1]) < eps) )){
-            
-            bndint[j]=0;
-      }
+           (fabs(p1[1]-bnd[j+1][1]) < eps) )) bndint[j]=0;
+     
 
       // start/end points the same
       if(( (fabs(p1[0]-bnd[j][0])  < eps) & (fabs(p1[1]-bnd[j][1])  < eps) )|
          ( (fabs(p2[0]-bnd[j][0])  < eps) & (fabs(p2[1]-bnd[j][1])  < eps) )|
          ( (fabs(p1[0]-bnd[j+1][0])< eps) & (fabs(p1[1]-bnd[j+1][1])< eps) )|
-         ( (fabs(p2[0]-bnd[j+1][0])< eps) & (fabs(p2[1]-bnd[j+1][1])< eps) ) ){ 
-            
+         ( (fabs(p2[0]-bnd[j+1][0])< eps) & (fabs(p2[1]-bnd[j+1][1])< eps) ) )
             bndint[j]=0;
-      }
 
       // call original routine if this doesn't work
       if(bndint[j]){
@@ -240,10 +207,11 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
    int ret=0;
    int i, err, intind[2];
    double ip1[2],ip2[2];
+   double eps=1e-16;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 //DEBUG
-printf("first_ips error=%d\n",err);
+//printf("first_ips error=%d\n",err);
 //printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
 //printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
 
@@ -271,8 +239,11 @@ printf("first_ips error=%d\n",err);
 
       // find the midpoints between p1, p2 their first intersections
       // store in x and y blocks
-      double xmp[2]={(ip1[0]+p1[0])/2,(ip2[0]+p2[0])/2};
-      double ymp[2]={(ip1[1]+p2[1])/2,(ip2[1]+p2[1])/2};
+//      double xmp[2]={(ip1[0]+p1[0])/2,(ip2[0]+p2[0])/2};
+//      double ymp[2]={(ip1[1]+p2[1])/2,(ip2[1]+p2[1])/2};
+
+      double xmp[2]={p1mp[0],p2mp[0]};
+      double ymp[2]={p1mp[1],p2mp[1]};
 
       // to handle holes, multiple boundaries
       // ignore this at the moment
@@ -289,7 +260,6 @@ printf("first_ips error=%d\n",err);
       // if they are both inside, return true
       if(in[0] && in[1]){
          ret=1;
-         printf("in in\n");
       }
    }
 
@@ -473,11 +443,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 
    // do the bounding box check first, for speed
    // do_intersect returns a string of T/F values
-   // default set to true
-//   int retint[nbnd];
-//   for(i=0;i<nbnd;i++){
-//      retint[i]=1;
-//   }
   
    // find intersections 
    // this is what is used in the R code.
@@ -486,6 +451,8 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    // length of the bounding box index
    lbbindex=iarrsum(nbnd,retint);
 
+//printf("lbbindex=%d\n",lbbindex);
+//printf("iarrsum(nbnd,retint)=%d\n",iarrsum(nbnd,retint));
 // DEBUG
 //printf("retint=");
 //int k;
@@ -495,7 +462,8 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 //printf("\n");
 
 // DEBUG
-printf("lbbindex=%d\n",lbbindex);
+//printf("lbbindex=%d\n",lbbindex);
+//printf("nbnd=%d\n",nbnd);
    
    // if lbbindex < 1 increment err
    if(lbbindex>1){
@@ -520,7 +488,7 @@ printf("lbbindex=%d\n",lbbindex);
       for(i=0;i<lbbindex;i++){
          // get current index
          j=bbindex[i];
-printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
+//printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
 
          thisedge[0][0]=bnd[j][0];
          thisedge[1][0]=bnd[j+1][0];
@@ -598,27 +566,32 @@ printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
       ip2[0]=ips[lastel][0];
       ip2[1]=ips[lastel][1];
 
+//printf("firstel=%d\n",firstel);
+//printf("lastel=%d\n",lastel);
+
       // calculate intind
+//printf("bbindex[%d]=%d\n",firstel,bbindex[firstel]);
       intind[0]=bbindex[firstel];
+//printf("bbindex[%d]=%d\n",lastel,bbindex[lastel]);
       intind[1]=bbindex[lastel];
 
    }else{
       // let the Robot warn us...
-      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
+//      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
       err++;
 
 // DEBUG
-printf("p1=list(x=%f,y=%f)\n",p1[0],p1[1]);
-printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
-printf("retint=");
-int k;
-for(k=0;k<(nbnd-1);k++){
-   printf(" %d,",retint[k]);
-}
-printf("\n");
+//printf("p1=list(x=%f,y=%f)\n",p1[0],p1[1]);
+//printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
+//printf("retint=");
+//int k;
+//for(k=0;k<(nbnd-1);k++){
+//   printf(" %d,",retint[k]);
+//}
+//printf("\n");
 
 
-   }
+   } // end of lbbindex<2 check
 
    return(err);
 }
@@ -795,7 +768,7 @@ double minarr(int narr, double arr[])
 
 
 // sum an array of integers 
-int iarrsum(int narr, int arr[])
+int iarrsum(int narr, int arr[narr])
 {
    int i;
    int val=0;

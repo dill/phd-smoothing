@@ -85,7 +85,7 @@ i=0;
    do{
 
 // DEBUG
-printf("run %d\n",i);
+//printf("run %d\n",i);
 i++;
 
       // save previous path
@@ -95,7 +95,7 @@ i++;
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,*nbnd,bnd);
 // DEBUG
-printf("delete change? %d\n",has_converged(prevpath,mypath));
+//printf("delete change? %d\n",has_converged(prevpath,mypath));
 // DEBUG
 //printf("#******* END  ********** \n");
 //printf("plot(bnd,type=\"l\")\n");
@@ -114,7 +114,7 @@ printf("delete change? %d\n",has_converged(prevpath,mypath));
       alter_step(&mypath,*nbnd,bnd);
 
 // DEBUG
-printf("alter change? %d\n",has_converged(prevpath,mypath));
+//printf("alter change? %d\n",has_converged(prevpath,mypath));
 // DEBUG
 //printf("#******* END  ********** \n");
 //printf("plot(bnd,type=\"l\")\n");
@@ -651,17 +651,17 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          triplen=triplen+hypot(ep2[0]-mid[0],ep2[1]-mid[1]);
 
 // DEBUG
-printf("***********************debug: pre facing\n");
-printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
-printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
-printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
-printf("points(ep1,pch=24)\n");
-printf("points(ep2,pch=24)\n");
+//printf("***********************debug: pre facing\n");
+////printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
+//printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
+//printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
+//printf("points(ep1,pch=24)\n");
+//printf("points(ep2,pch=24)\n");
 
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
 // DEBUG
-printf("***********************debug: after facing\n");
+//printf("***********************debug: after facing\n");
 //printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
 //printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
 //printf("points(ep1,pch=24)\n");
@@ -673,7 +673,7 @@ printf("***********************debug: after facing\n");
             // cut out anything silly
             //delete_step(&newpath, nbnd, bnd);
 
-printf("h=%f, t=%f\n",hull_length(&newpath),triplen);
+//printf("h=%f, t=%f\n",hull_length(&newpath),triplen);
             // only insert the path if it's better!
             if(hull_length(&newpath)<=triplen){
 
