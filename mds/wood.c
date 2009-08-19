@@ -315,7 +315,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       double bnd2first[2];
       bnd2first[0]=current->data[0];
       bnd2first[1]=current->data[1];
-
       
       while(current->next!=NULL){
          current=current->next;
@@ -330,53 +329,70 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
 
       do_intersect(ip1,bnd2first,2,last,interr2);
 
-printf("cat(\"interr1=%d\\n\")\n",interr1[0]);
-printf("cat(\"interr2=%d\\n\")\n",interr2[0]);
-
+//printf("cat(\"interr1=%d\\n\")\n",interr1[0]);
+//printf("cat(\"interr2=%d\\n\")\n",interr2[0]);
+//
+//printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
 
 //      if(!(err_ind1 & err_ind2)){
 
-      if((interr1[0]+interr2[0])!=0){
+//      if((interr1[0]+interr2[0])==0){
+      if(interr1[0]){
 
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-         AppendNode(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert);
+         Push(&bnd1,curr_insert);
    
          curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-         AppendNode(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert);
+         Push(&bnd1,curr_insert);
    
          curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
-         Push(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert);
+         AppendNode(&bnd1,curr_insert);
    
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-         Push(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert);
+         AppendNode(&bnd1,curr_insert);
 
       }else{
-
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-         Push(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert); // pushed ip1 into both
+         AppendNode(&bnd1,curr_insert);
    
          curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-         Push(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert); // pushed p1 into both
+         AppendNode(&bnd1,curr_insert);
    
          curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
-         AppendNode(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert); // append ip2 for both
+         Push(&bnd1,curr_insert);
    
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-         AppendNode(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert); // append p2 for both
+         Push(&bnd1,curr_insert);
 
       }
 
 
-
-
+      if(interr2[0]){
+         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+         AppendNode(&bnd2,curr_insert); // pushed ip1 into both
+   
+         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+         AppendNode(&bnd2,curr_insert); // pushed p1 into both
+   
+         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+         Push(&bnd2,curr_insert); // append ip2 for both
+   
+         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+         Push(&bnd2,curr_insert); // append p2 for both
+      }else{
+         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+         Push(&bnd2,curr_insert);
+   
+         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+         Push(&bnd2,curr_insert);
+   
+         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+         AppendNode(&bnd2,curr_insert);
+   
+         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+         AppendNode(&bnd2,curr_insert);
+      }
 
 
 // DEBUG
@@ -399,8 +415,10 @@ printf("cat(\"interr2=%d\\n\")\n",interr2[0]);
 
       // pick the shorter path return path
       if(hull_length(&bnd1)<hull_length(&bnd2)){
+printf("cat(\"picked 1\\n\")\n");
          return bnd1;
       }else{
+printf("cat(\"picked 2\\n\")\n");
          return bnd2;
       }
 
