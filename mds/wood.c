@@ -253,55 +253,106 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       // need to decide on where to do Appends and where to do Pushes
       
       // check to work out the order of Push/AppendNodes
-      double testnode[2];
-      int ints[nbnd-1];
-      int bnd_err=0;
-
-      // check if the line between ip2 and the first element of
-      // bnd1 and bnd2 are inside...
-
-      // first element of bnd1
+//      double testnode[2];
+//      int ints[nbnd-1];
+//      int bnd_err=0;
+//
+//      // check if the line between ip2 and the first element of
+//      // bnd1 and bnd2 are inside...
+//
+//      // first element of bnd1
       node* current = NULL;
       current=bnd1;
-
-      // first test if ip1 to the first element of bnd1 is inside
-      // ie are there any intersections on the line between and the boundary
-      testnode[0]=current->data[0];
-      testnode[1]=current->data[1];
-
-// errors here vvvvvvvvvvvvvvvvvvvvvvvvvv
-      sp_do_intersect(ip1,testnode,nbnd,bnd,ints);
-
-      int err_ind1=1;
-      int err_ind2=1;
+//
+//      // first test if ip1 to the first element of bnd1 is inside
+//      // ie are there any intersections on the line between and the boundary
+//      testnode[0]=current->data[0];
+//      testnode[1]=current->data[1];
+//
+//      sp_do_intersect(ip1,testnode,nbnd,bnd,ints);
+//
+//      int err_ind1=1;
+//      int err_ind2=1;
    
-      if(iarrsum((nbnd-1),ints)!=0){
-         err_ind1=0;
+//      if(iarrsum((nbnd-1),ints)!=0){
+//         err_ind1=0;
+//      }
+//
+//      sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
+//
+//      if(iarrsum((nbnd-1),ints)==0){
+//         err_ind2=0;
+//      }
+
+      // quick hack on do_intersect. If the ip->first point in bnd intersect then
+      // switch
+
+      // ip1->first element of bnd1
+      // ip2->last element of bnd1
+
+
+      double bnd1first[2];
+      bnd1first[0]=current->data[0];
+      bnd1first[1]=current->data[1];
+
+      double last[2][2];
+      
+      while(current->next!=NULL){
+         current=current->next;
       }
 
-      sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
+      last[0][0]=ip1[0];
+      last[0][1]=ip1[1];
+      last[1][0]=current->data[0];
+      last[1][1]=current->data[0];
 
-      if(iarrsum((nbnd-1),ints)==0){
-         err_ind2=0;
+      int interr1[1];
+
+      do_intersect(ip2,bnd1first,2,last,interr1);
+
+      current=bnd2;
+
+      double bnd2first[2];
+      bnd2first[0]=current->data[0];
+      bnd2first[1]=current->data[1];
+
+      
+      while(current->next!=NULL){
+         current=current->next;
       }
 
-      if(!(err_ind1 & err_ind2)){
+      last[0][0]=ip2[0];
+      last[0][1]=ip2[1];
+      last[1][0]=current->data[0];
+      last[1][1]=current->data[0];
+
+      int interr2[1];
+
+      do_intersect(ip1,bnd2first,2,last,interr2);
+
+printf("cat(\"interr1=%d\\n\")\n",interr1[0]);
+printf("cat(\"interr2=%d\\n\")\n",interr2[0]);
+
+
+//      if(!(err_ind1 & err_ind2)){
+
+      if((interr1[0]+interr2[0])!=0){
 
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert); // pushed ip1 into both
+         AppendNode(&bnd2,curr_insert);
    
          curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
          AppendNode(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert); // pushed p1 into both
+         AppendNode(&bnd2,curr_insert);
    
          curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
          Push(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert); // append ip2 for both
+         Push(&bnd2,curr_insert);
    
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
          Push(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert); // append p2 for both
+         Push(&bnd2,curr_insert);
 
       }else{
 
@@ -322,6 +373,9 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
          AppendNode(&bnd2,curr_insert); // append p2 for both
 
       }
+
+
+
 
 
 
