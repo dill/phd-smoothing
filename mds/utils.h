@@ -18,14 +18,14 @@ void twosort(double *);
 int online(double[2],double[2][2]);
 int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]);
 void intpoint(double[2], double[2],double[2][2],double[2]);
-void do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int bndint[nbnd]);
+void do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int bndint[nbnd-1]);
 double minarr(int narr, double arr[narr]);
 double maxarr(int narr, double arr[narr]);
 int compare_doubles (const void *a, const void *b);
 int crapfind(int narr, double[narr], double);
 int iarrsum(int narr, int arr[narr]);
 double hull_length(node**);
-void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd]);
+void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
 int first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2], 
                double[2], double[2], int[2]);
 void Push(node**, double[2]);
@@ -38,13 +38,13 @@ void in_out(double *, double *, double *,double *,double *,int *, int *, int * )
 
 
 // do two points and the boundary intersect?
-void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd])
+void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
 {
    /*
     * p1,p2    points we wish to test
     * nbnd     length of boundary
     * bnd      boundary
-    * bndint   boundary intersections
+    * bndint   boundary intersections (length nbnd-1)
     */
 
    // uses: maxarr, minarr, intpoint
@@ -70,7 +70,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
-   for(i=0;i<nbnd;i++){
+   for(i=0;i<(nbnd-1);i++){
       // set true to begin with
       bndint[i]=1;
 
@@ -146,7 +146,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 
 // special do_intersect, thinks that points that start/end at the same
 // place don't intersect. Neither do exactly overlapping lines.
-void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd])
+void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
 {
    int j, tmpnbnd, tmpbndint[1];
    double tmpbnd[2][2];
@@ -154,7 +154,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
-   for(j=0;j<nbnd;j++){
+   for(j=0;j<(nbnd-1);j++){
       // set true to begin with
       bndint[j]=1;
 
@@ -168,7 +168,6 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
            (fabs(p2[1]-bnd[j][1])   < eps) &
            (fabs(p1[1]-bnd[j+1][1]) < eps) )) bndint[j]=0;
      
-
       // start/end points the same
       if(( (fabs(p1[0]-bnd[j][0])  < eps) & (fabs(p1[1]-bnd[j][1])  < eps) )|
          ( (fabs(p2[0]-bnd[j][0])  < eps) & (fabs(p2[1]-bnd[j][1])  < eps) )|
@@ -434,7 +433,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    *                 error code, 0=okay
    */
 
-   int i, lbbindex, firstel, lastel, retint[nbnd];
+   int i, lbbindex, firstel, lastel, retint[nbnd-1];
    double thisedge[2][2];
    double ip[2];
 
@@ -449,7 +448,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    do_intersect(p1,p2,nbnd,bnd,retint);
    
    // length of the bounding box index
-   lbbindex=iarrsum(nbnd,retint);
+   lbbindex=iarrsum((nbnd-1),retint);
 
 //printf("lbbindex=%d\n",lbbindex);
 //printf("iarrsum(nbnd,retint)=%d\n",iarrsum(nbnd,retint));
@@ -473,7 +472,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       int j=0;
 
       // populate bbindex   
-      for(i=0;i<nbnd;i++){
+      for(i=0;i<(nbnd-1);i++){
          if(retint[i]){
             bbindex[j]=i;
             j++;

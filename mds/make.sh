@@ -9,7 +9,7 @@
 #gcc -lm -g -O2 doubleyuh-test.c inout.c wood.c 
 
 # w-shaped area - alter step debugging (facing mostly)
-gcc -lm -g alterdebug.c inout.c wood.c 
+#gcc -lm -g alterdebug.c inout.c wood.c 
 
 # linked list test
 #gcc -lm -g ll-test.c inout.c 

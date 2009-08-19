@@ -50,43 +50,14 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    mypath=make_bnd_path(p1,p2,*nbnd,bnd);
 
-// DEBUG
-//printf("--------------------------\n");
-//printf("plot(bnd,type=\"l\")\n");
-//printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-//printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("points(p1)\n");
-//printf("points(p2)\n");
-//printf("path<-list(x=c(),y=c())\n");
-
    node* current=mypath;
-// DEBUG
-//printf("#******* END  ********** \n");
-//printf("plot(bnd,type=\"l\")\n");
-//printf("path<-list(x=c(),y=c())\n");
-//
-//current=mypath;
-//while(current!=NULL){
-//   printf("path$x<-c(path$x,%f)\n",current->data[0]);
-//   printf("path$y<-c(path$y,%f)\n",current->data[1]);
-//   current=current->next;
-//}
-//printf("lines(path,lwd=2,col=\"red\")\n");
-//printf("scan()\n");
-//
+
    // convergence stop
    conv=0;
    conv_stop=10;
 
-// DEBUG
-i=0;
-
    // keep going until we don't remove any more points.
    do{
-
-// DEBUG
-//printf("run %d\n",i);
-i++;
 
       // save previous path
       //prev.path<-my.path
@@ -94,40 +65,9 @@ i++;
 
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,*nbnd,bnd);
-// DEBUG
-//printf("delete change? %d\n",has_converged(prevpath,mypath));
-// DEBUG
-//printf("#******* END  ********** \n");
-//printf("plot(bnd,type=\"l\")\n");
-//printf("path<-list(x=c(),y=c())\n");
-//
-//current=mypath;
-//while(current!=NULL){
-//   printf("path$x<-c(path$x,%f)\n",current->data[0]);
-//   printf("path$y<-c(path$y,%f)\n",current->data[1]);
-//   current=current->next;
-//}
-//printf("lines(path,lwd=2,col=\"red\")\n");
-//printf("scan()\n");
 
       // add new vertices
       alter_step(&mypath,*nbnd,bnd);
-
-// DEBUG
-//printf("alter change? %d\n",has_converged(prevpath,mypath));
-// DEBUG
-//printf("#******* END  ********** \n");
-//printf("plot(bnd,type=\"l\")\n");
-//printf("path<-list(x=c(),y=c())\n");
-//
-//current=mypath;
-//while(current!=NULL){
-//   printf("path$x<-c(path$x,%f)\n",current->data[0]);
-//   printf("path$y<-c(path$y,%f)\n",current->data[1]);
-//   current=current->next;
-//}
-//printf("lines(path,lwd=2,col=\"red\")\n");
-//printf("scan()\n");
 
       // increment convergence stopper 
       conv++;
@@ -314,7 +254,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       
       // check to work out the order of Push/AppendNodes
       double testnode[2];
-      int ints[nbnd];
+      int ints[nbnd-1];
       int bnd_err=0;
 
       // check if the line between ip2 and the first element of
@@ -335,13 +275,13 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       int err_ind1=1;
       int err_ind2=1;
    
-      if(iarrsum(nbnd,ints)!=0){
+      if(iarrsum((nbnd-1),ints)!=0){
          err_ind1=0;
       }
 
       sp_do_intersect(ip2,testnode,nbnd,bnd,ints);
 
-      if(iarrsum(nbnd,ints)==0){
+      if(iarrsum((nbnd-1),ints)==0){
          err_ind2=0;
       }
 
@@ -429,7 +369,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
    // Return:
    //           revised path with dropped vertices
    
-   int i,j, intbnd[nbnd];
+   int i,j, intbnd[nbnd-1];
    double mytrip[3][2], p1[2], p2[2], xmp[1], ymp[1];
 
    node* current=NULL;   // iterator
@@ -544,7 +484,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             
             // first part asks if there are any intersections, if there are
             // none then that's okay. Second part asks if midpoints are inside.
-            if((iarrsum(nbnd,intbnd)==0) & in[0]){
+            if((iarrsum((nbnd-1),intbnd)==0) & in[0]){
 
                // remove point i by setting next pointer from i-1 to 
                // i+1, and prev from i+1 to i-1

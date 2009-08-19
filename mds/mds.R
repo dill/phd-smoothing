@@ -45,11 +45,8 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
          if(sum(intp)>1){
 
             # call the R Wood algorithm
-            oldpath<-wood_path(p1,p2,bnd)
+#            oldpath<-wood_path(p1,p2,bnd)
             
-#plot(bnd,type="l")
-#lines(oldpath,lwd=2,col="red")
-#scan()
             # C version
             D[i,j]<-woodpath(p1,p2,bnd)
 
@@ -57,8 +54,8 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
 #            if(any(is.na(path))){
 #               D[i,j]<-NA
 #            }else{
-               # find the length of the path
-               op<-hull_length(oldpath)
+#               # find the length of the path
+#               op<-hull_length(oldpath)
 #            }
 
          # if the line p1p2 doesn't intersect any sides
@@ -69,8 +66,6 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
 ### DEBUG
 #cat(".")
 
-
-#   if(abs(D[i,j]-op)>0.01) cat("yelp!\n")
 
    
       }
