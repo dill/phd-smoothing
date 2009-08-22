@@ -1,0 +1,61 @@
+% Writeup for MDS
+% David Lawrence Miller
+% d.l.miller@bath.ac.uk
+ 
+% Started : 22 August 2008
+ 
+\documentclass[a4paper,10pt]{amsart}
+ 
+% Load some packages
+\usepackage{times, amsmath, amssymb, amsfonts, url, natbib, bm, rotating}
+ 
+\usepackage{multirow}
+\usepackage{graphicx}
+
+% top matter
+\title{}
+\author{David Lawrence Miller}
+\email{d.l.miller@bath.ac.uk}
+\address{Mathematical Sciences, University of Bath, Bath, United Kingdom}
+ 
+% Shortcuts
+% Probability
+\newcommand{\prob}[1]{\mathbb{P}\left[ #1 \right]}
+% Hovitz-Thompson
+\newcommand{\HT}{\hat{\tau}_{HT}}
+% Schwarz-Christoffel
+\newcommand{\sch}{Schwarz-Christoffel }
+% fprime
+\newcommand{\fprime}{f^\prime(z)}
+% figure reference command
+\newcommand{\fig}[1]{\emph{fig.} (\ref{#1})}
+% equation reference command
+\newcommand{\eqn}[1]{\emph{eqn.} (\ref{#1})}
+% phi inverse
+\newcommand{\phiinv}{\phi^{-1}}
+% use other phi
+\renewcommand{\phi}{\varphi}
+
+\begin{document}
+ 
+% The abstract
+\begin{abstract}
+Here.
+\end{abstract}
+ 
+ 
+% New theorem for theorems
+\newtheorem{thm}{Theorem}[section]
+ 
+%New theorem for definitions
+\newtheorem{defn}{Definition}[section]
+ 
+\maketitle
+
+%\markright{TECH. DETAILS OF SCHWARZ-CHRISTOFFEL MAPPING}
+
+
+\bibliographystyle{plainnat}
+\bibliography{mds-refs}
+
+\end{document}
