@@ -29,10 +29,7 @@ new.data<-data.frame(x=xx,y=yy,z=fs.test(xx,yy))
 
 
 # map the prediction grid
-#D<-create_distance_matrix(xx,yy,bnd,logfile="ramsay-big-log.txt")
-D<-read.csv(file="ramsay-big-log.txt")
-D<-D[,-1]
-D<-D+t(D)
+D<-create_distance_matrix(xx,yy,bnd)
 
 
 n.samp<-250
