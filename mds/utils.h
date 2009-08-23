@@ -450,20 +450,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
 
-//printf("lbbindex=%d\n",lbbindex);
-//printf("iarrsum(nbnd,retint)=%d\n",iarrsum(nbnd,retint));
-// DEBUG
-//printf("retint=");
-//int k;
-//for(k=0;k<(nbnd-1);k++){
-//   printf(" %d,",retint[k]);
-//}
-//printf("\n");
-
-// DEBUG
-//printf("lbbindex=%d\n",lbbindex);
-//printf("nbnd=%d\n",nbnd);
-   
    // if lbbindex < 1 increment err
    if(lbbindex>1){
       // find intersections & sort by distance
@@ -487,27 +473,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       for(i=0;i<lbbindex;i++){
          // get current index
          j=bbindex[i];
-//printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
-
-         thisedge[0][0]=bnd[j][0];
-         thisedge[1][0]=bnd[j+1][0];
-         thisedge[0][1]=bnd[j][1];
-         thisedge[1][1]=bnd[j+1][1];
-
-         // calculate and save the intersection
-         intpoint(p1,p2,thisedge,ip);
-// DEBUG
-//printf("****************\n");
-//printf("plot(bnd,type=\"l\")\n");
-//printf("ip=list(x=%f,y=%f)\n",ip[0],ip[1]);
-//printf("p1=list(x=%f,y=%f)\n",p1[0],p1[1]);
-//printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("edge=list(x=c(%f,%f),y=c(%f,%f))\n",thisedge[0][0],thisedge[1][0],
-//                                            thisedge[0][1],thisedge[1][1]);
-//printf("lines(edge,col=\"green\",lwd=2);\n");
-//printf("points(p1); points(p2);\n"); 
-//printf("points(ip,col=\"red\",pch=24)\n"); 
-//printf("****************\n");
 
          ips[i][0]=ip[0];
          ips[i][1]=ip[1];
@@ -539,20 +504,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       // The compare function is used to perform the comparison on the array elements. 
       qsort(&sortdists,lbbindex,sizeof(double),compare_doubles);
 
-// DEBUG
-//printf("**************qsort debug ************\n");
-//int k;
-//for(k=0;k<lbbindex;k++){
-//   printf("%f,",dists[k]);
-//}
-//printf("\n");
-//for(k=0;k<lbbindex;k++){
-//   printf("%f,",sortdists[k]);
-//}
-//printf("\n");
-//printf("**************END qsort debug ************\n");
-///////////////////////////////////
-
       // find first intersection between p1 and bnd
       // p1.int<-pe(ips,order(dists)[1])
       firstel = crapfind(lbbindex,dists,sortdists[0]);
@@ -565,30 +516,14 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       ip2[0]=ips[lastel][0];
       ip2[1]=ips[lastel][1];
 
-//printf("firstel=%d\n",firstel);
-//printf("lastel=%d\n",lastel);
-
       // calculate intind
-//printf("bbindex[%d]=%d\n",firstel,bbindex[firstel]);
       intind[0]=bbindex[firstel];
-//printf("bbindex[%d]=%d\n",lastel,bbindex[lastel]);
       intind[1]=bbindex[lastel];
 
    }else{
       // let the Robot warn us...
-//      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
+      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
       err++;
-
-// DEBUG
-//printf("p1=list(x=%f,y=%f)\n",p1[0],p1[1]);
-//printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("retint=");
-//int k;
-//for(k=0;k<(nbnd-1);k++){
-//   printf(" %d,",retint[k]);
-//}
-//printf("\n");
-
 
    } // end of lbbindex<2 check
 
@@ -621,7 +556,6 @@ void Push(node** headRef, double data[2]) {
 
 	if(newNode->next !=NULL){
 	   newNode->next->prev = newNode;
-   	//*headRef->prev = newNode;
 	}
   
    // previous element of new node will be NULL

@@ -42,6 +42,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.5,logfilename=NA, plot.it=
 
    ### do the PCO and construct the data frame
    # create D
+cat("created D\n")
    D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd,logfile=logfilename)
 
    # perform mds on the sample matrix
@@ -73,8 +74,9 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.5,logfilename=NA, plot.it=
    npred.data$y<-gendata$y[-samp.ind]
 
    # new MDS coords for the prediction points
+cat("before D.pred\n")
    D.pred<-create_distance_matrix(npred.data$x,npred.data$y,bnd)
-   D.pred<-D.pred+t(D.pred)
+cat("created D.pred\n")
    pred.mds<-insert.mds(D.pred,samp.mds)
 
    # put this in the correct format 
@@ -86,13 +88,16 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.5,logfilename=NA, plot.it=
 
    ### Now do some fitting and prediction
 
+cat("running models...\n")
    ### mapping
    b.mapped<-gam(z~s(x,y,k=49),data=samp.data)
    fv <- predict(b.mapped,newdata=pred.data)
+cat("b.mapped\n")
    
    ### normal tprs
    b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
    fv.tprs <- predict(b.tprs,newdata=gendata)
+cat("b.tprs\n")
    
    ### soap
    knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
@@ -102,6 +107,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.5,logfilename=NA, plot.it=
    knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
    b.soap<-gam(z~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=nsamp.data)
    fv.soap <- predict(b.soap,newdata=gendata)
+cat("b.soap\n")
 
    # create the image
    gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
