@@ -1,10 +1,6 @@
 # function to run simulations on the wigglytop 2 domain
 # Copyright David Lawrence Miller 2009.
-
-library(soap)
 source("mds.R")
-source("wood.R")
-source("insert.mds.R")
 
 wt2_smooth_test<-function(samp.size=250,noise.level=0.5,logfilename=NA, plot.it=FALSE){
 

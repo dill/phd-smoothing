@@ -4,7 +4,9 @@
 source("utils.R")
 source("mds-wrap.R")
 source("wood.R")
-#source("insert.mds.R")
+source("insert.mds.R")
+
+library(soap)
 
 # create the distance matrix
 create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
