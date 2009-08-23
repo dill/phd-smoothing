@@ -43,21 +43,8 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
          # any boundary side
          intp<-do_intersect(p1,p2,bnd)
          if(sum(intp)>1){
-
-            # call the R Wood algorithm
-#            oldpath<-wood_path(p1,p2,bnd)
-            
             # C version
             D[i,j]<-woodpath(p1,p2,bnd)
-
-
-#            if(any(is.na(path))){
-#               D[i,j]<-NA
-#            }else{
-#               # find the length of the path
-#               op<-hull_length(oldpath)
-#            }
-
          # if the line p1p2 doesn't intersect any sides
          }else{
             # insert the distance
@@ -66,8 +53,6 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
 ### DEBUG
 #cat(".")
 
-
-   
       }
       # if asked to we write out a log file at each line
       if(!is.na(logfile)){
