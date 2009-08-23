@@ -408,8 +408,8 @@ double hull_length(node** hull) {
 
    // this is a bit ugly
    while (current->next != NULL) {
-      hullen=hullen+hypot((current->next->data[0]-current->data[0]),
-                          (current->next->data[1]-current->data[1]));
+      hullen=hullen+hypot((current->next->data[0] - current->data[0]),
+                          (current->next->data[1] - current->data[1]));
       current = current->next;
    }
    return(hullen);
@@ -612,12 +612,8 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
  */
 void Push(node** headRef, double data[2]) {
    node* newNode = malloc(sizeof(node));
-   //node* head = *headRef; 
    newNode->data[0] = data[0];
    newNode->data[1] = data[1];
-
-   // make prev of head the new node
-   //*headRef->prev = newNode; 
 
    // next element of the new node will be the head
    newNode->next = *headRef;  // The '*' to dereferences back 
@@ -639,8 +635,7 @@ void Push(node** headRef, double data[2]) {
 // think this will work
 void AppendNode(node** headRef, double data[2]) {
    node* current = *headRef;
-   node* newNode;
-   newNode = malloc(sizeof(node));
+   node* newNode = malloc(sizeof(node));
    newNode->data[0] = data[0];
    newNode->data[1] = data[1];
    newNode->next = NULL;
