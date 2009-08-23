@@ -43,7 +43,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.5,logfilename=NA, plot.it=
    ### do the PCO and construct the data frame
    # create D
    D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd,logfile=logfilename)
-   D<-D+t(D)
 
    # perform mds on the sample matrix
    # options needed for insertion to work
