@@ -610,7 +610,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 
    }else{
       // let the Robot warn us...
-      printf("DANGER, WILL ROBINSON! lbbindex=%d (< 2)\n",lbbindex);
+      //printf("DANGER, WILL ROBINSON! lbbindex=%d (< 2)\n",lbbindex);
       err++;
 
 // DEBUG
