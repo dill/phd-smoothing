@@ -26,7 +26,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
                          z=fs.test(xx[samp.ind],yy[samp.ind])+noise)
    
    # map the prediction grid
-   D.samp<-create_distance_matrix(xx,yy,bnd)
+   D.samp<-create_distance_matrix(samp.data$x,samp.data$y,bnd)
 
    samp.mds<-cmdscale(D.samp,eig=TRUE,x.ret=TRUE)
 
