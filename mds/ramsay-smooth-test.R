@@ -1,9 +1,6 @@
 # function to do the smoothing on the Ramsay horseshoe 
 # Copyright David Lawrence Miller 2009
-
 source("mds.R")
-
-library(soap)
 
 ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot.it=FALSE){
    ## create a boundary...
@@ -19,7 +16,6 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
    onoff<-inSide(list(x=-bnd$x,y=-bnd$y),-xx,-yy)
    xx<-xx[onoff];yy<-yy[onoff]
    
-
    # make the sample
    samp.ind<-sample(1:length(xx),samp.size)
 
@@ -44,16 +40,15 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
 
    # new MDS coords for the prediction points
 cat("before D.pred\n")
-   D.pred<-create_distance_matrix(npred.data$x,npred.data$y,bnd)
+   pred.mds<-insert.mds(pred.data,samp.data,samp.mds)
 cat("created D.pred\n")
-   pred.mds<-insert.mds(D.pred,samp.mds)
 
    # put this in the correct format 
    pred.data<-list(x=rep(0,dim(D)[2]),y=rep(0,dim(D)[2]))
    pred.data$x[samp.ind]<-samp.data$x  # need to add in the sample points too
-   pred.data$x[-samp.ind]<-pred.mds[1,]
+   pred.data$x[-samp.ind]<-pred.mds[,1]
    pred.data$y[samp.ind]<-samp.data$y  # need to add in the sample points too
-   pred.data$y[-samp.ind]<-pred.mds[2,]
+   pred.data$y[-samp.ind]<-pred.mds[,2]
 
    # boundary, only for drawing the line around the outside
    fsb <- fs.boundary()
