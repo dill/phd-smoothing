@@ -5,7 +5,7 @@ source("mds.R")
 
 library(soap)
 
-wt2_smooth_test<-function(samp.size=250,noise.level=0.5,logfilename=NA, plot.it=FALSE){
+ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot.it=FALSE){
    ## create a boundary...
    bnd <- fs.boundary()
    bnd<-pe(bnd,seq(1,length(bnd$x),8))
@@ -24,7 +24,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.5,logfilename=NA, plot.it=
    samp.ind<-sample(1:length(xx),samp.size)
 
    # add noise
-   noise<-rnorm(n.samp)*0.3
+   noise<-rnorm(samp.size)*noise.level
 
    samp.data<-data.frame(x=xx[samp.ind],y=yy[samp.ind],
                          z=fs.test(xx[samp.ind],yy[samp.ind])+noise)

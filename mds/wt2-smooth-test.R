@@ -2,7 +2,7 @@
 # Copyright David Lawrence Miller 2009.
 source("mds.R")
 
-wt2_smooth_test<-function(samp.size=250,noise.level=0.5,logfilename=NA, plot.it=FALSE){
+wt2_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot.it=FALSE){
 
    ## create a boundary...
    bnd <- read.csv("wt2-verts.csv",header=FALSE) 

@@ -3,10 +3,10 @@
 # -O2 needed for weird things not to happen in Mac...
 
 # pseudo-Ramsay test
-#gcc -lm -g test.c inout.c wood.c
+gcc -lm -g test.c inout.c wood.c
 
 # w-shaped area
-gcc -lm -g -O0 doubleyuh-test.c inout.c wood.c 
+#gcc -lm -g -O0 doubleyuh-test.c inout.c wood.c 
 
 # w-shaped area - alter step debugging (facing mostly)
 #gcc -lm -g alterdebug.c inout.c wood.c 

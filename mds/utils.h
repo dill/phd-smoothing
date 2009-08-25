@@ -68,6 +68,8 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
    pbbox[1][0]=minarr(2,xarr);
    pbbox[1][1]=minarr(2,yarr);
 
+
+
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
    for(i=0;i<(nbnd-1);i++){
@@ -79,6 +81,11 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
       thisedge[1][0]=bnd[i+1][0];
       thisedge[0][1]=bnd[i][1];
       thisedge[1][1]=bnd[i+1][1];
+
+//printf("thisedge=list(x=c(%f,%f),y=c(%f,%f));\n",thisedge[0][0],thisedge[1][0],
+//                  thisedge[0][1],thisedge[1][1]);
+//printf("lines(thisedge,lwd=2,col=\"red\")\n");
+
 
       // bounding box for the edge
       //e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
@@ -94,18 +101,38 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 
       // establish whether the bounding boxes intersect
       // if max edge x less than min point x
-      if(ebbox[0][0]+eps < pbbox[1][0]) bndint[i]=0;
+      if(ebbox[0][0]+eps <= pbbox[1][0]) bndint[i]=0;
       // if max point x less than min edge x
-      if(pbbox[0][0]+eps < ebbox[1][0]) bndint[i]=0;
+      if(pbbox[0][0]+eps <= ebbox[1][0]) bndint[i]=0;
       // if max edge y less than min point y
-      if(ebbox[0][1]+eps < pbbox[1][1]) bndint[i]=0;
+      if(ebbox[0][1]+eps <= pbbox[1][1]) bndint[i]=0;
       // if max point y less than min edge y
-      if(pbbox[0][1]+eps < ebbox[1][1]) bndint[i]=0;
+      if(pbbox[0][1]+eps <= ebbox[1][1]) bndint[i]=0;
+
+// This might be neccesary...
+//      // case where the lines are exactly overlapping
+//      if(( (fabs(p1[0]-bnd[i][0])   >= eps) & 
+//           (fabs(p2[0]-bnd[i+1][0]) >= eps) &
+//           (fabs(p1[1]-bnd[i][1])   >= eps) & 
+//           (fabs(p2[1]-bnd[i+1][1]) >= eps) ) |
+//         ( (fabs(p2[0]-bnd[i][0])   >= eps) & 
+//           (fabs(p1[0]-bnd[i+1][0]) >= eps) &
+//           (fabs(p2[1]-bnd[i][1])   >= eps) &
+//           (fabs(p1[1]-bnd[i+1][1]) >= eps) )) bndint[i]=0;
+//     
+//      // start/end points the same
+//      if(( (fabs(p1[0]-bnd[i][0])   >= eps) & (fabs(p1[1]-bnd[i][1])   >= eps) )|
+//         ( (fabs(p2[0]-bnd[i][0])   >= eps) & (fabs(p2[1]-bnd[i][1])   >= eps) )|
+//         ( (fabs(p1[0]-bnd[i+1][0]) >= eps) & (fabs(p1[1]-bnd[i+1][1]) >= eps) )|
+//         ( (fabs(p2[0]-bnd[i+1][0]) >= eps) & (fabs(p2[1]-bnd[i+1][1]) >= eps) ) )
+//            bndint[i]=0;
+
 
       // if the bounding boxes do intersect, check that the
       // intersection of the two lines lies within the bounding
       // boxes.
       if(bndint[i]){
+
          // first find the intersection point
          intpoint(p1,p2,thisedge,ip);
 
@@ -140,6 +167,9 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
             }
          } // end of bounding box ip check
       }
+
+//printf("res=%d\n",bndint[i]);
+
    }// end iterate over boundary
 }
 
@@ -159,20 +189,20 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
       bndint[j]=1;
 
       // case where the lines are exactly overlapping
-      if(( (fabs(p1[0]-bnd[j][0])   < eps) & 
-           (fabs(p2[0]-bnd[j+1][0]) < eps) &
-           (fabs(p1[1]-bnd[j][1])   < eps) & 
-           (fabs(p2[1]-bnd[j+1][1]) < eps) ) |
-         ( (fabs(p2[0]-bnd[j][0])   < eps) & 
-           (fabs(p1[0]-bnd[j+1][0]) < eps) &
-           (fabs(p2[1]-bnd[j][1])   < eps) &
-           (fabs(p1[1]-bnd[j+1][1]) < eps) )) bndint[j]=0;
+      if(( (fabs(p1[0]-bnd[j][0])   <= eps) & 
+           (fabs(p2[0]-bnd[j+1][0]) <= eps) &
+           (fabs(p1[1]-bnd[j][1])   <= eps) & 
+           (fabs(p2[1]-bnd[j+1][1]) <= eps) ) |
+         ( (fabs(p2[0]-bnd[j][0])   <= eps) & 
+           (fabs(p1[0]-bnd[j+1][0]) <= eps) &
+           (fabs(p2[1]-bnd[j][1])   <= eps) &
+           (fabs(p1[1]-bnd[j+1][1]) <= eps) )) bndint[j]=0;
      
       // start/end points the same
-      if(( (fabs(p1[0]-bnd[j][0])  < eps) & (fabs(p1[1]-bnd[j][1])  < eps) )|
-         ( (fabs(p2[0]-bnd[j][0])  < eps) & (fabs(p2[1]-bnd[j][1])  < eps) )|
-         ( (fabs(p1[0]-bnd[j+1][0])< eps) & (fabs(p1[1]-bnd[j+1][1])< eps) )|
-         ( (fabs(p2[0]-bnd[j+1][0])< eps) & (fabs(p2[1]-bnd[j+1][1])< eps) ) )
+      if(( (fabs(p1[0]-bnd[j][0])  <= eps) & (fabs(p1[1]-bnd[j][1])  <= eps) )|
+         ( (fabs(p2[0]-bnd[j][0])  <= eps) & (fabs(p2[1]-bnd[j][1])  <= eps) )|
+         ( (fabs(p1[0]-bnd[j+1][0])<= eps) & (fabs(p1[1]-bnd[j+1][1])<= eps) )|
+         ( (fabs(p2[0]-bnd[j+1][0])<= eps) & (fabs(p2[1]-bnd[j+1][1])<= eps) ) )
             bndint[j]=0;
 
       // call original routine if this doesn't work
@@ -576,7 +606,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 
    }else{
       // let the Robot warn us...
-//      printf("DANGER, WILL ROBINSON! lbbindex<1\n");
+      printf("DANGER, WILL ROBINSON! lbbindex=%d (< 2)\n",lbbindex);
       err++;
 
 // DEBUG
