@@ -75,18 +75,18 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
 // DEBUG
-//printf("#******* END  ********** \n");
-//printf("plot(bnd,type=\"l\")\n");
-//printf("path<-list(x=c(),y=c())\n");
-//
-//current=mypath;
-//while(current!=NULL){
-//   printf("path$x<-c(path$x,%f)\n",current->data[0]);
-//   printf("path$y<-c(path$y,%f)\n",current->data[1]);
-//   current=current->next;
-//}
-//printf("lines(path,lwd=2,col=\"red\")\n");
-//printf("scan()\n");
+printf("#******* END  ********** \n");
+printf("plot(bnd,type=\"l\")\n");
+printf("path<-list(x=c(),y=c())\n");
+
+current=mypath;
+while(current!=NULL){
+   printf("path$x<-c(path$x,%f)\n",current->data[0]);
+   printf("path$y<-c(path$y,%f)\n",current->data[1]);
+   current=current->next;
+}
+printf("lines(path,lwd=2,col=\"red\")\n");
+printf("scan()\n");
 
    // return the length of the path
    *pathlen=hull_length(&mypath);
