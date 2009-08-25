@@ -105,10 +105,10 @@ bnd[20][1]=1.102146e-16;
    int i;
 
 	printf("bnd<-list(x=c(),y=c())\n");
-	for(i=0;i<9;i++){
+	for(i=0;i<nbnd;i++){
 		printf("bnd$x<-c(bnd$x,%f)\n",xbnd[i]);
 	}
-	for(i=0;i<9;i++){
+	for(i=0;i<nbnd;i++){
 		printf("bnd$y<-c(bnd$y,%f)\n",ybnd[i]);
 	}
 
@@ -123,16 +123,23 @@ bnd[20][1]=1.102146e-16;
    p2[0]=0.329545;
    p2[1]=-0.5;
 
+   p1[0]=-0.284091;
+   p1[1]=0.500000;
+   p2[0]=0.022727;
+   p2[1]=-0.333333;
+
+
+
    int bndint[nbnd-1];
 
-   //do_intersect(p1,p2,nbnd,bnd,bndint);
+   do_intersect(p1,p2,nbnd,bnd,bndint);
 
-//   printf("bndint= ");
+   printf("bndint= ");
 
-//   for(i=0;i<(nbnd-1);i++){
-//      printf("%d",bndint[i]);
-//   }
-//   printf("\n");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d",bndint[i]);
+   }
+   printf("\n");
 
    double ret=0;
    wood_path(&p1,&p2,&nbnd,&xbnd,&ybnd,&ret);

@@ -13,8 +13,8 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
    xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
    onoff<-inSide(bnd,xx,yy)
    xx<-xx[onoff];yy<-yy[onoff]
-   onoff<-inSide(list(x=-bnd$x,y=-bnd$y),-xx,-yy)
-   xx<-xx[onoff];yy<-yy[onoff]
+   onoff.fix<-inSide(list(x=-bnd$x,y=-bnd$y),-xx,-yy)
+   xx<-xx[onoff.fix];yy<-yy[onoff.fix]
    
    # make the sample
    samp.ind<-sample(1:length(xx),samp.size)
@@ -44,26 +44,31 @@ cat("before D.pred\n")
 cat("created D.pred\n")
 
    # put this in the correct format 
-   pred.data<-list(x=rep(0,dim(D)[2]),y=rep(0,dim(D)[2]))
+   pred.size<-dim(pred.data)[1]+dim(samp.data)[1]
+   pred.data<-list(x=rep(0,pred.size),y=rep(0,pred.size))
    pred.data$x[samp.ind]<-samp.data$x  # need to add in the sample points too
    pred.data$x[-samp.ind]<-pred.mds[,1]
    pred.data$y[samp.ind]<-samp.data$y  # need to add in the sample points too
    pred.data$y[-samp.ind]<-pred.mds[,2]
+
+   # prediction data for non mds'd
+   npred.data<-list(x=xx,y=yy,z=fs.test(xx,yy))
+
 
    # boundary, only for drawing the line around the outside
    fsb <- fs.boundary()
    
    # truth
    z.truth<-matrix(NA,m,n)
-   z.truth[onoff]<-new.data$z
+   z.truth[onoff]<-fs.test(xx,yy)
    
    ### mapping
-   b.mapped<-gam(z~s(x,y,k=49),data=samp.data.t)
-   fv.mapped <- predict(b.mapped,newdata=new.data.mapped)
+   b.mapped<-gam(z~s(x,y,k=49),data=samp.data.mds)
+   fv.mapped <- predict(b.mapped,newdata=pred.data)
    
    ### normal tprs
-   b.tprs<-gam(z~s(x,y,k=49),data=samp.data.n)
-   fv.tprs <- predict(b.tprs,newdata=new.data)
+   b.tprs<-gam(z~s(x,y,k=49),data=samp.data)
+   fv.tprs <- predict(b.tprs,newdata=npred.data)
    
    ### soap
    # create some internal knots...
@@ -71,13 +76,13 @@ cat("created D.pred\n")
                        y=rep(c(-.6,-.3,.3,.6),rep(8,4)))
    knots.ind<-inSide(bnd,x=knots$x,y=knots$y)
    knots<-list(x=knots$x[knots.ind],y=knots$y[knots.ind])
-   b.soap<-gam(z~s(x,y,k=20,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data.n)
-   fv.soap<-predict(b.soap,newdata=new.data,block.size=-1)
+   b.soap<-gam(z~s(x,y,k=20,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
+   fv.soap<-predict(b.soap,newdata=npred.data,block.size=-1)
    
    ### calculate MSEs
-   cat("tprs MSE=",mean((fv.tprs-new.data$z)^2,na.rm=TRUE),"\n")
-   cat("soap MSE=",mean((fv.soap-new.data$z)^2,na.rm=TRUE),"\n")
-   cat("mapped MSE=",mean((fv.mapped-new.data$z)^2,na.rm=TRUE),"\n")
+   cat("tprs MSE=",mean((fv.tprs-npred.data$z)^2,na.rm=TRUE),"\n")
+   cat("soap MSE=",mean((fv.soap-npred.data$z)^2,na.rm=TRUE),"\n")
+   cat("mapped MSE=",mean((fv.mapped-npred.data$z)^2,na.rm=TRUE),"\n")
 
    # plot
    if(plot.it){
