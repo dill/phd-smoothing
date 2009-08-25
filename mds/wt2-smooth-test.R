@@ -38,7 +38,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot.it
 
    ### do the PCO and construct the data frame
    # create D
-cat("created D\n")
    D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd,logfile=logfilename)
 
    # perform mds on the sample matrix
@@ -70,32 +69,23 @@ cat("created D\n")
    npred.data$y<-gendata$y[-samp.ind]
 
    # new MDS coords for the prediction points
-#cat("before D.pred\n")
-#   D.pred<-create_distance_matrix(npred.data$x,npred.data$y,bnd)
-#cat("created D.pred\n")
-cat("calling insert.mds\n")
    pred.mds<-insert.mds(npred.data,gendata.samp,samp.mds)
-cat("called insert.mds\n")
 
    # put this in the correct format 
-   pred.data<-list(x=rep(0,dim(D)[2]),y=rep(0,dim(D)[2]))
+   pred.data<-list(x=rep(0,length(gendata$x)),y=rep(0,length(gendata$x)))
    pred.data$x[samp.ind]<-samp.data$x  # need to add in the sample points too
-   pred.data$x[-samp.ind]<-pred.mds[1,]
+   pred.data$x[-samp.ind]<-pred.mds[,1]
    pred.data$y[samp.ind]<-samp.data$y  # need to add in the sample points too
-   pred.data$y[-samp.ind]<-pred.mds[2,]
+   pred.data$y[-samp.ind]<-pred.mds[,2]
 
    ### Now do some fitting and prediction
-
-cat("running models...\n")
    ### mapping
    b.mapped<-gam(z~s(x,y,k=49),data=samp.data)
    fv <- predict(b.mapped,newdata=pred.data)
-cat("b.mapped\n")
    
    ### normal tprs
    b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
    fv.tprs <- predict(b.tprs,newdata=gendata)
-cat("b.tprs\n")
    
    ### soap
    knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
@@ -105,7 +95,6 @@ cat("b.tprs\n")
    knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
    b.soap<-gam(z~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=nsamp.data)
    fv.soap <- predict(b.soap,newdata=gendata)
-cat("b.soap\n")
 
    # create the image
    gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
@@ -127,21 +116,25 @@ cat("b.soap\n")
       xscale<-seq(min(gendata$x),max(gendata$x),length.out=50)
       yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
    
+      pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-gendata$z
       pred.mat<-matrix(pred.mat,50,50)
       image(xscale,yscale,pred.mat,main="truth",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
       
+      pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv
       pred.mat<-matrix(pred.mat,50,50)
       image(xscale,yscale,pred.mat,main="mds",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
       
+      pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.tprs
       pred.mat<-matrix(pred.mat,50,50)
       image(xscale,yscale,pred.mat,main="tprs",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
       
+      pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.soap
       pred.mat<-matrix(pred.mat,50,50)
       image(xscale,yscale,pred.mat,main="soap",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
