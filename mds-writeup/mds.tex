@@ -13,7 +13,7 @@
 \usepackage{graphicx}
 
 % top matter
-\title{}
+\title{Multidimensional scaling as a tool for smoothing over complex regions}
 \author{David Lawrence Miller}
 \email{d.l.miller@bath.ac.uk}
 \address{Mathematical Sciences, University of Bath, Bath, United Kingdom}
@@ -35,6 +35,12 @@
 \newcommand{\phiinv}{\phi^{-1}}
 % use other phi
 \renewcommand{\phi}{\varphi}
+%transpose
+\newcommand{\tr}[1]{#1^{\text{T}}}
+%transpose
+\newcommand{\diag}{\text{diag}}
+
+
 
 \begin{document}
  
@@ -53,6 +59,63 @@ Here.
 \maketitle
 
 %\markright{TECH. DETAILS OF SCHWARZ-CHRISTOFFEL MAPPING}
+
+\section{Introduction}
+
+Multidimensional scaling (MDS) or as it is often referred to principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of points based on the distances between the points (\cite{chatfieldcollins}, p. 187.)
+
+This method provides an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points in such a way that smoothing does not suffer from leakage.
+
+\section{Multidimensional Scaling}
+
+We first define $d_{ij}$ as the distance between the points $i$ and $j$. How we find $d_{ij}$ is discussed in the next section, for the moment we assume that we know $d_{ij}$.
+
+We then wish to find the matrix $D$ such that:
+
+\begin{equation*}
+B=X\tr{X}
+\end{equation*}
+
+where the $i,j^{\text{th}}$ element of $B$ is given by (\cite{chatfieldcollins}, p. 187.):
+
+\begin{equation*}
+b_{ij}=-\frac{1}{2}\{ d^2_{ij} - d^2_{i.} - d^2_{.j} + d^2_{..} \}
+\end{equation*}
+
+where a dot indicates the mean over the relevant row/column/both. Once we have found $B$, we factorise it into $X\tr{X}$ for ease of computation. We may find the new coordinate system by simply looking at the eigenvectors of $X$.
+
+
+
+
+
+
+
+\subsection{Inserting new points}
+
+Given we have found the principle coordinates for some set of points, we may wish to introduce new points into set. To do this we do not need to start from the beginning again, rather, we can use the method of \cite{gower1968} to find the coordinates of the new points by the relation:
+
+\begin{equation*}
+\mathbf{x} = \frac{1}{2} \Lambda^{-1} \tr{X} \mathbf{d}
+\end{equation*}
+
+where $\Lambda$ is $\diag(\lambda_1, \lambda_2, \dots)$ (the eigenvalues of $X$) and $\mathbf{d}$ is the distance from the points in the original MDS to those new points we wish to insert.
+
+
+
+\subsection{Finding the within-area distances}
+
+The within-area distances to be fed to MDS are 
+
+
+
+
+\section{Simulation experiment}
+
+
+do plots of vis.gam() with too.far set low and overlay of points
+
+
+\section{Conclusions}
 
 
 \bibliographystyle{plainnat}
