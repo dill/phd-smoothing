@@ -436,6 +436,10 @@ double hull_length(node** hull) {
    double hullen=0;
    node* current = *hull;
 
+   if(current ==NULL){
+      return(1e16);
+   }
+
    // this is a bit ugly
    while (current->next != NULL) {
       hullen=hullen+hypot((current->next->data[0] - current->data[0]),
