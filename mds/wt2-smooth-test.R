@@ -70,10 +70,12 @@ cat("created D\n")
    npred.data$y<-gendata$y[-samp.ind]
 
    # new MDS coords for the prediction points
-cat("before D.pred\n")
-   D.pred<-create_distance_matrix(npred.data$x,npred.data$y,bnd)
-cat("created D.pred\n")
-   pred.mds<-insert.mds(D.pred,samp.mds)
+#cat("before D.pred\n")
+#   D.pred<-create_distance_matrix(npred.data$x,npred.data$y,bnd)
+#cat("created D.pred\n")
+cat("calling insert.mds\n")
+   pred.mds<-insert.mds(npred.data,gendata.samp,samp.mds)
+cat("called insert.mds\n")
 
    # put this in the correct format 
    pred.data<-list(x=rep(0,dim(D)[2]),y=rep(0,dim(D)[2]))
