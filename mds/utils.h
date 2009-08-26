@@ -564,7 +564,6 @@ void Push(node** headRef, double data[2]) {
    newNode->prev = NULL;  // The '*' to dereferences back to 
 								  // the real head
    *headRef = newNode;        // ditto
-
 }
 
 //struct node* AppendNode(struct node** headRef, double data[2]) {
@@ -586,10 +585,8 @@ void AppendNode(node** headRef, double data[2]) {
       }
       newNode->prev = current;
       current->next = newNode;
-
    }
 }
-
 
 // Variant of CopyList() that uses Push()
 node* CopyList(node* head)
