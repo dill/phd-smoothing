@@ -69,7 +69,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot.it
    npred.data$y<-gendata$y[-samp.ind]
 
    # new MDS coords for the prediction points
-   pred.mds<-insert.mds(npred.data,gendata.samp,samp.mds)
+   pred.mds<-insert.mds(npred.data,gendata.samp,samp.mds,bnd)
 
    # put this in the correct format 
    pred.data<-list(x=rep(0,length(gendata$x)),y=rep(0,length(gendata$x)))
