@@ -21,16 +21,24 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    //  return:
    //   length of the path
 
-   double arr[2], tmp, bnd[*nbnd][2];
+   double arr[2], tmp, **bnd;
    int conv, conv_stop, i;
+
+   bnd=(double**)malloc(sizeof(double*)*(*nbnd));
+   bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
 
    node* prevpath=NULL;
    node* mypath=NULL;
 
    // HACK: put things in the right format
    for(i=0; i<*nbnd; i++){
+
+      bnd[i]=bnd[0]+i*2;
+
       bnd[i][0]=xbnd[i];
       bnd[i][1]=ybnd[i];
+
+
    }
 
    // HACK:make sure that the points are defined from the left,
@@ -48,7 +56,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   mypath=make_bnd_path(p1,p2,*nbnd,bnd);
+   mypath=make_bnd_path(p1,p2,*nbnd,**bnd);
 
    node* current=mypath;
 
@@ -64,10 +72,10 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       prevpath=CopyList(mypath);
 
       // delete step, remove anything that doesn't need to be there
-      delete_step(&mypath,*nbnd,bnd);
+      delete_step(&mypath,*nbnd,**bnd);
 
       // add new vertices
-      alter_step(&mypath,*nbnd,bnd);
+      alter_step(&mypath,*nbnd,**bnd);
 
       // increment convergence stopper 
       conv++;
