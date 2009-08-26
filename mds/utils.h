@@ -101,13 +101,13 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 
       // establish whether the bounding boxes intersect
       // if max edge x less than min point x
-      if(ebbox[0][0]+eps <= pbbox[1][0]) bndint[i]=0;
+      if(ebbox[0][0]+eps < pbbox[1][0]) bndint[i]=0;
       // if max point x less than min edge x
-      if(pbbox[0][0]+eps <= ebbox[1][0]) bndint[i]=0;
+      if(pbbox[0][0]+eps < ebbox[1][0]) bndint[i]=0;
       // if max edge y less than min point y
-      if(ebbox[0][1]+eps <= pbbox[1][1]) bndint[i]=0;
+      if(ebbox[0][1]+eps < pbbox[1][1]) bndint[i]=0;
       // if max point y less than min edge y
-      if(pbbox[0][1]+eps <= ebbox[1][1]) bndint[i]=0;
+      if(pbbox[0][1]+eps < ebbox[1][1]) bndint[i]=0;
 
 // This might be neccesary...
 //      // case where the lines are exactly overlapping

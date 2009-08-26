@@ -46,9 +46,9 @@ cat("created D.pred\n")
    # put this in the correct format 
    pred.size<-dim(pred.data)[1]+dim(samp.data)[1]
    pred.data<-list(x=rep(0,pred.size),y=rep(0,pred.size))
-   pred.data$x[samp.ind]<-samp.data$x  # need to add in the sample points too
+   pred.data$x[samp.ind]<-samp.data.mds$x  # need to add in the sample points too
    pred.data$x[-samp.ind]<-pred.mds[,1]
-   pred.data$y[samp.ind]<-samp.data$y  # need to add in the sample points too
+   pred.data$y[samp.ind]<-samp.data.mds$y  # need to add in the sample points too
    pred.data$y[-samp.ind]<-pred.mds[,2]
 
    # prediction data for non mds'd

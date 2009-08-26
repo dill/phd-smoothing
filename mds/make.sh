@@ -5,7 +5,7 @@
 # pseudo-Ramsay test
 #gcc -lm -g test.c inout.c wood.c
 
-# pseudo-Ramsay test
+# Ramsay test
 gcc -lm -g ramsay-test.c inout.c wood.c
 
 # w-shaped area
@@ -18,5 +18,5 @@ gcc -lm -g ramsay-test.c inout.c wood.c
 #gcc -lm -g ll-test.c inout.c 
 
 # shared object file
-gcc -lm -g -std=gnu99 -shared inout.c wood.c -o wood.so -L/usr/lib/R/lib  -fPIC #-lR
+#gcc -lm -g -std=gnu99 -shared inout.c wood.c -o wood.so -L/usr/lib/R/lib  -fPIC #-lR
 #rm *.o

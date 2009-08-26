@@ -7,7 +7,7 @@ int main(void)
 
    //////////// EVERYTHING
    int nbnd;
-   nbnd=20;
+   nbnd=21;
    double bnd[nbnd][2];
 
 bnd[0][0]=-0.9;
@@ -123,23 +123,34 @@ bnd[20][1]=1.102146e-16;
    p2[0]=0.329545;
    p2[1]=-0.5;
 
-   p1[0]=-0.284091;
-   p1[1]=0.500000;
-   p2[0]=0.022727;
-   p2[1]=-0.333333;
+//   p1[0]=-0.284091;
+//   p1[1]=0.500000;
+//   p2[0]=0.022727;
+//   p2[1]=-0.333333;
 
 
+//   int bndint[nbnd-1];
+//
+//   do_intersect(p1,p2,nbnd,bnd,bndint);
+//
+//   printf("bndint= ");
+//
+//   for(i=0;i<(nbnd-1);i++){
+//      printf("%d",bndint[i]);
+//   }
+//   printf("\n");
 
-   int bndint[nbnd-1];
+   int err;
+   int intind[2];
+   double ip1[2], ip2[2];
 
-   do_intersect(p1,p2,nbnd,bnd,bndint);
+   err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
-   printf("bndint= ");
+   printf("err=%d\n",err);
+   printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+   printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+   printf("intind= %d %d\n",intind[0], intind[1]);
 
-   for(i=0;i<(nbnd-1);i++){
-      printf("%d",bndint[i]);
-   }
-   printf("\n");
 
    double ret=0;
    wood_path(&p1,&p2,&nbnd,&xbnd,&ybnd,&ret);

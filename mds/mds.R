@@ -5,7 +5,6 @@ source("utils.R")
 source("mds-wrap.R")
 source("wood.R")
 source("insert.mds.R")
-
 library(soap)
 
 # create the distance matrix
@@ -26,7 +25,6 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
       return(FALSE)
    }
 
-
    # create a matrix to hold the distances
    D<-matrix(0,length(xpoints),length(xpoints))
 
@@ -39,7 +37,6 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
 ### DEBUG
 #cat("x=c(",p1$x,",",p2$x,")\n")
 #cat("y=c(",p1$y,",",p2$y,")\n")
-
 
          # if there are any intersections of the line p1p2 with 
          # any boundary side
