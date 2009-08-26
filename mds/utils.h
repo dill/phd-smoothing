@@ -82,11 +82,6 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
       thisedge[0][1]=bnd[i][1];
       thisedge[1][1]=bnd[i+1][1];
 
-//printf("thisedge=list(x=c(%f,%f),y=c(%f,%f));\n",thisedge[0][0],thisedge[1][0],
-//                  thisedge[0][1],thisedge[1][1]);
-//printf("lines(thisedge,lwd=2,col=\"red\")\n");
-
-
       // bounding box for the edge
       //e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
       //             y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
@@ -108,25 +103,6 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
       if(ebbox[0][1]+eps <= pbbox[1][1]) bndint[i]=0;
       // if max point y less than min edge y
       if(pbbox[0][1]+eps <= ebbox[1][1]) bndint[i]=0;
-
-// This might be neccesary...
-//      // case where the lines are exactly overlapping
-//      if(( (fabs(p1[0]-bnd[i][0])   >= eps) & 
-//           (fabs(p2[0]-bnd[i+1][0]) >= eps) &
-//           (fabs(p1[1]-bnd[i][1])   >= eps) & 
-//           (fabs(p2[1]-bnd[i+1][1]) >= eps) ) |
-//         ( (fabs(p2[0]-bnd[i][0])   >= eps) & 
-//           (fabs(p1[0]-bnd[i+1][0]) >= eps) &
-//           (fabs(p2[1]-bnd[i][1])   >= eps) &
-//           (fabs(p1[1]-bnd[i+1][1]) >= eps) )) bndint[i]=0;
-//     
-//      // start/end points the same
-//      if(( (fabs(p1[0]-bnd[i][0])   >= eps) & (fabs(p1[1]-bnd[i][1])   >= eps) )|
-//         ( (fabs(p2[0]-bnd[i][0])   >= eps) & (fabs(p2[1]-bnd[i][1])   >= eps) )|
-//         ( (fabs(p1[0]-bnd[i+1][0]) >= eps) & (fabs(p1[1]-bnd[i+1][1]) >= eps) )|
-//         ( (fabs(p2[0]-bnd[i+1][0]) >= eps) & (fabs(p2[1]-bnd[i+1][1]) >= eps) ) )
-//            bndint[i]=0;
-
 
       // if the bounding boxes do intersect, check that the
       // intersection of the two lines lies within the bounding
@@ -167,8 +143,6 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
             }
          } // end of bounding box ip check
       }
-
-//printf("res=%d\n",bndint[i]);
 
    }// end iterate over boundary
 }
@@ -239,15 +213,9 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
    double eps=1e-16;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
-//DEBUG
-//printf("first_ips error=%d\n",err);
-//printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-//printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
 
    // if there are no errors, go ahead
    if(err==0){
-//DEBUG
-//printf("first_ips error=%d\n",err);
       // midpoint between p1 and first intersection 
       double p1mp[2]={(ip1[0]+p1[0])/2,(ip1[1]+p1[1])/2};
       // midpoint between p2 and first intersection 
@@ -268,9 +236,6 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
 
       // find the midpoints between p1, p2 their first intersections
       // store in x and y blocks
-//      double xmp[2]={(ip1[0]+p1[0])/2,(ip2[0]+p2[0])/2};
-//      double ymp[2]={(ip1[1]+p2[1])/2,(ip2[1]+p2[1])/2};
-
       double xmp[2]={p1mp[0],p2mp[0]};
       double ymp[2]={p1mp[1],p2mp[1]};
 
@@ -351,12 +316,12 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
    }
 
    /// do something to check for infinities...
-//   if(all(c(a1,a2,b1,b2,c1,c2)!=Inf) & all(c(a1,a2,b1,b2,c1,c2)!=-Inf)){
-      // calculate the intersection
+   //   if(all(c(a1,a2,b1,b2,c1,c2)!=Inf) & all(c(a1,a2,b1,b2,c1,c2)!=-Inf)){
+   // calculate the intersection
 
-// want to calculate...
-//      intx<-det(matrix(c(b1,b2,c1,c2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
-//      inty<-det(matrix(c(c1,c2,a1,a2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
+   // want to calculate...
+   //      intx<-det(matrix(c(b1,b2,c1,c2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
+   //      inty<-det(matrix(c(c1,c2,a1,a2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
       ip[0]=(b1*c2-(b2*c1))/(a1*b2-(a2*b1));
       ip[1]=(c1*a2-(a1*c2))/(a1*b2-(b1*a2));
 
@@ -484,20 +449,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
 
-//printf("lbbindex=%d\n",lbbindex);
-//printf("iarrsum(nbnd,retint)=%d\n",iarrsum(nbnd,retint));
-// DEBUG
-//printf("retint=");
-//int k;
-//for(k=0;k<(nbnd-1);k++){
-//   printf(" %d,",retint[k]);
-//}
-//printf("\n");
-
-// DEBUG
-//printf("lbbindex=%d\n",lbbindex);
-//printf("nbnd=%d\n",nbnd);
-   
    // if lbbindex < 1 increment err
    if(lbbindex>1){
       // find intersections & sort by distance
@@ -521,7 +472,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       for(i=0;i<lbbindex;i++){
          // get current index
          j=bbindex[i];
-//printf("first_ips: bbindex[%d]=%d\n",i,bbindex[i]);
 
          thisedge[0][0]=bnd[j][0];
          thisedge[1][0]=bnd[j+1][0];
@@ -530,18 +480,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
 
          // calculate and save the intersection
          intpoint(p1,p2,thisedge,ip);
-// DEBUG
-//printf("****************\n");
-//printf("plot(bnd,type=\"l\")\n");
-//printf("ip=list(x=%f,y=%f)\n",ip[0],ip[1]);
-//printf("p1=list(x=%f,y=%f)\n",p1[0],p1[1]);
-//printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("edge=list(x=c(%f,%f),y=c(%f,%f))\n",thisedge[0][0],thisedge[1][0],
-//                                            thisedge[0][1],thisedge[1][1]);
-//printf("lines(edge,col=\"green\",lwd=2);\n");
-//printf("points(p1); points(p2);\n"); 
-//printf("points(ip,col=\"red\",pch=24)\n"); 
-//printf("****************\n");
 
          ips[i][0]=ip[0];
          ips[i][1]=ip[1];
@@ -552,20 +490,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
          sortdists[i]=dists[i];
       }
 
-// SORT THIS OUT!!!!
-      // remove duplicates (ie when dist is zero)
-//      if(length(ips$x)>3){
-//         p1.ind<-which((ips$x==p1$x)&(ips$y==p1$y))
-//         p2.ind<-which((ips$x==p2$x)&(ips$y==p2$y))
-//         nonzero<-c(p1.ind,p2.ind)
-//         if(length(nonzero)!=0 & length(nonzero)!=length(dists)){
-//            dists<-dists[-nonzero]
-//            bbindex<-bbindex[-nonzero]
-//            ips$x<-ips$x[-nonzero];ips$y<-ips$y[-nonzero]
-//         }
-//      }
-/////////////////////////////////////////////
-
       // prototype from stdlib.h
       // void qsort (void *array, size_t count, size_t size, comparison_fn_t compare)
       // The qsort function sorts the array array. 
@@ -573,19 +497,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       // The compare function is used to perform the comparison on the array elements. 
       qsort(&sortdists,lbbindex,sizeof(double),compare_doubles);
 
-// DEBUG
-//printf("**************qsort debug ************\n");
-//int k;
-//for(k=0;k<lbbindex;k++){
-//   printf("%f,",dists[k]);
-//}
-//printf("\n");
-//for(k=0;k<lbbindex;k++){
-//   printf("%f,",sortdists[k]);
-//}
-//printf("\n");
-//printf("**************END qsort debug ************\n");
-///////////////////////////////////
 
       // find first intersection between p1 and bnd
       // p1.int<-pe(ips,order(dists)[1])
@@ -599,31 +510,14 @@ int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],
       ip2[0]=ips[lastel][0];
       ip2[1]=ips[lastel][1];
 
-//printf("firstel=%d\n",firstel);
-//printf("lastel=%d\n",lastel);
-
       // calculate intind
-//printf("bbindex[%d]=%d\n",firstel,bbindex[firstel]);
       intind[0]=bbindex[firstel];
-//printf("bbindex[%d]=%d\n",lastel,bbindex[lastel]);
       intind[1]=bbindex[lastel];
 
    }else{
       // let the Robot warn us...
       //printf("DANGER, WILL ROBINSON! lbbindex=%d (< 2)\n",lbbindex);
       err++;
-
-// DEBUG
-//printf("p1=list(x=%f,y=%f)\n",p1[0],p1[1]);
-//printf("p2=list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("retint=");
-//int k;
-//for(k=0;k<(nbnd-1);k++){
-//   printf(" %d,",retint[k]);
-//}
-//printf("\n");
-
-
    } // end of lbbindex<2 check
 
    return(err);
@@ -722,16 +616,6 @@ int Length(node* head) {
     }
     return count;
 }
-
-///*
-// * Delete the first element
-// */
-//void DelFirst(node** headRef) {
-//
-//   *headRef=headRef->next;
-//
-//}
-
 
 ////////////////////////////
 
