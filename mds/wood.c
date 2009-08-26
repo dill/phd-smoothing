@@ -6,9 +6,9 @@
 #include "utils.h"
 
 void wood_path(double*, double*, int*, double*, double*, double*);
-node* make_bnd_path(double[2], double[2], int nbnd, double[nbnd][2]);
-void delete_step(node**, int nbnd, double[nbnd][2]);
-void alter_step(node**, int nbnd, double[nbnd][2]);
+node* make_bnd_path(double[2], double[2], int nbnd, double**);
+void delete_step(node**, int nbnd, double**);
+void alter_step(node**, int nbnd, double**);
 int has_converged(node*, node*);
 
 
@@ -38,7 +38,6 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       bnd[i][0]=xbnd[i];
       bnd[i][1]=ybnd[i];
 
-
    }
 
    // HACK:make sure that the points are defined from the left,
@@ -56,9 +55,9 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   mypath=make_bnd_path(p1,p2,*nbnd,**bnd);
+   mypath=make_bnd_path(p1,p2,*nbnd,bnd);
 
-   node* current=mypath;
+//   node* current=mypath;
 
    // convergence stop
    conv=0;
@@ -72,10 +71,10 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       prevpath=CopyList(mypath);
 
       // delete step, remove anything that doesn't need to be there
-      delete_step(&mypath,*nbnd,**bnd);
+      delete_step(&mypath,*nbnd,bnd);
 
       // add new vertices
-      alter_step(&mypath,*nbnd,**bnd);
+      alter_step(&mypath,*nbnd,bnd);
 
       // increment convergence stopper 
       conv++;
@@ -102,7 +101,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
 
 // create a path between p1 and p2 using the boundary
-node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
+node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
 {
    /* Args:
     *  p1, p2           points
@@ -241,13 +240,14 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       printf("ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
       printf("DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
    }
+   return 0;
 }
 
 
 // iterate over the points in the path:
 // delete as many points as possible, making sure that the
 // path is still outside
-void delete_step(node** path, int nbnd, double bnd[nbnd][2])
+void delete_step(node** path, int nbnd, double **bnd)
 {
    // Args:
    //  path     the current path
@@ -256,7 +256,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
    // Return:
    //           revised path with dropped vertices
    
-   int i,j, intbnd[nbnd-1];
+   int i, intbnd[nbnd-1];
    double mytrip[3][2], p1[2], p2[2], xmp[1], ymp[1];
 
    node* current=NULL;   // iterator
@@ -320,8 +320,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
          // in this case we remove the ith and (i+1)th entries, point (i-1)th
          // next to the (i+2)th.
          // path<-pe(path,-c(i,i+1))
-         if(mytrip[0][0]==mytrip[2][0] & 
-            mytrip[0][1]==mytrip[2][1]){
+         if((mytrip[0][0]==mytrip[2][0]) & (mytrip[0][1]==mytrip[2][1])){
 
             // current is sitting at the 3rd entry
             // create a pointer to that
@@ -350,7 +349,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
             p2[0]=mytrip[2][0];  p2[1]=mytrip[2][1];
 
             // see if the line between p1 and p2 intersects the boundary
-            sp_do_intersect(p1,p2, nbnd, bnd,intbnd);
+            sp_do_intersect(p1,p2, nbnd,bnd,intbnd);
 
             // midpoints
             xmp[0]=(mytrip[2][0]+mytrip[0][0])/2;
@@ -409,7 +408,7 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
 }           
 
 // alter the path
-void alter_step(node** path, int nbnd, double bnd[nbnd][2])
+void alter_step(node** path, int nbnd, double **bnd)
 {
    // Args:
    //  path     the current path
@@ -418,7 +417,6 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
    // Return:
    //           revised path with added/ammended vertices
 
-   int i;
    double ep1[2], ep2[2], mid[2], triplen;
 
    node* prevpath=NULL;

@@ -16,17 +16,17 @@ typedef struct node
 // some prototypes
 void twosort(double *);
 int online(double[2],double[2][2]);
-int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2]);
+int facing(double p1[2], double p2[2] , int nbnd, double **);
 void intpoint(double[2], double[2],double[2][2],double[2]);
-void do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int bndint[nbnd-1]);
+void do_intersect(double[2], double[2], int nbnd, double **,int bndint[nbnd-1]);
 double minarr(int narr, double arr[narr]);
 double maxarr(int narr, double arr[narr]);
 int compare_doubles (const void *a, const void *b);
 int crapfind(int narr, double[narr], double);
 int iarrsum(int narr, int arr[narr]);
 double hull_length(node**);
-void sp_do_intersect(double[2], double[2], int nbnd, double[nbnd][2],int[nbnd-1]);
-int first_ips(double[2], double[2], int nbnd, double bnd[nbnd][2], 
+void sp_do_intersect(double[2], double[2], int nbnd, double **,int[nbnd-1]);
+int first_ips(double[2], double[2], int nbnd, double **, 
                double[2], double[2], int[2]);
 void Push(node**, double[2]);
 void AppendNode(node**, double[2]);
@@ -38,7 +38,7 @@ void in_out(double *, double *, double *,double *,double *,int *, int *, int * )
 
 
 // do two points and the boundary intersect?
-void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
+void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int bndint[nbnd-1])
 {
    /*
     * p1,p2    points we wish to test
@@ -150,11 +150,14 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int 
 
 // special do_intersect, thinks that points that start/end at the same
 // place don't intersect. Neither do exactly overlapping lines.
-void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],int bndint[nbnd-1])
+void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int bndint[nbnd-1])
 {
    int j, tmpnbnd, tmpbndint[1];
-   double tmpbnd[2][2];
+   double **tmpbnd;
    double eps=1e-10;
+
+   bnd=(double**)malloc(sizeof(double*)*1);
+   bnd[0]=(double*)malloc(sizeof(double)*1*2);
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
@@ -196,7 +199,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2],i
 
 
 /* determine whether the line between two points is facing inside or outside */
-int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
+int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
 {
    /*
    Args:
@@ -210,7 +213,6 @@ int facing(double p1[2], double p2[2] , int nbnd, double bnd[nbnd][2])
    int ret=0;
    int i, err, intind[2];
    double ip1[2],ip2[2];
-   double eps=1e-16;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
@@ -417,7 +419,7 @@ double hull_length(node** hull) {
 ///////////////////////////////////
 // find the first intersection points of p1 and p2
 // with bnd
-int first_ips(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2], 
+int first_ips(double p1[2], double p2[2], int nbnd, double **bnd, 
                double ip1[2], double ip2[2],int intind[2])
 {   
    /* Args:
