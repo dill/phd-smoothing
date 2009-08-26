@@ -40,7 +40,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
 
    # new MDS coords for the prediction points
 cat("before D.pred\n")
-   pred.mds<-insert.mds(pred.data,samp.data,samp.mds)
+   pred.mds<-insert.mds(pred.data,samp.data,samp.mds,bnd)
 cat("created D.pred\n")
 
    # put this in the correct format 

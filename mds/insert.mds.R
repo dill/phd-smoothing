@@ -1,8 +1,10 @@
-"insert.mds"<-function(new.points,old.points,cmd.object){
+"insert.mds"<-function(new.points,old.points,cmd.object,bnd){
    # insert a new point into the MDS, see Gower (Biometrika, 1968.)
    # args
-   #  new.points
+   #  new.points     points to insert into the MDS
+   #  old.points     old MDS points
    #  cmd.object     object returned from cmdscale, with eig=TRUE
+   #  bnd            boundary
    # ret
    # coordinates of new points in the mds?
    
