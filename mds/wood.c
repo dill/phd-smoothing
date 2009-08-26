@@ -120,8 +120,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       // between that set and the complete set of vertices.
 
       // first sort the intersection indices
-      //
-      //  IGNORE AT THE MOMENT
       itwosort(intind);
 
       // want elements intind[0]-1 to intind[1 ](inclusive)
@@ -132,8 +130,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       // initialize a linked list, first the head
       node* bnd1 = NULL;
 
-      // since we ordered intind first, we don't need to worry too
-      // much about 
+      // since we ordered intind first, we don't need to worry too much
 
       // push everything in
       //                     vvvvvvvvvv <- since we want it to be inclusive
@@ -142,26 +139,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
          curr_insert[1]=bnd[i][1];
          Push(&bnd1,curr_insert);
       }
-
-// Hope this doesn't happen at the moment   
-//      // make sure we aren't adding a superfluous vertex (not both end of a side
-//      // that we don't need)
-//      // ie. ip1, vertex, vertex... rather than vertex,ip1,vertex
-//   
-//   // increased to 2, maybe this fixes things...
-//      if(length(picker)>2){
-//   
-//         if(on_line(ip1,pe(bnd.1.sort,1:2))){
-//            bnd.1.sort<-pe(bnd.1.sort,-1)
-//            picker<-picker[-1]
-//         }
-//         ep.1<-length(bnd.1.sort$x)
-//   
-//         if(on_line(ip2,pe(bnd.1.sort,(ep.1-1):ep.1))){
-//            bnd.1.sort<-pe(bnd.1.sort,-ep.1)
-//            picker<-picker[-ep.1]
-//         }
-//      }
 
       // create the second boundary segment
       // want intind[1]+1:intind[0]
@@ -206,7 +183,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       line2[0][1]=bnd[intind[1]][1];
       line2[1][0]=bnd[intind[1]+1][0];
       line2[1][1]=bnd[intind[1]+1][1];
-
 
       if( online(ip1,line1) & online(ip2,line2)){
 
@@ -254,7 +230,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double bnd[nbnd][2])
       }
 
    }else{ // end of error if()
-
       printf("ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
       printf("DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
    }
@@ -290,7 +265,6 @@ void delete_step(node** path, int nbnd, double bnd[nbnd][2])
       by[i]=bnd[i][1];
    }
    
-
    // to handle holes, multiple boundaries
    // ignore this at the moment
    double xmin=minarr(nbnd,bx);
@@ -494,22 +468,8 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          triplen=hypot(mid[0]-ep1[0],mid[1]-ep1[1]);
          triplen=triplen+hypot(ep2[0]-mid[0],ep2[1]-mid[1]);
 
-// DEBUG
-//printf("***********************debug: pre facing\n");
-////printf("facing: %d\n",facing(ep1, ep2, nbnd, bnd));
-//printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
-//printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
-//printf("points(ep1,pch=24)\n");
-//printf("points(ep2,pch=24)\n");
-
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
-// DEBUG
-//printf("***********************debug: after facing\n");
-//printf("ep1=list(x=%f,y=%f)\n",ep1[0],ep1[1]);
-//printf("ep2=list(x=%f,y=%f)\n",ep2[0],ep2[1]);
-//printf("points(ep1,pch=24)\n");
-//printf("points(ep2,pch=24)\n");
 
             // create a new path
             newpath=make_bnd_path(ep1,ep2,nbnd,bnd);
@@ -517,7 +477,6 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
             // cut out anything silly
             //delete_step(&newpath, nbnd, bnd);
 
-//printf("h=%f, t=%f\n",hull_length(&newpath),triplen);
             // only insert the path if it's better!
             if(hull_length(&newpath)<=triplen){
 
@@ -556,7 +515,6 @@ void alter_step(node** path, int nbnd, double bnd[nbnd][2])
          } // end facing
          
         	current=current->prev; // go back to i, need this to catch all triplets
-//delete_step(path, nbnd, bnd);
       } // end of iteration over the path
 
       conv++;
