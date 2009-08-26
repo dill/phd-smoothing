@@ -6,7 +6,7 @@
 #gcc -lm -g test.c inout.c wood.c
 
 # Ramsay test
-gcc -lm -g ramsay-test.c inout.c wood.c
+gcc -lm -g -O0 ramsay-test.c inout.c wood.c
 
 # w-shaped area
 #gcc -lm -g -O0 doubleyuh-test.c inout.c wood.c 
