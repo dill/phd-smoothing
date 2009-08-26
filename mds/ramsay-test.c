@@ -140,16 +140,16 @@ bnd[20][1]=1.102146e-16;
 //   }
 //   printf("\n");
 
-   int err;
-   int intind[2];
-   double ip1[2], ip2[2];
-
-   err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
-
-   printf("err=%d\n",err);
-   printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-   printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-   printf("intind= %d %d\n",intind[0], intind[1]);
+//   int err;
+//   int intind[2];
+//   double ip1[2], ip2[2];
+//
+//   err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+//
+//   printf("err=%d\n",err);
+//   printf("ip1=list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//   printf("ip2=list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//   printf("intind= %d %d\n",intind[0], intind[1]);
 
 
    double ret=0;

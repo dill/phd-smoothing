@@ -173,7 +173,7 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
 
       // insert from the end back to intend[0] 
       //             vvvvvvv don't include intind[0] twice
-      for(i=nbnd;i>=intind[0];i--){
+      for(i=(nbnd-1);i>=intind[0];i--){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
          AppendNode(&bnd2,curr_insert);

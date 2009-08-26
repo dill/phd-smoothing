@@ -54,7 +54,6 @@ cat("created D.pred\n")
    # prediction data for non mds'd
    npred.data<-list(x=xx,y=yy,z=fs.test(xx,yy))
 
-
    # boundary, only for drawing the line around the outside
    fsb <- fs.boundary()
    

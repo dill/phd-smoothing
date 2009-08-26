@@ -152,12 +152,19 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int bndint[
 // place don't intersect. Neither do exactly overlapping lines.
 void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int bndint[nbnd-1])
 {
-   int j, tmpnbnd, tmpbndint[1];
+   int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
    double eps=1e-10;
 
-   bnd=(double**)malloc(sizeof(double*)*1);
-   bnd[0]=(double*)malloc(sizeof(double)*1*2);
+   tmpnbnd=2;
+
+   tmpbnd=(double**)malloc(sizeof(double*)*tmpnbnd);
+   tmpbnd[0]=(double*)malloc(sizeof(double)*tmpnbnd*2);
+
+   for(i=0; i<tmpnbnd; i++){
+      tmpbnd[i]=tmpbnd[0]+i*2;
+   }
+
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
@@ -186,7 +193,6 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int bndi
       if(bndint[j]){
          tmpbnd[0][0]=bnd[j][0]; tmpbnd[0][1]=bnd[j][1];
          tmpbnd[1][0]=bnd[j+1][0]; tmpbnd[1][1]=bnd[j+1][1];
-         tmpnbnd=2;
 
          tmpbndint[0]=bndint[j];
 
