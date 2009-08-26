@@ -23,12 +23,12 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    double arr[2], tmp, **bnd;
    int conv, conv_stop, i;
+   node* prevpath=NULL;
+   node* mypath=NULL;
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
 
-   node* prevpath=NULL;
-   node* mypath=NULL;
 
    // HACK: put things in the right format
    for(i=0; i<*nbnd; i++){
@@ -97,6 +97,10 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    // return the length of the path
    *pathlen=hull_length(&mypath);
+
+   FreeList(&mypath);
+   FreeList(&prevpath);
+
 }
 
 
@@ -115,6 +119,9 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
    // each point intersects
    double ip1[2],ip2[2], curr_insert[2];
    int intind[2],i,start, err;
+   double line1[2][2], line2[2][2];
+   node* bnd1 = NULL;
+   node* bnd2 = NULL;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
@@ -134,8 +141,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
       //picker<-c(picker[1]:picker[2])
       //bnd.1.sort<-pe(bnd,picker)
 
-      // initialize a linked list, first the head
-      node* bnd1 = NULL;
 
       // since we ordered intind first, we don't need to worry too much
 
@@ -153,9 +158,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
       //       setdiff(c(1:(length(bnd$x)-1)),picker))
       // bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),
       //       length(bnd.2.sort$x):picker[1]))
-
-      // initialize a linked list, first the head
-      node* bnd2 = NULL;
 
       // handle the case where start is actually the end
       if(intind[1]!=nbnd){
@@ -179,7 +181,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
          AppendNode(&bnd2,curr_insert);
       }
 
-      double line1[2][2], line2[2][2];
 
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
@@ -256,8 +257,13 @@ void delete_step(node** path, int nbnd, double **bnd)
    // Return:
    //           revised path with dropped vertices
    
-   int i, intbnd[nbnd-1];
-   double mytrip[3][2], p1[2], p2[2], xmp[1], ymp[1];
+   int i, *intbnd;
+   double mytrip[3][2], p1[2], p2[2], xmp[1], ymp[1], *bx, *by, xmin, ymin, mina[2], break_code;
+   // convergence stop
+   int conv=0;
+   int conv_stop=10;
+	int inout_n=1;
+   int in[1];
 
    node* current=NULL;   // iterator
    node* prevpath=NULL;
@@ -265,24 +271,32 @@ void delete_step(node** path, int nbnd, double **bnd)
    node* start_ptr=NULL;
    node* end_ptr=NULL;
 
+   // setup intbnd
+   intbnd=(int*)malloc(sizeof(int)*(nbnd-1));
+
+   for(i=0; i<(nbnd-1); i++){
+      intbnd[i]=intbnd[0]+i;
+   }
+
    ////// needed later on for the in_out() call
-   double bx[nbnd];
-   double by[nbnd];
-   for(i=0;i<nbnd;i++){
+   bx=(double*)malloc(sizeof(double)*nbnd);
+   by=(double*)malloc(sizeof(double)*nbnd);
+
+   for(i=0; i<nbnd; i++){
+      bx[i]=bx[0]+i;
+      by[i]=by[0]+i;
+
       bx[i]=bnd[i][0];
       by[i]=bnd[i][1];
    }
    
    // to handle holes, multiple boundaries
    // ignore this at the moment
-   double xmin=minarr(nbnd,bx);
-   double ymin=minarr(nbnd,by);
-   double mina[2] = {xmin, ymin};
-   double break_code=minarr(2,mina)-1;
+   xmin=minarr(nbnd,bx);
+   ymin=minarr(nbnd,by);
+   mina[0] = xmin; mina[1] = ymin;
+   break_code=minarr(2,mina)-1;
 
-   // convergence stop
-   int conv=0;
-   int conv_stop=10;
 
    // keep going until we don't remove any more points.
    do{
@@ -358,8 +372,6 @@ void delete_step(node** path, int nbnd, double **bnd)
             //if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
             //  inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
             //             (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
-				int inout_n=1;
-            int in[1];
             in[0]=1;
             in_out(bx,by,&break_code,xmp,ymp,in, &nbnd,&inout_n);
 

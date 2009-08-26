@@ -18,27 +18,28 @@ void twosort(double *);
 int online(double[2],double[2][2]);
 int facing(double p1[2], double p2[2] , int nbnd, double **);
 void intpoint(double[2], double[2],double[2][2],double[2]);
-void do_intersect(double[2], double[2], int nbnd, double **,int bndint[nbnd-1]);
-double minarr(int narr, double arr[narr]);
-double maxarr(int narr, double arr[narr]);
+void do_intersect(double[2], double[2], int nbnd, double **,int *);
+double minarr(int narr, double *);
+double maxarr(int narr, double *);
 int compare_doubles (const void *a, const void *b);
-int crapfind(int narr, double[narr], double);
-int iarrsum(int narr, int arr[narr]);
+int crapfind(int narr, double *, double);
+int iarrsum(int narr, int *);
 double hull_length(node**);
-void sp_do_intersect(double[2], double[2], int nbnd, double **,int[nbnd-1]);
+void sp_do_intersect(double[2], double[2], int nbnd, double **,int *);
 int first_ips(double[2], double[2], int nbnd, double **, 
                double[2], double[2], int[2]);
 void Push(node**, double[2]);
 void AppendNode(node**, double[2]);
 node* CopyList(node*);
 int Length(node*);
+void FreeList(node**);
 
 // for in_out in separate file
 void in_out(double *, double *, double *,double *,double *,int *, int *, int * );
 
 
 // do two points and the boundary intersect?
-void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int bndint[nbnd-1])
+void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint)
 {
    /*
     * p1,p2    points we wish to test
@@ -52,17 +53,15 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int bndint[
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps;
+   double eps=1e-16;
    int i;
-   double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2];
-
-   eps=1e-16;
+   double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
    // bounding box around the points p1,p2
    //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
    //             y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
-   double xarr[2] = {p1[0],p2[0]};
-   double yarr[2] = {p1[1],p2[1]};
+   xarr[0] = p1[0]; xarr[1] = p2[0];
+   yarr[0] = p1[1]; yarr[1] = p2[1];
    pbbox[0][0]=maxarr(2,xarr);
    pbbox[0][1]=maxarr(2,yarr);
    pbbox[1][0]=minarr(2,xarr);
@@ -150,7 +149,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int bndint[
 
 // special do_intersect, thinks that points that start/end at the same
 // place don't intersect. Neither do exactly overlapping lines.
-void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int bndint[nbnd-1])
+void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint)
 {
    int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
@@ -217,45 +216,47 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
    */
 
    int ret=0;
-   int i, err, intind[2];
-   double ip1[2],ip2[2];
+   int in[2]={0,0};
+   int i, err, intind[2], tmpinout;
+   double ip1[2],ip2[2], xmp[2], ymp[2];
+   double *bx, *by, xmin, ymin, mina[2], break_code;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
    // if there are no errors, go ahead
    if(err==0){
-      // midpoint between p1 and first intersection 
-      double p1mp[2]={(ip1[0]+p1[0])/2,(ip1[1]+p1[1])/2};
-      // midpoint between p2 and first intersection 
-      double p2mp[2]={(ip2[0]+p2[0])/2,(ip2[1]+p2[1])/2};
-
       // are the midpoints inside?
       // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
       // call the in_out routine from soap. Need to make sure that things are
       // in the right format
       //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
 
-      double bx[nbnd];
-      double by[nbnd];
-      for(i=0;i<nbnd;i++){
+      bx=(double*)malloc(sizeof(double)*nbnd);
+      by=(double*)malloc(sizeof(double)*nbnd);
+
+      for(i=0; i<nbnd; i++){
+         bx[i]=bx[0]+i;
+         by[i]=by[0]+i;
+
          bx[i]=bnd[i][0]; 
          by[i]=bnd[i][1];
       }
 
       // find the midpoints between p1, p2 their first intersections
       // store in x and y blocks
-      double xmp[2]={p1mp[0],p2mp[0]};
-      double ymp[2]={p1mp[1],p2mp[1]};
+      xmp[0]=(ip1[0]+p1[0])/2;
+      xmp[1]=(ip2[0]+p2[0])/2;
+      ymp[0]=(ip1[1]+p1[1])/2;
+      ymp[1]=(ip2[1]+p2[1])/2;
 
       // to handle holes, multiple boundaries
       // ignore this at the moment
-      double xmin=minarr(nbnd,bx);
-      double ymin=minarr(nbnd,by);
-      double mina[2] = {xmin, ymin};
-      double break_code=minarr(2,mina)-1;
+      xmin=minarr(nbnd,bx);
+      ymin=minarr(nbnd,by);
+      mina[0] = xmin; mina[1]=ymin;
+      break_code=minarr(2,mina)-1;
 
-      int in[2]={0,0};
-      int tmpinout=2;
+      tmpinout=2;
 
       in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
 
@@ -440,12 +441,19 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
    *                 error code, 0=okay
    */
 
-   int i, lbbindex, firstel, lastel, retint[nbnd-1];
-   double thisedge[2][2];
+   int i, lbbindex, firstel, lastel, *retint, *bbindex;
+   double thisedge[2][2], **ips, *dists, *sortdists;
    double ip[2];
+   int j=0;
 
    // error code 0= okay
    int err=0;
+
+   // setup retint
+   retint=(int*)malloc(sizeof(int)*(nbnd-1));
+   for(i=0; i<(nbnd-1); i++){
+      retint[i]=retint[0]+i;
+   }
 
    // do the bounding box check first, for speed
    // do_intersect returns a string of T/F values
@@ -457,12 +465,20 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
 
+   // setup bbindex, dists, sortdists
+   bbindex=(int*)malloc(sizeof(int)*lbbindex);
+   dists=(double*)malloc(sizeof(double)*lbbindex);
+   sortdists=(double*)malloc(sizeof(double)*lbbindex);
+   for(i=0; i<lbbindex; i++){
+      bbindex[i]=bbindex[0]+i;
+      dists[i]=dists[0]+i;
+      sortdists[i]=sortdists[0]+i;
+   }
+
    // if lbbindex < 1 increment err
    if(lbbindex>1){
       // find intersections & sort by distance
       // bbindex=c(1:(length(bnd$x)-1))[doint]
-      int bbindex[lbbindex];
-      int j=0;
 
       // populate bbindex   
       for(i=0;i<(nbnd-1);i++){
@@ -473,9 +489,11 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
       }
 
       // hold distances and intersection points temporarily
-      double dists[lbbindex];
-      double sortdists[lbbindex];
-      double ips[lbbindex][2];
+      ips=(double**)malloc(sizeof(double*)*lbbindex);
+      ips[0]=(double*)malloc(sizeof(double)*lbbindex*2);
+      for(i=0; i<lbbindex; i++){
+         ips[i]=ips[0]+i*2;
+      }
 
       for(i=0;i<lbbindex;i++){
          // get current index
@@ -546,6 +564,21 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
  *   to the head pointer -- this allows us
  *   to modify the caller's memory.
  */
+
+// free a linked list's memory
+void FreeList(node** headRef) { 
+   node* current = *headRef;// deref headRef to get the real head 
+   node* next; 
+   while (current != NULL) { 
+      next = current->next; // note the next pointer 
+      free(current->data); // delete the node 
+      free(current); // delete the node 
+      current = next; // advance to the next node 
+   } 
+   *headRef = NULL; // Again, deref headRef to affect the real head back 
+   // in the caller. 
+} 
+
 void Push(node** headRef, double data[2]) {
    node* newNode = malloc(sizeof(node));
    newNode->data[0] = data[0];
@@ -564,6 +597,7 @@ void Push(node** headRef, double data[2]) {
    newNode->prev = NULL;  // The '*' to dereferences back to 
 								  // the real head
    *headRef = newNode;        // ditto
+   //FreeList(&newNode);
 }
 
 //struct node* AppendNode(struct node** headRef, double data[2]) {
@@ -586,7 +620,12 @@ void AppendNode(node** headRef, double data[2]) {
       newNode->prev = current;
       current->next = newNode;
    }
+
+   //FreeList(&newNode);
+
 }
+
+
 
 // Variant of CopyList() that uses Push()
 node* CopyList(node* head)
@@ -656,7 +695,7 @@ void itwosort(int *twovec)
 }
 
 // find the maximum in an array
-double maxarr(int narr, double arr[])
+double maxarr(int narr, double *arr)
 {
    int i;
    double maxval=arr[0];
@@ -670,7 +709,7 @@ double maxarr(int narr, double arr[])
 }
 
 // find the minimum in an array
-double minarr(int narr, double arr[])
+double minarr(int narr, double *arr)
 {
    int i;
    double minval=arr[0];
@@ -685,7 +724,7 @@ double minarr(int narr, double arr[])
 
 
 // sum an array of integers 
-int iarrsum(int narr, int arr[narr])
+int iarrsum(int narr, int *arr)
 {
    int i;
    int val=0;
@@ -711,9 +750,8 @@ int compare_doubles (const void *a, const void *b)
 
 // my very own, very poor find
 // returns the first element of the array to match the value
-int crapfind(int narr, double arr[narr], double val){
-   int i;
-   int index;
+int crapfind(int narr, double *arr, double val){
+   int i, index;
 
    for(i=0;i<narr;i++){
       if(arr[i]==val){
