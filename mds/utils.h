@@ -113,32 +113,32 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
 
          // first need to handle the horizontal and vertical line cases
          if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
-            if(ip[0]>=ebbox[0][0] | ip[0]<=ebbox[1][0]) bndint[i]=0;
+            if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
          }
          if(fabs(pbbox[0][0]-pbbox[1][0])>=eps){
-            if(ip[0]>=pbbox[0][0] | ip[0]<=pbbox[1][0]) bndint[i]=0;
+            if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
          }
          if(fabs(ebbox[0][1]-ebbox[1][1])>=eps){
-            if(ip[1]>=ebbox[0][1] | ip[1]<=ebbox[1][1]) bndint[i]=0;
+            if((ip[1]>=ebbox[0][1]) | (ip[1]<=ebbox[1][1])) bndint[i]=0;
          }
          if(fabs(pbbox[0][1]-pbbox[1][1])>=eps){
-            if(ip[1]>=pbbox[0][1] | ip[1]<=pbbox[1][1]) bndint[i]=0;
+            if((ip[1]>=pbbox[0][1]) | (ip[1]<=pbbox[1][1])) bndint[i]=0;
          } // end of horiz/vert check
    
          // then handle whether the intersection point lies within the
          // the bounding box
          if(bndint[i]){
             if(fabs(ebbox[0][0]-ebbox[1][0])<=eps){
-               if(ip[1]>=ebbox[0][1] | ip[1]<=ebbox[1][1]) bndint[i]=0;
+               if((ip[1]>=ebbox[0][1]) | (ip[1]<=ebbox[1][1])) bndint[i]=0;
             }
             if(fabs(pbbox[0][0]-pbbox[1][0])<=eps){
-               if(ip[1]>=pbbox[0][1] | ip[1]<=pbbox[1][1]) bndint[i]=0;
+               if((ip[1]>=pbbox[0][1]) | (ip[1]<=pbbox[1][1])) bndint[i]=0;
             }
             if(fabs(ebbox[0][1]-ebbox[1][1])<=eps){
-               if(ip[0]>=ebbox[0][0] | ip[0]<=ebbox[1][0]) bndint[i]=0;
+               if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
             }
             if(fabs(pbbox[0][1]-pbbox[1][1])<=eps){
-               if(ip[0]>=pbbox[0][0] | ip[0]<=pbbox[1][0]) bndint[i]=0;
+               if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
             }
          } // end of bounding box ip check
       }
