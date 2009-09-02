@@ -572,7 +572,7 @@ void FreeList(node** headRef) {
    node* next; 
    while (current != NULL) { 
       next = current->next; // note the next pointer 
-      free(current->data); // delete the node 
+//      free(current->data); // delete the node 
       free(current); // delete the node 
       current = next; // advance to the next node 
    } 
