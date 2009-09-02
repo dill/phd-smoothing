@@ -29,7 +29,6 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
 
-
    // HACK: put things in the right format
    for(i=0; i<*nbnd; i++){
 

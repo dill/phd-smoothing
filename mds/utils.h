@@ -22,7 +22,7 @@ void do_intersect(double[2], double[2], int nbnd, double **,int *);
 double minarr(int narr, double *);
 double maxarr(int narr, double *);
 int compare_doubles (const void *a, const void *b);
-int crapfind(int narr, double *, double);
+int crapfind(int narr, double[], double);
 int iarrsum(int narr, int *);
 double hull_length(node**);
 void sp_do_intersect(double[2], double[2], int nbnd, double **,int *);
@@ -462,6 +462,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
    // this is what is used in the R code.
    do_intersect(p1,p2,nbnd,bnd,retint);
    
+
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
 
@@ -506,7 +507,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
 
          // calculate and save the intersection
          intpoint(p1,p2,thisedge,ip);
-
          ips[i][0]=ip[0];
          ips[i][1]=ip[1];
 
@@ -521,12 +521,13 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
       // The qsort function sorts the array array. 
       // The array contains count elements, each of which is of size size.
       // The compare function is used to perform the comparison on the array elements. 
-      qsort(&sortdists,lbbindex,sizeof(double),compare_doubles);
+      qsort(sortdists,lbbindex,sizeof(double),compare_doubles);
 
 
       // find first intersection between p1 and bnd
       // p1.int<-pe(ips,order(dists)[1])
       firstel = crapfind(lbbindex,dists,sortdists[0]);
+
       ip1[0]=ips[firstel][0];
       ip1[1]=ips[firstel][1];
       
@@ -750,7 +751,7 @@ int compare_doubles (const void *a, const void *b)
 
 // my very own, very poor find
 // returns the first element of the array to match the value
-int crapfind(int narr, double *arr, double val){
+int crapfind(int narr, double arr[], double val){
    int i, index;
 
    for(i=0;i<narr;i++){
