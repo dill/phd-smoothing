@@ -200,6 +200,9 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
          bndint[j]=tmpbndint[0];
       }
    } // end for loop
+
+   free(tmpbnd[0]);
+   free(tmpbnd);
 }
 
 
@@ -265,6 +268,8 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
          ret=1;
       }
    }
+
+   free(bx);free(by);
 
    // if err returned >0 then return 0
    return(ret);
@@ -547,6 +552,13 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
       err++;
    } // end of lbbindex<2 check
 
+   free(bbindex);
+   free(dists);
+   free(sortdists);
+   free(retint);
+   free(ips[0]);
+   free(ips);
+
    return(err);
 }
 
@@ -572,7 +584,7 @@ void FreeList(node** headRef) {
    node* next; 
    while (current != NULL) { 
       next = current->next; // note the next pointer 
-//      free(current->data); // delete the node 
+      //free(current->data); // delete the node 
       free(current); // delete the node 
       current = next; // advance to the next node 
    } 
@@ -598,6 +610,7 @@ void Push(node** headRef, double data[2]) {
    newNode->prev = NULL;  // The '*' to dereferences back to 
 								  // the real head
    *headRef = newNode;        // ditto
+
    //FreeList(&newNode);
 }
 
@@ -622,7 +635,7 @@ void AppendNode(node** headRef, double data[2]) {
       current->next = newNode;
    }
 
-   //FreeList(&newNode);
+   //free(newNode);
 
 }
 
@@ -644,6 +657,9 @@ node* CopyList(node* head)
       }
       current = current->next;
    }
+
+
+   FreeList(&newList);
    return(newList);
 }
 

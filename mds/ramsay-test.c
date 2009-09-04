@@ -7,9 +7,7 @@ int main(void)
 
    //////////// EVERYTHING
    int nbnd;
-   double *xbnd;
-   double *ybnd;
-   double **bnd;
+   double *xbnd, *ybnd, **bnd;
    int i;
    double p1[2], p2[2];
    double ret=0;
@@ -148,6 +146,12 @@ int main(void)
    wood_path(p1,p2,&nbnd,xbnd,ybnd,&ret);
 
    printf("path length is %f\n",ret);
+
+
+   free(bnd[0]);
+   free(bnd);
+   free(xbnd);
+   free(ybnd);
 
    return 0;
 }

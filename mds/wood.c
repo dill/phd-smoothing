@@ -80,25 +80,28 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
 
-// DEBUG
-//printf("#******* END  ********** \n");
-//printf("plot(bnd,type=\"l\")\n");
-//printf("path<-list(x=c(),y=c())\n");
-//
-//current=mypath;
-//while(current!=NULL){
-//   printf("path$x<-c(path$x,%f)\n",current->data[0]);
-//   printf("path$y<-c(path$y,%f)\n",current->data[1]);
-//   current=current->next;
-//}
-//printf("lines(path,lwd=2,col=\"red\")\n");
-//printf("scan()\n");
+   // DEBUG
+   //printf("#******* END  ********** \n");
+   //printf("plot(bnd,type=\"l\")\n");
+   //printf("path<-list(x=c(),y=c())\n");
+   //
+   //current=mypath;
+   //while(current!=NULL){
+   //   printf("path$x<-c(path$x,%f)\n",current->data[0]);
+   //   printf("path$y<-c(path$y,%f)\n",current->data[1]);
+   //   current=current->next;
+   //}
+   //printf("lines(path,lwd=2,col=\"red\")\n");
+   //printf("scan()\n");
 
    // return the length of the path
    *pathlen=hull_length(&mypath);
 
    FreeList(&mypath);
    FreeList(&prevpath);
+  
+   free(bnd[0]);
+   free(bnd);
 
 }
 
@@ -231,8 +234,10 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
 
       // pick the shorter path return path
       if(hull_length(&bnd1)<hull_length(&bnd2)){
+         FreeList(&bnd2);
          return bnd1;
       }else{
+         FreeList(&bnd1);
          return bnd2;
       }
 
@@ -416,6 +421,11 @@ void delete_step(node** path, int nbnd, double **bnd)
 
    }while(!has_converged(prevpath,*path) &
          (conv<conv_stop) ); // end of do loop
+
+   // free some memory
+   free(bx); free(by);
+   free(intbnd);
+
 }           
 
 // alter the path
@@ -538,6 +548,9 @@ void alter_step(node** path, int nbnd, double **bnd)
 
    } while(!has_converged(prevpath,*path)&
          (conv<conv_stop)); //end of main do
+
+   //FreeList(&newpath);
+
 }
 
 // check convergence
