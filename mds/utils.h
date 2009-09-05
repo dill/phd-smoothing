@@ -656,7 +656,7 @@ node* CopyList(node* head)
    }
 
    //FreeList(&newList);
-   return(&newList);
+   return(newList);
 }
 
 
