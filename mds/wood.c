@@ -245,6 +245,10 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
       printf("ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
       printf("DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
    }
+
+   // if everything goes wrong then still free memory
+   FreeList(&bnd1);
+   FreeList(&bnd2);
    return 0;
 }
 
