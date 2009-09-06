@@ -120,13 +120,13 @@ int main(void)
    ybnd[20]=bnd[0][1];
 
 
-	printf("bnd<-list(x=c(),y=c())\n");
-	for(i=0;i<nbnd;i++){
-		printf("bnd$x<-c(bnd$x,%f)\n",xbnd[i]);
-	}
-	for(i=0;i<nbnd;i++){
-		printf("bnd$y<-c(bnd$y,%f)\n",ybnd[i]);
-	}
+//   printf("bnd<-list(x=c(),y=c())\n");
+//   for(i=0;i<nbnd;i++){
+//   	printf("bnd$x<-c(bnd$x,%f)\n",xbnd[i]);
+//   }
+//   for(i=0;i<nbnd;i++){
+//   	printf("bnd$y<-c(bnd$y,%f)\n",ybnd[i]);
+//   }
 
 //   p2[0]=0.5;
 //   p2[1]=0.7;

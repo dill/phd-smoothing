@@ -67,8 +67,6 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    pbbox[1][0]=minarr(2,xarr);
    pbbox[1][1]=minarr(2,yarr);
 
-
-
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
    for(i=0;i<(nbnd-1);i++){
@@ -142,7 +140,6 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
             }
          } // end of bounding box ip check
       }
-
    }// end iterate over boundary
 }
 
