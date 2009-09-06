@@ -644,20 +644,41 @@ void CopyList(node* head, node** newList)
    node* current = head;      // used to iterate over the original list
    //node* newList = NULL;      // head of the new list
    node* tail = NULL; // kept pointing to the last node in the new list
-   while (current != NULL) {
-      if (newList == NULL) { // special case for the first new node
-         Push(newList, current->data);
-         tail = *newList;
-      }else{
-         Push(&(tail->next), current->data);     // add each node at the tail
-         tail = tail->next;    // advance the tail to the new last node
-      }
-      current = current->next;
-   }
 
-   //FreeList(&newList);
-   //return(newList);
+
+   while (current != NULL) { 
+      if (*newList == NULL) { // special case for the first new node 
+         Push(newList, current->data); 
+         tail = *newList; 
+      }else{ 
+         Push(&(tail->next), current->data); // add each node at the tail 
+         tail = tail->next; // advance the tail to the new last node 
+      } 
+      current = current->next; 
+   } 
+//   Push(newList, current->data);
+//   tail = *newList;
+//   current = current->next;
+//   while (current != NULL) {
+//      Push(&(tail->next), current->data);     // add each node at the tail
+//      tail = tail->next;    // advance the tail to the new last node
+//      current = current->next;
+//   }
 }
+
+// Dummy node variant 
+//void CopyList(node* head, node** newList) { 
+//   node* current = head; // used to iterate over the original list 
+//   node* tail; // kept pointing to the last node in the new list 
+//   //node dummy; // build the new list off this dummy node 
+//   //dummy.next = NULL; 
+//   tail = *newList; // start the tail pointing at the dummy 
+//   while (current != NULL) { 
+//      Push(&(tail->next), current->data);// add each node at the tail 
+//      tail = tail->next; // advance the tail to the new last node 
+//      current = current->next; 
+//   } 
+//} 
 
 
 /*

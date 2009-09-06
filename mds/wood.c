@@ -6,7 +6,7 @@
 #include "utils.h"
 
 void wood_path(double*, double*, int*, double*, double*, double*);
-node* make_bnd_path(double[2], double[2], int nbnd, double**);
+void make_bnd_path(double[2], double[2], int nbnd, double**, node**);
 void delete_step(node**, int nbnd, double**);
 void alter_step(node**, int nbnd, double**);
 int has_converged(node*, node*);
@@ -52,7 +52,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   mypath=make_bnd_path(p1,p2,*nbnd,bnd);
+   make_bnd_path(p1,p2,*nbnd,bnd,&mypath);
 
 //   node* current=mypath;
 
@@ -92,6 +92,10 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    //printf("lines(path,lwd=2,col=\"red\")\n");
    //printf("scan()\n");
 
+   if(conv==conv_stop){
+      printf("WARNING: path find finished without convergence!\n");
+   }
+
    // return the length of the path
    *pathlen=hull_length(&mypath);
 
@@ -105,7 +109,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
 
 // create a path between p1 and p2 using the boundary
-node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
+void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** path)
 {
    /* Args:
     *  p1, p2           points
@@ -230,13 +234,11 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
 
       }
 
-      // pick the shorter path return path
+      // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
-         FreeList(&bnd2);
-         return bnd1;
+         CopyList(bnd1,path);
       }else{
-         FreeList(&bnd1);
-         return bnd2;
+         CopyList(bnd2,path);
       }
 
    }else{ // end of error if()
@@ -247,7 +249,6 @@ node* make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd)
    // if everything goes wrong then still free memory
    FreeList(&bnd1);
    FreeList(&bnd2);
-   return 0;
 }
 
 
@@ -427,6 +428,7 @@ void delete_step(node** path, int nbnd, double **bnd)
    // free some memory
    free(bx); free(by);
    free(intbnd);
+   FreeList(&prevpath);
 
 }           
 
@@ -501,7 +503,7 @@ void alter_step(node** path, int nbnd, double **bnd)
          if(facing(ep1, ep2, nbnd, bnd)){
 
             // create a new path
-            newpath=make_bnd_path(ep1,ep2,nbnd,bnd);
+            make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
 
             // cut out anything silly
             //delete_step(&newpath, nbnd, bnd);
@@ -554,7 +556,7 @@ void alter_step(node** path, int nbnd, double **bnd)
    } while(!has_converged(prevpath,*path)&
          (conv<conv_stop)); //end of main do
 
-   //FreeList(&newpath);
+   FreeList(&prevpath);
 
 }
 
