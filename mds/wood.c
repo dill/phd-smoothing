@@ -31,12 +31,10 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    // HACK: put things in the right format
    for(i=0; i<*nbnd; i++){
-
       bnd[i]=bnd[0]+i*2;
 
       bnd[i][0]=xbnd[i];
       bnd[i][1]=ybnd[i];
-
    }
 
    // HACK:make sure that the points are defined from the left,
@@ -67,7 +65,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
       // save previous path
       //prev.path<-my.path
-      prevpath=CopyList(mypath);
+      CopyList(mypath,&prevpath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,*nbnd,bnd);
@@ -311,7 +309,7 @@ void delete_step(node** path, int nbnd, double **bnd)
 
       // use prevpath to keep a copy of the previous path for comparison
       //prev.path<-path
-      prevpath=CopyList(*path);
+      CopyList(*path,&prevpath);
 
       // start point for triplet selection
       current = *path;   // iterator
@@ -463,7 +461,7 @@ void alter_step(node** path, int nbnd, double **bnd)
 
       // use prevpath to keep a copy of the previous path for comparison            
       //prev.path<-path
-      prevpath=CopyList(*path);
+      CopyList(*path,&prevpath);
 
       // start point for triplet selection
       //i<-2

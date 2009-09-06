@@ -30,7 +30,7 @@ int first_ips(double[2], double[2], int nbnd, double **,
                double[2], double[2], int[2]);
 void Push(node**, double[2]);
 void AppendNode(node**, double[2]);
-node* CopyList(node*);
+void CopyList(node*, node**);
 int Length(node*);
 void FreeList(node**);
 
@@ -639,15 +639,15 @@ void AppendNode(node** headRef, double data[2]) {
 }
 
 // Variant of CopyList() that uses Push()
-node* CopyList(node* head)
+void CopyList(node* head, node** newList)
 {
    node* current = head;      // used to iterate over the original list
-   node* newList = NULL;      // head of the new list
+   //node* newList = NULL;      // head of the new list
    node* tail = NULL; // kept pointing to the last node in the new list
    while (current != NULL) {
       if (newList == NULL) { // special case for the first new node
-         Push(&newList, current->data);
-         tail = newList;
+         Push(newList, current->data);
+         tail = *newList;
       }else{
          Push(&(tail->next), current->data);     // add each node at the tail
          tail = tail->next;    // advance the tail to the new last node
@@ -656,7 +656,7 @@ node* CopyList(node* head)
    }
 
    //FreeList(&newList);
-   return(newList);
+   //return(newList);
 }
 
 
