@@ -100,10 +100,8 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    FreeList(&mypath);
    FreeList(&prevpath);
-  
    free(bnd[0]);
    free(bnd);
-
 }
 
 
@@ -144,7 +142,6 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
       //picker<-c(picker[1]:picker[2])
       //bnd.1.sort<-pe(bnd,picker)
 
-
       // since we ordered intind first, we don't need to worry too much
 
       // push everything in
@@ -184,7 +181,6 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
          AppendNode(&bnd2,curr_insert);
       }
 
-
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
       line1[1][0]=bnd[intind[0]+1][0];
@@ -196,7 +192,6 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
       line2[1][1]=bnd[intind[1]+1][1];
 
       if( online(ip1,line1) & online(ip2,line2)){
-
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert); 
@@ -212,9 +207,7 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
          Push(&bnd1,curr_insert);
          AppendNode(&bnd2,curr_insert); 
-
       }else{
-
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          Push(&bnd1,curr_insert);
          AppendNode(&bnd2,curr_insert);
@@ -230,7 +223,6 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
-
       }
 
       // pick the shorter path to return
