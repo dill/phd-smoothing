@@ -607,8 +607,6 @@ void Push(node** headRef, double data[2]) {
    newNode->prev = NULL;  // The '*' to dereferences back to 
 								  // the real head
    *headRef = newNode;        // ditto
-
-   //FreeList(&newNode);
 }
 
 //struct node* AppendNode(struct node** headRef, double data[2]) {
@@ -647,6 +645,7 @@ void CopyList(node* head, node** newList)
       if (*newList == NULL) { // special case for the first new node 
          Push(newList, current->data); 
          tail = *newList; 
+         //tail->prev=NULL;
       }else{ 
          Push(&(tail->next), current->data); // add each node at the tail 
          tail = tail->next; // advance the tail to the new last node 

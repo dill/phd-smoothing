@@ -11,7 +11,6 @@ void delete_step(node**, int nbnd, double**);
 void alter_step(node**, int nbnd, double**);
 int has_converged(node*, node*);
 
-
 void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,double *pathlen)
 {
    // args:
@@ -264,13 +263,12 @@ void delete_step(node** path, int nbnd, double **bnd)
    // Return:
    //           revised path with dropped vertices
    
-   int i, *intbnd;
+   int i, *intbnd, in[1];
    double mytrip[3][2], p1[2], p2[2], xmp[1], ymp[1], *bx, *by, xmin, ymin, mina[2], break_code;
+	int inout_n=1;
    // convergence stop
    int conv=0;
    int conv_stop=10;
-	int inout_n=1;
-   int in[1];
 
    node* current=NULL;   // iterator
    node* prevpath=NULL;
@@ -280,7 +278,6 @@ void delete_step(node** path, int nbnd, double **bnd)
 
    // setup intbnd
    intbnd=(int*)malloc(sizeof(int)*(nbnd-1));
-
    for(i=0; i<(nbnd-1); i++){
       intbnd[i]=intbnd[0]+i;
    }
@@ -288,11 +285,9 @@ void delete_step(node** path, int nbnd, double **bnd)
    ////// needed later on for the in_out() call
    bx=(double*)malloc(sizeof(double)*nbnd);
    by=(double*)malloc(sizeof(double)*nbnd);
-
    for(i=0; i<nbnd; i++){
       bx[i]=bx[0]+i;
       by[i]=by[0]+i;
-
       bx[i]=bnd[i][0];
       by[i]=bnd[i][1];
    }
@@ -304,10 +299,8 @@ void delete_step(node** path, int nbnd, double **bnd)
    mina[0] = xmin; mina[1] = ymin;
    break_code=minarr(2,mina)-1;
 
-
    // keep going until we don't remove any more points.
    do{
-
       // use prevpath to keep a copy of the previous path for comparison
       //prev.path<-path
       CopyList(*path,&prevpath);
@@ -336,13 +329,13 @@ void delete_step(node** path, int nbnd, double **bnd)
 				}
          }
 
-         // if we are going forward and back again, just
-         // remove the point
+         // pointer is now at i+1
+
+         // if we are going forward and back again, just remove the point
          // in this case we remove the ith and (i+1)th entries, point (i-1)th
          // next to the (i+2)th.
          // path<-pe(path,-c(i,i+1))
          if((mytrip[0][0]==mytrip[2][0]) & (mytrip[0][1]==mytrip[2][1])){
-
             // current is sitting at the 3rd entry
             // create a pointer to that
             end_ptr=current->next; // pointer to i+2
@@ -360,9 +353,7 @@ void delete_step(node** path, int nbnd, double **bnd)
             
             // change previous
             current->prev=start_ptr; //set i+2 prev to i-1
-            
          }else{
-
             //// This is all setup for the next if() vvvvv
 
             // start and end points of the trip in p1 and p2
@@ -389,7 +380,6 @@ void delete_step(node** path, int nbnd, double **bnd)
             // first part asks if there are any intersections, if there are
             // none then that's okay. Second part asks if midpoints are inside.
             if((iarrsum((nbnd-1),intbnd)==0) & in[0]){
-
                // remove point i by setting next pointer from i-1 to 
                // i+1, and prev from i+1 to i-1
 
@@ -413,7 +403,6 @@ void delete_step(node** path, int nbnd, double **bnd)
 
                //current=current->next;
                // now current is sitting at i+2
-
             } // end if on del middle
          } // end of if del back-and-forth
 
