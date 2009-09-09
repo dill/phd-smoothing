@@ -14,8 +14,8 @@ int main(void)
 
 
    nbnd=21;
-   bnd=(double**)malloc(sizeof(double*)*nbnd);
-   bnd[0]=(double*)malloc(sizeof(double)*nbnd*2);
+   bnd=(double**)malloc(sizeof(double*)*(nbnd));
+   bnd[0]=(double*)malloc(sizeof(double)*(nbnd*2));
 
    for(i=0; i<nbnd; i++){
       bnd[i]=bnd[0]+i*2;
@@ -133,15 +133,15 @@ int main(void)
 //   p1[0]=0.4;
 //   p1[1]=0.2;
 
-//   p1[0]=-0.386364;
-//   p1[1]=0.333333;
-//   p2[0]=0.329545;
-//   p2[1]=-0.5;
+   p1[0]=-0.386364;
+   p1[1]=0.333333;
+   p2[0]=0.329545;
+   p2[1]=-0.5;
 
-   p1[0]=-0.284091;
-   p1[1]=0.500000;
-   p2[0]=0.022727;
-   p2[1]=-0.333333;
+//   p1[0]=-0.284091;
+//   p1[1]=0.500000;
+//   p2[0]=0.022727;
+//   p2[1]=-0.333333;
 
    wood_path(p1,p2,&nbnd,xbnd,ybnd,&ret);
 

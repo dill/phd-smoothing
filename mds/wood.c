@@ -1,4 +1,5 @@
 // Simon's algorithm for finding the path
+// Copyright 2009 David Lawrence Miller
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,8 +54,6 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    make_bnd_path(p1,p2,*nbnd,bnd,&mypath);
 
-//   node* current=mypath;
-
    // convergence stop
    conv=0;
    conv_stop=10;
@@ -94,7 +93,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    if(conv==conv_stop){
       printf("WARNING: path find finished without convergence!\n");
       printf("conv = %d\n",conv);
-      printf("convergence = %d\n",!has_converged(prevpath,mypath) );
+      printf("convergence = %d\n",has_converged(prevpath,mypath) );
    }
 
    // return the length of the path
@@ -488,9 +487,6 @@ void alter_step(node** path, int nbnd, double **bnd)
             // create a new path
             make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
 
-            // cut out anything silly
-            //delete_step(&newpath, nbnd, bnd);
-
             // only insert the path if it's better!
             if(hull_length(&newpath)<=triplen){
 
@@ -526,9 +522,9 @@ void alter_step(node** path, int nbnd, double **bnd)
    
                current=current->next; // current now at i+1
             }else{
-               // end insert if short if()            
+               
                FreeList(&newpath);
-            }
+            }// end insert if 
          } // end facing
          
         	current=current->prev; // go back to i, need this to catch all triplets

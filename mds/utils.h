@@ -1,4 +1,5 @@
 /* First hash at re-writing the utils.R script in C */
+// Copyright 2009 David Lawrence Miller
 
 #include <math.h>
 #include <stdlib.h>
@@ -602,38 +603,53 @@ void Push(node** headRef, double data[2]) {
 
 	if(newNode->next !=NULL){
 	   newNode->next->prev = newNode;
-   	//*headRef->prev = newNode;
 	}
   
    // previous element of new node will be NULL
-   newNode->prev = NULL;  // The '*' to dereferences back to 
-								  // the real head
-   *headRef = newNode;        // ditto
+   newNode->prev = NULL;
+   *headRef = newNode;
 }
 
-//struct node* AppendNode(struct node** headRef, double data[2]) {
-// think this will work
-void AppendNode(node** headRef, double data[2]) {
-   node* current = *headRef;
-   node* newNode = malloc(sizeof(node));
+//void AppendNode(node** headRef, double data[2]) {
+//   node* current = *headRef;
+//   node* newNode = malloc(sizeof(node));
+//
+//   newNode->data[0] = data[0];
+//   newNode->data[1] = data[1];
+//   newNode->next = NULL;
+//
+//   // special case for length 0
+//   if (current == NULL) {
+//      newNode->prev = NULL;
+//      *headRef = newNode;
+//   }else{
+//      // Locate the last node
+//      while (current->next != NULL) {
+//         current = current->next;
+//      }
+//      // insert the new node
+//      newNode->prev = current;
+//      current->next = newNode;
+//   }
+//}
 
-   newNode->data[0] = data[0];
-   newNode->data[1] = data[1];
-   newNode->next = NULL;
-
-   // special case for length 0
-   if (current == NULL) {
-      newNode->prev = NULL;
-      *headRef = newNode;
-   }else{
-      // Locate the last node
-      while (current->next != NULL) {
-         current = current->next;
-      }
-      newNode->prev = current;
-      current->next = newNode;
-   }
+void AppendNode(node** headRef, double data[2]) { 
+   node* current = *headRef; 
+   // special case for the empty list 
+   if (current == NULL) { 
+      Push(headRef, data); 
+   }else{ 
+      // Locate the last node 
+      while (current->next != NULL) { 
+         current = current->next; 
+      } 
+      // Build the node after the last node 
+      Push(&(current->next), data); 
+      current->next->prev=current;
+   } 
 }
+
+
 
 // Variant of CopyList() that uses Push()
 void CopyList(node* head, node** newList)
