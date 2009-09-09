@@ -264,9 +264,11 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
       if(in[0] && in[1]){
          ret=1;
       }
+
+      // free some memory
+      free(bx);free(by);
    }
 
-   free(bx);free(by);
 
    // if err returned >0 then return 0
    return(ret);
@@ -582,7 +584,6 @@ void FreeList(node** headRef) {
    node* next; 
    while (current != NULL) { 
       next = current->next; // note the next pointer 
-      //free(current->data); // delete the node 
       free(current); // delete the node 
       current = next; // advance to the next node 
    } 

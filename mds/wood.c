@@ -75,7 +75,7 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       // increment convergence stopper 
       conv++;
 
-   } while(!has_converged(prevpath,mypath) & (conv<conv_stop));
+   } while( !(has_converged(prevpath,mypath) | (conv<conv_stop) ));
 
    // DEBUG
    //printf("#******* END  ********** \n");
@@ -93,6 +93,8 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
 
    if(conv==conv_stop){
       printf("WARNING: path find finished without convergence!\n");
+      printf("conv = %d\n",conv);
+      printf("convergence = %d\n",!has_converged(prevpath,mypath) );
    }
 
    // return the length of the path
@@ -237,7 +239,7 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
       printf("DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
    }
 
-   // if everything goes wrong then still free memory
+   // free memory
    FreeList(&bnd1);
    FreeList(&bnd2);
 }
@@ -403,8 +405,8 @@ void delete_step(node** path, int nbnd, double **bnd)
       } // end iteration over path
       conv++; // increment run counter
 
-   }while(!has_converged(prevpath,*path) &
-         (conv<conv_stop) ); // end of do loop
+   } while( !(has_converged(prevpath,*path) | (conv<conv_stop) ));
+   // end of do loop
 
    // free some memory
    free(bx); free(by);
@@ -534,8 +536,8 @@ void alter_step(node** path, int nbnd, double **bnd)
 
       conv++;
 
-   } while(!has_converged(prevpath,*path)&
-         (conv<conv_stop)); //end of main do
+   } while( !(has_converged(prevpath,*path) | (conv<conv_stop) ));
+   //end of main do
 
    FreeList(&prevpath);
 
