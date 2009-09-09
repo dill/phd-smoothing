@@ -543,6 +543,9 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
       intind[0]=bbindex[firstel];
       intind[1]=bbindex[lastel];
 
+      free(ips[0]);
+      free(ips);
+
    }else{
       // let the Robot warn us...
       //printf("DANGER, WILL ROBINSON! lbbindex=%d (< 2)\n",lbbindex);
@@ -553,8 +556,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
    free(dists);
    free(sortdists);
    free(retint);
-   free(ips[0]);
-   free(ips);
 
    return(err);
 }
