@@ -61,6 +61,11 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    // keep going until we don't remove any more points.
    do{
 
+      // free up prevpath before we copy onto it
+      if(conv>0){
+         FreeList(&prevpath);
+      }
+
       // save previous path
       //prev.path<-my.path
       CopyList(mypath,&prevpath);
