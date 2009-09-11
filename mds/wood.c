@@ -57,20 +57,25 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
       for(j=(i+1); j<*len; j++){
          // set p2
          p2[0]=x[j]; p2[1]=y[j];
-   
+  
+
+// This seems to fuck things up. 
          // HACK:make sure that the points are defined from the left,
          // this may or may not be a fix to the paths joining the wrong points
-         arr[0]=p1[0]; arr[1]=p1[1];
-         
-         twosort(arr);
-         if(arr[0]!=p1[0]){ 
-            p1[0]=p2[0];
-            p2[0]=arr[1];
-            tmp=p1[1];
-            p1[1]=p2[1];
-            p2[1]=tmp;
-         }
+//         arr[0]=p1[0]; arr[1]=p1[1];
+//         
+//         twosort(arr);
+//         if(arr[0]!=p1[0]){ 
+//            p1[0]=p2[0];
+//            p2[0]=arr[1];
+//            tmp=p1[1];
+//            p1[1]=p2[1];
+//            p2[1]=tmp;
+//         }
       
+
+//////////////////^^^^^^^^^^^^^^^^^
+
          // check to see if we have to do the 
          do_intersect(p1, p2, *nbnd, bnd, retint);
  
@@ -78,10 +83,13 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
             pathlen[k]=make_path(p1,p2,*nbnd,bnd);
          }else{
             pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
+            //printf("*");
          }
          // DEBUG
          if(k<pathlenlen){
             printf("pathlen[%d]=%f\n",k+1,pathlen[k]);
+            //printf("(%f, %f)->(%f,%f)=%f\n",p1[0],p1[1],p2[0],p2[1],pathlen[k]);
+            //printf("%d: %d, %d\n",k,i,j);
          }
          // increment pathlen counter
          k++;

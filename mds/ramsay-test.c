@@ -9,7 +9,7 @@ int main(void)
    int nbnd, len, i;
    double *xbnd, *ybnd, **bnd, *x, *y, *ret;
 
-   len=2;
+   len=4;
 
    nbnd=21;
    bnd=(double**)malloc(sizeof(double*)*(nbnd));
@@ -110,10 +110,10 @@ int main(void)
    x[1]=0.329545;
    y[1]=-0.5;
 
-//   p1[0]=-0.284091;
-//   p1[1]=0.500000;
-//   p2[0]=0.022727;
-//   p2[1]=-0.333333;
+   x[2]=-0.284091;
+   y[2]=0.500000;
+   x[3]=0.022727;
+   y[3]=-0.333333;
 
    wood_path(&len,x,y,&nbnd,xbnd,ybnd,ret);
 
