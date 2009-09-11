@@ -308,23 +308,23 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
    // handle the horizontal/vertical line case...
 
    // point line horizontal
-   if(fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<eps | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))){
+   if( (fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))){
       a1=0;
       b1=1;
       c1=-p1[1];
    // point line vertical
-   }else if(fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<eps| isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
+   }else if( (fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
       a1=1;
       b1=0;
       c1=-p1[0];
    // edge horizontal
-   }else if(fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<eps | 
+   }else if( (fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<eps) | 
             isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))){
       a2=0;
       b2=1;
       c2=-edge[0][1];
    // edge vertical
-   }else if(fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<eps | 
+   }else if( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<eps) | 
             isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))){
       a2=1;
       b2=0;
@@ -469,7 +469,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
    // this is what is used in the R code.
    do_intersect(p1,p2,nbnd,bnd,retint);
    
-
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
 

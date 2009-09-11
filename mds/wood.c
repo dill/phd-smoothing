@@ -6,30 +6,29 @@
 #include <math.h>
 #include "utils.h"
 
-void wood_path(double*, double*, int*, double*, double*, double*);
+void wood_path(int*, double*, double*, int*, double*, double*, double*);
 void make_bnd_path(double[2], double[2], int nbnd, double**, node**);
 void delete_step(node**, int nbnd, double**);
 void alter_step(node**, int nbnd, double**);
 int has_converged(node*, node*);
+double make_path(double[2], double[2], int, double**);
 
-void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,double *pathlen)
+void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *ybnd,double *pathlen)
 {
    // args:
-   //   p1, p2      the two points to find the path between
+   //   x,y         lists of x and y points
    //   nbnd        length of bnd
    //   bnd         the boundary that got in the way
    //  return:
    //   length of the path
 
-   double arr[2], tmp, **bnd;
-   int conv, conv_stop, i;
-   node* prevpath=NULL;
-   node* mypath=NULL;
+   double arr[2], tmp, **bnd, p1[2], p2[2];
+   int i, j,k, pathlenlen, *retint;
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
 
-   // HACK: put things in the right format
+   // put bnd in the right format and allocate memory
    for(i=0; i<*nbnd; i++){
       bnd[i]=bnd[0]+i*2;
 
@@ -37,22 +36,74 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       bnd[i][1]=ybnd[i];
    }
 
-   // HACK:make sure that the points are defined from the left,
-   // this may or may not be a fix to the paths joining the wrong points
-   arr[0]=p1[0]; arr[1]=p1[1];
-   
-   twosort(arr);
-   if(arr[0]!=p1[0]){ 
-      p1[0]=p2[0];
-      p2[0]=arr[1];
-      tmp=p1[1];
-      p1[1]=p2[1];
-      p2[1]=tmp;
+   // allocate memory for retint
+   retint=(int*)malloc(sizeof(int)*(*nbnd-1));
+   for(i=0; i<(*nbnd-1); i++){
+      retint[i]=retint[0]+i;
    }
+
+   // find the length of pathlen, upper triangle of a len*len matrix
+   pathlenlen=((*len)*(*len)-(*len))/2;
+
+   // insertion counter
+   k=0;
+
+   // loop over all point pairs
+   //         vvvvvv don't do the last row
+   for(i=0; i<(*len-1); i++){
+      // set p1
+      p1[0]=x[i]; p1[1]=y[i];
+
+      for(j=(i+1); j<*len; j++){
+         // set p2
+         p2[0]=x[j]; p2[1]=y[j];
+   
+         // HACK:make sure that the points are defined from the left,
+         // this may or may not be a fix to the paths joining the wrong points
+         arr[0]=p1[0]; arr[1]=p1[1];
+         
+         twosort(arr);
+         if(arr[0]!=p1[0]){ 
+            p1[0]=p2[0];
+            p2[0]=arr[1];
+            tmp=p1[1];
+            p1[1]=p2[1];
+            p2[1]=tmp;
+         }
+      
+         // check to see if we have to do the 
+         do_intersect(p1, p2, *nbnd, bnd, retint);
+ 
+         if(iarrsum((*nbnd-1), retint)>0){
+            pathlen[k]=make_path(p1,p2,*nbnd,bnd);
+         }else{
+            pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
+         }
+         // DEBUG
+         if(k<pathlenlen){
+            printf("pathlen[%d]=%f\n",k+1,pathlen[k]);
+         }
+         // increment pathlen counter
+         k++;
+      }    
+   } //end of main for loops
+
+   free(bnd[0]);
+   free(bnd);
+   free(retint);
+}
+
+
+double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
+{
+   int conv, conv_stop;
+   double hulllen;
+   node* prevpath=NULL;
+   node* mypath=NULL;
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   make_bnd_path(p1,p2,*nbnd,bnd,&mypath);
+   make_bnd_path(p1,p2,nbnd,bnd,&mypath);
 
    // convergence stop
    conv=0;
@@ -71,10 +122,10 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
       CopyList(mypath,&prevpath);
 
       // delete step, remove anything that doesn't need to be there
-      delete_step(&mypath,*nbnd,bnd);
+      delete_step(&mypath,nbnd,bnd);
 
       // add new vertices
-      alter_step(&mypath,*nbnd,bnd);
+      alter_step(&mypath,nbnd,bnd);
 
       // increment convergence stopper 
       conv++;
@@ -102,12 +153,13 @@ void wood_path(double *p1, double *p2, int *nbnd, double *xbnd, double *ybnd,dou
    }
 
    // return the length of the path
-   *pathlen=hull_length(&mypath);
+   hulllen=hull_length(&mypath);
 
    FreeList(&mypath);
    FreeList(&prevpath);
-   free(bnd[0]);
-   free(bnd);
+
+   // return the length of the path
+   return(hulllen);
 }
 
 

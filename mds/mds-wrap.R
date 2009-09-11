@@ -1,21 +1,31 @@
 # wrapper function for C code
-woodpath<-function(p1,p2,bnd){
+woodpath<-function(xpoints,ypoints,bnd){
 
    # put everything in the right format
-   ap1<-c(p1$x,p1$y)
-   ap2<-c(p2$x,p2$y)
    xbnd<-bnd$x
    ybnd<-bnd$y
    nbnd<-length(xbnd)
+   len<-length(xpoints)
 
    # load the library
    dyn.load("wood.so")
 
-   wood_ret<-.C("wood_path",p1=as.double(ap1), p2=as.double(ap2), nbnd=as.integer(nbnd),
-                xbnd=as.double(xbnd), ybnd=as.double(ybnd), pathlen=as.double(0))
+   wood_ret<-.C("wood_path",len=as.integer(len),x=as.double(xpoints),y=as.double(ypoints),
+                nbnd=as.integer(nbnd),
+                xbnd=as.double(xbnd), ybnd=as.double(ybnd), pathlen=as.double(rep(0,(len^2-len)/2)))
 
+   # get passed back an array which is the upper diagonal
 
-   return(wood_ret$pathlen)
+   # create a matrix
+   D<-matrix(0,len,len)
+
+   # set the upper triangle to the values
+   D[upper.tri(D)]<-wood_ret$pathlen
+   
+   # transpose
+   D<-D+t(D)
+
+   return(D)
 
 
 

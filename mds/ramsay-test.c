@@ -6,12 +6,10 @@ int main(void)
 {
 
    //////////// EVERYTHING
-   int nbnd;
-   double *xbnd, *ybnd, **bnd;
-   int i;
-   double p1[2], p2[2];
-   double ret=0;
+   int nbnd, len, i;
+   double *xbnd, *ybnd, **bnd, *x, *y, *ret;
 
+   len=2;
 
    nbnd=21;
    bnd=(double**)malloc(sizeof(double*)*(nbnd));
@@ -23,10 +21,18 @@ int main(void)
 
    xbnd=(double*)malloc(sizeof(double)*nbnd);
    ybnd=(double*)malloc(sizeof(double)*nbnd);
+   x=(double*)malloc(sizeof(double)*nbnd);
+   y=(double*)malloc(sizeof(double)*nbnd);
 
    for(i=0; i<nbnd; i++){
       xbnd[i]=xbnd[0]+i;
       ybnd[i]=ybnd[0]+i;
+   }
+
+   ret=(double*)malloc(sizeof(double)*(len*len-len)/2);
+
+   for(i=0; i<(len*len-len)/2; i++){
+      ret[i]=ret[0]+i;
    }
 
    bnd[0][0]=-0.9;
@@ -75,48 +81,14 @@ int main(void)
 
 
 
-   xbnd[0]=bnd[0][0];
-   xbnd[1]=bnd[1][0];
-   xbnd[2]=bnd[2][0];
-   xbnd[3]=bnd[3][0];
-   xbnd[4]=bnd[4][0];
-   xbnd[5]=bnd[5][0];
-   xbnd[6]=bnd[6][0];
-   xbnd[7]=bnd[7][0];
-   xbnd[8]=bnd[8][0];
-   xbnd[9]=bnd[9][0];
-   xbnd[10]=bnd[10][0];
-   xbnd[11]=bnd[11][0];
-   xbnd[12]=bnd[12][0];
-   xbnd[13]=bnd[13][0];
-   xbnd[14]=bnd[14][0];
-   xbnd[15]=bnd[15][0];
-   xbnd[16]=bnd[16][0];
-   xbnd[17]=bnd[17][0];
-   xbnd[18]=bnd[18][0];
-   xbnd[19]=bnd[19][0];
+   for(i=0;i<nbnd;i++){
+      xbnd[i]=bnd[i][0];
+   }
    xbnd[20]=bnd[0][0];
 
-   ybnd[0]=bnd[0][1];
-   ybnd[1]=bnd[1][1];
-   ybnd[2]=bnd[2][1];
-   ybnd[3]=bnd[3][1];
-   ybnd[4]=bnd[4][1];
-   ybnd[5]=bnd[5][1];
-   ybnd[6]=bnd[6][1];
-   ybnd[7]=bnd[7][1];
-   ybnd[8]=bnd[8][1];
-   ybnd[9]=bnd[9][1];
-   ybnd[10]=bnd[10][1];
-   ybnd[11]=bnd[11][1];
-   ybnd[12]=bnd[12][1];
-   ybnd[13]=bnd[13][1];
-   ybnd[14]=bnd[14][1];
-   ybnd[15]=bnd[15][1];
-   ybnd[16]=bnd[16][1];
-   ybnd[17]=bnd[17][1];
-   ybnd[18]=bnd[18][1];
-   ybnd[19]=bnd[19][1];
+   for(i=0;i<nbnd;i++){
+      ybnd[i]=bnd[i][1];
+   }
    ybnd[20]=bnd[0][1];
 
 
@@ -133,25 +105,28 @@ int main(void)
 //   p1[0]=0.4;
 //   p1[1]=0.2;
 
-   p1[0]=-0.386364;
-   p1[1]=0.333333;
-   p2[0]=0.329545;
-   p2[1]=-0.5;
+   x[0]=-0.386364;
+   y[0]=0.333333;
+   x[1]=0.329545;
+   y[1]=-0.5;
 
 //   p1[0]=-0.284091;
 //   p1[1]=0.500000;
 //   p2[0]=0.022727;
 //   p2[1]=-0.333333;
 
-   wood_path(p1,p2,&nbnd,xbnd,ybnd,&ret);
+   wood_path(&len,x,y,&nbnd,xbnd,ybnd,ret);
 
-   printf("path length is %f\n",ret);
+   printf("path length is %f\n",ret[0]);
 
 
    free(bnd[0]);
    free(bnd);
    free(xbnd);
    free(ybnd);
+   free(x);
+   free(y);
+   free(ret);
 
    return 0;
 }
