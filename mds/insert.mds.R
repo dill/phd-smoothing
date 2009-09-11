@@ -25,26 +25,21 @@
    new.dist<-matrix(0,length(old.points$x),length(new.points$x))
 
    for(i in 1:length(old.points$x)){
-      # from each old point
-      p1<-list(x=old.points$x[i],y=old.points$y[i])
       for(j in 1:length(new.points$x)){
-         # to each new point
-         p2<-list(x=new.points$x[j],y=new.points$y[j])
+         x<-c(old.points$x[i],new.points$x[j])
+         y<-c(old.points$y[i],new.points$y[j])
 
-         # if there are any intersections of the line p1p2 with 
-         # any boundary side
-         intp<-do_intersect(p1,p2,bnd)
-         if(sum(intp)>1){
-            # C version
-            new.dist[i,j]<-woodpath(p1,p2,bnd)
-         # if the line p1p2 doesn't intersect any sides
-         }else{
-            # insert the distance
-            new.dist[i,j]<-sqrt((p1$x-p2$x)^2+(p1$y-p2$y)^2)
-         }
+            new.dist[i,j]<-woodpath(x,y,bnd)[1,2]
 
       }
    }
+
+#   new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
+#                      bnd)
+#   new.dist<-new.dist[1:length(old.points$x),
+#                      (length(old.points$x)+1):length(c(old.points$x,new.points$x))]
+
+
 
    # the ith element of d is d_i^2-d_{i,n+1}^2
    # d<-diag(X%*%Xt)-new.dist^2

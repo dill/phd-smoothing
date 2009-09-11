@@ -86,11 +86,11 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
             //printf("*");
          }
          // DEBUG
-         if(k<pathlenlen){
-            printf("pathlen[%d]=%f\n",k+1,pathlen[k]);
-            //printf("(%f, %f)->(%f,%f)=%f\n",p1[0],p1[1],p2[0],p2[1],pathlen[k]);
-            //printf("%d: %d, %d\n",k,i,j);
-         }
+         //if(k<pathlenlen){
+         //   printf("pathlen[%d]=%f\n",k+1,pathlen[k]);
+         //   //printf("(%f, %f)->(%f,%f)=%f\n",p1[0],p1[1],p2[0],p2[1],pathlen[k]);
+         //   //printf("%d: %d, %d\n",k,i,j);
+         //}
          // increment pathlen counter
          k++;
       }    
