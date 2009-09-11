@@ -86,11 +86,11 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
             //printf("*");
          }
          // DEBUG
-         //if(k<pathlenlen){
-         //   printf("pathlen[%d]=%f\n",k+1,pathlen[k]);
-         //   //printf("(%f, %f)->(%f,%f)=%f\n",p1[0],p1[1],p2[0],p2[1],pathlen[k]);
-         //   //printf("%d: %d, %d\n",k,i,j);
-         //}
+         if(k<pathlenlen){
+            printf("pathlen[%d]=%f\n",k+1,pathlen[k]);
+            //printf("(%f, %f)->(%f,%f)=%f\n",p1[0],p1[1],p2[0],p2[1],pathlen[k]);
+            //printf("%d: %d, %d\n",k,i,j);
+         }
          // increment pathlen counter
          k++;
       }    
@@ -194,11 +194,6 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
 
 	// if there are no errors
    if(err==0){
-
-      // This is quite horrible code.
-      // What we do is: take the ordering that makes sense first
-      // eg 1:5 not 5:1, make that set of edges, then take the difference
-      // between that set and the complete set of vertices.
 
       // first sort the intersection indices
       itwosort(intind);
@@ -327,7 +322,8 @@ void delete_step(node** path, int nbnd, double **bnd)
    // convergence stop
    int conv=0;
    int conv_stop=10;
-
+   
+   // some linked lists
    node* current=NULL;   // iterator
    node* prevpath=NULL;
    // needed for deletion

@@ -31,6 +31,10 @@
 
             new.dist[i,j]<-woodpath(x,y,bnd)[1,2]
 
+            if(new.dist[i,j]>10){
+               cat(new.dist[i,j],"\n")
+            }
+
       }
    }
 

@@ -611,6 +611,7 @@ void Push(node** headRef, double data[2]) {
    *headRef = newNode;
 }
 
+// Normal AppendNode 
 //void AppendNode(node** headRef, double data[2]) {
 //   node* current = *headRef;
 //   node* newNode = malloc(sizeof(node));
@@ -634,6 +635,7 @@ void Push(node** headRef, double data[2]) {
 //   }
 //}
 
+// AppendNode with Push()
 void AppendNode(node** headRef, double data[2]) { 
    node* current = *headRef; 
    // special case for the empty list 
@@ -649,8 +651,6 @@ void AppendNode(node** headRef, double data[2]) {
       current->next->prev=current;
    } 
 }
-
-
 
 // Variant of CopyList() that uses Push()
 void CopyList(node* head, node** newList)
