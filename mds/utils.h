@@ -657,18 +657,6 @@ void CopyList(node* head, node** newList)
 {
    node* current = head;      // used to iterate over the original list
 
-//   node* tail = NULL; // kept pointing to the last node in the new list
-//   while (current != NULL) { 
-//      if (*newList == NULL) { // special case for the first new node 
-//         Push(newList, current->data); 
-//         tail = *newList; 
-//      }else{ 
-//         Push(&(tail->next), current->data); // add each node at the tail 
-//         tail = tail->next; // advance the tail to the new last node 
-//      } 
-//      current = current->next; 
-//   } 
-
    // Re-write of this code with AppendNode.
    while (current != NULL) {
       AppendNode(newList, current->data);
