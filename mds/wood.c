@@ -58,24 +58,6 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
          // set p2
          p2[0]=x[j]; p2[1]=y[j];
   
-
-// This seems to fuck things up. 
-         // HACK:make sure that the points are defined from the left,
-         // this may or may not be a fix to the paths joining the wrong points
-//         arr[0]=p1[0]; arr[1]=p1[1];
-//         
-//         twosort(arr);
-//         if(arr[0]!=p1[0]){ 
-//            p1[0]=p2[0];
-//            p2[0]=arr[1];
-//            tmp=p1[1];
-//            p1[1]=p2[1];
-//            p2[1]=tmp;
-//         }
-      
-
-//////////////////^^^^^^^^^^^^^^^^^
-
          // check to see if we have to do the 
          do_intersect(p1, p2, *nbnd, bnd, retint);
  
