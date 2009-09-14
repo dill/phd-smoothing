@@ -22,7 +22,7 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
    //  return:
    //   length of the path
 
-   double arr[2], tmp, **bnd, p1[2], p2[2];
+   double **bnd, p1[2], p2[2];
    int i, j,k, pathlenlen, *retint;
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
