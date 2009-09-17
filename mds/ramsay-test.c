@@ -1,6 +1,9 @@
 // for testing each function in the new C code
 
 #include <stdio.h>
+#include <stdlib.h>
+#include "utils.h"
+#include "wood.h"
 
 int main(void)
 {
@@ -9,7 +12,7 @@ int main(void)
    int nbnd, len, i;
    double *xbnd, *ybnd, **bnd, *x, *y, *ret;
 
-   len=4;
+   len=2;
 
    nbnd=21;
    bnd=(double**)malloc(sizeof(double*)*(nbnd));
@@ -115,10 +118,10 @@ int main(void)
 //   x[3]=0.022727;
 //   y[3]=-0.333333;
 
-   x[2]=0.329545;
-   y[2]=0.750000;
-   x[3]=-0.386364;
-   y[3]=-0.500000;
+//   x[2]=0.329545;
+//   y[2]=0.750000;
+//   x[3]=-0.386364;
+//   y[3]=-0.500000;
 
 
    wood_path(&len,x,y,&nbnd,xbnd,ybnd,ret);
