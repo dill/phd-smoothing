@@ -62,11 +62,11 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
             //printf("*");
          }
          // DEBUG
-         if(k<pathlenlen){
-            printf("pathlen[%d]=%f\n",k+1,pathlen[k]);
-            //printf("(%f, %f)->(%f,%f)=%f\n",p1[0],p1[1],p2[0],p2[1],pathlen[k]);
-            //printf("%d: %d, %d\n",k,i,j);
-         }
+//         if(k<pathlenlen){
+//            printf("pathlen[%d]=%f\n",k+1,pathlen[k]);
+//            //printf("(%f, %f)->(%f,%f)=%f\n",p1[0],p1[1],p2[0],p2[1],pathlen[k]);
+//            //printf("%d: %d, %d\n",k,i,j);
+//         }
          // increment pathlen counter
          k++;
       }    
@@ -264,14 +264,16 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
-         CopyList(bnd1,path);
+//         CopyList(bnd1,path);
+         *path=bnd1;
+      FreeList(&bnd2);
       }else{
-         CopyList(bnd2,path);
+//         CopyList(bnd2,path);
+         *path=bnd2;
+      FreeList(&bnd1);
       }
 
       // free memory
-      FreeList(&bnd1);
-      FreeList(&bnd2);
 
    }else{ // end of error if()
       printf("ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
@@ -377,11 +379,17 @@ void delete_step(node** path, int nbnd, double **bnd)
 
             // change where next points to
             current->next=end_ptr; // point i-1 next to i+2
+
             start_ptr=current; // pointer to i-1
 
             // go forward again (remember next has changed)
             current=current->next; // back to i+2
             
+// free memory of i and i+1
+free(current->prev->prev);
+free(current->prev);
+
+
             // change previous
             current->prev=start_ptr; //set i+2 prev to i-1
          }else{
@@ -429,6 +437,9 @@ void delete_step(node** path, int nbnd, double **bnd)
                // go forward again (remember next has changed)
                current=current->next; // back to i+1
                
+// free i's memory
+free(current->prev);
+
                // change previous
                current->prev=start_ptr; //set i+1 prev to i-1
 
