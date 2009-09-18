@@ -280,7 +280,9 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
       b1=1;
       c1=-p1[1];
    // point line vertical
-   }else if( (fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
+   }
+
+   if( (fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
       a1=1;
       b1=0;
       c1=-p1[0];
@@ -293,7 +295,9 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
       b2=1;
       c2=-edge[0][1];
    // edge vertical
-   }else if( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<eps) | 
+   }
+
+   if( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<eps) | 
             isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))){
       a2=1;
       b2=0;
