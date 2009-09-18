@@ -21,7 +21,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-16;
+   double eps=1e-15;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
