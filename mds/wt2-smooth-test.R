@@ -141,10 +141,25 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot.it
       contour(xscale,yscale,pred.mat,add=T)
 
    }
+
+
+   
    ### calculate MSEs
-   cat("mds MSE=",mean((fv-gendata$z)^2,na.rm=T),"\n")
-   cat("tprs MSE=",mean((fv.tprs-gendata$z)^2,na.rm=T),"\n")
-   cat("soap MSE=",mean((fv.soap-gendata$z)^2,na.rm=T),"\n")
+   mses<-list(mds=mean((fv-gendata$z)^2,na.rm=T),
+              tprs=mean((fv.tprs-gendata$z)^2,na.rm=T),
+              soap=mean((fv.soap-gendata$z)^2,na.rm=T))
+
+   # print them
+   cat("mds MSE=" ,mses$mds,"\n")
+   cat("tprs MSE=",mses$tprs,"\n")
+   cat("soap MSE=",mses$soap,"\n")
+
+   # lets return an object...
+
+   ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=nsamp.data,pred=npred.data,mses=mses)
+
+   return(ret)
+
 }
 
 #### MDS explanatory plot
