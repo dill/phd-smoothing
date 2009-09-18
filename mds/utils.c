@@ -284,8 +284,10 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
       a1=1;
       b1=0;
       c1=-p1[0];
+   }
+
    // edge horizontal
-   }else if( (fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<eps) | 
+   if( (fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<eps) | 
             isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))){
       a2=0;
       b2=1;
@@ -485,6 +487,12 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
 
          // find the distance and save
          dists[i]=hypot(p1[0]-ip[0],p1[1]-ip[1]);
+
+
+//printf("p1[0]=%f p1[1]=%f ip[0]=%f ip[1]=%f\n",p1[0], p1[1],ip[0],ip[1]);
+//printf("p2[0]=%f p2[1]=%f\n",p2[0], p2[1]);
+//printf("hyp=%f\n",hypot(p1[0]-ip[0],p1[1]-ip[1]));
+
          // also copy for sorting
          sortdists[i]=dists[i];
       }
@@ -734,7 +742,7 @@ int compare_doubles (const void *a, const void *b)
 
 // my very own, very poor find
 // returns the first element of the array to match the value
-int crapfind(int narr, double arr[], double val){
+int crapfind(int narr, double *arr, double val){
    int i, index;
 
    for(i=0;i<narr;i++){

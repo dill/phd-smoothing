@@ -24,7 +24,7 @@ void do_intersect(double[2], double[2], int nbnd, double **,int *);
 double minarr(int narr, double *);
 double maxarr(int narr, double *);
 int compare_doubles (const void *a, const void *b);
-int crapfind(int narr, double[], double);
+int crapfind(int narr, double *, double);
 int iarrsum(int narr, int *);
 double hull_length(node**);
 void sp_do_intersect(double[2], double[2], int nbnd, double **,int *);
