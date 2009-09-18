@@ -558,6 +558,9 @@ void alter_step(node** path, int nbnd, double **bnd)
                
                // change where next points to
                newpath->prev=current; // point head of newpath back 
+
+               free(current->next); // free the memory at i
+
                current->next=newpath; // point i-1 next to the head of newpath
       
                // fast forward to the end of newpath
