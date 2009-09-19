@@ -112,7 +112,7 @@ cat("created D.pred\n")
    }
 
    ### calculate MSEs
-   mses<-list(mds=mean((fv-npred.data$z)^2,na.rm=T),
+   mses<-list(mds=mean((fv.mapped-npred.data$z)^2,na.rm=T),
               tprs=mean((fv.tprs-npred.data$z)^2,na.rm=T),
               soap=mean((fv.soap-npred.data$z)^2,na.rm=T))
 
