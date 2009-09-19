@@ -78,10 +78,6 @@ cat("created D.pred\n")
    b.soap<-gam(z~s(x,y,k=20,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
    fv.soap<-predict(b.soap,newdata=npred.data,block.size=-1)
    
-   ### calculate MSEs
-   cat("tprs MSE=",mean((fv.tprs-npred.data$z)^2,na.rm=TRUE),"\n")
-   cat("soap MSE=",mean((fv.soap-npred.data$z)^2,na.rm=TRUE),"\n")
-   cat("mapped MSE=",mean((fv.mapped-npred.data$z)^2,na.rm=TRUE),"\n")
 
    # plot
    if(plot.it){
@@ -114,6 +110,29 @@ cat("created D.pred\n")
       lines(fsb,lwd=2)
 
    }
+
+   ### calculate MSEs
+   mses<-list(mds=mean((fv-npred.data$z)^2,na.rm=T),
+              tprs=mean((fv.tprs-npred.data$z)^2,na.rm=T),
+              soap=mean((fv.soap-npred.data$z)^2,na.rm=T))
+
+   # print them
+   cat("mds MSE=" ,mses$mds,"\n")
+   cat("tprs MSE=",mses$tprs,"\n")
+   cat("soap MSE=",mses$soap,"\n")
+
+   # pred object
+   preds<-list(tprs=fv.tprs,soap=fv.soap,mds=fv.mapped,truth=z.truth)
+
+   # lets return an object...
+   ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=nsamp.data,
+             pred=npred.data,mses=mses,pred=preds)
+
+   return(ret)
+
+
+
+
 
 }
 
