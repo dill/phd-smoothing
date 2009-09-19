@@ -125,7 +125,7 @@ cat("created D.pred\n")
    preds<-list(tprs=fv.tprs,soap=fv.soap,mds=fv.mapped,truth=z.truth)
 
    # lets return an object...
-   ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=nsamp.data,
+   ret<-list(samp.mds=samp.data.mds,pred.mds=pred.data,samp=samp.data,
              pred=npred.data,mses=mses,pred=preds)
 
    return(ret)
