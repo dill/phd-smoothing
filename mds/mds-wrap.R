@@ -25,6 +25,9 @@ woodpath<-function(xpoints,ypoints,bnd){
    # transpose
    D<-D+t(D)
 
+
+#D[D>1e10]<-NA
+
    return(D)
 
 

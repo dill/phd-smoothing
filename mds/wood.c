@@ -84,6 +84,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    double hulllen;
    node* prevpath=NULL;
    node* mypath=NULL;
+   node* current=NULL;
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
@@ -130,11 +131,11 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    //printf("lines(path,lwd=2,col=\"red\")\n");
    //printf("scan()\n");
 
-   if(conv==conv_stop){
-      printf("WARNING: path find finished without convergence!\n");
-      printf("conv = %d\n",conv);
-      printf("convergence = %d\n",has_converged(prevpath,mypath) );
-   }
+   //if(conv==conv_stop){
+   //   printf("WARNING: path find finished without convergence!\n");
+   //   printf("conv = %d\n",conv);
+   //   printf("convergence = %d\n",has_converged(prevpath,mypath) );
+   //}
 
    // return the length of the path
    hulllen=hull_length(&mypath);
