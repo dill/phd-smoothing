@@ -108,7 +108,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
       // increment convergence stopper 
       conv++;
 
-   } while( !(has_converged(prevpath,mypath) | (conv<conv_stop) ));
+   } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
    printf("#******* END  ********** \n");
@@ -327,6 +327,9 @@ void delete_step(node** path, int nbnd, double **bnd)
 
    // keep going until we don't remove any more points.
    do{
+      if(conv>0){
+         FreeList(&prevpath);
+      }
       // use prevpath to keep a copy of the previous path for comparison
       //prev.path<-path
       CopyList(*path,&prevpath);
@@ -340,10 +343,8 @@ void delete_step(node** path, int nbnd, double **bnd)
          // equivalent of some ANDs in the above, but doesn't cause a memory
          // problem since the while() evaluates all of the conditions.
          if(current->next==NULL){
-printf("rly\n");
             break;
          }else if(current->next->next==NULL){
-printf("rly\n");
             break;
          }
 
@@ -447,13 +448,10 @@ printf("rly\n");
       } // end iteration over path
       conv++; // increment run counter
 
-printf("hull length=%f\n",hull_length(path));
-printf("old hull length=%f\n",hull_length(&prevpath));
-printf("converge: %d, conv=%d, conv_stop=%d\n",has_converged(prevpath,*path),conv,conv_stop);
-   } while( !(has_converged(prevpath,*path)) | (conv<conv_stop) );
+//printf("converge: %d, conv=%d, conv_stop=%d\n",has_converged(prevpath,*path),conv,conv_stop);
+   } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );
    // end of do loop
 
-printf("2 converge: %d, conv=%d, conv_stop=%d\n",has_converged(prevpath,*path),conv,conv_stop);
    // free some memory
    free(bx); free(by);
    free(intbnd);
@@ -490,6 +488,9 @@ void alter_step(node** path, int nbnd, double **bnd)
       // iterator
       current = *path;
 
+      if(conv>0){
+         FreeList(&prevpath);
+      }
       // use prevpath to keep a copy of the previous path for comparison            
       //prev.path<-path
       CopyList(*path,&prevpath);
@@ -580,7 +581,7 @@ void alter_step(node** path, int nbnd, double **bnd)
         	current=current->prev; // go back to i, need this to catch all triplets
       } // end of iteration over the path
       conv++;
-   } while( !(has_converged(prevpath,*path) | (conv<conv_stop) ));
+   } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );
    //end of main do
 
    FreeList(&prevpath);
