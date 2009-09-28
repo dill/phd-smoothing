@@ -125,7 +125,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
 //   }
 //   printf("lines(path,lwd=2,col=\"red\")\n");
 //   printf("scan()\n");
-//
+
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
