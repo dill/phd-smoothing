@@ -129,7 +129,6 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
       tmpbnd[i]=tmpbnd[0]+i*2;
    }
 
-
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
    for(j=0;j<(nbnd-1);j++){
@@ -394,7 +393,6 @@ double hull_length(node** hull) {
       return(1e16);
    }
 
-   // this is a bit ugly
    while (current->next != NULL) {
       hullen=hullen+hypot((current->next->data[0] - current->data[0]),
                           (current->next->data[1] - current->data[1]));

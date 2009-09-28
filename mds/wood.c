@@ -77,6 +77,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    double hulllen;
    node* prevpath=NULL;
    node* mypath=NULL;
+   
+   // used for debugging, below...
    node* current=NULL;
 
    // create the initial path:
@@ -111,24 +113,24 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   printf("#******* END  ********** \n");
-   printf("plot(bnd,type=\"l\")\n");
-   printf("path<-list(x=c(),y=c())\n");
-   
-   current=mypath;
-   while(current!=NULL){
-      printf("path$x<-c(path$x,%f)\n",current->data[0]);
-      printf("path$y<-c(path$y,%f)\n",current->data[1]);
-      current=current->next;
-   }
-   printf("lines(path,lwd=2,col=\"red\")\n");
-   printf("scan()\n");
-
-   //if(conv==conv_stop){
-   //   printf("WARNING: path find finished without convergence!\n");
-   //   printf("conv = %d\n",conv);
-   //   printf("convergence = %d\n",has_converged(prevpath,mypath) );
-   //}
+//   printf("#******* END  ********** \n");
+//   printf("plot(bnd,type=\"l\")\n");
+//   printf("path<-list(x=c(),y=c())\n");
+//   
+//   current=mypath;
+//   while(current!=NULL){
+//      printf("path$x<-c(path$x,%f)\n",current->data[0]);
+//      printf("path$y<-c(path$y,%f)\n",current->data[1]);
+//      current=current->next;
+//   }
+//   printf("lines(path,lwd=2,col=\"red\")\n");
+//   printf("scan()\n");
+//
+//   if(conv==conv_stop){
+//      printf("WARNING: path find finished without convergence!\n");
+//      printf("conv = %d\n",conv);
+//      printf("convergence = %d\n",has_converged(prevpath,mypath) );
+//   }
 
    // return the length of the path
    hulllen=hull_length(&mypath);
@@ -448,9 +450,11 @@ void delete_step(node** path, int nbnd, double **bnd)
       } // end iteration over path
       conv++; // increment run counter
 
-//printf("converge: %d, conv=%d, conv_stop=%d\n",has_converged(prevpath,*path),conv,conv_stop);
    } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );
    // end of do loop
+
+   // DEBUG
+   //printf("converge: %d, conv=%d, conv_stop=%d\n",has_converged(prevpath,*path),conv,conv_stop);
 
    // free some memory
    free(bx); free(by);
