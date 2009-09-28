@@ -59,14 +59,7 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
             pathlen[k]=make_path(p1,p2,*nbnd,bnd);
          }else{
             pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
-            //printf("*");
          }
-         // DEBUG
-//         if(k<pathlenlen){
-//            printf("pathlen[%d]=%f\n",k+1,pathlen[k]);
-//            //printf("(%f, %f)->(%f,%f)=%f\n",p1[0],p1[1],p2[0],p2[1],pathlen[k]);
-//            //printf("%d: %d, %d\n",k,i,j);
-//         }
          // increment pathlen counter
          k++;
       }    
@@ -118,18 +111,18 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath) | (conv<conv_stop) ));
 
    // DEBUG
-   //printf("#******* END  ********** \n");
-   //printf("plot(bnd,type=\"l\")\n");
-   //printf("path<-list(x=c(),y=c())\n");
-   //
-   //current=mypath;
-   //while(current!=NULL){
-   //   printf("path$x<-c(path$x,%f)\n",current->data[0]);
-   //   printf("path$y<-c(path$y,%f)\n",current->data[1]);
-   //   current=current->next;
-   //}
-   //printf("lines(path,lwd=2,col=\"red\")\n");
-   //printf("scan()\n");
+   printf("#******* END  ********** \n");
+   printf("plot(bnd,type=\"l\")\n");
+   printf("path<-list(x=c(),y=c())\n");
+   
+   current=mypath;
+   while(current!=NULL){
+      printf("path$x<-c(path$x,%f)\n",current->data[0]);
+      printf("path$y<-c(path$y,%f)\n",current->data[1]);
+      current=current->next;
+   }
+   printf("lines(path,lwd=2,col=\"red\")\n");
+   printf("scan()\n");
 
    //if(conv==conv_stop){
    //   printf("WARNING: path find finished without convergence!\n");
@@ -267,14 +260,13 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
       if(hull_length(&bnd1)<hull_length(&bnd2)){
 //         CopyList(bnd1,path);
          *path=bnd1;
-      FreeList(&bnd2);
+         FreeList(&bnd2);
       }else{
 //         CopyList(bnd2,path);
          *path=bnd2;
-      FreeList(&bnd1);
+         FreeList(&bnd1);
       }
 
-      // free memory
 
    }else{ // end of error if()
       printf("ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
@@ -348,8 +340,10 @@ void delete_step(node** path, int nbnd, double **bnd)
          // equivalent of some ANDs in the above, but doesn't cause a memory
          // problem since the while() evaluates all of the conditions.
          if(current->next==NULL){
+printf("rly\n");
             break;
          }else if(current->next->next==NULL){
+printf("rly\n");
             break;
          }
 
@@ -386,10 +380,9 @@ void delete_step(node** path, int nbnd, double **bnd)
             // go forward again (remember next has changed)
             current=current->next; // back to i+2
             
-// free memory of i and i+1
-free(current->prev->prev);
-free(current->prev);
-
+            // free memory of i and i+1
+            free(current->prev->prev);
+            free(current->prev);
 
             // change previous
             current->prev=start_ptr; //set i+2 prev to i-1
@@ -438,8 +431,8 @@ free(current->prev);
                // go forward again (remember next has changed)
                current=current->next; // back to i+1
                
-// free i's memory
-free(current->prev);
+               // free i's memory
+               free(current->prev);
 
                // change previous
                current->prev=start_ptr; //set i+1 prev to i-1
@@ -454,9 +447,13 @@ free(current->prev);
       } // end iteration over path
       conv++; // increment run counter
 
-   } while( !(has_converged(prevpath,*path) | (conv<conv_stop) ));
+printf("hull length=%f\n",hull_length(path));
+printf("old hull length=%f\n",hull_length(&prevpath));
+printf("converge: %d, conv=%d, conv_stop=%d\n",has_converged(prevpath,*path),conv,conv_stop);
+   } while( !(has_converged(prevpath,*path)) | (conv<conv_stop) );
    // end of do loop
 
+printf("2 converge: %d, conv=%d, conv_stop=%d\n",has_converged(prevpath,*path),conv,conv_stop);
    // free some memory
    free(bx); free(by);
    free(intbnd);
@@ -582,9 +579,7 @@ void alter_step(node** path, int nbnd, double **bnd)
          
         	current=current->prev; // go back to i, need this to catch all triplets
       } // end of iteration over the path
-
       conv++;
-
    } while( !(has_converged(prevpath,*path) | (conv<conv_stop) ));
    //end of main do
 

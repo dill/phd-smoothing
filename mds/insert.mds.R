@@ -24,25 +24,25 @@
 
    new.dist<-matrix(0,length(old.points$x),length(new.points$x))
 
-#   for(i in 1:length(old.points$x)){
-#      for(j in 1:length(new.points$x)){
-#         x<-c(old.points$x[i],new.points$x[j])
-#         y<-c(old.points$y[i],new.points$y[j])
-#
-#            new.dist[i,j]<-woodpath(x,y,bnd)[1,2]
-#
-##            if(new.dist[i,j]>10){
-##               cat(new.dist[i,j],"\n")
-##            }
-#
-#      }
-#   }
+   for(i in 1:length(old.points$x)){
+      for(j in 1:length(new.points$x)){
+         x<-c(old.points$x[i],new.points$x[j])
+         y<-c(old.points$y[i],new.points$y[j])
 
-   new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
-                      bnd)
-   new.dist<-new.dist[1:length(old.points$x),
-                      (length(old.points$x)+1):length(c(old.points$x,new.points$x))]
+            new.dist[i,j]<-woodpath(x,y,bnd)[1,2]
 
+#            if(new.dist[i,j]>10){
+#               cat(new.dist[i,j],"\n")
+#            }
+
+      }
+   }
+
+#   new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
+#                      bnd)
+#   new.dist<-new.dist[1:length(old.points$x),
+#                      (length(old.points$x)+1):length(c(old.points$x,new.points$x))]
+#
 
 
    # the ith element of d is d_i^2-d_{i,n+1}^2
