@@ -28,14 +28,10 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
    # map the prediction grid
    D.samp<-create_distance_matrix(samp.data$x,samp.data$y,bnd)
 
-   # for the moment remove those values that returned errors
-   rm.vals.samp<-which(D.samp>1e10,arr.ind=T) 
-   D.samp<-D.samp[-rm.vals.samp[,1],-rm.vals.samp[,2]]
-
    samp.mds<-cmdscale(D.samp,eig=TRUE,x.ret=TRUE)
 
    samp.data.mds<-data.frame(x=samp.mds$points[,1],y=samp.mds$points[,2],
-                             z=samp.data$z[-rm.vals.samp[,1]])
+                             z=samp.data$z)
 
    ### create prediction data
    # non-mapped prediction data
@@ -44,39 +40,19 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
 
    # new MDS coords for the prediction points
 cat("before D.pred\n")
-   samp.data.ins<-list(x=samp.data$x[-rm.vals.samp[,1]],
-                       y=samp.data$y[-rm.vals.samp[,1]],
-                       z=samp.data$z[-rm.vals.samp[,1]])
-
-   pred.mds<-insert.mds(pred.data,samp.data.ins,samp.mds,bnd)
+   pred.mds<-insert.mds(pred.data,samp.data,samp.mds,bnd)
 cat("created D.pred\n")
-   # for the moment remove those values that returned errors
-   rm.vals<-which(pred.mds>1e10 | pred.mds<1e-10) 
-   pred.mds<-pred.mds[-rm.vals,]
 
-   
-#  ignore this at the moment...
-#   pred.size<-dim(pred.mds)[1]+length(samp.data.ins$x)
-#
-#
-#   samp.ind<-samp.ind[-rm.vals.samp[,1]]
-#   pred.ind<-c(1:pred.size)
-#   pred.ind<-setdiff(pred.ind,samp.ind)
-#
-#   # put this in the correct format 
-#   pred.data<-list(x=rep(1e10,pred.size),y=rep(1e10,pred.size))
-#   pred.data$x[samp.ind]<-samp.data.mds$x  # need to add in the sample points too
-#   pred.data$x[pred.ind]<-pred.mds[,1]
-#   pred.data$y[samp.ind]<-samp.data.mds$y  # need to add in the sample points too
-#   pred.data$y[pred.ind]<-pred.mds[,2]
-
-   pred.data<-list(x=pred.mds[,1],y=pred.mds[,2])
-   
+   # put this in the correct format 
+   pred.size<-dim(pred.data)[1]+dim(samp.data)[1]
+   pred.data<-list(x=rep(0,pred.size),y=rep(0,pred.size))
+   pred.data$x[samp.ind]<-samp.data.mds$x  # need to add in the sample points too
+   pred.data$x[-samp.ind]<-pred.mds[,1]
+   pred.data$y[samp.ind]<-samp.data.mds$y  # need to add in the sample points too
+   pred.data$y[-samp.ind]<-pred.mds[,2]
 
    # prediction data for non mds'd
-   pred.x<-xx[-rm.vals]
-   pred.y<-yy[-rm.vals]
-   npred.data<-list(x=pred.x,y=pred.y,z=fs.test(pred.x,pred.y))
+   npred.data<-list(x=xx,y=yy,z=fs.test(xx,yy))
 
    # boundary, only for drawing the line around the outside
    fsb <- fs.boundary()
@@ -136,7 +112,7 @@ cat("created D.pred\n")
    }
 
    ### calculate MSEs
-   mses<-list(mds=mean((fv.mapped-npred.data$z)^2,na.rm=T),
+   mses<-list(mds=mean((fv-npred.data$z)^2,na.rm=T),
               tprs=mean((fv.tprs-npred.data$z)^2,na.rm=T),
               soap=mean((fv.soap-npred.data$z)^2,na.rm=T))
 
@@ -149,7 +125,7 @@ cat("created D.pred\n")
    preds<-list(tprs=fv.tprs,soap=fv.soap,mds=fv.mapped,truth=z.truth)
 
    # lets return an object...
-   ret<-list(samp.mds=samp.data.mds,pred.mds=pred.data,samp=samp.data,
+   ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=nsamp.data,
              pred=npred.data,mses=mses,pred=preds)
 
    return(ret)
