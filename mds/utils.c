@@ -21,7 +21,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-15;
+   double eps=1e-10;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -505,7 +505,6 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
       // The array contains count elements, each of which is of size size.
       // The compare function is used to perform the comparison on the array elements. 
       qsort(sortdists,lbbindex,sizeof(double),compare_doubles);
-
 
       // find first intersection between p1 and bnd
       // p1.int<-pe(ips,order(dists)[1])

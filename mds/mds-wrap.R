@@ -13,11 +13,8 @@ woodpath<-function(xpoints,ypoints,bnd){
    # load the library
    dyn.load("wood.so")
 
-
-
    for(i in 1:len){
       for(j in i:len){
-
          xp<-c(xpoints[i],xpoints[j])
          yp<-c(ypoints[i],ypoints[j])
 
@@ -33,6 +30,8 @@ woodpath<-function(xpoints,ypoints,bnd){
       }
    }
 
+   # load the library
+   dyn.unload("wood.so")
 
 
    # get passed back an array which is the upper diagonal

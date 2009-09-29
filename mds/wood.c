@@ -37,7 +37,7 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
    }
 
    // find the length of pathlen, upper triangle of a len*len matrix
-   pathlenlen=((*len)*(*len)-(*len))/2;
+   pathlenlen=((*len)*(*len-1))/2;
 
    // insertion counter
    k=0;
@@ -157,7 +157,8 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
    // find the first intersection between p1, p2 and the boundary side that 
    // each point intersects
    double ip1[2],ip2[2], curr_insert[2];
-   int intind[2],i,start, err;
+   int intind[2],i,start;
+   int err=0;
    double line1[2][2], line2[2][2];
    node* bnd1 = NULL;
    node* bnd2 = NULL;
