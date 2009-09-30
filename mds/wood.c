@@ -48,14 +48,14 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
       // set p1
       p1[0]=x[i]; p1[1]=y[i];
 
-      for(j=(i+1); j<*len; j++){
+      for(j=(i+1); j<(*len); j++){
          // set p2
          p2[0]=x[j]; p2[1]=y[j];
   
          // check to see if we have to do the 
          do_intersect(p1, p2, *nbnd, bnd, retint);
  
-         if(iarrsum((*nbnd-1), retint)>0){
+         if(iarrsum((*nbnd-1), retint)>1){
             pathlen[k]=make_path(p1,p2,*nbnd,bnd);
          }else{
             pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
