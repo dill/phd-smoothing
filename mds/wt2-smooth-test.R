@@ -38,9 +38,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot.it
 
    ### do the PCO and construct the data frame
    # create D
-cat("1\n")
    D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd,logfile=logfilename)
-cat("2\n")
 
    # perform mds on the sample matrix
    # options needed for insertion to work
@@ -70,10 +68,8 @@ cat("2\n")
    npred.data$x<-gendata$x[-samp.ind]
    npred.data$y<-gendata$y[-samp.ind]
 
-cat("3\n")
    # new MDS coords for the prediction points
    pred.mds<-insert.mds(npred.data,gendata.samp,samp.mds,bnd)
-cat("4\n")
 
    # put this in the correct format 
    pred.data<-list(x=rep(0,length(gendata$x)),y=rep(0,length(gendata$x)))
