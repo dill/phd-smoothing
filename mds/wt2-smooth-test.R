@@ -150,13 +150,16 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot.it
               soap=mean((fv.soap-gendata$z)^2,na.rm=T))
 
    # print them
-   cat("mds MSE=" ,mses$mds,"\n")
-   cat("tprs MSE=",mses$tprs,"\n")
-   cat("soap MSE=",mses$soap,"\n")
+   #cat("mds MSE=" ,mses$mds,"\n")
+   #cat("tprs MSE=",mses$tprs,"\n")
+   #cat("soap MSE=",mses$soap,"\n")
 
    # lets return an object...
 
-   ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=nsamp.data,pred=npred.data,mses=mses)
+#   ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=nsamp.data,pred=npred.data,mses=mses)
+
+   # short object for long sims
+   ret<-list(mses=mses)
 
    return(ret)
 

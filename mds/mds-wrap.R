@@ -46,8 +46,6 @@ woodpath<-function(xpoints,ypoints,bnd){
    # load the library
    dyn.unload("wood.so")
 
-cat("R len=",(len*(len-1)/2),"\n")
-   
    # transpose
    D<-D+t(D)
 
