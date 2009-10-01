@@ -1,8 +1,5 @@
 # test of lines across the domain for wt2
-
-
 source("mds.R")
-
 
 ## create a boundary...
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
@@ -51,7 +48,7 @@ lines(x=gendata$x[1003:1025],y=gendata$y[1003:1025],lwd=2,col="red")
 lines(x=gendata$x[1101:1110],y=gendata$y[1101:1110],lwd=2,col="red")
 
 # mapped points
-plot(samp.mds$points,asp=1)
+plot(samp.mds$points,xlab="x*",ylab="y*",asp=1)
 lines(x=samp.mds$points[48:94,1],y=samp.mds$points[48:94,2],lwd=2,col="red")
 lines(x=samp.mds$points[471:517,1],y=samp.mds$points[471:517,2],lwd=2,col="red")
 lines(x=samp.mds$points[699:742,1],y=samp.mds$points[699:742,2],lwd=2,col="red")
