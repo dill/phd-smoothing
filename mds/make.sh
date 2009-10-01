@@ -6,7 +6,7 @@
 #gcc -lm -g test.c inout.c wood.c
 
 # Ramsay test
-gcc -lm -g -O0 -std=gnu99 inout.c utils.c wood.c ramsay-test.c
+#gcc -Wall -pedantic -lm -g -O0 -std=gnu99 inout.c utils.c wood.c ramsay-test.c
 
 # w-shaped area
 #gcc -lm -g -O0 doubleyuh-test.c inout.c wood.c 
@@ -18,5 +18,5 @@ gcc -lm -g -O0 -std=gnu99 inout.c utils.c wood.c ramsay-test.c
 #gcc -lm -g ll-test.c inout.c 
 
 # shared object file
-gcc -lm -g -std=gnu99 -shared inout.c utils.c wood.c -o wood.so -L/usr/lib/R/lib  -fPIC #-lR
+gcc  -Wall -pedantic -lm -g -std=gnu99 -shared inout.c utils.c wood.c -o wood.so -L/usr/lib/R/lib  -fPIC #-lR
 #rm *.o
