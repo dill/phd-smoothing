@@ -43,8 +43,7 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
    k=0;
 
    // loop over all point pairs
-   //         vvvvvv don't do the last row
-   for(i=0; i<(*len-1); i++){
+   for(i=0; i<(*len); i++){
       // set p1
       p1[0]=x[i]; p1[1]=y[i];
 
@@ -52,9 +51,10 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
          // set p2
          p2[0]=x[j]; p2[1]=y[j];
   
-         // check to see if we have to do the 
+         // check to see if we have to do the path finding or
+         // just the hypotenuse 
          do_intersect(p1, p2, *nbnd, bnd, retint);
- 
+         //                           vvv just hypot when we touch only 1 vertex 
          if(iarrsum((*nbnd-1), retint)>1){
             pathlen[k]=make_path(p1,p2,*nbnd,bnd);
          }else{
@@ -79,7 +79,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    node* mypath=NULL;
    
    // used for debugging, below...
-   node* current=NULL;
+   //node* current=NULL;
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2

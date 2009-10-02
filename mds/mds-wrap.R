@@ -27,7 +27,6 @@ woodpath<-function(xpoints,ypoints,bnd){
 #
 #         D[i,j]<-wood_ret$pathlen
 #
-#
 #      }
 #   }
 
@@ -36,14 +35,17 @@ woodpath<-function(xpoints,ypoints,bnd){
                 nbnd=as.integer(nbnd),xbnd=as.double(xbnd), ybnd=as.double(ybnd), 
                 pathlen=as.double(rep(0,(len*(len-1)/2))))
    # get passed back an array which is the upper diagonal
-   # set the upper triangle to the values
-   D[upper.tri(D)]<-wood_ret$pathlen
+
+   # R fills columns first, so fill the lower triangle first
+   # then take the transpose for the same effect   
+   D[lower.tri(D)]<-wood_ret$pathlen
+
+   D<-t(D)
+
 
    # load the library
    dyn.unload("wood.so")
 
-
-   
    # transpose
    D<-D+t(D)
 

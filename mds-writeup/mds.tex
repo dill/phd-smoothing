@@ -104,12 +104,33 @@ where $\Lambda$ is $\diag(\lambda_1, \lambda_2, \dots)$ (the eigenvalues of $X$)
 
 \subsection{Finding the within-area distances}
 
-The within-area distances to be fed to MDS are found using a novel algorithm. This works by tracing the inside sides of the polygon and then modifying the path by deleting and replacing portions of the path.
+The within-area distances to be fed to MDS are found using a novel algorithm. This works by tracing the inside sides of the polygon and then modifying the path by deleting and replacing portions of the path. Given that there is no direct path within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
+
+\begin{itemize}
+\item Create initial path by drawing a line between $p_1$ and $p_2$ and where they meet the boundary of $\Gamma$ and start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary. Choose the shorter of these add the paths between $p_1$, $p_2$ and the boundary and this is the starting path. 
+\item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the line between $v_1$ and $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) and the line between $v_1$ and $v_3$ lies inside $\Gamma$ then delete $v_2$. This iterates over the entire path once, deleting all superfluous vertices. 
+\item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the path $v_1$, some subset of the vertices of $\Gamma$, $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) then replace $v_2$ with those elements of $\Gamma$. 
+\item We then iterate between steps 2 and 3 until there has been no change from one run to the next (ie. convergence) or there have been too many iterations.
+\end{itemize}
+
+[[ need to do a diagram for the above! ]]
 
 
 
-
+[[ euclidean distance analysis ]]
 \section{Simulation experiment}
+
+Ramsay
+mds MSE= 0.002239077 
+tprs MSE= 0.0651262 
+soap MSE= 0.001455530 
+
+
+wt2
+mds=0.1291663
+tprs=0.0760142
+soap=0.02217734
+
 
 
 do plots of vis.gam() with too.far set low and overlay of points

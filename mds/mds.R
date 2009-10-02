@@ -1,9 +1,7 @@
 # Multidimensional scaling approach...
 
 # let's see what happens
-source("utils.R")
 source("mds-wrap.R")
-source("wood.R")
 source("insert.mds.R")
 library(soap)
 
