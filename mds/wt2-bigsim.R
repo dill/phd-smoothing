@@ -13,7 +13,7 @@ res.mse.soap<-rep(0,1000)
 res.mse.tprs<-rep(0,1000)
 
 for(i in 1:1000){
-   wt2.res<-wt2_smooth_test(samp.size=samp.size,noise.level=noise.level,logfilename=NA, plot.it=FALSE)
+   wt2.res<-wt2_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE)
    res.mse.mds[i]<-wt2.res$mses$mds
    res.mse.soap[i]<-wt2.res$mses$soap
    res.mse.tprs[i]<-wt2.res$mses$tprs
