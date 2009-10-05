@@ -6,7 +6,7 @@ source("insert.mds.R")
 library(soap)
 
 # create the distance matrix
-create_distance_matrix<-function(xpoints,ypoints,bnd,logfile=NA){
+create_distance_matrix<-function(xpoints,ypoints,bnd){
    # requires the library soap   
    # args:
    #  xpoints,ypoints      data points
