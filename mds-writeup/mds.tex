@@ -29,6 +29,8 @@
 \newcommand{\fprime}{f^\prime(z)}
 % figure reference command
 \newcommand{\fig}[1]{\emph{fig.} (\ref{#1})}
+% Figure reference command
+\newcommand{\Fig}[1]{\emph{Fig.} (\ref{#1})}
 % equation reference command
 \newcommand{\eqn}[1]{\emph{eqn.} (\ref{#1})}
 % phi inverse
@@ -88,7 +90,42 @@ S = -\frac{1}{2}HDH.
 
 So, in order to obtain a the new configuration of points using MDS (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition.
 
-Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function.
+Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function. \Fig{ramsay-mds} shows MDS being performed on the Ramsay horseshoe (\cite{ramsay}.) From this it is clear to see that performing MDS separates the two arms of the horseshoe.
+
+% Ramsay MDSed 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=0in 0.5in 0in 0.25in, width=5.5in]{figs/ramsay-mds.pdf} \\
+\caption{i}
+\label{ramsay-mds}
+% generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
+\end{figure}
+
+An advantage of the MDS approach is that in our eigen-decomposition we may pick an arbitrary number of eigenvectors to retain and push the original set of points into higher dimensions. Using three eigenvectors we get the configuration in \fig{ramsay-mds-3d}.
+
+mds k=2
+2615.5597  229.0039
+
+
+mds k=3
+2615.5597  229.0039   46.8754
+
+
+% Ramsay MDSed 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=0in 0.5in 0in 0.25in, width=5.5in]{figs/ramsay-mds-3d.pdf} \\
+\caption{i}
+\label{ramsay-mds-3d}
+% generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
+\end{figure}
+
+
+
+
+
 
 
 \subsection{Finding the within-area distances}
@@ -106,7 +143,7 @@ The within-area distances to be fed to MDS are found using a novel algorithm. Th
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[trim=0in 0in 0in 0in, width=4in]{figs/wdia.pdf} \\
+\includegraphics[trim=0in 0.5in 0in 0.25in, width=4in]{figs/wdia.pdf} \\
 \caption{($i$) to ($vi$) show the path as the algorithm progresses from initial state to final, shortest path. }
 \label{wdia}
 % generate /phd-smoothing/mds-writeup/figs/distanceexplanation.R
@@ -115,6 +152,7 @@ The within-area distances to be fed to MDS are found using a novel algorithm. Th
 
 
 [[ euclidean distance analysis ]]
+
 \section{Simulation experiment}
 
 Ramsay
