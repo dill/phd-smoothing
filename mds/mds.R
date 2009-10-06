@@ -3,6 +3,7 @@
 # let's see what happens
 source("mds-wrap.R")
 source("insert.mds.R")
+source("pe.R")
 library(soap)
 
 # create the distance matrix

@@ -90,38 +90,7 @@ S = -\frac{1}{2}HDH.
 
 So, in order to obtain a the new configuration of points using MDS (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition.
 
-Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function. \Fig{ramsay-mds} shows MDS being performed on the Ramsay horseshoe (\cite{ramsay}.) From this it is clear to see that performing MDS separates the two arms of the horseshoe.
-
-% Ramsay MDSed 
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[trim=0in 0.5in 0in 0.25in, width=5.5in]{figs/ramsay-mds.pdf} \\
-\caption{i}
-\label{ramsay-mds}
-% generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
-\end{figure}
-
-An advantage of the MDS approach is that in our eigen-decomposition we may pick an arbitrary number of eigenvectors to retain and push the original set of points into higher dimensions. Using three eigenvectors we get the configuration in \fig{ramsay-mds-3d}.
-
-mds k=2
-2615.5597  229.0039
-
-
-mds k=3
-2615.5597  229.0039   46.8754
-
-
-% Ramsay MDSed 
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[trim=0in 0.5in 0in 0.25in, width=5.5in]{figs/ramsay-mds-3d.pdf} \\
-\caption{i}
-\label{ramsay-mds-3d}
-% generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
-\end{figure}
-
+Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function. 
 
 
 
@@ -152,6 +121,52 @@ The within-area distances to be fed to MDS are found using a novel algorithm. Th
 
 
 [[ euclidean distance analysis ]]
+
+
+\section{Multidimensional scaling for complex domains}
+
+Tying together the two previous sections, we may now look at how, using MDS and our new algorithm, we can reconfigure the points in our domain.
+
+\Fig{ramsay-mds} shows MDS being performed on the Ramsay horseshoe (\cite{ramsay}.) From this it is clear to see that performing MDS separates the two arms of the horseshoe.
+
+% Ramsay MDSed 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=0in 0.5in 0in 0.25in, width=5.5in]{figs/ramsay-mds.pdf} \\
+\caption{Left panel shows the horseshoe with 734 points. Right panel shows their configuration under MDS using the algorithm detailed above.}
+\label{ramsay-mds}
+% generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
+\end{figure}
+
+An advantage of the MDS approach is that in our eigen-decomposition we may pick an arbitrary number of eigenvectors to retain and push the original set of points into higher dimensions. Using three eigenvectors we get the configuration in \fig{ramsay-mds-3d}.
+
+The two eigenvalues returned from running \texttt{cmdscale} in \textsf{R} when we ask for a 2-dimensional are 2615.5597 and 229.0039. Adding another dimension gives eigenvalues of 2615.5597, 229.0039, 46.8754. Clearly significantly less variation is being explained in the third dimension, however this may well not be of primary concern if it prevents leakage.
+
+
+% Ramsay MDSed 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=0in 0.5in 0in 0.25in, width=5.5in]{figs/ramsay-mds-3d.pdf} \\
+\caption{Two-dimensional projections of the 3D mapping of the horseshoe.}
+\label{ramsay-mds-3d}
+% generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
+\end{figure}
+
+
+
+
+
+[[sensitivity to points collected...]]
+
+just collect one arm and see what happens...
+
+
+
+
+
+
 
 \section{Simulation experiment}
 
