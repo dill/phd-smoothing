@@ -25,7 +25,7 @@ source("R-prototype/utils.R")
 bndpath<-make_bnd_path(list(x=x[1],y=y[1]),list(x=x[2],y=y[2]),bnd)
 
 #### first part, line between p1 and p2
-plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1)
+plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1,main="(i)")
 points(x=x[1],y=y[1],pch=19);points(x=x[2],y=y[2],pch=19)
 # line from left point to bnd
 lines(x=c(x[1],bndpath$path.1$x[1]),y=c(y[1],bndpath$path.1$y[1]),col="green",lwd=2)
@@ -36,14 +36,14 @@ lines(x=c(x[2],bndpath$path.1$x[length(bndpath$path.1$x)]),y=c(y[2],bndpath$path
 
 
 #### second, both paths
-plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1)
+plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1,main="(ii)")
 points(x=x[1],y=y[1],pch=19);points(x=x[2],y=y[2],pch=19)
 lines(bndpath$path.1,lwd=2,col="green")
 lines(bndpath$path.2,lwd=2,col="green",lty=2)
 
 
 #### third, initial path 
-plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1)
+plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1,main="(iii)")
 points(x=x[1],y=y[1],pch=19);points(x=x[2],y=y[2],pch=19)
 # line from left point to bnd
 lines(x=c(x[1],bndpath$path.1$x[1]),y=c(y[1],bndpath$path.1$y[1]),col="green",lwd=2)
@@ -53,21 +53,21 @@ lines(bndpath$path.1,lwd=2,col="green")
 
 
 #### fourth, first delete 
-plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1)
+plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1,main="(iv)")
 points(x=x[1],y=y[1],pch=19);points(x=x[2],y=y[2],pch=19)
 lines(x=c(x[1],bndpath$path.1$x[2:(length(bndpath$path.1$x)-1)],x[2]),y=c(y[1],bndpath$path.1$y[2:(length(bndpath$path.1$x)-1)],y[2]),col="green",lwd=2)
 
 
 #### fifth, alter step
 alt<-make_bnd_path(p1=pe(bndpath$path.1,2),p2=pe(bndpath$path.1,length(bndpath$path.1$x)-1),bnd)
-plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1)
+plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1,main="(v)")
 points(x=x[1],y=y[1],pch=19);points(x=x[2],y=y[2],pch=19)
 lines(x=c(x[1],bndpath$path.1$x[2],alt$path.1$x,bndpath$path.1$x[length(bndpath$path.1$x)-1],x[2]),y=c(y[1],bndpath$path.1$y[2],alt$path.1$y,bndpath$path.1$y[length(bndpath$path.1$y)-1],y[2]),,col="green",lwd=2)
 
 
 #### sixth, done! 
 wp<-wood_path(list(x=x[1],y=y[1]),list(x=x[2],y=y[2]),bnd)
-plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1)
+plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1,main="(vi)")
 points(x=x[1],y=y[1],pch=19);points(x=x[2],y=y[2],pch=19)
 # line from left point to bnd
 lines(wp,col="green",lwd=2)

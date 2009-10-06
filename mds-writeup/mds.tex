@@ -37,7 +37,7 @@
 \renewcommand{\phi}{\varphi}
 %transpose
 \newcommand{\tr}[1]{#1^{\text{T}}}
-%transpose
+% diagonal
 \newcommand{\diag}{\text{diag}}
 
 
@@ -70,30 +70,25 @@ This method provides an obvious framework for the problem of smoothing over a re
 
 We first define $d_{ij}$ as the distance between the points $i$ and $j$. How we find $d_{ij}$ is discussed in the next section, for the moment we assume that we know $d_{ij}$.
 
-We then wish to find the matrix $D$ such that:
+\cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points given we know the $d_{ij}$s. 
 
-\begin{equation*}
-B=X\tr{X}
-\end{equation*}
+Taking the unknown new locations and putting them in an $n \times p$ matrix, $X$. Taking $S=X\tr{X}$, and performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. So we may now express $S$ as some set of length $n$ vectors (hopfully less than $p$ of them.) We now have that $\tilde{X}=U\Lambda^{1/2}$.
 
-where the $i,j^{\text{th}}$ element of $B$ is given by (\cite{chatfieldcollins}, p. 187.):
+The $d_{ij}$s mentioned above form an $n \times n$ matrix, $D$. We can relate this to $S$, above, by first defining
 
-\begin{equation*}
-b_{ij}=-\frac{1}{2}\{ d^2_{ij} - d^2_{i.} - d^2_{.j} + d^2_{..} \}
-\end{equation*}
+\begin{equation}
+H = I-\frac{1}{n}\mathbf{1}\tr{\mathbf{1}}.
+\end{equation}
 
-where a dot indicates the mean over the relevant row/column/both. Once we have found $B$, we factorise it into $X\tr{X}$ for ease of computation. We may find the new coordinate system by simply looking at the eigenvectors of $X$.
+By pre- and post-multiplying any matrix by $H$ we double centre it (row and column means are 0.) We then obtain\footnote{See \cite{diaconis08} for a simple proof.}:
 
-\subsection{Inserting new points}
+\begin{equation}
+S = -\frac{1}{2}HDH.
+\end{equation}
 
-Given we have found the principle coordinates for some set of points, we may wish to introduce new points into set. To do this we do not need to start from the beginning again, rather, we can use the method of \cite{gower1968} to find the coordinates of the new points by the relation:
+So, in order to obtain a the new configuration of points using MDS (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition.
 
-\begin{equation*}
-\mathbf{x} = \frac{1}{2} \Lambda^{-1} \tr{X} \mathbf{d}
-\end{equation*}
-
-where $\Lambda$ is $\diag(\lambda_1, \lambda_2, \dots)$ (the eigenvalues of $X$) and $\mathbf{d}$ is the distance from the points in the original MDS to those new points we wish to insert.
-
+Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function.
 
 
 \subsection{Finding the within-area distances}
@@ -101,13 +96,21 @@ where $\Lambda$ is $\diag(\lambda_1, \lambda_2, \dots)$ (the eigenvalues of $X$)
 The within-area distances to be fed to MDS are found using a novel algorithm. This works by tracing the inside sides of the polygon and then modifying the path by deleting and replacing portions of the path. Given that there is no direct path within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
 
 \begin{itemize}
-\item Create initial path by drawing a line between $p_1$ and $p_2$ and where they meet the boundary of $\Gamma$ and start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary. Choose the shorter of these add the paths between $p_1$, $p_2$ and the boundary and this is the starting path. 
-\item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the line between $v_1$ and $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) and the line between $v_1$ and $v_3$ lies inside $\Gamma$ then delete $v_2$. This iterates over the entire path once, deleting all superfluous vertices. 
-\item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the path $v_1$, some subset of the vertices of $\Gamma$, $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) then replace $v_2$ with those elements of $\Gamma$. 
-\item We then iterate between steps 2 and 3 until there has been no change from one run to the next (ie. convergence) or there have been too many iterations.
+\item Create initial path by drawing a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)) and where they meet the boundary of $\Gamma$ and start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary (\fig{wdia}, ($ii$).) Choose the shorter of these add the paths between $p_1$, $p_2$ and the boundary and this is the starting path(\fig{wdia}, ($iii$).) 
+\item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the line between $v_1$ and $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) and the line between $v_1$ and $v_3$ lies inside $\Gamma$ then delete $v_2$ (\fig{wdia}, ($iv$) and ($vi$).) This iterates over the entire path once, deleting all superfluous vertices. 
+\item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the path $v_1$, some subset of the vertices of $\Gamma$, $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) then replace $v_2$ with those elements of $\Gamma$ (\fig{wdia}, ($v$)). 
+\item We then iterate between steps 2 and 3 until there has been no change from one run to the next (ie. convergence) or there have been too many iterations (\fig{wdia}, ($vi$).)
 \end{itemize}
 
-[[ need to do a diagram for the above! ]]
+% diagram for finding the shortest path in W
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=0in 0in 0in 0in, width=4in]{figs/wdia.pdf} \\
+\caption{($i$) to ($vi$) show the path as the algorithm progresses from initial state to final, shortest path. }
+\label{wdia}
+% generate /phd-smoothing/mds-writeup/figs/distanceexplanation.R
+\end{figure}
 
 
 
