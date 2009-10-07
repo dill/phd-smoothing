@@ -74,7 +74,11 @@ We first define $d_{ij}$ as the distance between the points $i$ and $j$. How we 
 
 \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points given we know the $d_{ij}$s. 
 
-Taking the unknown new locations and putting them in an $n \times p$ matrix, $X$. Taking $S=X\tr{X}$, and performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. So we may now express $S$ as some set of length $n$ vectors (hopefully less than $p$ of them.) We now have that $\tilde{X}=U\Lambda^{1/2}$.
+Taking the unknown new locations and putting them in an $n \times p$ matrix, $X$. Taking $S=X\tr{X}$, and performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. Picking the largest $k$ eigenvectors (for $k<p$,) $S$ can be represented in a reduced form. In this case, we are interested in
+
+\begin{equation}
+\tilde{X}=U\Lambda^{1/2}.
+\end{equation}
 
 The $d_{ij}$s mentioned above form an $n \times n$ matrix, $D$. We can relate this to $S$, above, by first defining
 
