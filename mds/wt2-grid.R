@@ -10,20 +10,36 @@ gendata <- read.csv("wt2truth.csv",header=TRUE)
 
 
 
+horiz.set<-c()
+for(i in 0:9){
+   horiz.set<-c(horiz.set,(1:50)+(50*i*5))
+}
+
+vert.set<-c()
+for(i in 1:50){
+   vert.set<-c(vert.set,seq(1,50,5)+50*i)
+}
+
+
+grid.set<-list(x=gendata$x[unique(c(vert.set,horiz.set))],
+               y=gendata$y[unique(c(vert.set,horiz.set))],
+               z=gendata$z[unique(c(vert.set,horiz.set))],
+               inside=gendata$inside[unique(c(vert.set,horiz.set))])
+
+
+grid.set<- list(x=grid.set$x[grid.set$inside==1],
+                y=grid.set$y[grid.set$inside==1],
+                z=grid.set$z[grid.set$inside==1])
 
 
 
 
 
+na.ind<-!(is.na(grid.set$x)&is.na(grid.set$y))
 
-
-
-
-
-
-
-
-
+grid.set<- list(x=grid.set$x[na.ind],
+               y=grid.set$y[na.ind],
+               z=grid.set$z[na.ind])
 
 
 
@@ -31,48 +47,59 @@ gendata<- list(x=gendata$x[gendata$inside==1],
                y=gendata$y[gendata$inside==1],
                z=gendata$z[gendata$inside==1])
 
-na.ind<-!(is.na(gendata$x)&is.na(gendata$y)&is.na(gendata$z))
-
-gendata<- list(x=gendata$x[na.ind],
-               y=gendata$y[na.ind],
-               z=gendata$z[na.ind])
-
-# attempt to get around the inside bug
-bnd.neg<-list(x=-bnd$x,y=-bnd$y)
-onoff<-inSide(bnd.neg,-gendata$x,-gendata$y)
-
-gendata<- list(x=gendata$x[onoff],
-               y=gendata$y[onoff],
-               z=gendata$z[onoff])
-
-# find some lines
-# store the indices
-my.line.index<-c(48:94,471:517,699:742,1003:1025,1101:1110)
-
+### do the full thing
 
 # create D
-D<-create_distance_matrix(gendata$x,gendata$y,bnd,logfile=logfilename)
+D<-create_distance_matrix(gendata$x,gendata$y,bnd)
 
 # perform mds
+mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
+
+# plot
+full.mds<-insert.mds(grid.set,gendata,mds,bnd)
+plot(full.mds,asp=1)
+
+
+# 3d
+mds3<-cmdscale(D,eig=TRUE,x.ret=TRUE,k=3)
+pred.mds3<-insert.mds(grid.set,gendata,mds3,bnd)
+open3d()
+plot3d(pred.mds3[,1],pred.mds3[,2],pred.mds3[,3])
+
+
+# now try with a sample
+
+
+# create the sample
+samp.size<-250
+samp.ind<-sample(1:length(gendata$x),samp.size)
+
+gendata.samp<- list(x=gendata$x[samp.ind],
+                    y=gendata$y[samp.ind],
+                    z=gendata$z[samp.ind])
+
+### do the PCO and construct the data frame
+# create D
+D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
+
+# perform mds on the sample matrix
+# options needed for insertion to work
 samp.mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
 
+samp.data<-list(x=c(),y=c(),z=c())
+samp.data$x<-samp.mds$points[,1]
+samp.data$y<-samp.mds$points[,2]
+samp.data$z<-gendata$z[samp.ind]
 
-# code to plot the lines we want to investigate
-par(mfrow=c(1,2))
-plot(gendata$x,gendata$y,xlab="x",ylab="y",asp=1)
-lines(x=gendata$x[48:94],y=gendata$y[48:94],lwd=2,col="red")
-lines(x=gendata$x[471:517],y=gendata$y[471:517],lwd=2,col="red")
-lines(x=gendata$x[699:742],y=gendata$y[699:742],lwd=2,col="red")
-lines(x=gendata$x[1003:1025],y=gendata$y[1003:1025],lwd=2,col="red")
-lines(x=gendata$x[1101:1110],y=gendata$y[1101:1110],lwd=2,col="red")
+pred.mds<-insert.mds(grid.set,gendata.samp,samp.mds,bnd)
 
-# mapped points
-plot(samp.mds$points,xlab="x*",ylab="y*",asp=1)
-lines(x=samp.mds$points[48:94,1],y=samp.mds$points[48:94,2],lwd=2,col="red")
-lines(x=samp.mds$points[471:517,1],y=samp.mds$points[471:517,2],lwd=2,col="red")
-lines(x=samp.mds$points[699:742,1],y=samp.mds$points[699:742,2],lwd=2,col="red")
-lines(x=samp.mds$points[1003:1025,1],y=samp.mds$points[1003:1025,2],lwd=2,col="red")
-lines(x=samp.mds$points[1101:1110,1],y=samp.mds$points[1101:1110,2],lwd=2,col="red")
+
+
+
+
+
+
+
 
 
 
