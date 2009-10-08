@@ -29,21 +29,33 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
                   y=gendata$y[onoff],
                   z=gendata$z[onoff])
 
-   # create the sample
+
+   ### do the PCO and construct the data frame
+   # create D
+   D<-create_distance_matrix(gendata$x,gendata$y,bnd)
+
+   # perform mds on D
+   # options needed for insertion to work
+   mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
+
+
+
+
+
+   ### create the sample
    samp.ind<-sample(1:length(gendata$x),samp.size)
 
    gendata.samp<- list(x=gendata$x[samp.ind],
                        y=gendata$y[samp.ind],
                        z=gendata$z[samp.ind])
 
-   ### do the PCO and construct the data frame
-   # create D
-   D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
+   # sample points insertion 
+   samp.mds<-insert.mds(gendata.samp,gendata,mds,bnd)
 
-   # perform mds on the sample matrix
-   # options needed for insertion to work
-   samp.mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
    
+
+
+
    # add noise
    noise<-noise.level*rnorm(length(samp.ind))
    #> summary(gendata$z)
@@ -52,8 +64,8 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
 
    # mapped sample data
    samp.data<-list(x=c(),y=c(),z=c())
-   samp.data$x<-samp.mds$points[,1]
-   samp.data$y<-samp.mds$points[,2]
+   samp.data$x<-samp.mds[,1]
+   samp.data$y<-samp.mds[,2]
    samp.data$z<-gendata$z[samp.ind]+noise
 
    # non-mapped sample data
@@ -65,18 +77,16 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    ### create prediction data
    # non-mapped prediction data
    npred.data<-list(x=c(),y=c(),z=c())
-   npred.data$x<-gendata$x[-samp.ind]
-   npred.data$y<-gendata$y[-samp.ind]
+   npred.data$x<-gendata$x#[-samp.ind]
+   npred.data$y<-gendata$y#[-samp.ind]
 
-   # new MDS coords for the prediction points
-   pred.mds<-insert.mds(npred.data,gendata.samp,samp.mds,bnd)
 
    # put this in the correct format 
    pred.data<-list(x=rep(0,length(gendata$x)),y=rep(0,length(gendata$x)))
-   pred.data$x[samp.ind]<-samp.data$x  # need to add in the sample points too
-   pred.data$x[-samp.ind]<-pred.mds[,1]
-   pred.data$y[samp.ind]<-samp.data$y  # need to add in the sample points too
-   pred.data$y[-samp.ind]<-pred.mds[,2]
+   pred.data$x<-mds$points[,1]
+   pred.data$y<-mds$points[,2]
+
+
 
    ### Now do some fitting and prediction
    ### mapping
