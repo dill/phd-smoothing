@@ -41,7 +41,8 @@
 \newcommand{\tr}[1]{#1^{\text{T}}}
 % diagonal
 \newcommand{\diag}{\text{diag}}
-
+% call \times \cross
+\newcommand{\cross}{\times}
 
 
 \begin{document}
@@ -64,27 +65,29 @@ Here.
 
 \section{Introduction}
 
-Multidimensional scaling (MDS) or as it is often referred to principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of points based on the distances between the points (\cite{chatfieldcollins}, p. 187.)
+Multidimensional scaling (MDS) or as it is often referred to principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of points based on the distances between the points (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a set of points in a lower dimension than the data, while still retaining information about the distances between the points. It is closely related to other methods such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondance analysis (\cite{terbraak}.)
 
 This method provides an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points in such a way that smoothing does not suffer from leakage.
 
 \section{Multidimensional Scaling}
 
-WHAT IS MDS!?!?!
+The basic concept behind MDS is to take the data, represent them as a set of inter-point distances and then find a new coordinate system based on those inter-point distances. We do this by simply performing an eigen-decomposition on the matrix of distances between points.
 
 \subsection{Finding the new point configuration}
 
-We first define $d_{ij}$ as the distance between the points $i$ and $j$. How we find $d_{ij}$ is discussed in the next section, for the moment we assume that we know $d_{ij}$.
+We first define $d_{ij}$ as the distance between the points $i$ and $j$. These form a matrix, $D$, with $ij^{\text{th}}$ element $d_{ij}$. How we find $d_{ij}$ is discussed in the next section, for the moment we assume that we know $d_{ij}$.
 
 \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points given we know the $d_{ij}$s. 
 
-Taking the unknown new locations and putting them in an $n \times p$ matrix, $X$. Let $S=X\tr{X}$, and performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. Picking the largest $k$ eigenvectors (for $k<p$,) $S$ can be represented in a reduced form. In this case, we are interested in
+Taking the unknown new locations and putting them in an $n \times p$ matrix, $X$. Let $S=X\tr{X}$, and performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. We may then represent $S$ in some arbitrary number of dimensions, $k$, by picking the $k$ largest eigenvectors of $S$. In this case, we are interested in
 
 \begin{equation}
-\tilde{X}=U\Lambda^{1/2}.
+\tilde{X}=\tilde{U}\tilde{\Lambda}^{1/2}.
 \end{equation}
 
-The $d_{ij}$s mentioned above form an $n \times n$ matrix, $D$. We can relate this to $S$, above, by first defining
+where a tilde indicates the $n \times k$ versions of $X$, $\Lambda$ and $U$.
+
+We can relate $D$ to $S$ by first defining
 
 \begin{equation}
 H = I-\frac{1}{n}\mathbf{1}\tr{\mathbf{1}}.
@@ -102,8 +105,15 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 
 \subsection{Inserting new points into the configuration}
 
+Clearly, we may be in a position where the new coordinate system has been found by MDS but more data has been collected afterward. In this case we would like to insert those new points into the configuration given by MDS. This is relatively easy given we have the correct quantities for calculation.
 
+We may find the new configuration, $\tilde{X}_{\text{new}}$, of some new data $X_{\text{new}}$ using:
 
+\begin{equation}
+\tilde{X}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{X} \mathbf{d},
+\end{equation}
+
+here $\Lambda$ and $\tr{X}$ are as above, $\mathbf{d}$ is defined as the vector of distances between each new point in $X_{\text{new}}$ and the points in the origina
 
 \section{Finding the within-area distances}
 
