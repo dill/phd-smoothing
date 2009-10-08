@@ -1,19 +1,8 @@
-# now in...
-#          ____  _____  
-#         |___ \|  __ \ 
-#           __) | |  | |
-#          |__ <| |  | |
-#          ___) | |__| |
-#         |____/|_____/ 
-#              
-              
-
-
 # function to run simulations on the wigglytop 2 domain
 # Copyright David Lawrence Miller 2009.
 source("mds.R")
 
-wt2_smooth_test_3d<-function(samp.size=250,noise.level=0.05, plot.it=FALSE){
+wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
 
    ## create a boundary...
    bnd <- read.csv("wt2-verts.csv",header=FALSE) 
@@ -40,20 +29,25 @@ wt2_smooth_test_3d<-function(samp.size=250,noise.level=0.05, plot.it=FALSE){
                   y=gendata$y[onoff],
                   z=gendata$z[onoff])
 
-   # create the sample
+
+   ### do the PCO and construct the data frame
+   # create D
+   D<-create_distance_matrix(gendata$x,gendata$y,bnd)
+
+   # perform mds on D
+   # options needed for insertion to work
+   mds<-cmdscale(D,eig=TRUE,x.ret=TRUE,k=3)
+
+   ### create the sample
    samp.ind<-sample(1:length(gendata$x),samp.size)
 
    gendata.samp<- list(x=gendata$x[samp.ind],
                        y=gendata$y[samp.ind],
                        z=gendata$z[samp.ind])
 
-   ### do the PCO and construct the data frame
-   # create D
-   D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
+   # sample points insertion 
+   samp.mds<-insert.mds(gendata.samp,gendata,mds,bnd)
 
-   # perform mds on the sample matrix
-   # options needed for insertion to work
-   samp.mds<-cmdscale(D,eig=TRUE,x.ret=TRUE,k=3)
    
    # add noise
    noise<-noise.level*rnorm(length(samp.ind))
@@ -62,10 +56,10 @@ wt2_smooth_test_3d<-function(samp.size=250,noise.level=0.05, plot.it=FALSE){
    #0.000000 0.000236 0.269300 0.276300 0.479600 0.850000 
 
    # mapped sample data
-   samp.data<-list(x=c(),y=c(),z=c(),w=c())
-   samp.data$x<-samp.mds$points[,1]
-   samp.data$y<-samp.mds$points[,2]
-   samp.data$w<-samp.mds$points[,3]
+   samp.data<-list(x=c(),y=c(),w=c(),z=c())
+   samp.data$x<-samp.mds[,1]
+   samp.data$y<-samp.mds[,2]
+   samp.data$w<-samp.mds[,3]
    samp.data$z<-gendata$z[samp.ind]+noise
 
    # non-mapped sample data
@@ -76,21 +70,18 @@ wt2_smooth_test_3d<-function(samp.size=250,noise.level=0.05, plot.it=FALSE){
 
    ### create prediction data
    # non-mapped prediction data
-   npred.data<-list(x=c(),y=c(),z=c())
-   npred.data$x<-gendata$x[-samp.ind]
-   npred.data$y<-gendata$y[-samp.ind]
+   npred.data<-list(x=c(),y=c())
+   npred.data$x<-gendata$x
+   npred.data$y<-gendata$y
 
-   # new MDS coords for the prediction points
-   pred.mds<-insert.mds(npred.data,gendata.samp,samp.mds,bnd)
 
    # put this in the correct format 
-   pred.data<-list(x=rep(0,length(gendata$x)),y=rep(0,length(gendata$x)),w=rep(0,length(gendata$x)))
-   pred.data$x[samp.ind]<-samp.data$x  # need to add in the sample points too
-   pred.data$x[-samp.ind]<-pred.mds[,1]
-   pred.data$y[samp.ind]<-samp.data$y  # need to add in the sample points too
-   pred.data$y[-samp.ind]<-pred.mds[,2]
-   pred.data$w[samp.ind]<-samp.data$w  # need to add in the sample points too
-   pred.data$w[-samp.ind]<-pred.mds[,3]
+   pred.data<-list(x=c(),y=c(),w=c())
+   pred.data$x<-mds$points[,1]
+   pred.data$y<-mds$points[,2]
+   pred.data$w<-mds$points[,3]
+
+
 
    ### Now do some fitting and prediction
    ### mapping
