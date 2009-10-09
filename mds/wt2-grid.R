@@ -26,22 +26,15 @@ grid.set<-list(x=gendata$x[unique(c(vert.set,horiz.set))],
                z=gendata$z[unique(c(vert.set,horiz.set))],
                inside=gendata$inside[unique(c(vert.set,horiz.set))])
 
-
 grid.set<- list(x=grid.set$x[grid.set$inside==1],
                 y=grid.set$y[grid.set$inside==1],
                 z=grid.set$z[grid.set$inside==1])
-
-
-
-
 
 na.ind<-!(is.na(grid.set$x)&is.na(grid.set$y))
 
 grid.set<- list(x=grid.set$x[na.ind],
                y=grid.set$y[na.ind],
                z=grid.set$z[na.ind])
-
-
 
 gendata<- list(x=gendata$x[gendata$inside==1],
                y=gendata$y[gendata$inside==1],
@@ -51,24 +44,30 @@ gendata<- list(x=gendata$x[gendata$inside==1],
 
 # create D
 D<-create_distance_matrix(gendata$x,gendata$y,bnd)
-
 # perform mds
 mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
 
-# plot
+
+
+
+
 full.mds<-insert.mds(grid.set,gendata,mds,bnd)
+
+
+# plot
 plot(full.mds,asp=1)
 
 
 # 3d
 mds3<-cmdscale(D,eig=TRUE,x.ret=TRUE,k=3)
 pred.mds3<-insert.mds(grid.set,gendata,mds3,bnd)
+
+# plot
 open3d()
 plot3d(pred.mds3[,1],pred.mds3[,2],pred.mds3[,3])
 
 
 # now try with a sample
-
 
 # create the sample
 samp.size<-250
@@ -94,9 +93,17 @@ samp.data$z<-gendata$z[samp.ind]
 pred.mds<-insert.mds(grid.set,gendata.samp,samp.mds,bnd)
 
 
+# for 2d plot full against the sample set of points
+par(mfrow=c(1,2))
+plot(full.mds,asp=1, main="full point set")
+# seems like this flips, so negate it
+plot(pred.mds[,1],-pred.mds[,2],asp=1,main="sample point set")
 
-
-
+# zoom
+par(mfrow=c(1,2))
+plot(full.mds,asp=1, main="full point set",xlim=c(1.5,4),ylim=c(0,1))
+# seems like this flips, so negate it
+plot(pred.mds[,1],-pred.mds[,2],asp=1,main="sample point set",xlim=c(1.5,4),ylim=c(0,1))
 
 
 
