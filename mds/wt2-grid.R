@@ -59,12 +59,13 @@ plot(full.mds,asp=1)
 
 
 # 3d
+library(rgl)
 mds3<-cmdscale(D,eig=TRUE,x.ret=TRUE,k=3)
 pred.mds3<-insert.mds(grid.set,gendata,mds3,bnd)
 
 # plot
 open3d()
-plot3d(pred.mds3[,1],pred.mds3[,2],pred.mds3[,3])
+plot3d(pred.mds3[,1],pred.mds3[,2],pred.mds3[,3],size=2)
 
 
 # now try with a sample
