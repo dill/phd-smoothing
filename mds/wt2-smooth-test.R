@@ -29,7 +29,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
                   y=gendata$y[onoff],
                   z=gendata$z[onoff])
  
- 
    ### do the PCO and construct the data frame
    # create D
    D<-create_distance_matrix(gendata$x,gendata$y,bnd)
@@ -37,10 +36,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    # perform mds on D
    # options needed for insertion to work
    mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
- 
- 
- 
- 
  
    ### create the sample
    samp.ind<-sample(1:length(gendata$x),samp.size)
@@ -51,10 +46,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
  
    # sample points insertion
    samp.mds<-insert.mds(gendata.samp,gendata,mds,bnd)
- 
-   
- 
- 
  
    # add noise
    noise<-noise.level*rnorm(length(samp.ind))
@@ -85,8 +76,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    pred.data<-list(x=rep(0,length(gendata$x)),y=rep(0,length(gendata$x)))
    pred.data$x<-mds$points[,1]
    pred.data$y<-mds$points[,2]
- 
- 
  
    ### Now do some fitting and prediction
    ### mapping

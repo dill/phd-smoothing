@@ -1,4 +1,10 @@
+# find the Euclidean distance between each pair of points, output to distance matrix
+
+
 euc<-matrix(0, length(samp.mds$points[,1]),length(samp.mds$points[,1]))
+
+
+
 
 # compute upper diagonal for the new point configuration
 for(i in 1:length(samp.mds$points[,1])){

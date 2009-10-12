@@ -1,4 +1,4 @@
-# function to run simulations on the wigglytop 2 domain
+# run a simulation to quantify the insertion error 
 # Copyright David Lawrence Miller 2009.
 source("mds.R")
 
