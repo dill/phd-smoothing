@@ -65,9 +65,9 @@ Here.
 
 \section{Introduction}
 
-Multidimensional scaling (MDS) or as it is often referred to principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of points based on the distances between the points (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a set of points in a lower dimension than the data, while still retaining information about the distances between the points. It is closely related to other methods such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondance analysis (\cite{terbraak}.)
+Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of points based on the distances between the points (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a projection of data into lower dimensional space, while still retaining information about the distances between the points. It is closely related to other methods such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondance analysis (\cite{terbraak}.)
 
-This method provides an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points in such a way that smoothing does not suffer from leakage.
+Multidimensional scaling offers an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points in such a way that the smooth does not suffer from leakage.
 
 \section{Multidimensional Scaling}
 
@@ -105,7 +105,7 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 
 \subsection{Inserting new points into the configuration}
 
-Clearly, we may be in a position where the new coordinate system has been found by MDS but more data has been collected afterward. In this case we would like to insert those new points into the configuration given by MDS. This is relatively easy given we have the correct quantities for calculation.
+It is possible that we may be in a position where the new coordinate system has been found by MDS but more data has been collected afterward. In this case we would like to insert those new points into the configuration given by MDS. This is relatively easy given we have the correct quantities for calculation.
 
 We may find the new configuration, $\tilde{X}_{\text{new}}$, of some new data $X_{\text{new}}$ using:
 
@@ -118,6 +118,15 @@ here $\Lambda$ and $\tr{X}$ are as above, $\mathbf{d}$ is defined as the vector 
 Although the calculation is simple, it hides two important pitfalls. First, if the eigenvectors in $\Lambda$ are not the true eigenvectors then we may insert points incorrectly. For example, if the sample is taken from only half of the space, since we don't have full information about the domain or, more pathologically, there were a trend in the sample locations. This would lead to the incorrect eigenvectors being obtained.
 
 Second, if we insert new points that are equidistant from points already in the MDS, then the new point will be placed between the previously inserted points in the plane. This is fine when that is its true location, however it is possible that the point was supposed to not lie in the plane but rather in an extra dimension and its distance was truncated. An example of this is illustrated in \fig{bojinsert}. A more complete explanation and characterization of this problem is given in \cite{Boj2009}.
+
+% diagram from Boj et al. 2009
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics{figs/boj0.jpg} \includegraphics[width=1in]{figs/boj1.jpg} \\
+\caption{Given the three points that make up the equilateral triangle in the left panel, if a new point is introduced then it will be placed in the centre of those points, even if it's distance from all old points is much greater (see right panel.) This is due to the projection onto the sample eigenvectors. Taken from \cite{Boj2009}.}
+\label{bojinsert}
+\end{figure}
 
 The effects of the above problems can be seen in \fig{wt2zoom} for the domain in \fig{wt2dia}. This shows that the $\Lambda$ found does not explain enough of the variation in that part of the domain, thus squashing the points together.
 
@@ -133,14 +142,6 @@ The effects of the above problems can be seen in \fig{wt2zoom} for the domain in
 
 For the above reasons, Gower's interpolation is not used on the sample alone. Rather, a representative set of points are used when constructing $\Lambda$. This approach removes the sensitivity of the fit to the location of the points in the sample.
 
-% diagram from Boj et al. 2009
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics{figs/boj0.jpg} \includegraphics[width=1in]{figs/boj1.jpg} \\
-\caption{Given the three points that make up the equilateral triangle in the left panel, if a new point is introduced then it will be placed in the centre of those points, even if it's distance from all old points is much greater (see right panel.) This is due to the projection onto the sample eigenvectors. Taken from \cite{Boj2009}.}
-\label{bojinsert}
-\end{figure}
 
 
 
@@ -149,12 +150,12 @@ For the above reasons, Gower's interpolation is not used on the sample alone. Ra
 
 The within-area distances to be fed to MDS are found using a novel algorithm. This works by tracing the inside sides of the polygon and then modifying the path by deleting and replacing portions of the path. Given that there is no direct path within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
 
-\begin{itemize}
+\begin{enumerate}
 \item Create initial path by drawing a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)) and where they meet the boundary of $\Gamma$ and start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary (\fig{wdia}, ($ii$).) Choose the shorter of these add the paths between $p_1$, $p_2$ and the boundary and this is the starting path(\fig{wdia}, ($iii$).) 
 \item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the line between $v_1$ and $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) and the line between $v_1$ and $v_3$ lies inside $\Gamma$ then delete $v_2$ (\fig{wdia}, ($iv$) and ($vi$).) This iterates over the entire path once, deleting all superfluous vertices. 
 \item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the path $v_1$, some subset of the vertices of $\Gamma$, $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) then replace $v_2$ with those elements of $\Gamma$ (\fig{wdia}, ($v$)). 
 \item We then iterate between steps 2 and 3 until there has been no change from one run to the next (ie. convergence) or there have been too many iterations (\fig{wdia}, ($vi$).)
-\end{itemize}
+\end{enumerate}
 
 % diagram for finding the shortest path in W
 \begin{figure}
@@ -189,10 +190,13 @@ Tying together the two previous sections, we may now look at how, using MDS and 
 
 An advantage of the MDS approach is that in our eigen-decomposition we may pick an arbitrary number of eigenvectors to retain and push the original set of points into higher dimensions. Using three eigenvectors we get the configuration in \fig{ramsay-mds-3d}.
 
-The two eigenvalues returned from running \texttt{cmdscale} in \textsf{R} when we ask for a 2-dimensional are 2615.5597 and 229.0039. Adding another dimension gives eigenvalues of 2615.5597, 229.0039, 46.8754. Clearly significantly less variation is being explained in the third dimension, however this may well not be of primary concern if it prevents leakage.
+The two eigenvalues returned from running \texttt{cmdscale} in \textsf{R} when we ask for a 2-dimensional are 2615.5597 and 229.0039. Adding another dimension gives a third eigenvalue of 46.8754. Clearly significantly less variation is being explained in the third dimension, however this may well not be of primary concern if it prevents leakage.
 
 
 \Fig{wt2dia} shows another domain which is more complicated than the horseshoe. The region has peninsulae which will cause similar problems to those found in the horseshoe. 
+
+
+An additional complication is that the peninsulae become smaller from left to right, thus the first couple of eigenvectors will be used to explain the variation along and across the bigger peninsulae.
 
 
 
