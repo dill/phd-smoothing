@@ -25,8 +25,6 @@ n <- length(x)
 
 
 source("mds.R")
-source("wood.R")
-source("utils.R")
 
 # instead, creating a set of test points
 #x<-c(-2.4688416, -1.1883870, -2.0504753,  0.0540343,  0.7386338,  1.7021442,  2.7163657,-2.336735 , -1.806122)

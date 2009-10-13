@@ -7,17 +7,23 @@
 #include "utils.h"
 #include "wood.h"
 
-void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *ybnd,double *pathlen)
+void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd,double *pathlen)
 {
    // args:
+   //   len         the length of x and y *
+   //   start       point to start at *
    //   x,y         lists of x and y points
    //   nbnd        length of bnd
    //   bnd         the boundary that got in the way
    //  return:
    //   length of the path
 
+   // * these can be manipulated to control which we evaluate
+   //  eg. in the insertion case
+
+
    double **bnd, p1[2], p2[2];
-   int i, j,k, pathlenlen, *retint;
+   int i, j,k, pathlenlen, *retint, end;
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
@@ -42,12 +48,19 @@ void wood_path(int *len, double *x, double *y, int *nbnd, double *xbnd, double *
    // insertion counter
    k=0;
 
+   // insertion hack for computing only a small part of the grid
+   if(*start != 0){
+      end=*start;
+   }else{
+      end=*len;
+   }
+
    // loop over all point pairs
-   for(i=0; i<(*len); i++){
+   for(i=0; i<end; i++){
       // set p1
       p1[0]=x[i]; p1[1]=y[i];
 
-      for(j=(i+1); j<(*len); j++){
+      for(j=(i+1+(*start)); j<(*len); j++){
          // set p2
          p2[0]=x[j]; p2[1]=y[j];
   

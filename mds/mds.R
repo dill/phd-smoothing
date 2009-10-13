@@ -7,7 +7,7 @@ source("pe.R")
 library(soap)
 
 # create the distance matrix
-create_distance_matrix<-function(xpoints,ypoints,bnd){
+create_distance_matrix<-function(xpoints,ypoints,bnd,start=0,len=NA){
    # requires the library soap   
    # args:
    #  xpoints,ypoints      data points
@@ -26,7 +26,7 @@ create_distance_matrix<-function(xpoints,ypoints,bnd){
 
    # create a matrix to hold the distances
 
-   D<-woodpath(xpoints,ypoints,bnd)
+   D<-woodpath(xpoints,ypoints,bnd,start,len)
 
    return(D)
 }
