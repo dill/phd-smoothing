@@ -21,9 +21,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // * these can be manipulated to control which we evaluate
    //  eg. in the insertion case
 
-
    double **bnd, p1[2], p2[2];
-   int i, j,k, pathlenlen, *retint, end;
+   int i,j,k, *retint;
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
@@ -42,41 +41,64 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
       retint[i]=retint[0]+i;
    }
 
-   // find the length of pathlen, upper triangle of a len*len matrix
-   pathlenlen=((*len)*(*len-1))/2;
-
    // insertion counter
    k=0;
 
-   // insertion hack for computing only a small part of the grid
+   // switch between insertion and full MDS 
+   // insertion format is c(old,new)
+   //  * so *start gives the index of the limit of the old points for insertion
+   //    if we're not doing insertion then this is just the length of the 
+   //    point vector
    if(*start != 0){
-      end=*start;
+      // #### Main loop for INSERTION
+      for(i=0; i<(*start); i++){
+         // set p1
+         p1[0]=x[i]; p1[1]=y[i];
+
+         for(j=(*start); j<(*len); j++){
+            // set p2
+            p2[0]=x[j]; p2[1]=y[j];
+  
+            // check to see if we have to do the path finding or
+            // just the hypotenuse 
+            do_intersect(p1, p2, *nbnd, bnd, retint);
+            //                           vvv just hypot when we touch only 1 vertex 
+            if(iarrsum((*nbnd-1), retint)>1){
+               pathlen[k]=make_path(p1,p2,*nbnd,bnd);
+            }else{
+               pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
+            }
+            // increment pathlen counter
+            k++;
+         }    
+      } //end of main for loops
    }else{
-      end=*len;
+      // #### Main for loop for FULL MDS
+      for(i=0; i<(*len); i++){
+         // set p1
+         p1[0]=x[i]; p1[1]=y[i];
+
+         for(j=(i+1); j<(*len); j++){
+            // set p2
+            p2[0]=x[j]; p2[1]=y[j];
+  
+            // check to see if we have to do the path finding or
+            // just the hypotenuse 
+            do_intersect(p1, p2, *nbnd, bnd, retint);
+            //                           vvv just hypot when we touch only 1 vertex 
+            if(iarrsum((*nbnd-1), retint)>1){
+               pathlen[k]=make_path(p1,p2,*nbnd,bnd);
+            }else{
+               pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
+            }
+            // increment pathlen counter
+            k++;
+         }    
+      } //end of main for loops
    }
 
    // loop over all point pairs
-   for(i=0; i<end; i++){
-      // set p1
-      p1[0]=x[i]; p1[1]=y[i];
-
-      for(j=(i+1+(*start)); j<(*len); j++){
-         // set p2
-         p2[0]=x[j]; p2[1]=y[j];
-  
-         // check to see if we have to do the path finding or
-         // just the hypotenuse 
-         do_intersect(p1, p2, *nbnd, bnd, retint);
-         //                           vvv just hypot when we touch only 1 vertex 
-         if(iarrsum((*nbnd-1), retint)>1){
-            pathlen[k]=make_path(p1,p2,*nbnd,bnd);
-         }else{
-            pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
-         }
-         // increment pathlen counter
-         k++;
-      }    
-   } //end of main for loops
+   // insertion case: go from old points to new points
 
    free(bnd[0]);
    free(bnd);

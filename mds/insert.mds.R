@@ -24,14 +24,10 @@
 
    ## everything at once
    new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
-                      bnd,start=length(old.points$x),len=length(new.points$y))
-#   new.dist<-new.dist[1:length(old.points$x),
-#                      (length(old.points$x)+1):length(c(old.points$x,new.points$x))]
-
-
+                      bnd,start=length(old.points$x))
 
    # the ith element of d is d_i^2-d_{i,n+1}^2
-   # d<-diag(X%*%Xt)-new.dist^2
+   #d<-diag(X%*%t(X))-new.dist^2
    d <- rowSums(X*X) - new.dist^2 # efficient version of above
    # finally construct the product
    ret<-1/2*((lambda.inverse * t(X)) %*% d)
