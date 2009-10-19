@@ -6,18 +6,19 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
  
    ## create a boundary...
    bnd <- read.csv("wt2-verts.csv",header=FALSE)
+
    names(bnd)<-c("x","y")
    
    ## Simulate some fitting data, inside boundary...
-   gendata <- read.csv("wt2truth.csv",header=TRUE)
+   gendata<-read.csv("wt2truth.csv",header=TRUE)
    
-   gendata<- list(x=gendata$x[gendata$inside==1],
+   gendata<-list(x=gendata$x[gendata$inside==1],
                   y=gendata$y[gendata$inside==1],
                   z=gendata$z[gendata$inside==1])
    
    na.ind<-!(is.na(gendata$x)&is.na(gendata$y)&is.na(gendata$z))
    
-   gendata<- list(x=gendata$x[na.ind],
+   gendata<-list(x=gendata$x[na.ind],
                   y=gendata$y[na.ind],
                   z=gendata$z[na.ind])
    
@@ -25,11 +26,26 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    bnd.neg<-list(x=-bnd$x,y=-bnd$y)
    onoff<-inSide(bnd.neg,-gendata$x,-gendata$y)
    
-   gendata<- list(x=gendata$x[onoff],
+   gendata<-list(x=gendata$x[onoff],
                   y=gendata$y[onoff],
                   z=gendata$z[onoff])
  
-   ### do the PCO and construct the data frame
+   # create the sample index
+   samp.ind<-sample(1:length(gendata$x),samp.size)
+
+   ## create the sample
+   gendata.samp<- list(x=gendata$x[samp.ind],
+                       y=gendata$y[samp.ind],
+                       z=gendata$z[samp.ind])
+
+
+
+   gendata<-list(x=gendata$x[-samp.ind],
+                  y=gendata$y[-samp.ind],
+                  z=gendata$z[-samp.ind])
+
+
+   ## do the PCO and construct the data frame
    # create D
    D<-create_distance_matrix(gendata$x,gendata$y,bnd)
  
@@ -37,12 +53,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    # options needed for insertion to work
    mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
  
-   ### create the sample
-   samp.ind<-sample(1:length(gendata$x),samp.size)
- 
-   gendata.samp<- list(x=gendata$x[samp.ind],
-                       y=gendata$y[samp.ind],
-                       z=gendata$z[samp.ind])
  
    # sample points insertion
    samp.mds<-insert.mds(gendata.samp,gendata,mds,bnd)

@@ -22,9 +22,15 @@
    # should take the form of a n by m matrix, where there are
    # and n original points to measure to and m new points.
 
-   ## everything at once
    new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
                       bnd,start=length(old.points$x))
+
+
+#   new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
+#                      bnd,start=NA)
+#
+#   new.dist<-new.dist[1:length(old.points$x),
+#                      (length(old.points$x)+1):length(c(old.points$x,new.points$x))]
 
    # the ith element of d is d_i^2-d_{i,n+1}^2
    #d<-diag(X%*%t(X))-new.dist^2

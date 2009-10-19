@@ -20,7 +20,6 @@ woodpath<-function(xpoints,ypoints,bnd,start){
       insert<-TRUE # used later
    }
 
-
    # load the library
    dyn.load("wood.so")
 
@@ -29,10 +28,10 @@ woodpath<-function(xpoints,ypoints,bnd,start){
                 x=as.double(xpoints),y=as.double(ypoints),
                 nbnd=as.integer(nbnd),xbnd=as.double(xbnd), 
                 ybnd=as.double(ybnd),pathlen=as.double(rep(0,pl)))
-   # get passed back an array which is the upper diagonal
 
    # full MDS
    if(!insert){
+      # get passed back an array which is the upper diagonal
       # create a matrix
       D<-matrix(0,len,len)
       # R fills columns first, so fill the lower triangle first
@@ -45,8 +44,7 @@ woodpath<-function(xpoints,ypoints,bnd,start){
 
    # insertion
    }else{
-      D<-as.matrix(wood_ret$pathlen)
-      dim(D)<-c(len-start,start)
+      D<-matrix(wood_ret$pathlen,ncol=start,nrow=len-start)
       D<-t(D)
    }
 
