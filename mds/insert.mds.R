@@ -11,9 +11,11 @@
    # want to calculate 1/2 * lambda^(-1) * X' * d
 
    # find lambda^(-1)
-   lambda.inverse<-1/cmd.object$eig
+   lambda.inverse<-matrix(0,length(cmd.object$eig),length(cmd.object$eig))
+   diag(lambda.inverse)<-1/cmd.object$eig
 
-   # take the original MDS coordinates and their transpose
+   # take the original MDS coordinates
+   # this is already double centred
    X<-cmd.object$points
    
    # finally d
@@ -33,10 +35,14 @@
 #                      (length(old.points$x)+1):length(c(old.points$x,new.points$x))]
 
    # the ith element of d is d_i^2-d_{i,n+1}^2
-   #d<-diag(X%*%t(X))-new.dist^2
-   d <- rowSums(X*X) - new.dist^2 # efficient version of above
+   d<-diag(X%*%t(X))-new.dist^2
+   #d <- rowSums(X*X) - new.dist^2 # efficient version of above
    # finally construct the product
-   ret<-1/2*((lambda.inverse * t(X)) %*% d)
+   ret<-1/2*((lambda.inverse %*% t(X)) %*% d)
+
+
+   #ret<-1/2*(t(d)%*% X %*% solve(t(X)%*%X))
+
 
    # return the transpose of the result
    # ie. mx2 rather than 2xm matrix
