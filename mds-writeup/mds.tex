@@ -105,7 +105,9 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 
 \subsection{Inserting new points into the configuration}
 
-It is possible that we may be in a position where the new coordinate system has been found by MDS but more data has been collected afterward. In this case we would like to insert those new points into the configuration given by MDS. This is relatively easy given we have the correct quantities for calculation.
+It is possible that we may be in a position where the new coordinate system has been found by MDS but more data has been collected afterward. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years. Two are covered here, first by Gower (\cite{gower1968}) and then that of Trosset \& Priebe (\cite{Trosset2008}).
+
+\subsubsection{Gower's interpolation} 
 
 We may find the new configuration, $\tilde{X}_{\text{new}}$, of some new data $X_{\text{new}}$ using:
 

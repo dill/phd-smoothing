@@ -16,7 +16,7 @@ woodpath<-function(xpoints,ypoints,bnd,start){
       # in the insertion case, start gives the length of the old points
       # here we are calculating a length(old.points)*length(new.points) matrix
       pl<-len-start # length of new points
-      pl<-pl*start # size of matrix
+      pl<-pl*len # size of matrix
       insert<-TRUE # used later
    }
 
@@ -44,7 +44,7 @@ woodpath<-function(xpoints,ypoints,bnd,start){
 
    # insertion
    }else{
-      D<-matrix(wood_ret$pathlen,ncol=start,nrow=len-start)
+      D<-matrix(wood_ret$pathlen,ncol=len,nrow=len-start)
       D<-t(D)
    }
 
