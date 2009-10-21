@@ -105,44 +105,55 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 
 \subsection{Inserting new points into the configuration}
 
-It is possible that we may be in a position where the new coordinate system has been found by MDS but more data has been collected afterward. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years. Two are covered here, first by Gower (\cite{gower1968}) and then that of Trosset \& Priebe (\cite{Trosset2008}).
+It is possible that we may be in a position where the new coordinate system has been found by MDS but more data has been collected afterward. In this case we would like to insert those new points into the configuration given by MDS\footnote{The insertion problem is also known as the ``out-of-sample problem''}. A number of methods have been developed over the past 40 years. Two are covered here, first by Gower (\cite{gower1968}) and then that of Trosset \& Priebe (\cite{Trosset2008}).
 
 \subsubsection{Gower's interpolation} 
 
-We may find the new configuration, $\tilde{X}_{\text{new}}$, of some new data $X_{\text{new}}$ using:
+Gower's method relies on taking a single new point, and inserting it into a new dimension in the reconfiguration and letting the point lie there; the extra dimension could then be projected on to the old axes. The technical details of the computation are detailed first, followed by some problems with this method. 
+
+We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\text{new}}$ using:
 
 \begin{equation}
-\tilde{X}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{X} \mathbf{d},
+\tilde{x}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{X} \mathbf{d},
+\label{gower}
 \end{equation}
 
-here $\Lambda$ and $\tr{X}$ are as above, $\mathbf{d}$ is defined as the vector of distances between each point in $X_{\text{new}}$ and the points in the original $X$ (\cite{gower1968}.) This formula is commonly referred to as ``Gower's interpolation.''
+here $\Lambda$ and $\tr{X}$ are as above, $\mathbf{d}$ is defined as the distance between $x_{\text{new}}$ and the points in the original $X$. This formula (\ref{gower}) is commonly referred to as ``Gower's interpolation.''
 
-Although the calculation is simple, it hides two important pitfalls. First, if the eigenvectors in $\Lambda$ are not the true eigenvectors then we may insert points incorrectly. For example, if the sample is taken from only half of the space, since we don't have full information about the domain or, more pathologically, there were a trend in the sample locations. This would lead to the incorrect eigenvectors being obtained.
+Although the calculation is simple, it hides important pitfalls. 
 
-Second, if we insert new points that are equidistant from points already in the MDS, then the new point will be placed between the previously inserted points in the plane. This is fine when that is its true location, however it is possible that the point was supposed to not lie in the plane but rather in an extra dimension and its distance was truncated. An example of this is illustrated in \fig{bojinsert}. A more complete explanation and characterization of this problem is given in \cite{Boj2009}.
+\begin{enumerate}
+\item If the eigenvectors in $\Lambda$ are not the true eigenvectors then we may insert the point incorrectly. For example, if the sample is taken from only half of the space, since we don't have full information about the domain or, more pathologically, there were a trend in the sample locations. This would lead to the incorrect eigenvectors being obtained.
+
+\item In the course of the projection onto the original MDS axes, we lose one of the coordinates (effectively truncating a dimension.) It is possible that the point was supposed to not lie in the plane but rather in an extra dimension and its distance was truncated. This can cause distortions in the point configuration. An example of this is illustrated in \fig{bojinsert}. A more complete explanation and characterization of this problem is given in \cite{Boj2009}. 
+
+\item This error is compounded when more than one point is added to the MDS configuration. For example, say MDS has been performed on some points and then mapped them into the plane. Then suppose that points are added into this configuration using Gower's interpolation. When the first point is added say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2dia} panel 2. 
+
+\end{enumerate}
 
 % diagram from Boj et al. 2009
 \begin{figure}
 \centering
 % trim order l b r t
 \includegraphics{figs/boj0.jpg} \includegraphics[width=1in]{figs/boj1.jpg} \\
-\caption{Given the three points that make up the equilateral triangle in the left panel, if a new point is introduced then it will be placed in the centre of those points, even if it's distance from all old points is much greater (see right panel.) This is due to the projection onto the sample eigenvectors. Taken from \cite{Boj2009}.}
+\caption{Given the three points that make up the equilateral triangle in the left panel, if a new point is introduced then it will be mapped into a dimension orthogonal to that of the original points. This extra dimension is then truncated and the projection onto the plane used. Taken from \cite{Boj2009}.}
 \label{bojinsert}
 \end{figure}
 
-The effects of the above problems can be seen in \fig{wt2zoom} for the domain in \fig{wt2dia}. This shows that the $\Lambda$ found does not explain enough of the variation in that part of the domain, thus squashing the points together.
+Item (1) can be rectified by using a grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space. The second and third points are linked, and combined lead us to believe that Gower's interpolation does not offer a solution to the insertion problem; we are both unable to insert points more than one at a time (thus making computation expensive) and, more importantly, are unable to insert points accurately without changing the representation space (\cite{Trosset2008}.)
 
-% zoom of the insertion error in wt2.
+
+% diagram CROP THIS ON MAC 
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[width=5in]{figs/wt2-zoom.pdf}\\
-\caption{Zoom of the mapping of a grid on the domain shown in \fig{wt2dia}. The left panel shows when the whole domain has been mapped as one and then the grid found by insertion, the second uses only the sample to construct the MDS and then again the location of the grid points is found by insertion.}
-\label{wt2zoom}
+\includegraphics[trim=8in 1in 1in 1in]{figs/gowererror.pdf} \\
+\caption{MDS configuration for the domain in \fig{wt2dia}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation.The red points should be positioned in the ``holes'' in the black grid.}
+\label{gowererror}
 \end{figure}
 
+\subsection{The method of Trosset and Priebe}
 
-For the above reasons, Gower's interpolation is not used on the sample alone. Rather, a representative set of points are used when constructing $\Lambda$. This approach removes the sensitivity of the fit to the location of the points in the sample.
 
 
 
