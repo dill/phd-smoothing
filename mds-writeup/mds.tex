@@ -65,21 +65,21 @@ Here.
 
 \section{Introduction}
 
-Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of points based on the distances between the points (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a projection of data into lower dimensional space, while still retaining information about the distances between the points. It is closely related to other methods such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondance analysis (\cite{terbraak}.)
+Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of points based on the distances between those points (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a projection of data into lower dimensional space, while still retaining information about the distances between the points. It is closely related to other methods such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondance analysis (\cite{terbraak}.)
 
 Multidimensional scaling offers an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points in such a way that the smooth does not suffer from leakage.
 
 \section{Multidimensional Scaling}
 
-The basic concept behind MDS is to take the data, represent them as a set of inter-point distances and then find a new coordinate system based on those inter-point distances. We do this by simply performing an eigen-decomposition on the matrix of distances between points.
+The basic concept behind MDS is to take the data, calculate their inter-point distances and then find a new coordinate system based on those inter-point distances. We do this by simply performing an eigen-decomposition on the matrix of distances between points.
 
 \subsection{Finding the new point configuration}
 
-We first define $d_{ij}$ as the distance between the points $i$ and $j$. These form a matrix, $D$, with $ij^{\text{th}}$ element $d_{ij}$. How we find $d_{ij}$ is discussed in the next section, for the moment we assume that we know $d_{ij}$.
+We first define $d_{ij}$ as the distance between the points $i$ and $j$. These form a matrix, $D$, with $ij^{\text{th}}$ element $d_{ij}$. In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. How we find $d_{ij}$ is discussed in the next section, for the moment we assume that we know $d_{ij}$.
 
 \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points given we know the $d_{ij}$s. 
 
-Taking the unknown new locations and putting them in an $n \times p$ matrix, $X$. Let $S=X\tr{X}$, and performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. We may then represent $S$ in some arbitrary number of dimensions, $k$, by picking the $k$ largest eigenvectors of $S$. In this case, we are interested in
+First, take the unknown new locations and putting them in an $n \times p$ matrix, $X$. Let $S=X\tr{X}$; performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. We may then represent $S$ in some arbitrary number of dimensions, $k$\footnote{We usually want $k<p$ to reduce the dimensionality of the problem.}, by picking the $k$ largest eigenvalues of $S$. In this case, we are interested in
 
 \begin{equation}
 \tilde{X}=\tilde{U}\tilde{\Lambda}^{1/2}.
@@ -87,7 +87,7 @@ Taking the unknown new locations and putting them in an $n \times p$ matrix, $X$
 
 where a tilde indicates the $n \times k$ versions of $X$, $\Lambda$ and $U$.
 
-We can relate $D$ to $S$ by first defining
+We can relate $D$ to $S$ by first defining:
 
 \begin{equation}
 H = I-\frac{1}{n}\mathbf{1}\tr{\mathbf{1}}.
@@ -105,29 +105,29 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 
 \subsection{Inserting new points into the configuration}
 
-It is possible that we may be in a position where the new coordinate system has been found by MDS but more data has been collected afterward. In this case we would like to insert those new points into the configuration given by MDS\footnote{The insertion problem is also known as the ``out-of-sample problem''}. A number of methods have been developed over the past 40 years. Two are covered here, first by Gower (\cite{gower1968}) and then that of Trosset \& Priebe (\cite{Trosset2008}).
+It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation; for example when further data is collected, or in order to predict over points not in the sample. In this case we would like to insert those new points into the configuration given by MDS\footnote{The insertion problem is also known as the ``out-of-sample problem'' (\cite{Trosset2008})}. A number of methods have been developed over the past 40 years. Two are covered here, first by \cite{gower1968} and then that of \cite{Trosset2008}.
 
 \subsubsection{Gower's interpolation} 
 
-Gower's method relies on taking a single new point, and inserting it into a new dimension in the reconfiguration and letting the point lie there; the extra dimension could then be projected on to the old axes. The technical details of the computation are detailed first, followed by some problems with this method. 
+Gower's method relies on taking a single new point $x_{\text{new}}$, and inserting at its distance from the original points ($\tilde{X}$) into a new dimension, orthogonal to $\tilde{X}$; the extra dimension is then be projected on to the old axes. The technical details of the computation are detailed first, followed by some arguments against using this method. 
 
 We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\text{new}}$ using:
 
 \begin{equation}
-\tilde{x}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{X} \mathbf{d},
+\tilde{x}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d},
 \label{gower}
 \end{equation}
 
-here $\Lambda$ and $\tr{X}$ are as above, $\mathbf{d}$ is defined as the distance between $x_{\text{new}}$ and the points in the original $X$. This formula (\ref{gower}) is commonly referred to as ``Gower's interpolation.''
+here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($m \cross n$) are as above, $\mathbf{d}$($n \cross 1$) is defined as the distance between $x_{\text{new}}$ and the points in the original $\tilde{X}$. This formula (\ref{gower}) is commonly referred to as ``Gower's interpolation.''
 
 Although the calculation is simple, it hides important pitfalls. 
 
 \begin{enumerate}
-\item If the eigenvectors in $\Lambda$ are not the true eigenvectors then we may insert the point incorrectly. For example, if the sample is taken from only half of the space, since we don't have full information about the domain or, more pathologically, there were a trend in the sample locations. This would lead to the incorrect eigenvectors being obtained.
+\item If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ are not the true eigenvalues; we may then insert the point incorrectly. Eigenvect, if the sample is taken from only half of the space, since we don't have full information about the domain or, more pathologically, there were a trend in the sample locations. This would lead to the incorrect eigenvalues being calculated.
 
-\item In the course of the projection onto the original MDS axes, we lose one of the coordinates (effectively truncating a dimension.) It is possible that the point was supposed to not lie in the plane but rather in an extra dimension and its distance was truncated. This can cause distortions in the point configuration. An example of this is illustrated in \fig{bojinsert}. A more complete explanation and characterization of this problem is given in \cite{Boj2009}. 
+\item In the course of the projection onto the original MDS axes, we lose one of the coordinates (effectively truncating a dimension.) If the MDS axes were in two dimensions, it is possible that the point was not supposed to lie in the plane but rather this an extra dimension and its distance was truncated. This can cause distortions in the point configuration. An example of this is illustrated in \fig{bojinsert}. A more complete explanation and characterization of this problem is given in \cite{Boj2009}. 
 
-\item This error is compounded when more than one point is added to the MDS configuration. For example, say MDS has been performed on some points and then mapped them into the plane. Then suppose that points are added into this configuration using Gower's interpolation. When the first point is added say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2dia} panel 2. 
+\item The above distortion is compounded when more than one point is added to the MDS configuration. For example, say MDS has been performed on some set of points and then mapped them into the plane. Then suppose that new points are added into this configuration using Gower's interpolation. When the first point is added say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2dia} panel 2. 
 
 \end{enumerate}
 
@@ -140,7 +140,7 @@ Although the calculation is simple, it hides important pitfalls.
 \label{bojinsert}
 \end{figure}
 
-Item (1) can be rectified by using a grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space. The second and third points are linked, and combined lead us to believe that Gower's interpolation does not offer a solution to the insertion problem; we are both unable to insert points more than one at a time (thus making computation expensive) and, more importantly, are unable to insert points accurately without changing the representation space (\cite{Trosset2008}.)
+Item (1) can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space. The second and third points are linked, and combined lead us to believe that Gower's interpolation does not offer a solution to the insertion problem; we are both unable to insert points more than one at a time (thus making computation expensive) and, more importantly, are unable to insert points accurately without changing the representation space (\cite{Trosset2008}.)
 
 
 % diagram CROP THIS ON MAC 
@@ -148,7 +148,7 @@ Item (1) can be rectified by using a grid on the domain to calculate the eigen-d
 \centering
 % trim order l b r t
 \includegraphics[trim=8in 1in 1in 1in]{figs/gowererror.pdf} \\
-\caption{MDS configuration for the domain in \fig{wt2dia}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation.The red points should be positioned in the ``holes'' in the black grid.}
+\caption{MDS configuration for the domain in \fig{wt2dia}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation from the initial MDS configuration. The red points should be positioned in the ``holes'' in the black grid.}
 \label{gowererror}
 \end{figure}
 
@@ -161,12 +161,14 @@ Item (1) can be rectified by using a grid on the domain to calculate the eigen-d
 
 \section{Finding the within-area distances}
 
-The within-area distances to be fed to MDS are found using a novel algorithm. This works by tracing the inside sides of the polygon and then modifying the path by deleting and replacing portions of the path. Given that there is no direct path within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
+The within-area distances to be fed to MDS are found using a novel algorithm. This works by tracing the inside sides of the polygon and then modifying the path by deleting and replacing portions of the path. 
+
+Given that there is no direct path within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
 
 \begin{enumerate}
-\item Create initial path by drawing a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)) and where they meet the boundary of $\Gamma$ and start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary (\fig{wdia}, ($ii$).) Choose the shorter of these add the paths between $p_1$, $p_2$ and the boundary and this is the starting path(\fig{wdia}, ($iii$).) 
-\item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the line between $v_1$ and $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) and the line between $v_1$ and $v_3$ lies inside $\Gamma$ then delete $v_2$ (\fig{wdia}, ($iv$) and ($vi$).) This iterates over the entire path once, deleting all superfluous vertices. 
-\item Given a triple of vertices, $v_1$, $v_2$, $v_3$ if the path $v_1$, some subset of the vertices of $\Gamma$, $v_3$ is shorter than the path ($v_1$, $v_2$, $v_3$) then replace $v_2$ with those elements of $\Gamma$ (\fig{wdia}, ($v$)). 
+\item Draw a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)) and where they meet the boundary of $\Gamma$. Start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary (\fig{wdia}, ($ii$).) Choose the shorter of these add the paths between $p_1$, $p_2$ and the boundary and this is the starting path(\fig{wdia}, ($iii$).) 
+\item Given a triple of vertices, ($v_i$, $v_{i+1}$, $v_{i+2}$) if the line between $v_i$ and $v_{i+2}$ is shorter than the path ($v_i$, $v_{i+1}$, $v_{i+2}$) and the line between $v_i$ and $v_{i+2}$ lies inside $\Gamma$ then delete $v_{i+1}$ (\fig{wdia}, ($iv$) and ($vi$).) This iterates over the entire path once, deleting all superfluous vertices. 
+\item Given a triple of vertices, ($v_i$, $v_{i+1}$, $v_{i+2}$) if the path ($v_i$, some subset of the vertices of $\Gamma$, $v_{i+2}$) is shorter than the path ($v_i$, $v_{i+1}$, $v_{i+2}$) then replace $v_{i+1}$ with those elements of $\Gamma$ (\fig{wdia}, ($v$)). 
 \item We then iterate between steps 2 and 3 until there has been no change from one run to the next (ie. convergence) or there have been too many iterations (\fig{wdia}, ($vi$).)
 \end{enumerate}
 
@@ -175,7 +177,7 @@ The within-area distances to be fed to MDS are found using a novel algorithm. Th
 \centering
 % trim order l b r t
 \includegraphics[trim=0in 0.5in 0in 0.25in, width=4in]{figs/wdia.pdf} \\
-\caption{($i$) to ($vi$) show the path as the algorithm progresses from initial state to final, shortest path. }
+\caption{The green lines in ($i$) to ($vi$) show the path as the algorithm progresses from initial state to final, shortest path (bottom right.) }
 \label{wdia}
 % generate /phd-smoothing/mds-writeup/figs/distanceexplanation.R
 \end{figure}
@@ -187,7 +189,7 @@ The within-area distances to be fed to MDS are found using a novel algorithm. Th
 
 \section{Multidimensional scaling for complex domains}
 
-Tying together the two previous sections, we may now look at how, using MDS and our new algorithm, we can reconfigure the points in our domain.
+Tying together the previous sections, we may now look at how, using MDS and our new algorithm, we can reconfigure the points in our domain.
 
 \Fig{ramsay-mds} shows MDS being performed on the Ramsay horseshoe (\cite{ramsay}.) From this it is clear to see that performing MDS separates the two arms of the horseshoe.
 
