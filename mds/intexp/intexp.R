@@ -1,7 +1,12 @@
 # integration experiment.
 
 # uses the functions from section 3.2.1 of the Red Book
-
+# data
+size<-c(1.42,1.58,1.78,1.99,1.99,1.99,2.13,2.13,2.13, 
+2.32,2.32,2.32,2.32,2.32,2.43,2.43,2.78,2.98,2.98) 
+wear<-c(4.0,4.2,2.5,2.6,2.8,2.4,3.2,2.4,2.6,4.8,2.9, 
+3.8,3.0,2.7,3.1,3.3,3.0,2.8,1.7) 
+x<-size-min(size);x<-x/max(x) 
 
 #R(x,z)forcubicsplineon[0,1]
 rk<-function(x,z){
@@ -18,23 +23,6 @@ spl.X<-function(x,xk){
    X[,3:q]<-outer(x,xk,FUN=rk)#andremainingtoR(x,xk) 
    X 
 } 
-
-
-
-size<-c(1.42,1.58,1.78,1.99,1.99,1.99,2.13,2.13,2.13, 
-2.32,2.32,2.32,2.32,2.32,2.43,2.43,2.78,2.98,2.98) 
-wear<-c(4.0,4.2,2.5,2.6,2.8,2.4,3.2,2.4,2.6,4.8,2.9, 
-3.8,3.0,2.7,3.1,3.3,3.0,2.8,1.7) 
-x<-size-min(size);x<-x/max(x) 
-plot(x,wear,xlab="Scaledenginesize",ylab="Wearindex") 
-
-xk<-1:4/5 #choosesomeknots 
-X<-spl.X(x,xk)#generatemodelmatrix 
-mod.1<-lm(wear~X-1)# fitmodel 
-xp<-0:100/100 # xvaluesforprediction 
-Xp<-spl.X(xp,xk)# predictionmatrix 
-lines(xp,Xp%*%coef(mod.1))#plotfittedspline 
-
 
 spl.S<-function(xk){ 
    # set up the penalized regression spline penalty matrix, 
@@ -61,13 +49,52 @@ prs.fit<-function(y,x,xk,lambda) {
    lm(y~Xa-1)#fitandreturnpenalizedregressionspline 
 } 
 
+xp<-0:100/100 # xvaluesforprediction 
 xk<-1:7/8 #choosesomeknots 
+xk<-unique(x)
 mod.2<-prs.fit(wear,x,xk,0.0001)# fitpen.reg.spline 
 Xp<-spl.X(xp,xk)#matrixtomapparamstofittedvaluesatxp 
-plot(x,wear);lines(xp,Xp%*%coef(mod.2))#plotdata&spl.fit 
+
+par(mfrow=c(3,1))
+#plot data & spl.fit 
+plot(x,wear, main="normal fit")
+lines(xp,Xp%*%coef(mod.2))
+abline(v=xk,col="green",lwd=2)
+rug(x,lwd=2)
 
 
 
+# now crazy things happen
+# move around the values of x and xk
+xk<-1:7/8 #choose some knots 
+xp<-0:120/100 # xvaluesforprediction 
 
+x[x>xk[3]]<-x[x>xk[3]]+0.2
+xk[xk>xk[3]]<-xk[xk>xk[3]]+0.2
+x[x>xk[4] & x<xk[7]]<-x[x>xk[4] & x<xk[7]]-0.1
+xk[xk>xk[4] & xk<xk[7]]<-xk[xk>xk[4] & xk<xk[7]]-0.2
+
+
+mod.2<-prs.fit(wear,x,xk,0.0001)# fitpen.reg.spline 
+Xp.move<-spl.X(xp,xk)#matrix to map params to fittedv alues at xp 
+
+
+#plot data & spl.fit 
+plot(x,wear, main="squash fit")
+lines(xp,Xp.move%*%coef(mod.2))
+abline(v=xk,col="green",lwd=2)
+rug(x,lwd=2)
+
+
+# fixing...
+
+
+spl.S<-function(xk){ 
+   # set up the penalized regression spline penalty matrix, 
+   # given knot sequence xk 
+   q<-length(xk)+2;S<-matrix(0,q,q) # initialize matrix to 0 
+   S[3:q,3:q]<-outer(xk,xk,FUN=rk) # fill in non-zero part 
+   S 
+} 
 
 
