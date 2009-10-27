@@ -49,9 +49,9 @@ prs.fit<-function(y,x,xk,lambda) {
    lm(y~Xa-1)#fitandreturnpenalizedregressionspline 
 } 
 
-xp<-0:100/100 # xvaluesforprediction 
+xp<-seq(0,1,len=120) # xvaluesforprediction 
 xk<-1:7/8 #choosesomeknots 
-xk<-unique(x)
+#xk<-c(unique(x),1.3)
 mod.2<-prs.fit(wear,x,xk,0.0001)# fitpen.reg.spline 
 Xp<-spl.X(xp,xk)#matrixtomapparamstofittedvaluesatxp 
 
@@ -67,16 +67,20 @@ rug(x,lwd=2)
 # now crazy things happen
 # move around the values of x and xk
 xk<-1:7/8 #choose some knots 
-xp<-0:120/100 # xvaluesforprediction 
+xp<-seq(0,1.2,len=120) # xvaluesforprediction 
+
 
 x[x>xk[3]]<-x[x>xk[3]]+0.2
+xp.m<-xp
+xp.m[xp.m>xk[3]]<-xp.m[xp.m>xk[3]]+0.2
 xk[xk>xk[3]]<-xk[xk>xk[3]]+0.2
 x[x>xk[4] & x<xk[7]]<-x[x>xk[4] & x<xk[7]]-0.1
+xp.m[xp.m>xk[4] & xp.m<xk[7]]<-xp.m[xp.m>xk[4] & xp.m<xk[7]]-0.1
 xk[xk>xk[4] & xk<xk[7]]<-xk[xk>xk[4] & xk<xk[7]]-0.2
 
 
 mod.2<-prs.fit(wear,x,xk,0.0001)# fitpen.reg.spline 
-Xp.move<-spl.X(xp,xk)#matrix to map params to fittedv alues at xp 
+Xp.move<-spl.X(xp.m,xk)#matrix to map params to fittedv alues at xp 
 
 
 #plot data & spl.fit 
@@ -96,5 +100,15 @@ spl.S<-function(xk){
    S[3:q,3:q]<-outer(xk,xk,FUN=rk) # fill in non-zero part 
    S 
 } 
+
+# migth be differentials of R
+Rd<-function(x,z){1/2*((z-1/2)^2-1/2)-1/3*(abs(x-z)-1/2)+1/24}
+Rd<-function(x,z){1/12*(6*(z^2-z-abs(z-x)+z(-x)^2)+2)}
+Rdd<-function(x,xk1,xk2){Rd(x,xk1)*Rd(x,xk2)}
+integrate(Rdd,lower=0,upper=1,xk1=xk[1],xk2=xk[2])
+rk(xk[1],xk[2])
+
+
+
 
 
