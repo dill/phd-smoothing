@@ -64,51 +64,113 @@ rug(x,lwd=2)
 
 
 
+#########################################################################
+
+
 # now crazy things happen
 # move around the values of x and xk
 xk<-1:7/8 #choose some knots 
 xp<-seq(0,1.2,len=120) # xvaluesforprediction 
+x.m<-x
 
-
-x[x>xk[3]]<-x[x>xk[3]]+0.2
+xk.m<-xk
+x.m[x.m>xk.m[3]]<-x.m[x.m>xk.m[3]]+0.2
 xp.m<-xp
-xp.m[xp.m>xk[3]]<-xp.m[xp.m>xk[3]]+0.2
-xk[xk>xk[3]]<-xk[xk>xk[3]]+0.2
-x[x>xk[4] & x<xk[7]]<-x[x>xk[4] & x<xk[7]]-0.1
-xp.m[xp.m>xk[4] & xp.m<xk[7]]<-xp.m[xp.m>xk[4] & xp.m<xk[7]]-0.1
-xk[xk>xk[4] & xk<xk[7]]<-xk[xk>xk[4] & xk<xk[7]]-0.2
+xp.m[xp.m>xk.m[3]]<-xp.m[xp.m>xk.m[3]]+0.2
+xk.m[xk.m>xk.m[3]]<-xk.m[xk.m>xk.m[3]]+0.2
+x.m[x.m>xk.m[4] & x.m<xk.m[7]]<-x.m[x.m>xk.m[4] & x.m<xk.m[7]]-0.1
+xp.m[xp.m>xk.m[4] & xp.m<xk.m[7]]<-xp.m[xp.m>xk.m[4] & xp.m<xk.m[7]]-0.1
+xk.m[xk.m>xk.m[4] & xk.m<xk.m[7]]<-xk.m[xk.m>xk.m[4] & xk.m<xk.m[7]]-0.2
 
 
-mod.2<-prs.fit(wear,x,xk,0.0001)# fitpen.reg.spline 
-Xp.move<-spl.X(xp.m,xk)#matrix to map params to fittedv alues at xp 
+mod.2<-prs.fit(wear,x.m,xk.m,0.0001)# fitpen.reg.spline 
+Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fittedv alues at xp 
 
 
 #plot data & spl.fit 
-plot(x,wear, main="squash fit")
+plot(x.m,wear, main="squash fit")
 lines(xp,Xp.move%*%coef(mod.2))
-abline(v=xk,col="green",lwd=2)
+abline(v=xk.m,col="green",lwd=2)
 rug(x,lwd=2)
 
+S<-spl.S(xk.m)
 
-# fixing...
+
+#### fixing...
+
+# 2nd differential of R
+Rd<-function(x,z){1/12*(6*(z^2-z-abs(z-x)+(z-x)^2)+2)}
+# product
+Rdd<-function(x,xk1,xk2){Rd(x,xk1)*Rd(x,xk2)}
+#integrate(Rdd,lower=0,upper=1,xk1=xk[1],xk2=xk[2])
+#rk(xk[1],xk[2])
+
+# function to integrate d^2/dx^2 R(x*_i,x*_j)
+intR<-function(xk1,xk2,xk,xk.m,max.x){
+
+   intrange<-c(0,xk.m,max.x)
+
+   # find the weights
+   #w<-1/abs(diff(intrange)/diff(c(0,1:7/8,1)))
+   w<-rep(1,length(intrange))
+
+   #cat("w=",w,"\n")
+
+   # return vector
+   ret<-rep(0,length(intrange))
+
+   for(i in 1:(length(intrange)-1)){
+      ret[i]<-integrate(Rdd,lower=intrange[i],upper=intrange[i+1],
+                        xk1=xk1,xk2=xk2)$value
+      ret[i]<-ret[i]*w[i]
+   }
+   sum(ret)
+}
 
 
-spl.S<-function(xk){ 
+spl.S<-function(xk,xk.m,max.x){ 
    # set up the penalized regression spline penalty matrix, 
    # given knot sequence xk 
-   q<-length(xk)+2;S<-matrix(0,q,q) # initialize matrix to 0 
-   S[3:q,3:q]<-outer(xk,xk,FUN=rk) # fill in non-zero part 
-   S 
+   q<-length(xk)+2
+   S<-matrix(0,q,q) # initialize matrix to 0 
+
+   T<-matrix(0,q-2,q-2)
+
+   for(i in 1:(q-2)){
+      for(j in 1:(q-2)){
+         # compute integral of d^2/dx^2 R(x*_i,x*_j)
+         T[i,j]<-intR(xk.m[i],xk.m[j],xk,xk.m,max.x)
+      }
+   }
+  
+   # by symmetry 
+   #T<-T+t(T)-diag(T)
+
+   S[3:q,3:q]<-T # fill in non-zero part 
+   S
 } 
 
-# migth be differentials of R
-Rd<-function(x,z){1/2*((z-1/2)^2-1/2)-1/3*(abs(x-z)-1/2)+1/24}
-Rd<-function(x,z){1/12*(6*(z^2-z-abs(z-x)+z(-x)^2)+2)}
-Rdd<-function(x,xk1,xk2){Rd(x,xk1)*Rd(x,xk2)}
-integrate(Rdd,lower=0,upper=1,xk1=xk[1],xk2=xk[2])
-rk(xk[1],xk[2])
 
+prs.fit<-function(y,x,xk,xk.m,lambda) {
+   q<-length(xk)+2 #dimension of basis 
+   n<-length(x) #number of data 
+   # create augmented model matrix.... 
+   Xa<-rbind(spl.X(x,xk),mat.sqrt(spl.S(xk,xk.m,max(x)))*sqrt(lambda)) 
+   y[(n+1):(n+q)]<-0 #augment the data vector 
+   lm(y~Xa-1)#fit and return penalized regression spline 
+} 
 
+#library(debug)
+#mtrace(intR)
+#mtrace(spl.S)
+mod.2<-prs.fit(wear,x.m,xk,xk.m,0.0001)# fitpen.reg.spline 
+Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fittedv alues at xp 
 
+modS<-spl.S(xk,xk.m,max(x))
 
+#plot data & spl.fit 
+plot(x.m,wear, main="fixed fit?")
+lines(xp,Xp.move%*%coef(mod.2))
+abline(v=xk.m,col="green",lwd=2)
+rug(x,lwd=2)
 
