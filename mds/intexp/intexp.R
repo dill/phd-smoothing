@@ -38,15 +38,15 @@ mat.sqrt<-function(S){
    rS<-d$vectors%*%diag(d$values^0.5)%*%t(d$vectors) 
 } 
 
-# functiontofitpenalizedregressionsplinetox,ydata, 
-# withknotsxk,givensmoothingparameter,lambda. 
+# functiont of it penalized regression spline to x,y data, 
+# with knots xk,given smoothing parameter, lambda. 
 prs.fit<-function(y,x,xk,lambda) {
-   q<-length(xk)+2 #dimensionofbasis 
-   n<-length(x) #numberofdata 
-   # createaugmentedmodelmatrix.... 
+   q<-length(xk)+2 #dimension of basis 
+   n<-length(x) #number of data 
+   # create augmented model matrix.... 
    Xa<-rbind(spl.X(x,xk),mat.sqrt(spl.S(xk))*sqrt(lambda)) 
-   y[(n+1):(n+q)]<-0 #augmentthedatavector 
-   lm(y~Xa-1)#fitandreturnpenalizedregressionspline 
+   y[(n+1):(n+q)]<-0 #augment the data vector 
+   lm(y~Xa-1)#fit and return penalized regression spline 
 } 
 
 xp<-seq(0,1,len=120) # xvaluesforprediction 
