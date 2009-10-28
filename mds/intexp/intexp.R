@@ -151,7 +151,7 @@ spl.S<-function(xk,xk.m,max.x){
 } 
 
 
-prs.fit<-function(y,x,xk,xk.m,lambda) {
+prs.fit<-function(y,x,xk.m,xk,lambda) {
    q<-length(xk)+2 #dimension of basis 
    n<-length(x) #number of data 
    # create augmented model matrix.... 
