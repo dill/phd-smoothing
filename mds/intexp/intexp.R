@@ -70,7 +70,7 @@ rug(x,lwd=2)
 # now crazy things happen
 # move around the values of x and xk
 xk<-1:7/8 #choose some knots 
-xp<-seq(0,1.2,len=120) # xvaluesforprediction 
+xp<-seq(0,1,len=100) # xvaluesforprediction 
 
 
 # don't think that this works since the knots are at the folds
@@ -89,15 +89,15 @@ x.m<-x
 xp.m<-xp
 xk.m<-xk
 x.m[x.m>0.3 & x.m<0.7]<-x.m[x.m>0.3 & x.m<0.7]*0.8
-xk.m[xk.m>0.3 & xk.m<0.7]<-xk.m[xk.m>0.3 & xk.m<0.7]*0.8
+#xk.m[xk.m>0.3 & xk.m<0.7]<-xk.m[xk.m>0.3 & xk.m<0.7]*0.8
 xp.m[xp.m>0.3 & xp.m<0.7]<-xp.m[xp.m>0.3 & xp.m<0.7]*0.8
-x.m[x.m>0.7]<-x.m[x.m>0.7]-0.24
-xk.m[xk.m>0.7]<-xk.m[xk.m>0.7]-0.24
-xp.m[xp.m>0.7]<-xp.m[xp.m>0.7]-0.24
+#x.m[x.m>0.7]<-x.m[x.m>0.7]-0.24
+#xk.m[xk.m>0.7]<-xk.m[xk.m>0.7]-0.24
+#xp.m[xp.m>0.7]<-xp.m[xp.m>0.7]-0.24
+
 
 mod.2<-prs.fit(wear,x.m,xk.m,0.0001)# fitpen.reg.spline 
-Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fittedv alues at xp 
-
+Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fitted values at xp 
 
 #plot data & spl.fit 
 plot(x,wear, main="squash fit")
@@ -107,6 +107,11 @@ rug(x,lwd=2)
 
 S<-spl.S(xk.m)
 
+# plot the raw fit without transform back
+plot(x.m,wear, main="raw squash fit")
+lines(xp.m,Xp.move%*%coef(mod.2))
+abline(v=xk.m,col="green",lwd=2)
+rug(x.m,lwd=2)
 
 #### fixing...
 
@@ -120,21 +125,30 @@ Rdd<-function(x,xk1,xk2){Rd(x,xk1)*Rd(x,xk2)}
 # function to integrate d^2/dx^2 R(x*_i,x*_j)
 intR<-function(xk1,xk2,xk,xk.m,max.x){
 
-   intrange<-c(0,xk.m,max.x)
+   #intrange<-c(0,xk.m,max.x)
+
+   #intrange1<-c(0,0.3,0.7,max.x)
+   #intrange2<-c(0,0.3*0.8,0.7-0.24,1)
 
    # find the weights
-   w<-abs(diff(intrange)/diff(c(0,1:7/8,1)))^4
-   #w<-rep(1,length(intrange))
+   #w<-abs(diff(intrange)/diff(c(0,1:7/8,1)))^4
+   #w<-rep(1,length(intrange1))
+
+   #w<-abs(diff(intrange1)/diff(intrange2))^4
+
+   # bespoke
+   intrange2<-c(0,0.3,0.7*0.8,1)
+   w<-c(1,0.8,0.14)
 
    #cat("w=",w,"\n")
 
    # return vector
-   ret<-rep(0,length(intrange))
+   ret<-rep(0,length(intrange2))
 
-   for(i in 1:(length(intrange)-1)){
-      ret[i]<-integrate(Rdd,lower=intrange[i],upper=intrange[i+1],
+   for(i in 1:(length(intrange2)-1)){
+      ret[i]<-integrate(Rdd,lower=intrange2[i],upper=intrange2[i+1],
                         xk1=xk1,xk2=xk2)$value
-      ret[i]<-ret[i]*w[i]
+      ret[i]<-ret[i]*w[i]^-1
    }
    sum(ret)
 }
@@ -186,15 +200,15 @@ rug(x,lwd=2)
 
 
 
-
-mod.2<-prs.fit(wear,x,xk,xk,0.0001)# fitpen.reg.spline 
-Xp.move<-spl.X(xp,xk)#matrix to map params to fittedv alues at xp 
-
-#plot data & spl.fit 
-plot(x,wear, main="old fit, new S estimation")
-lines(xp,Xp.move%*%coef(mod.2))
-abline(v=xk,col="green",lwd=2)
-rug(x,lwd=2)
+## code to test the S calculation
+#mod.2<-prs.fit(wear,x,xk,xk,0.0001)# fitpen.reg.spline 
+#Xp.move<-spl.X(xp,xk)#matrix to map params to fittedv alues at xp 
+#
+##plot data & spl.fit 
+#plot(x,wear, main="old fit, new S estimation")
+#lines(xp,Xp.move%*%coef(mod.2))
+#abline(v=xk,col="green",lwd=2)
+#rug(x,lwd=2)
 
 
 
