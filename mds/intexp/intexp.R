@@ -69,7 +69,7 @@ rug(x,lwd=2)
 
 # now crazy things happen
 # move around the values of x and xk
-xk<-1:7/8 #choose some knots 
+xk<-seq(1/8,7/8,len=8) #choose some knots 
 xp<-seq(0,1,len=100) # xvaluesforprediction 
 
 
@@ -88,12 +88,14 @@ xp<-seq(0,1,len=100) # xvaluesforprediction
 x.m<-x
 xp.m<-xp
 xk.m<-xk
-x.m[x.m>0.3 & x.m<0.7]<-x.m[x.m>0.3 & x.m<0.7]*0.8
+x.m[x.m>0.5]<-x.m[x.m>0.5]*0.8
 #xk.m[xk.m>0.3 & xk.m<0.7]<-xk.m[xk.m>0.3 & xk.m<0.7]*0.8
-xp.m[xp.m>0.3 & xp.m<0.7]<-xp.m[xp.m>0.3 & xp.m<0.7]*0.8
+xp.m[xp.m>0.5]<-xp.m[xp.m>0.5]*0.8
 #x.m[x.m>0.7]<-x.m[x.m>0.7]-0.24
 #xk.m[xk.m>0.7]<-xk.m[xk.m>0.7]-0.24
 #xp.m[xp.m>0.7]<-xp.m[xp.m>0.7]-0.24
+#xp.m<-sort(xp.m)
+#x.m<-sort(x.m)
 
 
 mod.2<-prs.fit(wear,x.m,xk.m,0.0001)# fitpen.reg.spline 
@@ -105,7 +107,7 @@ lines(xp,Xp.move%*%coef(mod.2))
 abline(v=xk.m,col="green",lwd=2)
 rug(x,lwd=2)
 
-S<-spl.S(xk.m)
+#S<-spl.S(xk.m)
 
 # plot the raw fit without transform back
 plot(x.m,wear, main="raw squash fit")
@@ -137,8 +139,9 @@ intR<-function(xk1,xk2,xk,xk.m,max.x){
    #w<-abs(diff(intrange1)/diff(intrange2))^4
 
    # bespoke
-   intrange2<-c(0,0.3,0.7*0.8,1)
-   w<-c(1,0.8,0.14)
+   intrange2<-c(0,0.5,1*0.8)
+   #w<-c(1,0.8,0.14)
+   w<-c(1,0.8)
 
    #cat("w=",w,"\n")
 
@@ -148,7 +151,7 @@ intR<-function(xk1,xk2,xk,xk.m,max.x){
    for(i in 1:(length(intrange2)-1)){
       ret[i]<-integrate(Rdd,lower=intrange2[i],upper=intrange2[i+1],
                         xk1=xk1,xk2=xk2)$value
-      ret[i]<-ret[i]*w[i]^-1
+      ret[i]<-ret[i]*w[i]^10
    }
    sum(ret)
 }
@@ -189,7 +192,7 @@ prs.fit<-function(y,x,xk,xk.m,lambda) {
 mod.2<-prs.fit(wear,x.m,xk,xk.m,0.0001)# fitpen.reg.spline 
 Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fittedv alues at xp 
 
-modS<-spl.S(xk.m,xk,max(x.m))
+#modS<-spl.S(xk.m,xk,max(x.m))
 
 #plot data & spl.fit 
 plot(x,wear, main="fixed fit?")
