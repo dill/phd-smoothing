@@ -118,12 +118,12 @@ We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\t
 \label{gower}
 \end{equation}
 
-here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($m \cross n$) are as above, $\mathbf{d}$($n \cross 1$) is defined as the distance between $x_{\text{new}}$ and the points in the original $\tilde{X}$. This formula (\ref{gower}) is commonly referred to as ``Gower's interpolation.''
+here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($m \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) is defined as the distance between $x_{\text{new}}$ and the points in the original $\tilde{X}$. This formula (\ref{gower}) is commonly referred to as ``Gower's interpolation.''
 
 Although the calculation is simple, it hides important pitfalls. 
 
 \begin{enumerate}
-\item If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ are not the true eigenvalues; we may then insert the point incorrectly. Eigenvect, if the sample is taken from only half of the space, since we don't have full information about the domain or, more pathologically, there were a trend in the sample locations. This would lead to the incorrect eigenvalues being calculated.
+\item If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ are not the true eigenvalues; we may then insert the point incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, hence only a portion of the full information about the domain iss included in the model. This would lead to the incorrect eigenvalues being calculated.
 
 \item In the course of the projection onto the original MDS axes, we lose one of the coordinates (effectively truncating a dimension.) If the MDS axes were in two dimensions, it is possible that the point was not supposed to lie in the plane but rather this an extra dimension and its distance was truncated. This can cause distortions in the point configuration. An example of this is illustrated in \fig{bojinsert}. A more complete explanation and characterization of this problem is given in \cite{Boj2009}. 
 
@@ -140,7 +140,7 @@ Although the calculation is simple, it hides important pitfalls.
 \label{bojinsert}
 \end{figure}
 
-Item (1) can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space. The second and third points are linked, and combined lead us to believe that Gower's interpolation does not offer a solution to the insertion problem; we are both unable to insert points more than one at a time (thus making computation expensive) and, more importantly, are unable to insert points accurately without changing the representation space (\cite{Trosset2008}.)
+Item (1) can be rectified by using an appropriately spaced grid (or using Landmark MDS (\cite{landmark}), see below) on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space. The second and third points are linked, and combined lead us to believe that Gower's interpolation does not offer a solution to the insertion problem; we are both unable to insert points more than one at a time (thus making computation expensive) and, more importantly, are unable to insert points accurately without changing the representation space (\cite{Trosset2008}.)
 
 
 % diagram CROP THIS ON MAC 
