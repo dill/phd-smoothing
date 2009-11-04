@@ -77,7 +77,7 @@ xk<-seq(1/8,7/8,len=8) #choose some knots
 xp<-seq(0,1,len=100) # xvaluesforprediction 
 
 # expansion/conraction factor
-expf<-2
+expf<-0.8
 
 # simpler
 x.m<-x
@@ -86,7 +86,7 @@ xk.m<-xk
 x.m[x.m>0.5]<-x.m[x.m>0.5]*expf
 xp.m[xp.m>0.5]<-xp.m[xp.m>0.5]*expf
 
-#xp.m<-sort(xp.m)
+xp.m<-sort(xp.m)
 
 #xk.m[xk.m>0.5]<-xk.m[xk.m>0.5]*expf
 
