@@ -1,9 +1,7 @@
 % Writeup for MDS
 % David Lawrence Miller
 % d.l.miller@bath.ac.uk
- 
-% Started : 22 August 2008
- 
+  
 \documentclass[a4paper,10pt]{amsart}
  
 % Load some packages
@@ -143,14 +141,18 @@ Although the calculation is simple, it hides important pitfalls.
 Item (1) can be rectified by using an appropriately spaced grid (or using Landmark MDS (\cite{landmark}), see below) on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space. The second and third points are linked, and combined lead us to believe that Gower's interpolation does not offer a solution to the insertion problem; we are both unable to insert points more than one at a time (thus making computation expensive) and, more importantly, are unable to insert points accurately without changing the representation space (\cite{Trosset2008}.)
 
 
-% diagram CROP THIS ON MAC 
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[trim=8in 1in 1in 1in]{figs/gowererror.pdf} \\
+\includegraphics[width=4in]{figs/gowererror.pdf} \\
 \caption{MDS configuration for the domain in \fig{wt2dia}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation from the initial MDS configuration. The red points should be positioned in the ``holes'' in the black grid.}
 \label{gowererror}
 \end{figure}
+
+
+\subsection{Landmark MDS}
+
+
 
 \subsection{The method of Trosset and Priebe}
 
