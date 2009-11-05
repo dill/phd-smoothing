@@ -51,7 +51,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
  
    # perform mds on D
    # options needed for insertion to work
-   mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
+   mds<-cmdscale(D,eig=TRUE,x.ret=TRUE,k=2)
  
  
    # sample points insertion
@@ -67,25 +67,31 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    samp.data<-list(x=c(),y=c(),z=c())
    samp.data$x<-samp.mds[,1]
    samp.data$y<-samp.mds[,2]
-   samp.data$z<-gendata$z[samp.ind]+noise
+   samp.data$z<-gendata.samp$z+noise
  
    # non-mapped sample data
    nsamp.data<-list(x=c(),y=c(),z=c())
-   nsamp.data$x<-gendata$x[samp.ind]
-   nsamp.data$y<-gendata$y[samp.ind]
-   nsamp.data$z<-gendata$z[samp.ind]+noise
+   nsamp.data$x<-gendata.samp$x
+   nsamp.data$y<-gendata.samp$y
+   nsamp.data$z<-gendata.samp$z+noise
  
    ### create prediction data
    # non-mapped prediction data
-   npred.data<-list(x=c(),y=c(),z=c())
-   npred.data$x<-gendata$x#[-samp.ind]
-   npred.data$y<-gendata$y#[-samp.ind]
+   npred.data<-list(x=rep(0,length(gendata$x)+length(samp.data$x)),
+                   y=rep(0,length(gendata$x)+length(samp.data$y)))
+   npred.data$x[-samp.ind]<-gendata$x
+   npred.data$y[-samp.ind]<-gendata$y
+   npred.data$x[samp.ind]<-nsamp.data$x
+   npred.data$y[samp.ind]<-nsamp.data$y
  
  
    # put this in the correct format
-   pred.data<-list(x=rep(0,length(gendata$x)),y=rep(0,length(gendata$x)))
-   pred.data$x<-mds$points[,1]
-   pred.data$y<-mds$points[,2]
+   pred.data<-list(x=rep(0,length(gendata$x)+length(samp.data$x)),
+                   y=rep(0,length(gendata$x)+length(samp.data$y)))
+   pred.data$x[-samp.ind]<-mds$points[,1]
+   pred.data$y[-samp.ind]<-mds$points[,2]
+   pred.data$x[samp.ind]<-samp.mds[,1]
+   pred.data$y[samp.ind]<-samp.mds[,2]
  
    ### Now do some fitting and prediction
    ### mapping
@@ -94,7 +100,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    
    ### normal tprs
    b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
-   fv.tprs <- predict(b.tprs,newdata=gendata)
+   fv.tprs <- predict(b.tprs,newdata=npred.data)
    
    ### soap
    knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
@@ -103,7 +109,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE
    knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
    b.soap<-gam(z~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=nsamp.data)
-   fv.soap <- predict(b.soap,newdata=gendata)
+   fv.soap <- predict(b.soap,newdata=npred.data)
  
    # create the image
    gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
@@ -126,7 +132,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
       yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
    
       pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-gendata$z
+      pred.mat[ind]<-gendata.ind$z[ind]
       pred.mat<-matrix(pred.mat,50,50)
       image(xscale,yscale,pred.mat,main="truth",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
@@ -154,9 +160,9 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
  
    
    ### calculate MSEs
-   mses<-list(mds=mean((fv-gendata$z)^2,na.rm=T),
-              tprs=mean((fv.tprs-gendata$z)^2,na.rm=T),
-              soap=mean((fv.soap-gendata$z)^2,na.rm=T))
+   mses<-list(mds=mean((fv-gendata.ind$z[ind])^2,na.rm=T),
+              tprs=mean((fv.tprs-gendata.ind$z[ind])^2,na.rm=T),
+              soap=mean((fv.soap-gendata.ind$z[ind])^2,na.rm=T))
  
    # print them
    #cat("mds MSE=" ,mses$mds,"\n")
