@@ -7,24 +7,36 @@ library(soap)
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
 names(bnd)<-c("x","y")
 
-## Simulate some fitting data, inside boundary...
-gendata <- read.csv("wt2truth.csv",header=TRUE)
+res<-100
 
+## Simulate some fitting data, inside boundary...
+#gendata <- read.csv("wt2truth.csv",header=TRUE)
+gendata<-list(x=c(),y=c(),inside=c())
+m<-res;n<-res
+xm <- seq(-3,3.5,length=m);yn<-seq(-3,3,length=n)
+xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
+onoff<-inSide(bnd,xx,yy)
+gendata$x<-xx
+gendata$y<-yy
+gendata$inside<-onoff
 
 ###################
 # create the grid
 horiz.set<-c()
 hind<-c()
-for(i in 0:9){
-   horiz.set<-c(horiz.set,(1:50)+(50*i*5))
-   hind<-c(hind,rep(i,50))
+for(i in 0:19){
+   horiz.set<-c(horiz.set,(1:res+(res*i*5)))
+   hind<-c(hind,rep(i,res))
+
+
+
 }
 
 vert.set<-c()
 vind<-c()
-for(i in 1:50){
-   vert.set<-c(vert.set,seq(1,50,5)+50*i)
-   vind<-c(vind,seq(1,10,1))
+for(i in 1:res){
+   vert.set<-c(vert.set,seq(1,res,20)+res*i)
+   vind<-c(vind,seq(1,20,1))
 }
 
 
@@ -35,6 +47,13 @@ hgrid.set<-list(x=gendata$x[horiz.set],
 vgrid.set<-list(x=gendata$x[vert.set],
                 y=gendata$y[vert.set],
                 ind=vind)
+
+
+#par(mfrow=c(1,2))
+#plot(hgrid.set)
+#plot(vgrid.set)
+
+
 
 na.ind<-!(is.na(vgrid.set$x)&is.na(vgrid.set$y))
 vgrid.set<-list(x=vgrid.set$x[na.ind],
@@ -95,7 +114,7 @@ v.full.mds<-insert.mds(vgrid.set,gendata,mds,bnd)
 # plot
 plot(mds$points,asp=1,type="n")
 
-for(i in 0:9){
+for(i in 0:19){
    lines(h.full.mds[hgrid.set$ind==i,])
 }
 
