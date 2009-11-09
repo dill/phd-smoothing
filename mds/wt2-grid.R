@@ -27,7 +27,7 @@ gendata$inside<-onoff&onoff2
 # create the grid
 horiz.set<-c()
 hind<-c()
-for(i in 0:19){
+for(i in 1:19){
    horiz.set<-c(horiz.set,(1:res+(res*i*5)))
    hind<-c(hind,rep(i,res))
 }
