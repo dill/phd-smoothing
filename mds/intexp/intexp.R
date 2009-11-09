@@ -10,7 +10,7 @@
 
 
 # different data
-x<-seq(0,1,len=10)
+x<-seq(0,1,len=30)
 y<-x^2
 
 
@@ -77,7 +77,7 @@ xk<-seq(1/8,7/8,len=8) #choose some knots
 xp<-seq(0,1,len=100) # xvaluesforprediction 
 
 # expansion/conraction factor
-expf<-2
+expf<-0.2
 
 # simpler
 x.tmp<-x
@@ -92,13 +92,30 @@ xk.m<-xk.tmp
 x.m<-x.tmp[x.tmp<=0.5]
 xp.m<-xp.tmp[xp.tmp<=0.5]
 
-# bottom squash toward middle
-x.m<-c(x.m,x.tmp[x.tmp>0.5 & x.tmp<=0.75]*-expf)
-xp.m<-c(xp.m,xp.tmp[xp.tmp>0.5 & xp.tmp<=0.75]*-expf)
 
-# top toward middle
-x.m<-c(x.m,x.tmp[x.tmp>0.75 & x.tmp<=1]*expf)
-xp.m<-c(xp.m,xp.tmp[xp.tmp>0.75 & xp.tmp<=1]*expf)
+x.tmp<-x.tmp[x.tmp>0.5]
+x.tmp<-x.tmp-0.75
+x.tmp<-x.tmp*expf
+x.tmp<-x.tmp+0.75
+
+
+
+xp.tmp<-xp.tmp[xp.tmp>0.5]
+xp.tmp<-xp.tmp-0.75
+xp.tmp<-xp.tmp*expf
+xp.tmp<-xp.tmp+0.75
+
+x.m<-c(x.m,x.tmp)
+xp.m<-c(xp.m,xp.tmp)
+
+
+# bottom squash toward middle
+#x.m<-c(x.m,x.tmp[x.tmp>0.5 & x.tmp<=0.75]*-expf)
+#xp.m<-c(xp.m,xp.tmp[xp.tmp>0.5 & xp.tmp<=0.75]*-expf)
+#
+## top toward middle
+#x.m<-c(x.m,x.tmp[x.tmp>0.75 & x.tmp<=1]*expf)
+#xp.m<-c(xp.m,xp.tmp[xp.tmp>0.75 & xp.tmp<=1]*expf)
 
 
 
@@ -111,7 +128,7 @@ mod.2<-prs.fit(y,x.m,xk.m,0.0001)# fitpen.reg.spline
 Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fitted values at xp 
 
 #plot data & spl.fit 
-plot(x,y, main="squash fit")
+plot(x,y, main="squash fit",xlim=c(0,1))
 lines(xp,Xp.move%*%coef(mod.2))
 abline(v=xk.m,col="green",lwd=2)
 rug(x,lwd=2)
@@ -119,7 +136,7 @@ rug(x,lwd=2)
 #S<-spl.S(xk.m)
 
 # plot the raw fit without transform back
-plot(x.m,y, main="raw squash fit")
+plot(x.m,y, main="raw squash fit",xlim=c(0,1))
 lines(xp.m,Xp.move%*%coef(mod.2))
 abline(v=xk.m,col="green",lwd=2)
 rug(x.m,lwd=2)
@@ -160,7 +177,7 @@ intR<-function(xk1,xk2,xk,xk.m,max.x){
    for(i in 1:(length(intrange2)-1)){
       ret[i]<-integrate(RdRd,lower=intrange2[i],upper=intrange2[i+1],
                         xk1=xk1,xk2=xk2)$value
-      ret[i]<-ret[i]*w[i]^-6
+      ret[i]<-ret[i]*w[i]^-3
    }
    sum(ret)
 }
