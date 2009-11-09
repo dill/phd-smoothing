@@ -27,16 +27,13 @@ hind<-c()
 for(i in 0:19){
    horiz.set<-c(horiz.set,(1:res+(res*i*5)))
    hind<-c(hind,rep(i,res))
-
-
-
 }
 
 vert.set<-c()
 vind<-c()
 for(i in 1:res){
-   vert.set<-c(vert.set,seq(1,res,20)+res*i)
-   vind<-c(vind,seq(1,20,1))
+   vert.set<-c(vert.set,seq(1,res,5)+res*i)
+   vind<-c(vind,seq(1,10,1))
 }
 
 
@@ -80,6 +77,36 @@ vgrid.set<-list(x=vgrid.set$x[onoff],
                 ind=vgrid.set$ind[onoff])
 
 
+# setup the index for the horizontal grid
+# this makes sure that all the lines are plotted separately
+di<-diff(hgrid.set$x)
+ju<-rep(0,length(di)+1)
+k<-1
+for(i in 1:length(di)){
+   ju[i]<-k
+   if(abs(di[i]-0.1326531)>1e-5){
+      k<-k+1
+   }
+}
+ju[length(ju)]<-k
+hgrid.set$ind<-ju
+
+
+# setup the index for the vertical grid
+# this makes sure that all the lines are plotted separately
+#di<-diff(vgrid.set$x)
+#ju<-rep(0,length(di)+1)
+#k<-1
+#for(i in 1:length(di)){
+#   ju[i]<-k
+#   if(abs(di[i]-0.6632653)>1e-5){
+#      k<-k+1
+#   }
+#}
+#ju[length(ju)]<-k
+#vgrid.set$ind<-ju
+#
+
 
 ##########################
 # done
@@ -111,27 +138,39 @@ h.full.mds<-insert.mds(hgrid.set,gendata,mds,bnd)
 v.full.mds<-insert.mds(vgrid.set,gendata,mds,bnd)
 
 
+par(mfrow=c(1,2))
 # plot
-plot(mds$points,asp=1,type="n")
+plot(mds$points,asp=1,type="n",main="full grid")
 
-for(i in 0:19){
-   lines(h.full.mds[hgrid.set$ind==i,])
+for(i in unique(hgrid.set$ind)){
+   if(length(h.full.mds[hgrid.set$ind==i,])==2){
+      points(x=h.full.mds[hgrid.set$ind==i,1],
+             y=h.full.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
+   }else{
+      lines(h.full.mds[hgrid.set$ind==i,])
+   }
+}
+
+for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+      lines(v.full.mds[vgrid.set$ind==i,])
 }
 
 
-for(i in 1:50){
-   lines(v.full.mds[vgrid.set$ind==i,])
+# zoom of plot
+plot(mds$points,asp=1,type="n",main="zoom",xlim=c(2,4),ylim=c(-0.5,0.75))
+
+for(i in unique(hgrid.set$ind)){
+   if(length(h.full.mds[hgrid.set$ind==i,])==2){
+      points(x=h.full.mds[hgrid.set$ind==i,1],
+             y=h.full.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
+   }else{
+      lines(h.full.mds[hgrid.set$ind==i,])
+   }
 }
 
-
-# 3d
-#library(rgl)
-#mds3<-cmdscale(D,eig=TRUE,x.ret=TRUE,k=3)
-#pred.mds3<-insert.mds(grid.set,gendata,mds3,bnd)
-#
-## plot
-#open3d()
-#plot3d(pred.mds3[,1],pred.mds3[,2],pred.mds3[,3],size=2)
+for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+      lines(v.full.mds[vgrid.set$ind==i,])
+}
 
 
 # now try with a sample

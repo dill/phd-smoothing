@@ -39,7 +39,6 @@ woodpath<-function(xpoints,ypoints,bnd,start){
       D[lower.tri(D)]<-wood_ret$pathlen
       D<-t(D)
 
-      # transpose
       D<-D+t(D)
 
    # insertion

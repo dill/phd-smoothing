@@ -80,11 +80,27 @@ xp<-seq(0,1,len=100) # xvaluesforprediction
 expf<-2
 
 # simpler
-x.m<-x
-xp.m<-xp
-xk.m<-xk
-x.m[x.m>0.5]<-x.m[x.m>0.5]*expf
-xp.m[xp.m>0.5]<-xp.m[xp.m>0.5]*expf
+x.tmp<-x
+xp.tmp<-xp
+xk.tmp<-xk
+
+x.m<-c()
+xp.m<-c()
+xk.m<-c()
+xk.m<-xk.tmp
+
+x.m<-x.tmp[x.tmp<=0.5]
+xp.m<-xp.tmp[xp.tmp<=0.5]
+
+# bottom squash toward middle
+x.m<-c(x.m,x.tmp[x.tmp>0.5 & x.tmp<=0.75]*-expf)
+xp.m<-c(xp.m,xp.tmp[xp.tmp>0.5 & xp.tmp<=0.75]*-expf)
+
+# top toward middle
+x.m<-c(x.m,x.tmp[x.tmp>0.75 & x.tmp<=1]*expf)
+xp.m<-c(xp.m,xp.tmp[xp.tmp>0.75 & xp.tmp<=1]*expf)
+
+
 
 #xp.m<-sort(xp.m)
 
