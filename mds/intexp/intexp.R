@@ -119,7 +119,7 @@ xp.m<-c(xp.m,xp.tmp)
 
 
 
-#xp.m<-sort(xp.m)
+xp.m<-sort(xp.m)
 
 #xk.m[xk.m>0.5]<-xk.m[xk.m>0.5]*expf
 
