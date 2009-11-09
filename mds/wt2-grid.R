@@ -53,8 +53,6 @@ vgrid.set<-list(x=gendata$x[vert.set],
 #plot(hgrid.set)
 #plot(vgrid.set)
 
-
-
 na.ind<-!(is.na(vgrid.set$x)&is.na(vgrid.set$y))
 vgrid.set<-list(x=vgrid.set$x[na.ind],
                 y=vgrid.set$y[na.ind],
@@ -192,7 +190,7 @@ for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
 }
 
 # zoom of plot
-plot(samp.mds$points,asp=1,type="n",main="sample zoom",xlim=c(2,4),ylim=c(-0.5,0.75))
+plot(samp.mds$points,asp=1,type="n",main="sample zoom",xlim=c(2,4),ylim=c(-0.5,0.1))
 
 for(i in unique(hgrid.set$ind)){
    if(length(h.part.mds[hgrid.set$ind==i,])==2){
