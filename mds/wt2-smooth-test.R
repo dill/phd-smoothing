@@ -40,10 +40,10 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
 
 
 
-#   gendata<-list(x=gendata$x[-samp.ind],
-#                  y=gendata$y[-samp.ind],
-#                  z=gendata$z[-samp.ind])
-#
+   gendata<-list(x=gendata$x[-samp.ind],
+                  y=gendata$y[-samp.ind],
+                  z=gendata$z[-samp.ind])
+
 
    ## do the PCO and construct the data frame
    # create D
