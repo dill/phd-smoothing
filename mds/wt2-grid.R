@@ -7,7 +7,7 @@ library(soap)
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
 names(bnd)<-c("x","y")
 
-res<-100
+res<-50
 
 ## Simulate some fitting data, inside boundary...
 #gendata <- read.csv("wt2truth.csv",header=TRUE)
