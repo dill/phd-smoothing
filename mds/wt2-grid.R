@@ -16,9 +16,12 @@ m<-res;n<-res
 xm <- seq(-3,3.5,length=m);yn<-seq(-3,3,length=n)
 xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 onoff<-inSide(bnd,xx,yy)
+onoff2<-inSide(bnd=list(x=-bnd$x,y=-bnd$y),-xx,-yy)
 gendata$x<-xx
 gendata$y<-yy
-gendata$inside<-onoff
+
+# need to do this!!!
+gendata$inside<-onoff&onoff2
 
 ###################
 # create the grid
