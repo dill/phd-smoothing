@@ -91,23 +91,6 @@ for(i in 1:length(di)){
 ju[length(ju)]<-k
 hgrid.set$ind<-ju
 
-
-# setup the index for the vertical grid
-# this makes sure that all the lines are plotted separately
-#di<-diff(vgrid.set$x)
-#ju<-rep(0,length(di)+1)
-#k<-1
-#for(i in 1:length(di)){
-#   ju[i]<-k
-#   if(abs(di[i]-0.6632653)>1e-5){
-#      k<-k+1
-#   }
-#}
-#ju[length(ju)]<-k
-#vgrid.set$ind<-ju
-#
-
-
 ##########################
 # done
 
@@ -121,7 +104,6 @@ gendata<- list(x=gendata$x[na.ind],
                y=gendata$y[na.ind],
                z=gendata$z[na.ind])
 
-
 ####
 
 ### do the full thing
@@ -131,14 +113,11 @@ D<-create_distance_matrix(gendata$x,gendata$y,bnd)
 mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
 
 
-
-
-
 h.full.mds<-insert.mds(hgrid.set,gendata,mds,bnd)
 v.full.mds<-insert.mds(vgrid.set,gendata,mds,bnd)
 
 
-par(mfrow=c(1,2))
+par(mfrow=c(2,2))
 # plot
 plot(mds$points,asp=1,type="n",main="full grid")
 
@@ -176,43 +155,53 @@ for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
 # now try with a sample
 
 # create the sample
-#samp.size<-250
-#samp.ind<-sample(1:length(gendata$x),samp.size)
-#
-#gendata.samp<- list(x=gendata$x[samp.ind],
-#                    y=gendata$y[samp.ind],
-#                    z=gendata$z[samp.ind])
-#
-#### do the PCO and construct the data frame
-## create D
-#D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
-#
-## perform mds on the sample matrix
-## options needed for insertion to work
-#samp.mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
-#
-#samp.data<-list(x=c(),y=c(),z=c())
-#samp.data$x<-samp.mds$points[,1]
-#samp.data$y<-samp.mds$points[,2]
-#samp.data$z<-gendata$z[samp.ind]
-#
-#pred.mds<-insert.mds(grid.set,gendata.samp,samp.mds,bnd)
-#
-#
-## for 2d plot full against the sample set of points
-#par(mfrow=c(1,2))
-#plot(full.mds,asp=1, main="full point set")
-## seems like this flips, so negate it
-#plot(pred.mds[,1],-pred.mds[,2],asp=1,main="sample point set")
-#
-## zoom
-#par(mfrow=c(1,2))
-#plot(full.mds,asp=1, main="full point set",xlim=c(1.5,4),ylim=c(0,1))
-## seems like this flips, so negate it
-#plot(pred.mds[,1],-pred.mds[,2],asp=1,main="sample point set",xlim=c(1.5,4),ylim=c(0,1))
+samp.size<-250
+samp.ind<-sample(1:length(gendata$x),samp.size)
+
+gendata.samp<- list(x=gendata$x[samp.ind],
+                    y=gendata$y[samp.ind],
+                    z=gendata$z[samp.ind])
+
+### do the PCO and construct the data frame
+# create D
+D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
+
+# perform mds on the sample matrix
+samp.mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
+
+h.part.mds<-insert.mds(hgrid.set,gendata.samp,samp.mds,bnd)
+v.part.mds<-insert.mds(vgrid.set,gendata.samp,samp.mds,bnd)
 
 
+plot(samp.mds$points,asp=1,type="n",main="sample grid n=250")
 
+for(i in unique(hgrid.set$ind)){
+   if(length(h.part.mds[hgrid.set$ind==i,])==2){
+      points(x=h.part.mds[hgrid.set$ind==i,1],
+             y=h.part.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
+   }else{
+      lines(h.part.mds[hgrid.set$ind==i,])
+   }
+}
 
+for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+      lines(v.part.mds[vgrid.set$ind==i,])
+}
+
+# zoom of plot
+plot(samp.mds$points,asp=1,type="n",main="sample zoom",xlim=c(2,4),ylim=c(-0.5,0.75))
+
+for(i in unique(hgrid.set$ind)){
+   if(length(h.part.mds[hgrid.set$ind==i,])==2){
+      points(x=h.part.mds[hgrid.set$ind==i,1],
+             y=h.part.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
+   }else{
+      lines(h.part.mds[hgrid.set$ind==i,])
+   }
+}
+
+for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+      lines(v.part.mds[vgrid.set$ind==i,])
+}
 
 
