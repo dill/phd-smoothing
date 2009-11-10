@@ -7,7 +7,7 @@ library(soap)
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
 names(bnd)<-c("x","y")
 
-res<-50
+res<-100
 
 ## Simulate some fitting data, inside boundary...
 #gendata <- read.csv("wt2truth.csv",header=TRUE)
@@ -49,9 +49,6 @@ vgrid.set<-list(x=gendata$x[vert.set],
                 ind=vind)
 
 
-#par(mfrow=c(1,2))
-#plot(hgrid.set)
-#plot(vgrid.set)
 
 na.ind<-!(is.na(vgrid.set$x)&is.na(vgrid.set$y))
 vgrid.set<-list(x=vgrid.set$x[na.ind],
@@ -92,6 +89,9 @@ for(i in 1:length(di)){
 ju[length(ju)]<-k
 hgrid.set$ind<-ju
 
+#par(mfrow=c(1,2))
+#plot(hgrid.set)
+#plot(vgrid.set)
 ##########################
 # done
 
