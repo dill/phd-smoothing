@@ -7,7 +7,7 @@ library(soap)
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
 names(bnd)<-c("x","y")
 
-res<-100
+res<-74
 
 ## Simulate some fitting data, inside boundary...
 #gendata <- read.csv("wt2truth.csv",header=TRUE)
@@ -36,7 +36,7 @@ vert.set<-c()
 vind<-c()
 for(i in 1:res){
    vert.set<-c(vert.set,seq(1,res,5)+res*i)
-   vind<-c(vind,seq(1,10,1))
+   vind<-c(vind,seq(1,15,1))
 }
 
 
@@ -82,16 +82,38 @@ ju<-rep(0,length(di)+1)
 k<-1
 for(i in 1:length(di)){
    ju[i]<-k
-   if(abs(di[i]-0.1326531)>1e-5){
+#   if(abs(di[i]-0.1326531)>1e-5){
+   if(abs(di[i]- 0.0890411)>1e-5){
       k<-k+1
    }
 }
 ju[length(ju)]<-k
 hgrid.set$ind<-ju
 
-#par(mfrow=c(1,2))
-#plot(hgrid.set)
-#plot(vgrid.set)
+# just a quick hack for the one vertical line that crosses a gap
+ju<-vgrid.set$ind
+ju[vgrid.set$ind==3][34:39]<-rep(max(ju)+1,6)
+ju[vgrid.set$ind==6][38:47]<-rep(max(ju)+1,10)
+vgrid.set$ind<-ju
+
+
+## code to plot the unmorphed grid
+#plot(gendata,asp=1,type="n",main="",xlab="",ylab="")
+#for(i in unique(hgrid.set$ind)){
+#   if(length(hgrid.set$x[hgrid.set$ind==i])==2){
+#      points(x=hgrid.set$x[hgrid.set$ind==i],
+#             y=hgrid.set$y[hgrid.set$ind==i],pch=19,cex=0.3)
+#   }else{
+#      lines(x=hgrid.set$x[hgrid.set$ind==i],
+#             y=hgrid.set$y[hgrid.set$ind==i],pch=19,cex=0.3)
+#   }
+#}
+#for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+#      lines(x=vgrid.set$x[vgrid.set$ind==i],
+#             y=vgrid.set$y[vgrid.set$ind==i],pch=19,cex=0.3)
+#}
+#lines(bnd,lwd=2)
+
 ##########################
 # done
 
@@ -117,10 +139,10 @@ mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
 h.full.mds<-insert.mds(hgrid.set,gendata,mds,bnd)
 v.full.mds<-insert.mds(vgrid.set,gendata,mds,bnd)
 
-
+## code to plot the grid
 par(mfrow=c(2,2))
 # plot
-plot(mds$points,asp=1,type="n",main="full grid")
+plot(mds$points,asp=1,type="n",main="",xlab="",ylab="")
 
 for(i in unique(hgrid.set$ind)){
    if(length(h.full.mds[hgrid.set$ind==i,])==2){
@@ -136,8 +158,10 @@ for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
 }
 
 
+
+
 # zoom of plot
-plot(mds$points,asp=1,type="n",main="zoom",xlim=c(2,4),ylim=c(-0.5,0.75))
+plot(mds$points,asp=1,type="n",main="",xlim=c(2,4),ylim=c(-0.5,0.75),xlab="",ylab="")
 
 for(i in unique(hgrid.set$ind)){
    if(length(h.full.mds[hgrid.set$ind==i,])==2){
@@ -174,35 +198,40 @@ h.part.mds<-insert.mds(hgrid.set,gendata.samp,samp.mds,bnd)
 v.part.mds<-insert.mds(vgrid.set,gendata.samp,samp.mds,bnd)
 
 
-plot(samp.mds$points,asp=1,type="n",main="sample grid n=250")
+plot(x=samp.mds$points[,1],y=samp.mds$points[,2],asp=1,type="n",main="",xlab="",ylab="")
 
 for(i in unique(hgrid.set$ind)){
    if(length(h.part.mds[hgrid.set$ind==i,])==2){
       points(x=h.part.mds[hgrid.set$ind==i,1],
              y=h.part.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
    }else{
-      lines(h.part.mds[hgrid.set$ind==i,])
+      lines(x=h.part.mds[hgrid.set$ind==i,1],
+            y=h.part.mds[hgrid.set$ind==i,2])
    }
 }
 
 for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
-      lines(v.part.mds[vgrid.set$ind==i,])
+      lines(x=v.part.mds[vgrid.set$ind==i,1],
+            y=v.part.mds[vgrid.set$ind==i,2])
 }
 
 # zoom of plot
-plot(samp.mds$points,asp=1,type="n",main="sample zoom",xlim=c(2,4),ylim=c(-0.5,0.1))
+plot(x=samp.mds$points[,1],y=samp.mds$points[,2],asp=1,type="n",main="",
+     xlab="",ylab="",xlim=c(2,3.75),ylim=c(-0.2,0.5))
 
 for(i in unique(hgrid.set$ind)){
    if(length(h.part.mds[hgrid.set$ind==i,])==2){
       points(x=h.part.mds[hgrid.set$ind==i,1],
              y=h.part.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
    }else{
-      lines(h.part.mds[hgrid.set$ind==i,])
+      lines(x=h.part.mds[hgrid.set$ind==i,1],
+            y=h.part.mds[hgrid.set$ind==i,2])
    }
 }
 
 for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
-      lines(v.part.mds[vgrid.set$ind==i,])
+      lines(x=v.part.mds[vgrid.set$ind==i,1],
+            y=v.part.mds[vgrid.set$ind==i,2])
 }
 
 

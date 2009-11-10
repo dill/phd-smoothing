@@ -73,11 +73,11 @@ The basic concept behind MDS is to take the data, calculate their inter-point di
 
 \subsection{Finding the new point configuration}
 
-We first define $d_{ij}$ as the distance between the points $i$ and $j$. These form a (symmetric) matrix, $D$, with $ij^{\text{th}}$ element $d_{ij}$. In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. How we find $d_{ij}$ is discussed in the next section, for the moment we assume that we know $d_{ij}$.
+We first define $d_{ij}$ as the distance between the points $i$ and $j$. These form a (symmetric) matrix, $D$, with $ij^{\text{th}}$ element $d_{ij}$. In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. How we find $d_{ij}$ is discussed in the next section, for the moment we assume that $D$ is known and gives the shortest within-domain distance between points.
 
 \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points given we know the $d_{ij}$s. 
 
-First, take the unknown new locations and putting them in an $n \times p$ matrix, $X$. Let $S=X\tr{X}$; performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. We may then represent $S$ in some arbitrary number of dimensions, $k$\footnote{We usually want $k<p$ to reduce the dimensionality of the problem.}, by picking the $k$ largest eigenvalues of $S$. In this case, we are interested in
+First, take the unknown new locations and putting them in an $n \times p$ matrix, $X$. Let $S=X\tr{X}$; performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. We may then represent $S$ in some arbitrary number of dimensions, $k$\footnote{In a multivariate analysis we usually want $k<p$ to reduce the dimensionality of the problem, although that is not the case here.}, by picking the $k$ largest eigenvalues of $S$. In this case, we are interested in
 
 \begin{equation}
 \tilde{X}=\tilde{U}\tilde{\Lambda}^{1/2}.
@@ -138,22 +138,53 @@ Although the calculation is simple, it hides important pitfalls.
 \label{bojinsert}
 \end{figure}
 
-Item (1) can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space.
-
-
-The second and third points are linked, and combined lead us to believe that Gower's interpolation does not offer a solution to the insertion problem; we are both unable to insert points more than one at a time (thus making computation expensive) and, more importantly, are unable to insert points accurately without changing the representation space (\cite{Trosset2008}.)
-
-
+% online insertion error in Gower
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[width=4in]{figs/gowererror.pdf} \\
+\includegraphics[width=2in]{figs/gowererror.pdf} \\
 \caption{MDS configuration for the domain in \fig{wt2dia}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation from the initial MDS configuration. The red points should be positioned in the ``holes'' in the black grid.}
 \label{gowererror}
 \end{figure}
 
+Item (1) can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space.
 
-\subsection{Landmark MDS}
+Item (3) is easily alleviated by simply no performing the insertion online. This clearly makes sense since we wish to find the locations of the prediction points relative to the original sample, rather than their positions relative to one another and the original sample.
+
+We now investigate the error and it's effect in the within-area distance case.
+
+
+\subsubsection{Interpolation error}
+
+To look at how the configuration is effected by the interpolation errror in Gower's insertion detailed above, we look at the error associated in different circumstances; as well as looking at the behaviour of a grid over the domain.
+
+To give a first impression of what happens when using Gower's insertion offline, see \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously (thinking of $\mathbf{d}$ in equation \ref{gower} as an $n \cross m$ matrix) from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again. This shows the projection error
+
+% offline insertion error in Gower
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=2in]{figs/wt2-gowererr-fullover.pdf} \\
+\caption{Error from inserting 250 points from the full MDS configuration back into the domain.}
+\label{gowerfullinsert}
+% generated (roughly) using wt2-insert-error.R
+\end{figure}
+
+
+It is also interesting to look at the behaviour of a grid placed over the domain. Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense grid of 1253 points, and then a less dense grid is inserted using the method of Gower.
+
+
+% grid to map
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=2in]{figs/wt2-grid-orig.pdf} \\
+\caption{The grid to be inserted into the MDS configuration.}
+\label{wt2-grid-orig}
+% generated using wt2-grid.R
+\end{figure}
+
+
 
 
 
