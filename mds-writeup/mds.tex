@@ -158,7 +158,9 @@ We now investigate the error and it's effect in the within-area distance case.
 
 To look at how the configuration is effected by the interpolation errror in Gower's insertion detailed above, we look at the error associated in different circumstances; as well as looking at the behaviour of a grid over the domain.
 
-To give a first impression of what happens when using Gower's insertion offline, see \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously (thinking of $\mathbf{d}$ in equation \ref{gower} as an $n \cross m$ matrix) from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again. This shows the projection error
+To give a first impression of what happens when using Gower's insertion offline, see \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously (thinking of $\mathbf{d}$ in equation \ref{gower} as an $n \cross m$ matrix) from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again.
+
+
 
 % offline insertion error in Gower
 \begin{figure}
@@ -171,7 +173,7 @@ To give a first impression of what happens when using Gower's insertion offline,
 \end{figure}
 
 
-It is also interesting to look at the behaviour of a grid placed over the domain. Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense grid of 1253 points, and then a less dense grid is inserted using the method of Gower.
+It is also interesting to look at the behaviour of a grid placed over the domain. Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using the method of Gower.
 
 
 % grid to map
@@ -184,7 +186,17 @@ It is also interesting to look at the behaviour of a grid placed over the domain
 % generated using wt2-grid.R
 \end{figure}
 
+The grid in \fig{} has been inserted 
 
+
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=2in]{figs/wt2-grid-orig.pdf} \\
+\caption{The grid to be inserted into the MDS configuration.}
+\label{wt2-grid-orig}
+% generated using wt2-grid.R
+\end{figure}
 
 
 

@@ -2,7 +2,7 @@
 # Copyright David Lawrence Miller 2009.
 source("mds.R")
  
-wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
+wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,plot.points=TRUE){
  
    ## create a boundary...
    bnd <- read.csv("wt2-verts.csv",header=FALSE)
@@ -40,26 +40,38 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
 
 
 
-#   gendata<-list(x=gendata$x[-samp.ind],
-#                  y=gendata$y[-samp.ind],
-#                  z=gendata$z[-samp.ind])
-#
+   gendata<-list(x=gendata$x[-samp.ind],
+                  y=gendata$y[-samp.ind],
+                  z=gendata$z[-samp.ind])
 
-   ## do the PCO and construct the data frame
+   # create the grid
+   source("wt2-create-grid.R")
+   my.grid<-wt2_create_grid()
+
+   ## do the MDS on the grid 
    # create D
-   D.samp<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
+   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
  
    # perform mds on D
-   # options needed for insertion to work
-   samp.mds<-cmdscale(D.samp,eig=TRUE,x.ret=TRUE,k=2)
- 
+   grid.mds<-cmdscale(D.grid,eig=TRUE,k=2)
  
    # sample points insertion
-   pred.mds<-insert.mds(gendata,gendata.samp,samp.mds,bnd)
+   samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd)
 
-   samp.mds<-samp.mds$points
+   # prediction points insertion
+   pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd)
 
- 
+   grid.mds<-grid.mds$points
+
+   # re-align
+#   samp.align<-eig.align(grid.mds,samp.mds)
+#   pred.align<-eig.align(grid.mds,pred.mds)
+#
+#
+#   samp.mds<-samp.align$X.s
+#   pred.mds<-pred.align$X.s
+
+
    # add noise
    noise<-noise.level*rnorm(length(samp.ind))
    #> summary(gendata$z)
@@ -82,15 +94,19 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    # non-mapped prediction data
    npred.data<-list(x=rep(0,length(gendata$x)+length(samp.data$x)),
                    y=rep(0,length(gendata$x)+length(samp.data$y)))
-   npred.data$x<-gendata$x
-   npred.data$y<-gendata$y
+   npred.data$x[-samp.ind]<-gendata$x
+   npred.data$y[-samp.ind]<-gendata$y
+   npred.data$x[samp.ind]<-nsamp.data$x
+   npred.data$y[samp.ind]<-nsamp.data$y
  
  
    # put this in the correct format
    pred.data<-list(x=rep(0,length(gendata$x)+length(samp.data$x)),
                    y=rep(0,length(gendata$x)+length(samp.data$y)))
-   pred.data$x<-pred.mds[,1]
-   pred.data$y<-pred.mds[,2]
+   pred.data$x[-samp.ind]<-pred.mds[,1]
+   pred.data$y[-samp.ind]<-pred.mds[,2]
+   pred.data$x[samp.ind]<-samp.mds[,1]
+   pred.data$y[samp.ind]<-samp.mds[,2]
  
    ### Now do some fitting and prediction
    ### mapping
@@ -135,6 +151,10 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
       pred.mat<-matrix(pred.mat,50,50)
       image(xscale,yscale,pred.mat,main="truth",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
+   
+      if(plot.points){
+         points(gendata.samp,pch=".")
+      }
       
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv
@@ -156,8 +176,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
  
    }
  
- 
-   
    ### calculate MSEs
    mses<-list(mds=mean((fv-gendata.ind$z[ind])^2,na.rm=T),
               tprs=mean((fv.tprs-gendata.ind$z[ind])^2,na.rm=T),
@@ -169,8 +187,8 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    #cat("soap MSE=",mses$soap,"\n")
  
    # lets return an object...
- 
-# ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=nsamp.data,pred=npred.data,mses=mses)
+   # ret<-list(samp.mds=samp.data,pred.mds=pred.data,
+   #           samp=nsamp.data,pred=npred.data,mses=mses)
  
    # short object for long sims
    ret<-list(mses=mses)
