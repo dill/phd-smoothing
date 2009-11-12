@@ -67,6 +67,17 @@ Multidimensional scaling (MDS) or, as it is often referred to, principle coordin
 
 Multidimensional scaling offers an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points such that the distances between the points are (approximately) preserved.
 
+The modeling strategy is as follows:
+
+\begin{enumerate}
+\item Take a regular grid over the domain and perform MDS on this.
+\item Using this grid, insert the sample points into this configuration.
+\item Fit the smooth to the MDS configuration of points.
+\item If prediction is required, take those predicted points and insert them into the MDS configuration, predict using the smooth and then back-transform\footnote{This is trivial if an index of the points is kept.} to the original space.
+\end{enumerate}
+
+The rest of this report is structured as follows: in section (2) an overview of MDS is given, along with technical details of how the MDS configuration is calculated; section (3) focuses on how the within-area distances are found; section (4) shows the some examples of this method on simulated data.
+
 \section{Multidimensional Scaling}
 
 The basic concept behind MDS is to take the data, calculate their inter-point distances and then find a new coordinate system based on those inter-point distances. We do this by simply performing an eigen-decomposition on the matrix of distances between points.
