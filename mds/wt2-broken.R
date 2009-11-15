@@ -2,7 +2,7 @@
 # Copyright David Lawrence Miller 2009.
 source("mds.R")
  
-wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
+wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,plot.points=TRUE){
  
    ## create a boundary...
    bnd <- read.csv("wt2-verts.csv",header=FALSE)
@@ -40,26 +40,35 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
 
 
 
-#   gendata<-list(x=gendata$x[-samp.ind],
-#                  y=gendata$y[-samp.ind],
-#                  z=gendata$z[-samp.ind])
-#
+   gendata<-list(x=gendata$x[-samp.ind],
+                  y=gendata$y[-samp.ind],
+                  z=gendata$z[-samp.ind])
 
-   ## do the PCO and construct the data frame
+   # create the grid
+#   source("wt2-create-grid.R")
+#   my.grid<-wt2_create_grid()
+
+   ## do the MDS on the grid 
    # create D
-   D.samp<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
+   D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
  
    # perform mds on D
-   # options needed for insertion to work
-   samp.mds<-cmdscale(D.samp,eig=TRUE,x.ret=TRUE,k=2)
+   mds<-cmdscale(D,eig=TRUE,k=2)
  
- 
-   # sample points insertion
-   pred.mds<-insert.mds(gendata,gendata.samp,samp.mds,bnd)
+   # prediction points insertion
+   pred.mds<-insert.mds(gendata,gendata.samp,mds,bnd)
 
-   samp.mds<-samp.mds$points
+   samp.mds<-mds$points
 
- 
+   # re-align
+#   samp.align<-eig.align(grid.mds,samp.mds)
+#   pred.align<-eig.align(grid.mds,pred.mds)
+#
+#
+#   samp.mds<-samp.align$X.s
+#   pred.mds<-pred.align$X.s
+
+
    # add noise
    noise<-noise.level*rnorm(length(samp.ind))
    #> summary(gendata$z)
@@ -82,35 +91,25 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    # non-mapped prediction data
    npred.data<-list(x=rep(0,length(gendata$x)+length(samp.data$x)),
                    y=rep(0,length(gendata$x)+length(samp.data$y)))
-   npred.data$x<-gendata$x
-   npred.data$y<-gendata$y
+   npred.data$x[-samp.ind]<-gendata$x
+   npred.data$y[-samp.ind]<-gendata$y
+   npred.data$x[samp.ind]<-nsamp.data$x
+   npred.data$y[samp.ind]<-nsamp.data$y
  
  
    # put this in the correct format
    pred.data<-list(x=rep(0,length(gendata$x)+length(samp.data$x)),
                    y=rep(0,length(gendata$x)+length(samp.data$y)))
-   pred.data$x<-pred.mds[,1]
-   pred.data$y<-pred.mds[,2]
+   pred.data$x[-samp.ind]<-pred.mds[,1]
+   pred.data$y[-samp.ind]<-pred.mds[,2]
+   pred.data$x[samp.ind]<-samp.mds[,1]
+   pred.data$y[samp.ind]<-samp.mds[,2]
  
    ### Now do some fitting and prediction
    ### mapping
    b.mapped<-gam(z~s(x,y,k=49),data=samp.data)
    fv <- predict(b.mapped,newdata=pred.data)
-   
-   ### normal tprs
-   b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
-   fv.tprs <- predict(b.tprs,newdata=npred.data)
-   
-   ### soap
-   knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
-   knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
-   insideknots<-inSide(bnd,knots.x,knots.y)
-   insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE
-   knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
-   b.soap<-gam(z~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=nsamp.data)
-   fv.soap <- predict(b.soap,newdata=npred.data)
- 
-   # create the image
+     # create the image
    gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
    ind<-c(1:length(gendata.ind$x))
    pred.mat<-rep(NA,length(gendata.ind$x))
@@ -118,23 +117,15 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    na.ind<-!(is.na(gendata.ind$x[gendata.ind$inside==1])&is.na(gendata.ind$y[gendata.ind$inside==1])&is.na(gendata.ind$z[gendata.ind$inside==1]))
    ind<-ind[na.ind]
    ind<-ind[onoff]
- 
- 
-   ## plotting
-   if(plot.it){
+
+
  
       # plot for truth, mds, tprs and soap
-      par(mfrow=c(2,2))
       
       # axis scales
       xscale<-seq(min(gendata$x),max(gendata$x),length.out=50)
       yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
    
-      pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-gendata.ind$z[ind]
-      pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="truth",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
       
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv
@@ -142,39 +133,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
       image(xscale,yscale,pred.mat,main="mds",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
       
-      pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-fv.tprs
-      pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="tprs",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
-      
-      pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-fv.soap
-      pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="soap",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
  
-   }
- 
- 
-   
-   ### calculate MSEs
-   mses<-list(mds=mean((fv-gendata.ind$z[ind])^2,na.rm=T),
-              tprs=mean((fv.tprs-gendata.ind$z[ind])^2,na.rm=T),
-              soap=mean((fv.soap-gendata.ind$z[ind])^2,na.rm=T))
- 
-   # print them
-   #cat("mds MSE=" ,mses$mds,"\n")
-   #cat("tprs MSE=",mses$tprs,"\n")
-   #cat("soap MSE=",mses$soap,"\n")
- 
-   # lets return an object...
- 
-# ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=nsamp.data,pred=npred.data,mses=mses)
- 
-   # short object for long sims
-   ret<-list(mses=mses)
- 
-   return(ret)
  
 }

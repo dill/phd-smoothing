@@ -51,7 +51,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    //    point vector
    if(*start != 0){
       // #### Main loop for INSERTION
-      for(i=0; i<(*len); i++){
+      //for(i=0; i<(*len); i++){
+      for(i=0; i<(*start); i++){
          // set p1
          p1[0]=x[i]; p1[1]=y[i];
 

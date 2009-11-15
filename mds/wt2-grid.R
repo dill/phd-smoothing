@@ -1,71 +1,180 @@
 # test of lines across the domain for wt2
 source("mds.R")
+library(soap)
+
 
 ## create a boundary...
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
 names(bnd)<-c("x","y")
 
+res<-74
+
 ## Simulate some fitting data, inside boundary...
-gendata <- read.csv("wt2truth.csv",header=TRUE)
+#gendata <- read.csv("wt2truth.csv",header=TRUE)
+gendata<-list(x=c(),y=c(),inside=c())
+m<-res;n<-res
+xm <- seq(-3,3.5,length=m);yn<-seq(-3,3,length=n)
+xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
+onoff<-inSide(bnd,xx,yy)
+onoff2<-inSide(bnd=list(x=-bnd$x,y=-bnd$y),-xx,-yy)
+gendata$x<-xx
+gendata$y<-yy
 
+# need to do this!!!
+gendata$inside<-onoff&onoff2
 
-
+###################
+# create the grid
 horiz.set<-c()
-for(i in 0:9){
-   horiz.set<-c(horiz.set,(1:50)+(50*i*5))
+hind<-c()
+for(i in 1:19){
+   horiz.set<-c(horiz.set,(1:res+(res*i*5)))
+   hind<-c(hind,rep(i,res))
 }
 
 vert.set<-c()
-for(i in 1:50){
-   vert.set<-c(vert.set,seq(1,50,5)+50*i)
+vind<-c()
+for(i in 1:res){
+   vert.set<-c(vert.set,seq(1,res,5)+res*i)
+   vind<-c(vind,seq(1,15,1))
 }
 
 
-grid.set<-list(x=gendata$x[unique(c(vert.set,horiz.set))],
-               y=gendata$y[unique(c(vert.set,horiz.set))],
-               z=gendata$z[unique(c(vert.set,horiz.set))],
-               inside=gendata$inside[unique(c(vert.set,horiz.set))])
+hgrid.set<-list(x=gendata$x[horiz.set],
+                y=gendata$y[horiz.set],
+                ind=hind)
 
-grid.set<- list(x=grid.set$x[grid.set$inside==1],
-                y=grid.set$y[grid.set$inside==1],
-                z=grid.set$z[grid.set$inside==1])
+vgrid.set<-list(x=gendata$x[vert.set],
+                y=gendata$y[vert.set],
+                ind=vind)
 
-na.ind<-!(is.na(grid.set$x)&is.na(grid.set$y))
 
-grid.set<- list(x=grid.set$x[na.ind],
-               y=grid.set$y[na.ind],
-               z=grid.set$z[na.ind])
+
+na.ind<-!(is.na(vgrid.set$x)&is.na(vgrid.set$y))
+vgrid.set<-list(x=vgrid.set$x[na.ind],
+                y=vgrid.set$y[na.ind],
+                z=vgrid.set$z[na.ind],
+                ind=vgrid.set$ind[na.ind])
+
+na.ind<-!(is.na(hgrid.set$x)&is.na(hgrid.set$y))
+hgrid.set<-list(x=hgrid.set$x[na.ind],
+                y=hgrid.set$y[na.ind],
+                z=hgrid.set$z[na.ind],
+                ind=hgrid.set$ind[na.ind])
+
+onoff<-inSide(bnd=bnd,x=hgrid.set$x,y=hgrid.set$y)
+hgrid.set<-list(x=hgrid.set$x[onoff],
+                y=hgrid.set$y[onoff],
+                z=hgrid.set$z[onoff],
+                ind=hgrid.set$ind[onoff])
+
+onoff<-inSide(bnd=bnd,x=vgrid.set$x,y=vgrid.set$y)
+vgrid.set<-list(x=vgrid.set$x[onoff],
+                y=vgrid.set$y[onoff],
+                z=vgrid.set$z[onoff],
+                ind=vgrid.set$ind[onoff])
+
+
+# setup the index for the horizontal grid
+# this makes sure that all the lines are plotted separately
+di<-diff(hgrid.set$x)
+ju<-rep(0,length(di)+1)
+k<-1
+for(i in 1:length(di)){
+   ju[i]<-k
+#   if(abs(di[i]-0.1326531)>1e-5){
+   if(abs(di[i]- 0.0890411)>1e-5){
+      k<-k+1
+   }
+}
+ju[length(ju)]<-k
+hgrid.set$ind<-ju
+
+# just a quick hack for the one vertical line that crosses a gap
+ju<-vgrid.set$ind
+ju[vgrid.set$ind==3][34:39]<-rep(max(ju)+1,6)
+ju[vgrid.set$ind==6][38:47]<-rep(max(ju)+1,10)
+vgrid.set$ind<-ju
+
+
+## code to plot the unmorphed grid
+#plot(gendata,asp=1,type="n",main="",xlab="",ylab="")
+#for(i in unique(hgrid.set$ind)){
+#   if(length(hgrid.set$x[hgrid.set$ind==i])==2){
+#      points(x=hgrid.set$x[hgrid.set$ind==i],
+#             y=hgrid.set$y[hgrid.set$ind==i],pch=19,cex=0.3)
+#   }else{
+#      lines(x=hgrid.set$x[hgrid.set$ind==i],
+#             y=hgrid.set$y[hgrid.set$ind==i],pch=19,cex=0.3)
+#   }
+#}
+#for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+#      lines(x=vgrid.set$x[vgrid.set$ind==i],
+#             y=vgrid.set$y[vgrid.set$ind==i],pch=19,cex=0.3)
+#}
+#lines(bnd,lwd=2)
+
+##########################
+# done
 
 gendata<- list(x=gendata$x[gendata$inside==1],
                y=gendata$y[gendata$inside==1],
                z=gendata$z[gendata$inside==1])
 
-### do the full thing
+na.ind<-!(is.na(gendata$x)&is.na(gendata$y))
 
+gendata<- list(x=gendata$x[na.ind],
+               y=gendata$y[na.ind],
+               z=gendata$z[na.ind])
+
+####
+
+### do the full thing
 # create D
 D<-create_distance_matrix(gendata$x,gendata$y,bnd)
 # perform mds
 mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
 
 
+h.full.mds<-insert.mds(hgrid.set,gendata,mds,bnd)
+v.full.mds<-insert.mds(vgrid.set,gendata,mds,bnd)
 
-
-
-full.mds<-insert.mds(grid.set,gendata,mds,bnd)
-
-
+## code to plot the grid
+par(mfrow=c(2,2))
 # plot
-plot(full.mds,asp=1)
+plot(mds$points,asp=1,type="n",main="",xlab="",ylab="")
+
+for(i in unique(hgrid.set$ind)){
+   if(length(h.full.mds[hgrid.set$ind==i,])==2){
+      points(x=h.full.mds[hgrid.set$ind==i,1],
+             y=h.full.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
+   }else{
+      lines(h.full.mds[hgrid.set$ind==i,])
+   }
+}
+
+for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+      lines(v.full.mds[vgrid.set$ind==i,])
+}
 
 
-# 3d
-library(rgl)
-mds3<-cmdscale(D,eig=TRUE,x.ret=TRUE,k=3)
-pred.mds3<-insert.mds(grid.set,gendata,mds3,bnd)
 
-# plot
-open3d()
-plot3d(pred.mds3[,1],pred.mds3[,2],pred.mds3[,3],size=2)
+
+# zoom of plot
+plot(mds$points,asp=1,type="n",main="",xlim=c(2,4),ylim=c(-0.5,0.75),xlab="",ylab="")
+
+for(i in unique(hgrid.set$ind)){
+   if(length(h.full.mds[hgrid.set$ind==i,])==2){
+      points(x=h.full.mds[hgrid.set$ind==i,1],
+             y=h.full.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
+   }else{
+      lines(h.full.mds[hgrid.set$ind==i,])
+   }
+}
+
+for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+      lines(v.full.mds[vgrid.set$ind==i,])
+}
 
 
 # now try with a sample
@@ -83,31 +192,46 @@ gendata.samp<- list(x=gendata$x[samp.ind],
 D<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
 
 # perform mds on the sample matrix
-# options needed for insertion to work
 samp.mds<-cmdscale(D,eig=TRUE,x.ret=TRUE)
 
-samp.data<-list(x=c(),y=c(),z=c())
-samp.data$x<-samp.mds$points[,1]
-samp.data$y<-samp.mds$points[,2]
-samp.data$z<-gendata$z[samp.ind]
-
-pred.mds<-insert.mds(grid.set,gendata.samp,samp.mds,bnd)
+h.part.mds<-insert.mds(hgrid.set,gendata.samp,samp.mds,bnd)
+v.part.mds<-insert.mds(vgrid.set,gendata.samp,samp.mds,bnd)
 
 
-# for 2d plot full against the sample set of points
-par(mfrow=c(1,2))
-plot(full.mds,asp=1, main="full point set")
-# seems like this flips, so negate it
-plot(pred.mds[,1],-pred.mds[,2],asp=1,main="sample point set")
+plot(x=samp.mds$points[,1],y=samp.mds$points[,2],asp=1,type="n",main="",xlab="",ylab="")
 
-# zoom
-par(mfrow=c(1,2))
-plot(full.mds,asp=1, main="full point set",xlim=c(1.5,4),ylim=c(0,1))
-# seems like this flips, so negate it
-plot(pred.mds[,1],-pred.mds[,2],asp=1,main="sample point set",xlim=c(1.5,4),ylim=c(0,1))
+for(i in unique(hgrid.set$ind)){
+   if(length(h.part.mds[hgrid.set$ind==i,])==2){
+      points(x=h.part.mds[hgrid.set$ind==i,1],
+             y=h.part.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
+   }else{
+      lines(x=h.part.mds[hgrid.set$ind==i,1],
+            y=h.part.mds[hgrid.set$ind==i,2])
+   }
+}
 
+for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+      lines(x=v.part.mds[vgrid.set$ind==i,1],
+            y=v.part.mds[vgrid.set$ind==i,2])
+}
 
+# zoom of plot
+plot(x=samp.mds$points[,1],y=samp.mds$points[,2],asp=1,type="n",main="",
+     xlab="",ylab="",xlim=c(2,3.75),ylim=c(-0.2,0.5))
 
+for(i in unique(hgrid.set$ind)){
+   if(length(h.part.mds[hgrid.set$ind==i,])==2){
+      points(x=h.part.mds[hgrid.set$ind==i,1],
+             y=h.part.mds[hgrid.set$ind==i,2],pch=19,cex=0.3)
+   }else{
+      lines(x=h.part.mds[hgrid.set$ind==i,1],
+            y=h.part.mds[hgrid.set$ind==i,2])
+   }
+}
 
+for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+      lines(x=v.part.mds[vgrid.set$ind==i,1],
+            y=v.part.mds[vgrid.set$ind==i,2])
+}
 
 
