@@ -88,13 +88,11 @@ We first define $d_{ij}$ as the distance between the points $i$ and $j$. These f
 
 \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points given we know the $d_{ij}$s. 
 
-First, take the unknown new locations and putting them in an $n \times p$ matrix, $X$. Let $S=X\tr{X}$; performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. We may then represent $S$ in some arbitrary number of dimensions, $k$\footnote{In a multivariate analysis we usually want $k<p$ to reduce the dimensionality of the problem, although that is not the case here.}, by picking the $k$ largest eigenvalues of $S$. In this case, we are interested in
+First, take the unknown new locations and putting them in an $n \times p$ matrix, $\tilde{X}$. Let $S=\tilde{X}\tr{\tilde{X}}$; performing an eigen-decomposition we can see that $S=U\Lambda\tr{U}$. We may then represent $S$ in some arbitrary number of dimensions, $k$\footnote{In a multivariate analysis we usually want $k<p$ to reduce the dimensionality of the problem, although that is not the case here.}, by picking the $k$ largest eigenvalues of $S$. In this case, we are interested in
 
 \begin{equation}
-\tilde{X}=\tilde{U}\tilde{\Lambda}^{1/2}.
+\tilde{X}=U\Lambda^{\frac{1}{2}}.
 \end{equation}
-
-where a tilde indicates the $n \times k$ versions of $X$, $\Lambda$ and $U$.
 
 We can relate $D$ to $S$ by first defining:
 
@@ -118,7 +116,7 @@ It is likely that we may be in a position where the coordinate system has been f
 
 \subsubsection{Gower's interpolation} 
 
-Gower's method relies on taking a single new point $x_{\text{new}}$, and inserting at its distance from the original points ($\tilde{X}$) into a new dimension, orthogonal to $\tilde{X}$; the extra dimension is then projected on to the old axes. The technical details of the computation are detailed first, followed by some problems arising from the use of this method. 
+Gower's method relies on taking a single new point $x_{\text{new}}$, and inserting at its distance from the MDS points ($\tilde{X}$) into a new dimension, orthogonal to $\tilde{X}$; the extra dimension is then projected on to the old axes. The technical details of the computation are detailed first, followed by some problems arising from the use of this method. 
 
 We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\text{new}}$ using:
 
@@ -131,7 +129,7 @@ here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($m \cross n$) are as above, 
 
 Although the calculation is simple, it hides important pitfalls. 
 
-If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ are not the true eigenvalues; we may then insert the point incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, hence only a portion of the full information about the domain is included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark}) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here.
+If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ are not the true eigenvalues; we may then insert the point incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, hence only a portion of the full information about the domain is included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark}) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. This problem can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. We discuss this in more detail below.
 
 In the course of the projection onto the original MDS axes, we lose one of the coordinates (effectively truncating a dimension.) If the MDS axes were in two dimensions, it is possible that the point was not supposed to lie in the plane but rather this an extra dimension and its distance was truncated. This can cause distortions in the point configuration. An example of this is illustrated in \fig{bojinsert}. A more complete explanation and characterisation of this problem is given in \cite{Boj2009}. 
 
@@ -155,20 +153,10 @@ The above distortion is compounded when extra points are added to the MDS config
 \label{gowererror}
 \end{figure}
 
-Item (1) can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space.
 
-Item (3) is easily alleviated by simply no performing the insertion online. This clearly makes sense since we wish to find the locations of the prediction points relative to the original sample, rather than their positions relative to one another and the original sample.
+Following from this, it is important to make sure that the MDS space is smooth in the sense that a grid of straight lines over the domain is mapped to a series of smooth lines. 
 
-We now investigate the error and it's effect in the within-area distance case.
-
-
-\subsubsection{Interpolation error}
-
-To look at how the configuration is effected by the interpolation errror in Gower's insertion detailed above, we look at the error associated in different circumstances; as well as looking at the behaviour of a grid over the domain.
-
-To give a first impression of what happens when using Gower's insertion offline, see \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously (thinking of $\mathbf{d}$ in equation \ref{gower} as an $n \cross m$ matrix) from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again.
-
-
+Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using the method of Gower.
 
 % offline insertion error in Gower
 \begin{figure}
@@ -179,9 +167,6 @@ To give a first impression of what happens when using Gower's insertion offline,
 \label{gowerfullinsert}
 % generated (roughly) using wt2-insert-error.R
 \end{figure}
-
-
-It is also interesting to look at the behaviour of a grid placed over the domain. Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using the method of Gower.
 
 % grid to map
 \begin{figure}
@@ -196,44 +181,19 @@ It is also interesting to look at the behaviour of a grid placed over the domain
 The grid in \fig{} has been inserted 
 
 
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=2in]{figs/wt2-grid-orig.pdf} \\
-\caption{The grid to be inserted into the MDS configuration.}
-\label{wt2-grid-orig}
-% generated using wt2-grid.R
-\end{figure}
-
-VVVVVVVVVVVVVVVVVVVV absorb this into the above
-
-Item (1) can be rectified by using an appropriately spaced grid (or using Landmark MDS (\cite{landmark}), see below) on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. The sample points can then be inserted into this space. The second and third points are linked, and combined lead us to believe that Gower's interpolation does not offer a solution to the insertion problem; we are both unable to insert points more than one at a time (thus making computation expensive) and, more importantly, are unable to insert points accurately without changing the representation space (\cite{Trosset2008}.)
-
-
-
+\subsubsection{Concrete example (BETTER TITLE)}
 
 It is important to note that those points found by simultaneous insertion via Gower's method are self-consistent but not consistent with the MDS configuration used to generate the inserted set.
 
-
-
-
-
-
-
-
------------------------
-
-
-Concrete example:
-
 DIAGRAM OF POINTS HERE!
-
 
 Take three points, equidistant, 1 unit apart, they have the following distance matrix:
 
 \begin{equation}
-D_3 = \begin{pmatrix} 0 & 1& 1\\1 & 0 & 1\\ 1 & 1 & 0\end{pmatrix}.
+D_3 = \begin{pmatrix} 0 & 1& 1\\1 & 0 & 1\\ 1 & 1 & 0\end{pmatrix},
 \end{equation}
+
+graphically: \fig{cexample}, top left pane.
 
 We find the MDS representation of the points in the same manner as \cite{diaconis08}.
 
@@ -250,8 +210,6 @@ where $H=I-\frac{1}{n}\mathbf{1}\mathbf{1}^\text{T}$.
 
 Now, performing an eigen-decomposition on $S$,
 
-
-
 \begin{equation}
 S = U \Lambda U^\text{T},
 \end{equation}
@@ -263,7 +221,7 @@ U = \begin{pmatrix}
 	0 & 0.8164 & -0.5773\\
 	-0.7071 & -0.4082 & -0.5773\\ 
 	0.7071 & -0.4082 & -0.5773
-	\end{pmatrix}\qquad
+	\end{pmatrix},\qquad
 \Lambda = \begin{pmatrix} 
 	1/2 & 0 & 0\\
 	0 & 1/2 & 0\\ 
@@ -274,7 +232,7 @@ U = \begin{pmatrix}
 Finally finding $X$,
 
 \begin{equation}
-X=U\Lambda^{-\frac{1}{2}}= \begin{pmatrix} 
+X=U\Lambda^{\frac{1}{2}}= \begin{pmatrix} 
 	0 & 0.5773 & -8\cross10^{-9}\\
 	-0.5 & -0.2886 & -8\cross10^{-9}\\ 
 	0.5 & -0.2886 & -8\cross10^{-9}
@@ -286,17 +244,25 @@ Discarding the last column, we obtain the MDS coordinates:
 \begin{equation}
 \begin{pmatrix} 
 	0 & 0.5773\\
-	-0.5 & -0.2886\\ 
-	0.5 & -0.2886
+	-0.5 & -0.2887\\ 
+	0.5 & -0.2887
 	\end{pmatrix},
 \label{origMDScoords}
 \end{equation}
 
-giving the representation seen in diagram BLAH
+giving the representation seen in \fig{cexample}, top right pane.
 
-ANOTHER PLOT HERE PLEASE.
+% grid to map
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=4in]{figs/cexample-fig.pdf} \\
+\caption{}
+\label{cexample}
+% generated using wt2-grid.R
+\end{figure}
 
-So, taking these points and re-inserting the second point into their MDS representation, we use equation (\ref{gower}). FIrst, finding the vector of distances from point 2 to the other points in the non-MDS space:
+So, taking these points and re-inserting the second point into their MDS representation, we use equation (\ref{gower}). First, finding the vector of distances from point 2 to the other points in the non-MDS space:
 
 \begin{equation}
 \mathbf{d}=\begin{pmatrix} 
@@ -321,11 +287,15 @@ And using Gower's formula:
 \begin{equation}
 \begin{aligned}
 \tilde{x}_{\text{new}} &= \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d}\\
-&=(0.3535, 0.2041, -4.3 \cross 10^{-17})
+&=\begin{pmatrix}
+0.5\\
+0.2887\\
+-2.4 \cross 10^{-9}\\
+\end{pmatrix},
 \end{aligned}
 \end{equation}
 
-This is clearly different from the coordinates in equation (\ref{origMDScoords}).
+which is a reflection of the second point in equation (\ref{origMDScoords}).
 
 Let us now see what happens when all three points are re-inserted. First generalise $\mathbf{d}$ to be a matrix, $\mathbb{D}$, giving the distances from the ``old'' points to our ``new'' points which double centred as above, by pre- and post-multiplying by the $H$ matrix. Now, equation (\ref{gower}) becomes:
 
@@ -335,12 +305,39 @@ Let us now see what happens when all three points are re-inserted. First general
 
 and so the coordinates obtained are:
 
+\begin{equation}
+\tilde{X}_\text{new}=\begin{pmatrix}
+-1.9\cross 10^{-17} & -0.25 & 0.25\\
+ 0.2887 & -0.1443 & -0.1443\\
+-2.04\cross 10^{-09} &  1.2\cross 10^{-9} & 1.3\cross 10^-{9}\\
+\end{pmatrix}
+\end{equation}
 
-CLEAR UP NOTATION BETWEEN $\tilde{X}$ and $X$.
+By analogy with the single point case, we take the transpose and remove the final column, thus obtaining:
 
+\begin{equation}
+\begin{pmatrix}
+-1.8\cross 10^{-17} &  0.2887\\
+-0.25 & -0.1443\\
+ 0.25 & -0.1443\\
+\end{pmatrix}
+\end{equation}
+
+which are different from our original coordinates but, as can be seen from \fig{cexample-new-insert}, the distances and shape are preserved.
 
 
 --------------------
+
+To give a first impression of what happens when using Gower's insertion offline, see \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously (thinking of $\mathbf{d}$ in equation \ref{gower} as an $n \cross m$ matrix) from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again.
+
+
+
+
+
+
+
+
+
 
 \section{Finding the within-area distances}
 
