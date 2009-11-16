@@ -217,7 +217,7 @@ for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
 
 # zoom of plot
 plot(x=samp.mds$points[,1],y=samp.mds$points[,2],asp=1,type="n",main="",
-     xlab="",ylab="",xlim=c(2,3.75),ylim=c(-0.2,0.5))
+     xlab="",ylab="",xlim=c(2,4),ylim=c(-0.5,0.75))
 
 for(i in unique(hgrid.set$ind)){
    if(length(h.part.mds[hgrid.set$ind==i,])==2){
