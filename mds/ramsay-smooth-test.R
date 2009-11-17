@@ -2,7 +2,7 @@
 # Copyright David Lawrence Miller 2009
 source("mds.R")
 
-ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot.it=FALSE){
+ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    ## create a boundary...
    bnd <- fs.boundary()
    bnd<-pe(bnd,seq(1,length(bnd$x),8))
@@ -15,7 +15,12 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
    xx<-xx[onoff];yy<-yy[onoff]
    onoff.fix<-inSide(list(x=-bnd$x,y=-bnd$y),-xx,-yy)
    xx<-xx[onoff.fix];yy<-yy[onoff.fix]
-   
+
+   # map the grid xx,yy
+   my.grid<-list(x=xx,y=yy)
+   D.grid<-create_distance_matrix(xx,yy,bnd)
+   mds.grid<-cmdscale(D.grid,eig=TRUE,k=2)
+
    # make the sample
    samp.ind<-sample(1:length(xx),samp.size)
 
@@ -25,13 +30,10 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
    samp.data<-data.frame(x=xx[samp.ind],y=yy[samp.ind],
                          z=fs.test(xx[samp.ind],yy[samp.ind])+noise)
    
-   # map the prediction grid
-   D.samp<-create_distance_matrix(samp.data$x,samp.data$y,bnd)
 
-   samp.mds<-cmdscale(D.samp,eig=TRUE,x.ret=TRUE)
-
-   samp.data.mds<-data.frame(x=samp.mds$points[,1],y=samp.mds$points[,2],
-                             z=samp.data$z)
+   # insert the sample
+   samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd)
+   samp.data.mds<-data.frame(x=samp.mds[,1],y=samp.mds[,2],z=samp.data$z)
 
    ### create prediction data
    # non-mapped prediction data
@@ -39,20 +41,18 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,logfilename=NA, plot
                          z=fs.test(xx[-samp.ind],yy[-samp.ind]))
 
    # new MDS coords for the prediction points
-cat("before D.pred\n")
    pred.mds<-insert.mds(pred.data,samp.data,samp.mds,bnd)
-cat("created D.pred\n")
 
    # put this in the correct format 
    pred.size<-dim(pred.data)[1]+dim(samp.data)[1]
-   pred.data<-list(x=rep(0,pred.size),y=rep(0,pred.size))
-   pred.data$x[samp.ind]<-samp.data.mds$x  # need to add in the sample points too
-   pred.data$x[-samp.ind]<-pred.mds[,1]
-   pred.data$y[samp.ind]<-samp.data.mds$y  # need to add in the sample points too
-   pred.data$y[-samp.ind]<-pred.mds[,2]
+   pred.data.mds<-list(x=rep(0,pred.size),y=rep(0,pred.size))
+   pred.data.mds$x[samp.ind]<-samp.data.mds$x  # need to add in the sample points too
+   pred.data.mds$x[-samp.ind]<-pred.mds[,1]
+   pred.data.mds$y[samp.ind]<-samp.data.mds$y  # need to add in the sample points too
+   pred.data.mds$y[-samp.ind]<-pred.mds[,2]
 
    # prediction data for non mds'd
-   npred.data<-list(x=xx,y=yy,z=fs.test(xx,yy))
+   pred.data<-list(x=xx,y=yy,z=fs.test(xx,yy))
 
    # boundary, only for drawing the line around the outside
    fsb <- fs.boundary()
@@ -63,11 +63,11 @@ cat("created D.pred\n")
    
    ### mapping
    b.mapped<-gam(z~s(x,y,k=49),data=samp.data.mds)
-   fv.mapped <- predict(b.mapped,newdata=pred.data)
+   fv.mapped <- predict(b.mapped,newdata=pred.data.mds)
    
    ### normal tprs
    b.tprs<-gam(z~s(x,y,k=49),data=samp.data)
-   fv.tprs <- predict(b.tprs,newdata=npred.data)
+   fv.tprs <- predict(b.tprs,newdata=pred.data)
    
    ### soap
    # create some internal knots...
@@ -76,7 +76,7 @@ cat("created D.pred\n")
    knots.ind<-inSide(bnd,x=knots$x,y=knots$y)
    knots<-list(x=knots$x[knots.ind],y=knots$y[knots.ind])
    b.soap<-gam(z~s(x,y,k=20,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
-   fv.soap<-predict(b.soap,newdata=npred.data,block.size=-1)
+   fv.soap<-predict(b.soap,newdata=pred.data,block.size=-1)
    
 
    # plot
@@ -112,29 +112,21 @@ cat("created D.pred\n")
    }
 
    ### calculate MSEs
-   mses<-list(mds=mean((fv.mapped-npred.data$z)^2,na.rm=T),
-              tprs=mean((fv.tprs-npred.data$z)^2,na.rm=T),
-              soap=mean((fv.soap-npred.data$z)^2,na.rm=T))
+   mses<-list(mds=mean((fv.mapped-pred.data$z)^2,na.rm=T),
+              tprs=mean((fv.tprs-pred.data$z)^2,na.rm=T),
+              soap=mean((fv.soap-pred.data$z)^2,na.rm=T))
 
    # print them
-   cat("mds MSE=" ,mses$mds,"\n")
-   cat("tprs MSE=",mses$tprs,"\n")
-   cat("soap MSE=",mses$soap,"\n")
+   #cat("mds MSE=" ,mses$mds,"\n")
+   #cat("tprs MSE=",mses$tprs,"\n")
+   #cat("soap MSE=",mses$soap,"\n")
 
-   # pred object
-   preds<-list(tprs=fv.tprs,soap=fv.soap,mds=fv.mapped,truth=z.truth)
+   ## pred object
+   #preds<-list(tprs=fv.tprs,soap=fv.soap,mds=fv.mapped,truth=z.truth)
 
-   # lets return an object...
-   ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=samp.data,
-             pred=npred.data,mses=mses,pred=preds)
+   ## lets return an object...
+   #ret<-list(samp.mds=samp.data,pred.mds=pred.data,samp=samp.data,
+   #          pred=npred.data,mses=mses,pred=preds)
 
-   return(ret)
-
-
-
-
-
+   return(mses)
 }
-
-
-

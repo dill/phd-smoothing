@@ -80,7 +80,7 @@ The modeling strategy is as follows:
 \item If prediction is required, take those predicted points and insert them into the MDS configuration, predict using the smooth and then back-transform\footnote{This is trivial if an index of the points is kept.} to the original space.
 \end{enumerate}
 
-The rest of this report is structured as follows: in section (2) an overview of MDS is given, along with technical details of how the MDS configuration is calculated; section (3) focuses on how the within-area distances are found; section (4) shows the some examples of this method on simulated data.
+The rest of this report is structured as follows: in section (2) an overview of MDS is given, along with technical details of how the MDS configuration is calculated; section (3) focuses on how the within-area distances are found; section (4) shows the some examples of this method on simulated data. I conclude with a proposed course of action to improve the method.
 
 \section{Multidimensional Scaling}
 
@@ -324,7 +324,7 @@ and so the coordinates obtained are:
 \tilde{X}_\text{new}=\begin{pmatrix}
 -1.9\cross 10^{-17} & -0.25 & 0.25\\
  0.2887 & -0.1443 & -0.1443\\
--2.04\cross 10^{-09} &  1.2\cross 10^{-9} & 1.3\cross 10^-{9}\\
+-2.04\cross 10^{-9} &  1.2\cross 10^{-9} & 1.3\cross 10^-{9}\\
 \end{pmatrix}
 \end{equation*}
 
@@ -391,6 +391,8 @@ Given that there is no direct path within the domain ($\Gamma$, say) between two
 
 Tying together the previous sections, we may now look at how, using MDS and our new algorithm, we can reconfigure the points in our domain.
 
+\subsection{Ramsay's horseshoe}
+
 \Fig{ramsay-mds} shows MDS being performed on the Ramsay horseshoe (\cite{ramsay}.) From this it is clear to see that performing MDS separates the two arms of the horseshoe.
 
 % Ramsay MDSed 
@@ -405,18 +407,9 @@ Tying together the previous sections, we may now look at how, using MDS and our 
 
 An advantage of the MDS approach is that in our eigen-decomposition we may pick an arbitrary number of eigenvectors to retain and push the original set of points into higher dimensions. Using three eigenvectors we get the configuration in \fig{ramsay-mds-3d}.
 
-
 The two eigenvalues returned from running \texttt{cmdscale} in \textsf{R} when we ask for a 2-dimensional are 2615.5597 and 229.0039. Adding another dimension gives a third eigenvalue of 46.8754. Clearly significantly less variation is being explained in the third dimension, however this may well not be of primary concern if it prevents leakage.
 
-\Fig{wt2dia} shows another domain which is more complicated than the horseshoe. The region has peninsulae which will cause similar problems to those found in the horseshoe. This domain is intended to replicate some of the problems that come about when dealing with coastlines.
-
-
-An additional complication is that the peninsulae become smaller from left to right, thus the first couple of eigenvectors will be used to explain the variation along and across the bigger peninsulae.
-
-
-
-
-% Ramsay MDSed 
+% Ramsay MDSed (3D) 
 \begin{figure}
 \centering
 % trim order l b r t
@@ -425,6 +418,16 @@ An additional complication is that the peninsulae become smaller from left to ri
 \label{ramsay-mds-3d}
 % generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
 \end{figure}
+
+Smoothing over these points with no error added to a sample of 250 points yields the model shown in \fig{ramsay-noerror-fit}.
+
+
+
+\subsection{Domain with peninsulae}
+
+\Fig{wt2dia} shows another domain which is more complicated than the horseshoe. The region has peninsulae which will cause similar problems to those found in the horseshoe. This domain is intended to replicate some of the problems that come about when dealing with coastlines.
+
+An additional complication is that the peninsulae become smaller from left to right, thus the first couple of eigenvectors will be used to explain the variation along the bigger peninsulae and across the baseline. Indeed, we can see this in \fig{wt2dia}.
 
 % plot of points in wt2.
 \begin{figure}
@@ -437,16 +440,6 @@ An additional complication is that the peninsulae become smaller from left to ri
 
 
 
-
-
-
-
-
-
-
-
-
-\section{Simulation experiment}
 
 
 
