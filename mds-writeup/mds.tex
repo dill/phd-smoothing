@@ -2,7 +2,12 @@
 % David Lawrence Miller
 % d.l.miller@bath.ac.uk
   
-\documentclass[a4paper,10pt]{amsart}
+\documentclass[a4paper,10pt]{article}
+\setlength{\textheight}{22.5cm}
+\setlength{\textwidth}{6.47in}
+\setlength{\oddsidemargin}{-1mm}
+\setlength{\topmargin}{0.1cm}
+\setlength{\evensidemargin}{-5mm} 
  
 % Load some packages
 \usepackage{times, amsmath, amssymb, amsfonts, url, natbib, bm, rotating}
@@ -12,9 +17,7 @@
 
 % top matter
 \title{Multidimensional scaling as a tool for smoothing over complex regions}
-\author{David Lawrence Miller}
-\email{d.l.miller@bath.ac.uk}
-\address{Mathematical Sciences, University of Bath, Bath, United Kingdom}
+\author{David Lawrence Miller\\Mathematical Sciences\\University of Bath\\\texttt{d.l.miller@bath.ac.uk}}
  
 % Shortcuts
 % Probability
@@ -46,9 +49,9 @@
 \begin{document}
  
 % The abstract
-\begin{abstract}
-Here.
-\end{abstract}
+%\begin{abstract}
+%Here.
+%\end{abstract}
  
  
 % New theorem for theorems
@@ -63,7 +66,7 @@ Here.
 
 \section{Introduction}
 
-Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of points based on the distances between those points (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a projection of data into lower dimensional space, while still retaining information about the distances between the points. It is closely related to other methods such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondance analysis (\cite{terbraak}.)
+Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of points based on the distances between those points (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a projection of data into lower dimensional space, while still retaining information about the distances between the points. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondance analysis (\cite{terbraak}.)
 
 Multidimensional scaling offers an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points such that the distances between the points are (approximately) preserved.
 
@@ -73,6 +76,7 @@ The modeling strategy is as follows:
 \item Take a regular grid over the domain and perform MDS on this.
 \item Using this grid, insert the sample points into this configuration.
 \item Fit the smooth to the MDS configuration of points.
+\item Depending on the inference needing to be done, the points can be back-transformed$^\text{1}$.
 \item If prediction is required, take those predicted points and insert them into the MDS configuration, predict using the smooth and then back-transform\footnote{This is trivial if an index of the points is kept.} to the original space.
 \end{enumerate}
 
@@ -84,7 +88,7 @@ The basic concept behind MDS is to take the data, calculate their inter-point di
 
 \subsection{Finding the new point configuration}
 
-We first define $d_{ij}$ as the distance between the points $i$ and $j$. These form a (symmetric) matrix, $D$, with $ij^{\text{th}}$ element $d_{ij}$. In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. How we find $d_{ij}$ is discussed in the next section, for the moment we assume that $D$ is known and gives the shortest within-domain distance between points.
+We first define $d_{ij}$ as the distance between the points $i$ and $j$. These form a (symmetric) matrix, $D$, with $ij^{\text{th}}$ element $d_{ij}$. In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. How we find $d_{ij}$ is discussed in the next section, for the moment let us assume that $D$ is known and gives the shortest within-domain distance between points.
 
 \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points given we know the $d_{ij}$s. 
 
@@ -110,13 +114,13 @@ So, in order to obtain a the new configuration of points using MDS (given that w
 
 Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function. 
 
-\subsection{Inserting new points into the configuration}
+\subsection{Gower's interpolation} 
 
 It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation; for example when further data is collected, or in order to predict over points not in the sample. In this case we would like to insert those new points into the configuration given by MDS\footnote{The insertion problem is also known as the ``out-of-sample problem'' (\cite{Trosset2008})}. A number of methods have been developed over the past 40 years. Gower's interpolation (\cite{gower1968}) is covered here.
 
-\subsubsection{Gower's interpolation} 
+Gower's method relies on taking a single new point $x_{\text{new}}$, and inserting it into a new (orthogonal) dimension in the configuration at its distance from the MDS points ($\tilde{X}$); the extra dimension is then projected on to the old axes. The technical details of the computation are detailed first, followed by some problems arising from the use of this method. 
 
-Gower's method relies on taking a single new point $x_{\text{new}}$, and inserting at its distance from the MDS points ($\tilde{X}$) into a new dimension, orthogonal to $\tilde{X}$; the extra dimension is then projected on to the old axes. The technical details of the computation are detailed first, followed by some problems arising from the use of this method. 
+\subsubsection{Gower's interpolation formula}
 
 We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\text{new}}$ using:
 
@@ -125,11 +129,12 @@ We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\t
 \label{gower}
 \end{equation}
 
-here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($m \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) is defined as the distance between $x_{\text{new}}$ and the points in the original $\tilde{X}$. This formula (\ref{gower}) is commonly referred to as ``Gower's interpolation.''
+here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($m \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) is defined as the distance between $x_{\text{new}}$ and the points in $\tilde{X}$.
 
-Although the calculation is simple, it hides important pitfalls. 
 
-If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ are not the true eigenvalues; we may then insert the point incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, hence only a portion of the full information about the domain is included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark}) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. This problem can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered. We discuss this in more detail below.
+\subsubsection{Problems arising}
+
+If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ may not represent the space correctly and, as such, we may then insert the point incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, hence only a portion of the full information about the domain is included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark}) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. This problem can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered.
 
 In the course of the projection onto the original MDS axes, we lose one of the coordinates (effectively truncating a dimension.) If the MDS axes were in two dimensions, it is possible that the point was not supposed to lie in the plane but rather this an extra dimension and its distance was truncated. This can cause distortions in the point configuration. An example of this is illustrated in \fig{bojinsert}. A more complete explanation and characterisation of this problem is given in \cite{Boj2009}. 
 
@@ -142,40 +147,43 @@ In the course of the projection onto the original MDS axes, we lose one of the c
 \label{bojinsert}
 \end{figure}
 
-The above distortion is compounded when extra points are added to the MDS configuration in an ``online'' manner. For example, say MDS has been performed on some set of points and then mapped them into the plane. Then suppose that new points are added into this configuration using Gower's interpolation. When the first point is added say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2dia} panel 2. It is for this reason that we do not insert the points online, but rather simultaneously insert all points.
+The above distortion is compounded when extra points are added to the MDS configuration in an ``online'' manner. For example, say MDS has been performed on some set of points and then mapped them into the plane. Then suppose that new points are added into this configuration using Gower's interpolation. When the first point is added, say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2dia} panel 2. It is for this reason that we do not insert the points online, but rather simultaneously insert all points.
 
 % online insertion error in Gower
 \begin{figure}
 \centering
 % trim order l b r t
 \includegraphics[width=2in]{figs/gowererror.pdf} \\
-\caption{MDS configuration for the domain in \fig{wt2dia}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation from the initial MDS configuration. The red points should be positioned in the ``holes'' in the black grid.}
+\caption{MDS configuration for the domain in \fig{wt2dia}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation online. The red points should be positioned in the ``holes'' in the black grid.}
 \label{gowererror}
 \end{figure}
 
 
 Following from this, it is important to make sure that the MDS space is smooth in the sense that a grid of straight lines over the domain is mapped to a series of smooth lines. 
 
-Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using the method of Gower. The grid produced under the insertion can be seen in \fig{wt2-grid-full}.
+Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using the method of Gower. The grid produced under the insertion can be seen in \fig{wt2-grid-full}. Taking a sample of 250 points from the 1253, an MDS configuration was also found and the same grid inserted (see \fig{wt2-grid-samp}.) From this it is clear that those points mapped into the domain are smooth but in the sample case the features in the far right of the shape (the less pronounced peninsulae) are squashed down.
+
 
 
 % grid to map
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[width=2in]{figs/wt2-grid-orig.pdf} \\
+\includegraphics[width=4in]{figs/wt2-grid-orig.pdf} \\
 \caption{The grid to be inserted into the MDS configuration.}
 \label{wt2-grid-orig}
 % generated using wt2-grid.R
 \end{figure}
 
+Given that the grid over the transformed space is smooth, how do the ``errors'' that can be seen in \fig{gowererror} occur? It turns out that although insertions using Gower's method are self-consistent, they are not consistent with the original MDS space. The following example shows that re-inserting points does not recover their MDS coordinates, but that the shape and distances are preserved.
+
 % mapped grid (full)
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[width=3in]{figs/wt2-grid-full.pdf} \\
-\caption{Inserted grid}
-\label{wt2-grid-orig}
+\includegraphics[width=5in]{figs/wt2-grid-full.pdf} \\
+\caption{Inserted grid when 1253 points are used to create the initial MDS configuration. The right panel shows a zoom of the far right part of the configuration.}
+\label{wt2-grid-full}
 % generated using wt2-grid.R
 \end{figure}
 
@@ -183,17 +191,14 @@ Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on 
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[width=3in]{figs/wt2-grid-samp.pdf} \\
-\caption{Inserted grid}
-\label{wt2-grid-orig}
+\includegraphics[width=5in]{figs/wt2-grid-samp.pdf} \\
+\caption{Inserted grid when 250 randomly chosen points are used to create the initial MDS configuration. The right panel shows a zoom of the far right part of the configuration. Comparing this to that of \fig{wt2-grid-full}, one can see that the details have been squashed together.}
+\label{wt2-grid-samp}
 % generated using wt2-grid.R
 \end{figure}
 
 
-The grid in \fig{} has been inserted 
-
-
-\subsubsection{Concrete example (BETTER TITLE)}
+\subsubsection{Consistency of interpolated points}
 
 It is important to note that those points found by simultaneous insertion via Gower's method are self-consistent but not consistent with the MDS configuration used to generate the inserted set.
 
@@ -333,8 +338,7 @@ By analogy with the single point case, we take the transpose and remove the fina
 \end{pmatrix}
 \end{equation*}
 
-which are different from our original coordinates but, as can be seen from \fig{cexample}, boottom right pane, the distances and shape are preserved.
-
+which are different from our original coordinates but, as can be seen from \fig{cexample}, bottom right pane, the distances and shape are preserved.
 
 The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again. Here the it can be seen that both sets of points are internally consistent but not consistent with each other.
 
@@ -342,7 +346,7 @@ The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[width=2in]{figs/wt2-gowererr-fullover.pdf} \\
+\includegraphics[width=4in]{figs/wt2-gowererr-fullover.pdf} \\
 \caption{Error from inserting 250 points from the full MDS configuration back into the domain.}
 \label{gowerfullinsert}
 % generated (roughly) using wt2-insert-error.R
@@ -358,7 +362,7 @@ It is for these reasons that the
 
 \section{Finding the within-area distances}
 
-The within-area distances to be fed to MDS are found using a novel algorithm. This works by tracing the inside sides of the polygon and then modifying the path by deleting and replacing portions of the path. 
+The within-area distances to be fed to MDS are found using a novel algorithm. This works by tracing the edges of the polygon and then modifying the path by deleting and replacing portions of the path. 
 
 Given that there is no direct path within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
 
@@ -402,12 +406,7 @@ Tying together the previous sections, we may now look at how, using MDS and our 
 An advantage of the MDS approach is that in our eigen-decomposition we may pick an arbitrary number of eigenvectors to retain and push the original set of points into higher dimensions. Using three eigenvectors we get the configuration in \fig{ramsay-mds-3d}.
 
 
-
-VVVV REWRITE
-
 The two eigenvalues returned from running \texttt{cmdscale} in \textsf{R} when we ask for a 2-dimensional are 2615.5597 and 229.0039. Adding another dimension gives a third eigenvalue of 46.8754. Clearly significantly less variation is being explained in the third dimension, however this may well not be of primary concern if it prevents leakage.
-
-OR REMOVE
 
 \Fig{wt2dia} shows another domain which is more complicated than the horseshoe. The region has peninsulae which will cause similar problems to those found in the horseshoe. This domain is intended to replicate some of the problems that come about when dealing with coastlines.
 

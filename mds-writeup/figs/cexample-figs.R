@@ -7,7 +7,7 @@ par(mfrow=c(2,2))
 X.orig<-matrix(c(1.5,1+sqrt(3)/2,1,1,2,1),2,3)
 X.orig<-t(X.orig)
 
-plot(X.orig,xlab="",ylab="",pch=19)
+plot(X.orig,xlab="",ylab="",pch=19,asp=1)
 
 
 ## Do the MDS
@@ -27,7 +27,7 @@ lambda.inv<-diag(1/eigen(S)$values)
 
 X<-U%*%chol(lambda)
 
-plot(X,xlab="",ylab="",pch=19)
+plot(X,xlab="",ylab="",pch=19,asp=1)
 
 
 ## insert new point
@@ -37,11 +37,11 @@ d2<-d2-mean(d2)
 xnew<-1/2*lambda.inv%*%t(X)%*%d2
 
 
-plot(X,xlab="",ylab="",pch=19)
+plot(X,xlab="",ylab="",pch=19,asp=1)
 points(x=xnew[1:2,][1],y=xnew[1:2,][2])
 
 
 ## insert everything
 X.new<-1/2*lambda.inv%*%t(X)%*%S
 
-plot(t(X.new[1:2,]),xlab="",ylab="",pch=19)
+plot(t(X.new[1:2,]),xlab="",ylab="",pch=19,asp=1)
