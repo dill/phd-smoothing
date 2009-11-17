@@ -19,7 +19,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    # map the grid xx,yy
    my.grid<-list(x=xx,y=yy)
    D.grid<-create_distance_matrix(xx,yy,bnd)
-   mds.grid<-cmdscale(D.grid,eig=TRUE,k=2)
+   grid.mds<-cmdscale(D.grid,eig=TRUE,k=2)
 
    # make the sample
    samp.ind<-sample(1:length(xx),samp.size)
@@ -29,7 +29,6 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
 
    samp.data<-data.frame(x=xx[samp.ind],y=yy[samp.ind],
                          z=fs.test(xx[samp.ind],yy[samp.ind])+noise)
-   
 
    # insert the sample
    samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd)
@@ -41,7 +40,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
                          z=fs.test(xx[-samp.ind],yy[-samp.ind]))
 
    # new MDS coords for the prediction points
-   pred.mds<-insert.mds(pred.data,samp.data,samp.mds,bnd)
+   pred.mds<-insert.mds(pred.data,my.grid,grid.mds,bnd)
 
    # put this in the correct format 
    pred.size<-dim(pred.data)[1]+dim(samp.data)[1]

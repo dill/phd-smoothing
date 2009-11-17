@@ -72,7 +72,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             // increment pathlen counter
             k++;
          }    
-      } //end of main for loops
+      }
    }else{
       // #### Main for loop for FULL MDS
       for(i=0; i<(*len); i++){
@@ -82,7 +82,11 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
          for(j=(i+1); j<(*len); j++){
             // set p2
             p2[0]=x[j]; p2[1]=y[j];
-  
+ 
+            // DEBUG
+            //printf("p1=(%f,%f)\n",p1[0],p1[1]);
+            //printf("p2=(%f,%f)\n",p1[0],p2[1]);
+ 
             // check to see if we have to do the path finding or
             // just the hypotenuse 
             do_intersect(p1, p2, *nbnd, bnd, retint);
@@ -95,7 +99,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             // increment pathlen counter
             k++;
          }    
-      } //end of main for loops
+      }
    }
 
    // loop over all point pairs
