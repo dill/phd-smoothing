@@ -85,11 +85,15 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
  
             // DEBUG
             //printf("p1=(%f,%f)\n",p1[0],p1[1]);
-            //printf("p2=(%f,%f)\n",p1[0],p2[1]);
+            //printf("p2=(%f,%f)\n",p2[0],p2[1]);
  
             // check to see if we have to do the path finding or
             // just the hypotenuse 
             do_intersect(p1, p2, *nbnd, bnd, retint);
+   
+            // DEBUG
+            //printf("ints=%d\n",iarrsum((*nbnd-1),retint));
+   
             //                           vvv just hypot when we touch only 1 vertex 
             if(iarrsum((*nbnd-1), retint)>1){
                pathlen[k]=make_path(p1,p2,*nbnd,bnd);

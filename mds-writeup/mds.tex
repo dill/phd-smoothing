@@ -272,7 +272,7 @@ giving the representation seen in \fig{cexample}, top right pane.
 \centering
 % trim order l b r t
 \includegraphics[width=4in]{figs/cexample-fig.pdf} \\
-\caption{Example shoing how the insertion of points is not consistent with previous point locations. Clockwise from top left: initial point configuration, MDS configuration of points, second point inserted and all points re-inserted.}
+\caption{Example showing how the insertion of points is not consistent with previous point locations. Clockwise from top left: initial point configuration, MDS configuration of points, second point inserted and all points re-inserted.}
 \label{cexample}
 % generated using figs/cexample-figs.R 
 \end{figure}
@@ -405,21 +405,24 @@ Tying together the previous sections, we may now look at how, using MDS and our 
 % generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
 \end{figure}
 
-An advantage of the MDS approach is that in our eigen-decomposition we may pick an arbitrary number of eigenvectors to retain and push the original set of points into higher dimensions. Using three eigenvectors we get the configuration in \fig{ramsay-mds-3d}.
+%An advantage of the MDS approach is that in our eigen-decomposition we may pick an arbitrary number of eigenvectors to retain and push the original set of points into higher dimensions. Using three eigenvectors we get the configuration in \fig{ramsay-mds-3d}.
 
 The two eigenvalues returned from running \texttt{cmdscale} in \textsf{R} when we ask for a 2-dimensional are 2615.5597 and 229.0039. Adding another dimension gives a third eigenvalue of 46.8754. Clearly significantly less variation is being explained in the third dimension, however this may well not be of primary concern if it prevents leakage.
 
-% Ramsay MDSed (3D) 
+% Ramsay MDS smooth fit (no noise)
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[trim=0in 0.5in 0in 0.25in, width=5.5in]{figs/ramsay-mds-3d.pdf} \\
-\caption{Two-dimensional projections of the 3D mapping of the horseshoe.}
-\label{ramsay-mds-3d}
-% generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
+\includegraphics[width=5.5in]{figs/ramsay-mds-smooth-noerr.pdf} \\
+\caption{Clockwise from top left: true Ramsay test function, fit given using MDS, thin plate regression spline fit and soap film smooth. Sample size was 250, no noise.}
+\label{ramsay-mds-smooth-noerr}
+% generate /phd-smoothing/mds/ramsay-smooth-test.R
 \end{figure}
 
-Smoothing over these points with no error added to a sample of 250 points yields the model shown in \fig{ramsay-noerror-fit}.
+Smoothing over these points (using a thin plate spline basis) with no error added to a sample of 250 points yields the model shown in \fig{ramsay-mds-smooth-noerr}. Here the plain thin plate fit is having leakage issues, both the MDS fit and the soap film smoother (\cite{soap}) have fixed this problem. Looking at the mean squared error we see that [[fill this in]].
+
+
+% Ramsay MDS smooth fit (with noise)
 
 
 
@@ -438,22 +441,86 @@ An additional complication is that the peninsulae become smaller from left to ri
 \label{wt2dia}
 \end{figure}
 
+Taking the MDS configuration and smoothing over it (again using a thin plate basis,) we obtain the fits shown in the top right panels of \fig{wt2-mds-smooth-noerr} (with no error) and \fig{wt2-mds-smooth-err} (with $\sigma=0.05$) when the sample size is 250. We again see that the leakage in the thin plate fit is not apparant in the MDS fit. However, although the main features of the true surface are captured, the model does not pick up the features on the right side of the domain. It seems that this is because of the compacting of these features by the MDS routine, as can be seen in \fig{wt2dia}. In both cases the mean squared error for the MDS fit is higher than (but of the same order as) that of the thin plate spline, but without the problem of leakage.
+
+%noise=0
+%$mses$mds
+%[1] 0.1074302
+%$mses$tprs
+%[1] 0.06047138
+%$mses$soap
+%[1] 0.0346587
+%
+%noise=0.05
+%$mses
+%$mses$mds
+%[1] 0.1164078
+%$mses$tprs
+%[1] 0.1006808
+%$mses$soap
+%[1] 0.02077468
+
+% wt2 MDS smooth, no error 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=6in]{figs/wt2-mds-smooth-noerr.pdf}\\
+\caption{Clockwise from top left: true Ramsay test function, fit given using MDS, thin plate regression spline fit and soap film smooth. Sample size was 250, no noise.}
+\label{wt2-mds-smooth-noerr}
+\end{figure}
 
 
+% wt2 MDS smooth, error 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=6in]{figs/wt2-mds-smooth-err.pdf}\\
+\caption{Clockwise from top left: true Ramsay test function, fit given using MDS, thin plate regression spline fit and soap film smooth. Sample size was 250, noise set at $\sigma^2=0.05$.}
+\label{wt2-mds-smooth-err}
+\end{figure}
 
+We can see why the fit is capturing the leakage but failing on the right side of the domain by looking at the raw fit on the transformed domain (as produced by \texttt{vis.gam} in \texttt{mgcv} with the \texttt{too.far} option set to 0.04.) \Fig{wt2-visgam} shows the surface with the data plotted ontop. Here we see that there is quite a lot of information in the right side of the domain, but it is being supressed by the penalty (there are lots of points here but \fig{wt2-mds-smooth-err} and \fig{wt2-mds-smooth-noerr} do not show much detail in that area.)
 
+% wt2 vis.gam output 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=4in]{figs/wt2-visgam.pdf}\\
+\caption{}
+\label{wt2-visgam}
+\end{figure}
 
+Further evidence to this can be seen if the mean squared error is calculated based on only those points with $x$ coordinates less than 0. In that case the MSE for the MDS fit is about half that of the plain thin plate fit (rather than of the same order and larger) and is about the same order as the soap film smoother.
 
-
-
-
-do plots of vis.gam() with too.far set low and overlay of points
-
-boxplots
-
-
+So, it would seem that there needs to be some adjustment of the penalty in order to account for the compacting of space by the mapping.
 
 \section{Conclusions}
+
+Although these results are encouraging, the inability of the smooth to capture the features in the right side of the domain is disappointing. Proposed further work is to follow the lead from \cite{wood2000}, which shows that given some transform of a variable, $y$ say, such that $y_i^\prime=y_i/k$, then $f(x,y^\prime k)$ will give the same fit as $f(x,y)$ (ie. the fit will be the same under the new coordinates) but the penalty will change to:
+
+\begin{equation}
+\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2k\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + k^3\Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y,
+\label{adjustedintegral}
+\end{equation}
+
+from
+
+\begin{equation*}
+\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + \Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y.
+\end{equation*}
+
+In the case of the MDS, the integral would need to be split over a grid such that each cell captured the distortion in space over the area of the cell. Mathematically, $\Omega$ would be split into a subsets, $\omega_i$ (where $\bigcup_{\forall j} \omega_j = \Omega$) and (\ref{adjustedintegral}) becomes
+
+
+\begin{equation}
+\sum_{\forall j} \int\int_{\omega_j} l_j^3 \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2k_jl_j\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + k_j^3\Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y,
+\label{adjustedintegral}
+\end{equation}
+
+where $k_j$ is the scaling in the $y$ direction and $l_j$ is the scaling in the $x$ direction for the $j^{\text{th}}$ cell.
+
+Using this penalty may allow for the distortions in space to be taken account of and therefore get around the problem of the details being smoothed over, as seen above. It will be easiest to first build this using a tensor product of $P$-splines, since their penalty is discrete to test its utility and then move on to the thin plate spline penalty.
+
 
 
 \bibliographystyle{plainnat}
