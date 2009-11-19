@@ -151,7 +151,7 @@ In the course of the projection onto the original MDS axes, we lose one of the c
 \label{bojinsert}
 \end{figure}
 
-The above distortion is compounded when extra points are added to the MDS configuration in an ``online'' manner. For example, say MDS has been performed on some set of points and then mapped them into the plane. Then suppose that new points are added into this configuration using Gower's interpolation. When the first point is added, say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2dia} panel 2. It is for this reason that we do not insert the points online, but rather simultaneously insert all points.
+This distortion is compounded when extra points are added to the MDS configuration in an ``online'' manner. For example, say MDS has been performed on some set of points and then mapped them into the plane. Then suppose that new points are added into this configuration using Gower's interpolation. When the first point is added, say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2dia} panel 2. It is for this reason that we do not insert the points online, but rather simultaneously insert all points.
 
 % online insertion error in Gower
 \begin{figure}
@@ -312,7 +312,7 @@ And using Gower's formula:
 \end{aligned}
 \end{equation*}
 
-which is a reflection of the second point in equation (\ref{origMDScoords}). This can be seen in \fig{cexample}, bottom left pane.
+which is a reflection of the second point in equation (\ref{origMDScoords}). This can be seen in \fig{cexample}, bottom left pane. This is not necessarily a problem since, by inspection, we can see that this is happening and correct it.
 
 Let us now see what happens when all three points are re-inserted. First generalise $\mathbf{d}$ to be a matrix, $\mathbb{D}$, giving the distances from the ``old'' points to our ``new'' points which double centred as above, by pre- and post-multiplying by the $H$ matrix. Now, equation (\ref{gower}) becomes:
 
@@ -342,7 +342,7 @@ By analogy with the single point case, we take the transpose and remove the fina
 
 which are different from our original coordinates but, as can be seen from \fig{cexample}, bottom right pane, the distances and shape are preserved.
 
-The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again. Here the it can be seen that both sets of points are internally consistent but not consistent with each other.
+The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again. Here the it can be seen that both sets of points are internally consistent but not consistent with each other. 
 
 % offline insertion error in Gower
 \begin{figure}
@@ -354,7 +354,17 @@ The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In
 % generated (roughly) using wt2-insert-error.R
 \end{figure}
 
-It is for these reasons that we insert both the sample and the prediction from a regular grid.
+Carrying out further investigation it is clear that when two insertions are performed the points are consistent between insertion sets. This can be seen in \fig{wt2-double-insert}. It is for these reasons that we insert both the sample and the prediction from a regular grid.
+
+% wt2 with prediction and sample inserted
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=4in]{figs/wt2-double-insert.pdf} \\
+\caption{Here both black and red points were inserted into an MDS configuration of a 1007 point, evenly spaced grid over the domain. Both point sets are consistent.}
+\label{wt2-double-insert}
+% generated (roughly) using wt2-smooth-test.R
+\end{figure}
 
 
 \section{Finding the within-area distances}
@@ -387,7 +397,7 @@ Tying together the previous sections, we may now look at how, using MDS and our 
 
 \subsection{Ramsay's horseshoe}
 
-\Fig{ramsay-mds} shows MDS being performed on the Ramsay horseshoe (\cite{ramsay}.) From this it is clear to see that performing MDS separates the two arms of the horseshoe.
+\Fig{ramsay-mds} shows MDS being performed on the Ramsay horseshoe (\cite{ramsay}.) From this it is clear to see that performing MDS separates the two arms of the horseshoe. In orer to cut down on computational time, the boundary of the horseshoe was approximated by 21 points (rather than the 160 give using the \texttt{fs.boundary} function in \texttt{mgcv}.)
 
 % Ramsay MDSed 
 \begin{figure}
@@ -413,7 +423,7 @@ The two eigenvalues returned from running \texttt{cmdscale} in \textsf{R} when w
 % generate /phd-smoothing/mds/ramsay-smooth-test.R
 \end{figure}
 
-Smoothing over these points  in 2D (using a thin plate spline basis) with no error added to a sample of 250 points yields the model shown in \fig{ramsay-mds-smooth-noerr}. Here the plain thin plate fit is has leakage issues, both the MDS fit and the soap film smoother (\cite{soap}) do not exhibit leakage. Looking at the mean squared error we see that [[fill this in]].
+Smoothing over these points in 2D (using a thin plate spline basis) with no error added to a sample of 250 points yields the model shown in \fig{ramsay-mds-smooth-noerr}. Here the plain thin plate fit is has leakage issues, both the MDS fit and the soap film smoother (\cite{soap}) do not exhibit leakage. Looking at the mean squared error we see that with no noise MDS with a thin plate basis and the soap film smoother were comparable, with the plain thin plate spline far behind. The same relationship held when noise was added (indeed, the prediction plots were almost identical and therefore the case with no noise is not shown here.)
 
 %> ramsay_smooth_test(noise.level=0.05)
 %$mds
@@ -444,11 +454,6 @@ Smoothing over these points  in 2D (using a thin plate spline basis) with no err
 %[1] 0.0753973
 %$soap
 %[1] 0.0007361255
-
-
-
-
-% Ramsay MDS smooth fit (with noise)
 
 
 
@@ -546,9 +551,7 @@ where $k_j$ is the scaling in the $y$ direction and $l_j$ is the scaling in the 
 
 Using this penalty may allow for the distortions in space to be taken account of and therefore get around the problem of the details being smoothed over, as seen above. It will be easiest to first build this using a tensor product of $P$-splines, since their penalty is discrete to test its utility and then move on to the thin plate spline penalty.
 
-Speed and landmark.
-
-
+Finally, in order to make this technique competative with \texttt{soap} (assuming that the above distortion adjustment is successful) a speed-up in the computation of the within-area distances must be achieved. At the moment this is the major bottleneck in the calculation since model fitting consists only of fitting a thin plate spline. Speed-ups can be achieved not only by further optimizing and refining the algorithm above, but also by minimizing the number of calculations for within-area distance that are needed. In \cite{landmark} a method to calculate MDS coordinates using a sparse grid of landmark points is suggested; although the authors are skeptical about how this will perform with non-Euclidean distances. There is clearly some work here in finding some minimal set of landmark points for the within-area distance metric obtained from the above algorithm.
 
 
 \bibliographystyle{plainnat}
