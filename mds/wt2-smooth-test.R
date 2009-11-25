@@ -116,7 +116,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    ### normal tprs
    b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
    fv.tprs <- predict(b.tprs,newdata=npred.data)
-   
+
    ### soap
    knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
    knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
