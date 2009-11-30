@@ -32,10 +32,12 @@
 ######## 
    # the ith element of d is d_i^2-d_{i,n+1}^2
    d<-(diag(X%*%t(X))-new.dist^2)
-   #d <- rowSums(X*X) - new.dist^2 # efficient version of above
+   d <- rowSums(X*X) - new.dist^2 # efficient version of above
 
-   #dbar<-1/dim(new.dist)[1]*t(new.dist)%*%t(t(rep(1,dim(new.dist)[1])))
+   #dbar<-diag(1/dim(new.dist)[1]*t(new.dist)%*%t(t(rep(1,dim(new.dist)[1])))
    #d<-new.dist-(t(dbar)%x%t(t(rep(1,dim(new.dist)[1]))))
+   #d<-d^2   
+
 
    # finally construct the product
    ret<-1/2*((lambda.inverse %*% t(X)) %*% d)
