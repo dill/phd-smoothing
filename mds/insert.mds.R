@@ -2,7 +2,7 @@
    # insert a new point into the MDS, see Gower (Biometrika, 1968.)
    # args
    #  new.points     points to insert into the MDS
-   #  old.points     old MDS points
+   #  old.points     old points
    #  cmd.object     object returned from cmdscale, with eig=TRUE
    #  bnd            boundary
    # ret
@@ -31,8 +31,8 @@
 
 ######## 
    # the ith element of d is d_i^2-d_{i,n+1}^2
-   d<-(diag(X%*%t(X))-new.dist^2)
-   d <- rowSums(X*X) - new.dist^2 # efficient version of above
+   d<-diag(X%*%t(X))-new.dist^2
+   #d<-diag(X[,1:2]%*%t(X[,1:2]))-new.dist^2
 
    #dbar<-diag(1/dim(new.dist)[1]*t(new.dist)%*%t(t(rep(1,dim(new.dist)[1])))
    #d<-new.dist-(t(dbar)%x%t(t(rep(1,dim(new.dist)[1]))))
