@@ -11,8 +11,7 @@
    # want to calculate 1/2 * lambda^(-1) * X' * d
 
    # find lambda^(-1)
-   lambda.inverse<-matrix(0,length(cmd.object$eig),length(cmd.object$eig))
-   diag(lambda.inverse)<-1/cmd.object$eig
+   lambda.inverse<-diag(1/cmd.object$eig)
 
    # take the original MDS coordinates
    # this is already double centred and dim(X)=nx2
@@ -29,15 +28,8 @@
    new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
                       bnd,start=length(old.points$x))
 
-######## 
    # the ith element of d is d_i^2-d_{i,n+1}^2
    d<-diag(X%*%t(X))-new.dist^2
-   #d<-diag(X[,1:2]%*%t(X[,1:2]))-new.dist^2
-
-   #dbar<-diag(1/dim(new.dist)[1]*t(new.dist)%*%t(t(rep(1,dim(new.dist)[1])))
-   #d<-new.dist-(t(dbar)%x%t(t(rep(1,dim(new.dist)[1]))))
-   #d<-d^2   
-
 
    # finally construct the product
    ret<-1/2*((lambda.inverse %*% t(X)) %*% d)
