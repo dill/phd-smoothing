@@ -16,7 +16,6 @@
    # take the original MDS coordinates
    # this is already double centred and dim(X)=nx2
    X<-cmd.object$points
-  
 
    ### This code does "at once" insertion 
    # finally d

@@ -75,8 +75,8 @@ mymds<-function(D){
 
 
 # perform mds on D
-#samp.mds<-cmdscale(D.samp,eig=TRUE,k=2)
-samp.mds<-mymds(D.samp)
+samp.mds<-cmdscale(D.samp,eig=TRUE,k=2,x.ret=TRUE)
+#samp.mds<-mymds(D.samp)
 
 # prediction points insertion
 pred.mds<-insert.mds(gendata,gendata.samp,samp.mds,bnd)
