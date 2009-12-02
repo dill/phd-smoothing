@@ -1,10 +1,8 @@
 # do large scale simulations for wt2
 # Copyright David Lawrence Miller 2009.
 
-# run this from the mds directory
-
 source("mds.R")
-source("sim/wt2-smooth-test.R")
+source("wt2-smooth-test.R")
 
 ###############################
 # initial setup
@@ -73,17 +71,17 @@ sim.size<-1
 samp.size<-250
 noise.level<-0.05
 
-
-res.mse.mds<-rep(0,sim.size)
-res.mse.soap<-rep(0,sim.size)
-res.mse.tprs<-rep(0,sim.size)
+res.mse<-list(mds=rep(0,sim.size), mdstp=rep(0,sim.size), 
+              soap=rep(0,sim.size),tprs=rep(0,sim.size))
 
 for(i in 1:sim.size){
-   wt2.res<-wt2_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
+   res<-wt2_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
                           gendata,bnd,grid.mds,my.grid,soap.knots,predd)
-   res.mse.mds[i]<- wt2.res$mds
-   res.mse.soap[i]<-wt2.res$soap
-   res.mse.tprs[i]<-wt2.res$tprs
+   res.mse$mds[i]<- res$mds
+   res.mse$mdstp[i]<- res$mdstp
+   res.mse$soap[i]<-res$soap
+   res.mse$tprs[i]<-res$tprs
 }
+write.csv(res.mse,file=paste("wt2-",samp.size,"-",noise.level,".csv",sep=""))
 
 

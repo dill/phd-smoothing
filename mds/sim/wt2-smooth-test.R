@@ -60,20 +60,24 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
  
    ### Now do some fitting and prediction
    ### mapping
-#   b.mapped<-gam(z~s(x,y,k=49),data=samp.data)
-   b.mapped<-gam(z~te(x,y,k=12),data=samp.data)
+   # thin plate
+   b.mapped<-gam(z~s(x,y,k=100),data=samp.data)
    fv <- predict(b.mapped,newdata=pred.data)
+   # tensor product of thin plate
+   b.mapped.tp<-gam(z~te(x,y,k=12),data=samp.data)
+   fv.tp <- predict(b.mapped.tp,newdata=pred.data)
    
    ### normal tprs
-   b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
+   b.tprs<-gam(z~s(x,y,k=100),data=nsamp.data)
    fv.tprs <- predict(b.tprs,newdata=npred.data)
 
    ### soap
-   b.soap<-gam(z~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=soap.knots,data=nsamp.data)
+   b.soap<-gam(z~s(x,y,k=60,bs="so",xt=list(bnd=list(bnd))),knots=soap.knots,data=nsamp.data)
    fv.soap <- predict(b.soap,newdata=npred.data)
  
    ### calculate MSEs
    mses<-list(mds=mean((fv-predd)^2,na.rm=T),
+              mdstp=mean((fv.tp-predd)^2,na.rm=T),
               tprs=mean((fv.tprs-predd)^2,na.rm=T),
               soap=mean((fv.soap-predd)^2,na.rm=T))
  

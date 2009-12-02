@@ -110,11 +110,11 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
  
    ### Now do some fitting and prediction
    ### mapping
-   b.mapped<-gam(z~s(x,y,k=49),data=samp.data)
+   b.mapped<-gam(z~s(x,y,k=100),data=samp.data)
    fv <- predict(b.mapped,newdata=pred.data)
    
    ### normal tprs
-   b.tprs<-gam(z~s(x,y,k=49),data=nsamp.data)
+   b.tprs<-gam(z~s(x,y,k=100),data=nsamp.data)
    fv.tprs <- predict(b.tprs,newdata=npred.data)
 
    ### soap
@@ -123,7 +123,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    insideknots<-inSide(bnd,knots.x,knots.y)
    insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE
    knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
-   b.soap<-gam(z~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=nsamp.data)
+   b.soap<-gam(z~s(x,y,k=60,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=nsamp.data)
    fv.soap <- predict(b.soap,newdata=npred.data)
  
    # create the image
