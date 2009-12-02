@@ -64,28 +64,33 @@
 
 \section{Introduction}
 
-When performing spatial smoothing over regions with complex boundaries, 
+\subsection{Motivation}
 
-WRITE MORE HERE!!
+Generalized additive models (GAMs) are a popular way of performing spatial smoothing. In this context, they are used to fit smooth functions of location over a geographical region. A typical application of this is in ecological modeling; particularly when the population density of a species is sought. In this case the locations of observations of animals are recorded and fed into the model which can then be used to perform inference on the population, whether that be an abundance estimate, density map or a more sophisticated inferential goal.
 
+When the geographical region has a complex boundary then features from one part of the domain can unduely influence other parts. This phenomenon is known as leakage. A typical example of this can be seen in \fig{leakage}. Leakage is problematic since it causes incorrect estimates of the density surface. This can then lead to incorrect abundance estimates, which is clearly not desirable.
+
+The cause of leakage can be thought of in two ways: the smooth not respecting the boundary conditions of the domain, or the smooth not taking into account the geometry of the domain in particular with regard to the distance between points in the domain. Previous work in this area has been to combat leakage along these lines. Work of \cite{ramsay} and \cite{soap} try to use boundary conditions to prevent leakage, where as \cite{wangranalli} attempt to approximate the within-area distances.
+
+% leakage example 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[trim=0.5in 1in 0in 1in, width=4in]{figs/leakageexample.pdf} \\
+\caption{An example of leakage. Here we can see that the model fit smooths accross the gap in the middle of the domain.}
+\label{leakage}
+\end{figure}
+
+
+\subsection{Proposition}
 
 Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of the data based on the distances between the points (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a projection of data into lower dimensional space, while still retaining information about the distances between the points. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}.)
 
 Multidimensional scaling offers an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points such that the distances between the points are (approximately) preserved.
 
-The modelling strategy is as follows:
+The modelling strategy is take the observations and the boundary of the domain, find the pairwise within-area distances for the observations and then perform MDS on the inter-observation distances, thus obtaining a new configuration of the data. Using this new configuration of the data, we fit the GAM. Inference can then be performed using this model. Should predictions be required then the those points at which predictions are needed should be inserted into the MDS configuration.
 
-\begin{enumerate}
-\item Take a regular grid over the domain and perform MDS on this.
-\item Using this grid, insert the sample points into this configuration.
-\item Fit the smooth to the MDS configuration of points.
-\item Perform inference.
-\item If predictions are required then find the points at which predictions are to be made are inserted into the MDS configuration.
-\end{enumerate}
-
-The back-transform above is trivial if an index of the points is kept. The reasoning behind this strategy will be explained below.
-
-The rest of this report is structured as follows: in section 2 an overview of MDS is given, along with technical details of how the MDS configuration is calculated; section 3 focuses on how the within-area distances are found; section 4 shows the some examples of this method on simulated data. I conclude with a proposed course of action to improve the method.
+The rest of this report is structured as follows: in section 2 an overview of MDS is given, along with technical details of how the MDS configuration is calculated; section 3 focuses on how the within-area distances are found; section 4 shows some examples of this method on simulated data. I conclude with a proposed course of action to improve the method.
 
 \section{Multidimensional Scaling}
 
