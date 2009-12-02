@@ -336,28 +336,29 @@ The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In
 
 Carrying out further investigation it is clear that when two insertions are performed the points are consistent between insertion sets. This can be seen in \fig{wt2-double-insert}. It is for these reasons that we insert both the sample and the prediction from a regular grid.
 
-MISSING DOUBLE INSERT
 
 % wt2 with prediction and sample inserted
-%\begin{figure}
-%\centering
-%\includegraphics[width=4in]{figs/wt2-double-insert.pdf} \\
-%\caption{Here both black and red points were inserted into an MDS configuration of a 1007 point, evenly spaced grid over the domain. Both point sets are consistent.}
-%\label{wt2-double-insert}
-%% generated (roughly) using wt2-smooth-test.R
-%\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=4in]{figs/wt2-double-insert.pdf} \\
+\caption{Here both black and red points were inserted into an MDS configuration of a 1007 point, evenly spaced grid over the domain. Both point sets are consistent.}
+\label{wt2-double-insert}
+% generated (roughly) using wt2-smooth-test.R
+\end{figure}
 
 
 \section{Finding the within-area distances}
 
-The within-area distances to be fed to MDS are found using a novel algorithm. This works by tracing the edges of the polygon and then modifying the path by deleting and replacing portions of the path. 
+In order to perform multidimensional scaling the matrix of distances must be first found. In this case it makes sense to find the shortest distances between each pair of points.
+
+Thinking of the boundary of the domain as a polygon, the within-area distances are found by tracing the edges of this polygon from the first point to the second. The path between the points is then modified by deleting and replacing segments of it. Put more mathematically:
 
 Given that there is no direct path within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
 
 \begin{enumerate}
-\item Draw a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)) and where they meet the boundary of $\Gamma$. Start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary (\fig{wdia}, ($ii$).) Choose the shorter of these add the paths between $p_1$, $p_2$ and the boundary and this is the starting path(\fig{wdia}, ($iii$).) 
-\item Given a triple of vertices, ($v_i$, $v_{i+1}$, $v_{i+2}$) if the line between $v_i$ and $v_{i+2}$ is shorter than the path ($v_i$, $v_{i+1}$, $v_{i+2}$) and the line between $v_i$ and $v_{i+2}$ lies inside $\Gamma$ then delete $v_{i+1}$ (\fig{wdia}, ($iv$) and ($vi$).) This iterates over the entire path once, deleting all superfluous vertices. 
-\item Given a triple of vertices, ($v_i$, $v_{i+1}$, $v_{i+2}$) if the path ($v_i$, some subset of the vertices of $\Gamma$, $v_{i+2}$) is shorter than the path ($v_i$, $v_{i+1}$, $v_{i+2}$) then replace $v_{i+1}$ with those elements of $\Gamma$ (\fig{wdia}, ($v$)). 
+\item Draw a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)). Start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary (\fig{wdia}, ($ii$).) Choose the shorter of these, add the paths between $p_1$, $p_2$ and the boundary and this is the starting path, $\mathcal{P}$ (\fig{wdia}, ($iii$).) 
+\item Given a triple of vertices, $(v_i, v_{i+1}, v_{i+2}) \in \mathcal{P}$ , if the line between $v_i$ and $v_{i+2}$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ and the line between $v_i$ and $v_{i+2}$ lies inside $\Gamma$ then delete $v_{i+1}$ (\fig{wdia}, ($iv$) and ($vi$).) This iterates over the entire path once, deleting all superfluous vertices. For example in \fig{wdia}, ($iii$) $v_2$ is deleted from $\mathcal{P}$ because the path straight between $v_1$ and $v_3$ is shorter. 
+\item Given a triple of vertices, $(v_i, v_{i+1}, v_{i+2})$ if the path $(v_i, \text{some subset of the vertices of } \Gamma, v_{i+2})$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ then replace $v_{i+1}$ with those elements of $\Gamma$ (\fig{wdia}, ($v$)). For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the path $(v_1, v^1_1, v^1_2, v^1_3, v_3)$ so the former is replaced with the latter in $\mathcal{P}$.
 \item We then iterate between steps 2 and 3 until there has been no change from one run to the next (ie. convergence) or there have been too many iterations (\fig{wdia}, ($vi$).)
 \end{enumerate}
 
@@ -365,12 +366,13 @@ Given that there is no direct path within the domain ($\Gamma$, say) between two
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[trim=0in 0.5in 0in 0.25in, width=4in]{figs/wdia.pdf} \\
+\includegraphics[trim=0in 0.5in 0in 0.25in, width=7in]{figs/wdia.pdf} \\
 \caption{The green lines in ($i$) to ($vi$) show the path as the algorithm progresses from initial state to final, shortest path (bottom right.) }
 \label{wdia}
 % generate /phd-smoothing/mds-writeup/figs/distanceexplanation.R
 \end{figure}
 
+Of course, if there is a direct path between $p_1$ and $p_2$ the the Euclidean distance between the points can be used.
 
 \section{Multidimensional scaling for complex domains}
 
