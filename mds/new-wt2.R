@@ -50,6 +50,9 @@ mymds<-function(D){
 
    n<-dim(D)[1]
 
+   # squaring
+   D<-D^2
+
    # double centre D
    ones<-t(t(rep(1,n)))
    H<-diag(1,n,n)-1/n*(ones%*%t(ones))
@@ -57,26 +60,26 @@ mymds<-function(D){
    S<- -1/2*H%*%D%*%H
 
    # eigen decompose
-   eS<-eigen(S)
+   eS<-eigen(S,symmetric=TRUE)
    U<-eS$vectors
-   lambda<-diag(eS$values)
+   lambda<-eS$values[1:2]
 
 #   X<-U%*%chol(lambda)
-   X<-U%*%diag(sqrt(eS$values))
+   X<-U[,1:2]%*%diag(sqrt(eS$values[1:2]),2)
 
-   X<-X[,1:2]
+#   X<-X[,1:2]
 
-   lambda<-lambda[1:2,1:2]
+#   lambda<-lambda[1:2,1:2]
 
    return(list(points=X,eig=lambda))
 
 }
 
-
-
+#library(debug)
+#mtrace(cmdscale)
 # perform mds on D
-samp.mds<-cmdscale(D.samp,eig=TRUE,k=2,x.ret=TRUE)
-#samp.mds<-mymds(D.samp)
+#samp.mds<-cmdscale(D.samp,eig=TRUE,k=2,x.ret=TRUE)
+samp.mds<-mymds(D.samp)
 
 # prediction points insertion
 pred.mds<-insert.mds(gendata,gendata.samp,samp.mds,bnd)

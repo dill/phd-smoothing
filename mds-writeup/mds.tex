@@ -128,7 +128,8 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 
 It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation; for example when further data is collected, or in order to predict over points not in the sample. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years. Gower's interpolation (\cite{gower1968}) is covered here.
 
-Gower's method relies on taking a single new point $x_{\text{new}}$, and inserting it into a new (orthogonal) dimension in the configuration. It is positioned at a distance from the MDS points ($\tilde{X}$) which is approximately the same as the distance between $x_{\text{new}}$ and the points in Euclidean space. The extra dimension is then projected on to the old axes. The technical details of the computation are detailed first, followed by some problems arising from the use of this method. 
+Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from $\tilde{X}$ which is the same as that of $x_{\text{new}}$ to the points in $X$. This is easily extended to more than one point. 
+
 
 \subsubsection{Gower's interpolation formula}
 
@@ -374,139 +375,15 @@ Given that there is no direct path within the domain ($\Gamma$, say) between two
 
 Of course, if there is a direct path between $p_1$ and $p_2$ the the Euclidean distance between the points can be used.
 
-\section{Multidimensional scaling for complex domains}
+\section{Multidimensional scaling for smoothing over complex domains}
 
-Tying together the previous sections, we may now look at how, using MDS and our new algorithm, we can reconfigure the points in our domain.
+Taking a cue from \cite{soap} simulations were conducted on the so-called modified Ramsay horseshoe and another domain supposed to mimic that of a coastline.
 
-\subsection{Ramsay's horseshoe}
-
-\Fig{ramsay-mds} shows MDS being performed on the Ramsay horseshoe (\cite{ramsay}.) From this it is clear to see that performing MDS separates the two arms of the horseshoe. In orer to cut down on computational time, the boundary of the horseshoe was approximated by 21 points (rather than the 160 give using the \texttt{fs.boundary} function in \texttt{mgcv}.)
-
-% Ramsay MDSed 
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[trim=0in 0.5in 0in 0.25in, width=5.5in]{figs/ramsay-mds.pdf} \\
-\caption{Left panel shows the horseshoe with 734 points. Right panel shows their configuration under MDS using the algorithm detailed above.}
-\label{ramsay-mds}
-% generate /phd-smoothing/mds-writeup/figs/ramsay-mds.R
-\end{figure}
-
-%An advantage of the MDS approach is that in our eigen-decomposition we may pick an arbitrary number of eigenvectors to retain and push the original set of points into higher dimensions. Using three eigenvectors we get the configuration in \fig{ramsay-mds-3d}.
-
-The two eigenvalues returned from running \texttt{cmdscale} in \textsf{R} when we ask for a 2-dimensional representation are 2615 and 229. Adding another dimension gives a third eigenvalue of 46.8. Clearly significantly less variation is being explained in the third dimension, however this may well not be of primary concern if it prevents leakage.
-
-% Ramsay MDS smooth fit (no noise)
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=5.5in]{figs/ramsay-mds-smooth-noerr.pdf} \\
-\caption{Clockwise from top left: true Ramsay test function, fit given using MDS, thin plate regression spline fit and soap film smooth. Sample size was 250, no noise.}
-\label{ramsay-mds-smooth-noerr}
-% generate /phd-smoothing/mds/ramsay-smooth-test.R
-\end{figure}
-
-Smoothing over these points in 2D (using a thin plate spline basis) with no error added to a sample of 250 points yields the model shown in \fig{ramsay-mds-smooth-noerr}. Here the plain thin plate fit is has leakage issues, both the MDS fit and the soap film smoother (\cite{soap}) do not exhibit leakage. Looking at the mean squared error we see that with no noise MDS with a thin plate basis and the soap film smoother were comparable, with the plain thin plate spline far behind. The same relationship held when noise was added (indeed, the prediction plots were almost identical and therefore the case with no noise is not shown here.)
-
-%> ramsay_smooth_test(noise.level=0.05)
-%$mds
-%[1] 0.00251955
-%$tprs
-%[1] 0.06459767
-%$soap
-%[1] 0.001559180
-%> ramsay_smooth_test(noise.level=0.05)
-%$mds
-%[1] 0.002114538
-%$tprs
-%[1] 0.0872122
-%$soap
-%[1] 0.001085477
-
-%> ramsay_smooth_test(noise.level=0)
-%$mds
-%[1] 0.001612497
-%$tprs
-%[1] 0.1072480
-%$soap
-%[1] 0.000800164
-%> ramsay_smooth_test(noise.level=0)
-%$mds
-%[1] 0.001751240
-%$tprs
-%[1] 0.0753973
-%$soap
-%[1] 0.0007361255
+\subsection{Modified horseshoe}
 
 
 
-\subsection{Domain with peninsulae}
 
-\Fig{wt2dia} shows another domain which is more complicated than the horseshoe. The region has peninsulae which will cause similar problems to those found in the horseshoe but additionally has other features. This domain is intended to replicate some of the problems that come about when dealing with coastlines.
-
-An additional complication is that the peninsulae become smaller from left to right, thus the first couple of eigenvectors will be used to explain the variation along the bigger peninsulae and across the baseline. Indeed, we can see this in \fig{wt2dia}.
-
-% plot of points in wt2.
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=6in]{figs/wt2-mds.pdf}\\
-\caption{A domain with many peninsulae (left), and its MDS representation in two dimensions (right) for 1253 points in the domain.}
-\label{wt2dia}
-\end{figure}
-
-Taking the MDS configuration and smoothing over it (again using a thin plate basis,) we obtain the fits shown in the top right panels of \fig{wt2-mds-smooth-noerr} (with no error) and \fig{wt2-mds-smooth-err} (with $\sigma=0.05$) when the sample size is 250. We again see that the leakage in the thin plate fit is not apparent in the MDS fit. However, although the main features of the true surface are captured, the model does not pick up the features on the right side of the domain. It seems that this is because of the compacting of these features by the MDS routine, as can be seen in \fig{wt2dia}. In both cases the mean squared error for the MDS fit is higher than (but of the same order as) that of the thin plate spline, but without the problem of leakage.
-
-%noise=0
-%$mses$mds
-%[1] 0.1074302
-%$mses$tprs
-%[1] 0.06047138
-%$mses$soap
-%[1] 0.0346587
-%
-%noise=0.05
-%$mses
-%$mses$mds
-%[1] 0.1164078
-%$mses$tprs
-%[1] 0.1006808
-%$mses$soap
-%[1] 0.02077468
-
-% wt2 MDS smooth, no error 
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=6in]{figs/wt2-mds-smooth-noerr.pdf}\\
-\caption{Clockwise from top left: true Ramsay test function, fit given using MDS, thin plate regression spline fit and soap film smooth. Sample size was 250, no noise added to the data.}
-\label{wt2-mds-smooth-noerr}
-\end{figure}
-
-
-% wt2 MDS smooth, error 
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=6in]{figs/wt2-mds-smooth-err.pdf}\\
-\caption{Clockwise from top left: true Ramsay test function, fit given using MDS, thin plate regression spline fit and soap film smooth. Sample size was 250, noise set at $\sigma^2=0.05$.}
-\label{wt2-mds-smooth-err}
-\end{figure}
-
-We can see why the fit is capturing the leakage but failing on the right side of the domain by looking at the raw fit on the transformed domain (as produced by \texttt{vis.gam} in \texttt{mgcv} with the \texttt{too.far} option set to 0.04.) \Fig{wt2-visgam} shows the surface with the data plotted ontop. Here we see that there is quite a lot of information in the right side of the domain, but it is being supressed by the penalty (there are plenty of samples here but \fig{wt2-mds-smooth-err} and \fig{wt2-mds-smooth-noerr} do not show much detail in that area.)
-
-% wt2 vis.gam output 
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=4in]{figs/wt2-visgam.pdf}\\
-\caption{Raw fit of the model in the transformed space for the domain with multiple peninsulae. Points lie on the sample data locations.}
-\label{wt2-visgam}
-\end{figure}
-
-Further evidence to this can be seen if the mean squared error is calculated based on only those points with $x$ coordinates less than 0. In that case the MSE for the MDS fit is about half that of the plain thin plate fit (rather than larger) and is about the same order as the soap film smoother.
-
-So, it would seem that there needs to be some adjustment of the penalty in order to account for the compacting of space by the mapping.
 
 \section{Conclusions}
 

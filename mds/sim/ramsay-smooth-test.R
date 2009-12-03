@@ -56,7 +56,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
                        y=rep(c(-.6,-.3,.3,.6),rep(8,4)))
    knots.ind<-inSide(bnd,x=knots$x,y=knots$y)
    knots<-list(x=knots$x[knots.ind],y=knots$y[knots.ind])
-   b.soap<-gam(z~s(x,y,k=32,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
+   b.soap<-gam(z~s(x,y,k=39,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
    fv.soap<-predict(b.soap,newdata=pred.data,block.size=-1)
    
    ### calculate MSEs

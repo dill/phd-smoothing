@@ -2,7 +2,8 @@
 # Copyright David Lawrence Miller 2009.
 
 source("mds.R")
-source("wt2-smooth-test.R")
+#source("wt2-smooth-test.R")
+source("wt2-soapfind.R")
 
 ###############################
 # initial setup
@@ -82,6 +83,6 @@ for(i in 1:sim.size){
    res.mse$soap[i]<-res$soap
    res.mse$tprs[i]<-res$tprs
 }
-write.csv(res.mse,file=paste("wt2-",samp.size,"-",noise.level,".csv",sep=""))
+#write.csv(res.mse,file=paste("wt2-",samp.size,"-",noise.level,".csv",sep=""))
 
 

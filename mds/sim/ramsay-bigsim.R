@@ -36,7 +36,7 @@ grid.mds<-cmdscale(D.grid,eig=TRUE,k=2)
 
 sim.size<-200
 samp.size<-250
-noise.level<-1
+noise.level<-0.1
 
 res.mse<-list(mds=rep(0,sim.size), soap=rep(0,sim.size),tprs=rep(0,sim.size))
 
