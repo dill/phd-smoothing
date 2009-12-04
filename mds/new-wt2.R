@@ -77,6 +77,7 @@ mymds<-function(D){
 
 #library(debug)
 #mtrace(cmdscale)
+#mtrace(insert.mds)
 # perform mds on D
 #samp.mds<-cmdscale(D.samp,eig=TRUE,k=2,x.ret=TRUE)
 samp.mds<-mymds(D.samp)

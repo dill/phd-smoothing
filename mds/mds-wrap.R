@@ -1,5 +1,5 @@
 # wrapper function for C code
-woodpath<-function(xpoints,ypoints,bnd,start){
+woodpath<-function(xpoints,ypoints,bnd,start=NA){
 
    # put everything in the right format
    xbnd<-bnd$x

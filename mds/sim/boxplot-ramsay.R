@@ -11,7 +11,7 @@ par(mgp=c(6,2,0))
 
 # ordering is mds, soap, tprs
 
-mse<-read.csv("ramsay-250-10.csv")
+mse<-read.csv("ramsay-250-1.csv")
 mse<-mse[,-1]
 
 mses<-c(signif(mean(mse[,1],na.rm=TRUE),3),
