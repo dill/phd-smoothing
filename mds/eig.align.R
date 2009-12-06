@@ -18,6 +18,6 @@ eig.align<-function(X.f,X.s){
    # re-align
    X.or<-t(X.eig)%*%X.s
    # return
-   return(list(X.f=t(X.f),X.s=t(X.s)))
+   return(X.or)
 }
 

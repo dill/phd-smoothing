@@ -1,4 +1,4 @@
-
+source("eig.align.R")
 par(mfrow=c(2,2))
 
 # my mds code
@@ -48,8 +48,8 @@ D.d<-as.matrix(dist(matrix(c(d.pts$x,d.pts$y),4,2),diag=TRUE,upper=TRUE,method=m
 #D.c<-as.matrix(dist(matrix(c(c.pts$x,c.pts$y),4,2),diag=TRUE,upper=TRUE))
 
 # MDS on the dots
-d.mds<-mymds(D.d)
-#d.mds<-cmdscale(D.d,eig=TRUE)
+#d.mds<-mymds(D.d)
+d.mds<-cmdscale(D.d,eig=TRUE)
 
 plot(d.mds$points,pch=19,asp=1,main="MDS dots, insert crosses",xlim=c(-1,1),ylim=c(-1,1))
 
@@ -62,40 +62,45 @@ points(c.ins,pch=4)
 
 # MDS both
 
-full.mds<-mymds(D.full)
+#full.mds<-mymds(D.full)
+full.mds<-cmdscale(D.full,eig=TRUE)
 plot(full.mds$points,pch=19,asp=1,main="MDS dots and crosses",
       xlim=c(-1,1),ylim=c(-1,1))
 
 # sample 
 
-plot(full.mds$points,pch=19,asp=1,main="full (red) with re-insert (black)",
-      xlim=c(-2,2),ylim=c(-1,1),col="red")
+plot(full.mds$points,pch=as.character(1:8),asp=1,main="full (red) with re-insert (black)",
+      xlim=c(-3,3),ylim=c(-1,1),col="red")
 
 # sample index
-sind1<-sample(1:4,2)
-sind2<-sample(1:4,2)
-samp<-matrix(c(d.pts$x[sind1],c.pts$x[sind2],
-         d.pts$y[sind1],c.pts$y[sind2]),4,2)
-D.samp<-as.matrix(dist(samp,diag=TRUE,upper=TRUE,method=meth))
+sind<-sample(1:8,4)
+#sind<-c(1,2,3,4)
+#sind<-c(5,6,7,8)
 
-D.samp<-diag(d.mds$points%*%t(d.mds$points))-D.samp^2
-samp.ins<-t(1/2*diag(1/d.mds$eig)%*%t(d.mds$points)%*%(D.samp))
-points(samp.ins,pch=as.character(1:4))
 
-D.full<-diag(d.mds$points%*%t(d.mds$points))-D.full[1:4,]^2
-full.ins<-t(1/2*diag(1/d.mds$eig)%*%t(d.mds$points)%*%(D.full))
-points(full.ins,pch=6)
+D.samp<-D.full[sind,1:4]
+D.samp<-D.full[1:4,sind]
 
-points(samp,pch=as.character(1:4),col="light blue")
+x.diag<-diag(d.mds$points%*%t(d.mds$points))
+x.diag<-matrix(rep(x.diag,dim(D.samp)[2]),dim(D.samp)[1],dim(D.samp)[2])
+
+D.samp<-x.diag-D.samp^2
+samp.ins<-1/2*t(diag(1/d.mds$eig)%*%t(d.mds$points)%*%(D.samp))
+points(samp.ins,pch=as.character(sind))
+
+#D.full<-diag(d.mds$points%*%t(d.mds$points))-D.full[1:4,]^2
+#full.ins<-t(1/2*diag(1/d.mds$eig)%*%t(d.mds$points)%*%(D.full))
+#points(full.ins,pch=6)
+
+#points(samp,pch=as.character(1:4),col="light blue")
 
 # not sample points
-nsamp<-matrix(c(d.pts$x[-sind1],c.pts$x[-sind2],
-         d.pts$y[-sind1],c.pts$y[-sind2]),4,2)
-D.nsamp<-as.matrix(dist(nsamp,diag=TRUE,upper=TRUE,method=meth))
+D.nsamp<-D.full[-sind,1:4]
+D.nsamp<-D.full[1:4,sind]
 
-D.nsamp<-diag(d.mds$points%*%t(d.mds$points))-D.nsamp^2
-nsamp.ins<-t(1/2*diag(1/d.mds$eig)%*%t(d.mds$points)%*%(D.nsamp))
-points(nsamp.ins,pch=as.character(5:8))
+D.nsamp<-x.diag-D.nsamp^2
+nsamp.ins<-1/2*t(diag(1/d.mds$eig)%*%t(d.mds$points)%*%(D.nsamp))
+points(nsamp.ins,pch=as.character(c(1:8)[-sind]))
 
 
 
