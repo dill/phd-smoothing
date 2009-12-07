@@ -141,20 +141,13 @@ We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\t
 here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) has $i^\text{th}$ element $d^2_i-d^2_{i,n+1}$, where $d^2_i$ is the square of the diagonal elements of $X\tr{X}$ and $d^2_{i,n+1}$ is the squared distance from the $i^\text{th}$ point in $X$ and the new point. As mentioned above, this extends simply to the case when we insert $m$ new points by making $d$ an $n \cross m$ matrix.
 
 
-\subsubsection{Problems arising}
+\subsubsection{Practical considerations}
+
+In Gower's 1968 paper, he proves that in the case where the distances are measured using Euclidean distance, the inserted points' locations will be exactly as those if the points had been included in the full MDS to begin with. However, this is not the end of the story.
 
 If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ may not represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. This problem can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered.
 
-In the course of the projection onto the original MDS axes, we lose one of the coordinates (effectively truncating a dimension.) If the MDS axes were in two dimensions, it is possible that the point was not supposed to lie in the plane but rather this an extra dimension and its distance was truncated. This can cause distortions in the point configuration. An example of this is illustrated in \fig{bojinsert}. A more complete explanation and characterisation of this problem is given in \cite{Boj2009}. 
-
-% diagram from Boj et al. 2009
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics{figs/boj0.jpg} \includegraphics[width=1in]{figs/boj1.jpg} \\
-\caption{Given the three points that make up the equilateral triangle in the left panel, if a new point is introduced then it will be mapped into a dimension orthogonal to that of the original points. This extra dimension is then truncated and the projection onto the plane used. Taken from \cite{Boj2009}.}
-\label{bojinsert}
-\end{figure}
+In the course of the projection onto the original MDS axes, we lose one of the coordinates (effectively truncating a dimension.) If the MDS axes were in two dimensions, it is possible that the point was not supposed to lie in the plane but rather this an extra dimension and its distance was truncated. This can cause distortions in the point configuration. A more complete explanation and characterisation of this problem is given in \cite{Boj2009}. 
 
 This distortion is compounded when extra points are added to the MDS configuration in an ``online'' manner. For example, say MDS has been performed on some set of points and then mapped them into the plane. Then suppose that new points are added into this configuration using Gower's interpolation. When the first point is added, say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2dia} panel 2. It is for this reason that we do not insert the points online, but rather simultaneously insert all points.
 
@@ -384,7 +377,7 @@ Taking a cue from \cite{soap} simulations were conducted on the so-called modifi
 For the modified horseshoe, 100 replications of samples of 250 points with normal errors (at 3 levels) were run. From these samples, three models were fit to the data and predictions over 718 points (including the sample locations) and the mean squared error was calculated between the model prediction and the true function value for the horseshoe. The three models fit were as follows using the \textsf{R} packages \texttt{mgcv} and \texttt{soap}:
 
 \begin{enumerate}
-\item \emph{Thin plate spline}: basis size 100, bivariate thin plate spline.
+\item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100.
 \item \emph{Soap film smoother}: 32 knots evenly spread over a grid over the domain, cyclic spline on the boundary was of basis size 39.
 \item \emph{MDS}: Used a thin plate spline of basis dimension 100.
 \end{enumerate} 
@@ -405,6 +398,19 @@ $\sigma^2$ & MDS & Soap film & Thin plate\\
 
 
 \subsection{Peninsulae domain}
+
+The Ramsay horseshoe is, in a sense, easy domain to smooth over since it is obvious what the transformation should be doing. For this reason a more complex and more realistic domain would provide more insights into the efficacy of the method. The domain shown in [FIG] is an approximation to a coastline with a strong trend along both peninsulae (in a manner similar to that of the horseshoe) but with the added complication of a further peak in the lower right corner.
+
+The models used were
+
+\begin{enumerate}
+\item \emph{Thin plate spline}: 
+\item \emph{Soap film smoother}: 
+\item \emph{MDS}: 
+\item \emph{MDS with tensor product}: tensor product of two thin plate splines, each of basis dimension ??
+\end{enumerate} 
+
+
 
 \begin{table}[ht]
 \centering
