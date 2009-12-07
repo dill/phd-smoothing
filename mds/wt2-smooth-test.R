@@ -110,7 +110,8 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
  
    ### Now do some fitting and prediction
    ### mapping
-   b.mapped<-gam(z~s(x,y,k=100),data=samp.data)
+   b.mapped<-gam(z~te(x,y,k=12),data=samp.data)
+   #b.mapped<-gam(z~s(x,y,k=100),data=samp.data)
    fv <- predict(b.mapped,newdata=pred.data)
    
    ### normal tprs
@@ -121,7 +122,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
    knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
    insideknots<-inSide(bnd,knots.x,knots.y)
-   insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE
+   insideknots[56]<-FALSE;insideknots[115]<-FALSE;insideknots[158]<-FALSE
    knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
    b.soap<-gam(z~s(x,y,k=60,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=nsamp.data)
    fv.soap <- predict(b.soap,newdata=npred.data)
@@ -149,25 +150,25 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-gendata.ind$z[ind]
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="truth",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="True",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
    
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="mds",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="Multidimensional scaling + thin plate",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
       
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.tprs
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="tprs",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="Thin plate regression splines",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
       
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.soap
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="soap",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="Soap film smoother",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
  
    }

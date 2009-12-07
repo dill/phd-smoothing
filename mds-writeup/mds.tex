@@ -381,12 +381,21 @@ Taking a cue from \cite{soap} simulations were conducted on the so-called modifi
 
 \subsection{Modified horseshoe}
 
+For the modified horseshoe, 100 replications of samples of 250 points with normal errors (at 3 levels) were run. From these samples, three models were fit to the data and predictions over 718 points (including the sample locations) and the mean squared error was calculated between the model prediction and the true function value for the horseshoe. The three models fit were as follows using the \textsf{R} packages \texttt{mgcv} and \texttt{soap}:
+
+\begin{enumerate}
+\item \emph{Thin plate spline}: basis size 100, bivariate thin plate spline.
+\item \emph{Soap film smoother}: 32 knots evenly spread over a grid over the domain, cyclic spline on the boundary was of basis size 39.
+\item \emph{MDS}: Used a thin plate spline of basis dimension 100.
+\end{enumerate} 
+
+
 \begin{table}[ht]
-\begin{tabular}{c || c c c}\\
- & MDS & soap & thin plate\\ 
+\centering
+\begin{tabular}{c || c c c}
+$\sigma^2$ & MDS & Soap film & Thin plate\\ 
 \hline
-\hline
-0.1  & 0.0032 (4e-04) & 0.0022 (4e-04) & 0.0402 (0.0123)\\ 
+0.1  & 0.0032 (0.0004) & 0.0022 (0.0004) & 0.0402 (0.0123)\\ 
 1  & 0.0436 (0.0233) & 0.0482 (0.0222) & 0.2306 (0.0383)\\ 
 10  & 2.0652 (1.9208) & 3.0702 (3.7669) & 3.3713 (1.7916)\\ 
 \end{tabular}
@@ -394,6 +403,21 @@ Taking a cue from \cite{soap} simulations were conducted on the so-called modifi
 \caption{}
 \end{table}
 
+
+\subsection{Peninsulae domain}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c || c c c c}
+$\sigma^2$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
+\hline
+0.05 & 0.0965 (0.0132) & 0.0643 (0.0681) & 0.0249 (0.0078) & 0.0525 (0.0223)\\ 
+0.5 & 0.1425 (0.0128) & 0.1111 (0.0293) & 0.0826 (0.102) & 0.1128 (0.0273)\\ 
+5 & 0.9102 (0.4768) & 1.2509 (0.9372) & 1.1544 (0.6089) & 1.3853 (0.4799)\\ 
+\end{tabular}
+\label{wt2resultstable}
+\caption{}
+\end{table}
 
 
 
