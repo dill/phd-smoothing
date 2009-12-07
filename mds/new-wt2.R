@@ -86,7 +86,17 @@ samp.mds<-mymds(D.samp)
 pred.mds<-insert.mds(gendata,gendata.samp,samp.mds,bnd)
 
 
+par(mfrow=c(1,2))
 plot(pred.mds,pch=19,cex=0.3,asp=1)
 points(samp.mds$points,pch=19,cex=0.3,col="red")
+
+
+# sample points insertion
+samp.ins<-insert.mds(gendatai.samp,gendata.samp,samp.mds,bnd)
+
+
+plot(pred.mds,pch=19,cex=0.3,asp=1)
+points(samp.ins,pch=19,cex=0.3,col="red")
+
 
 

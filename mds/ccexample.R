@@ -1,4 +1,3 @@
-source("eig.align.R")
 par(mfrow=c(2,2))
 
 # my mds code
@@ -79,7 +78,7 @@ sind<-sample(1:8,4)
 #sind<-c(1,2,3,4)
 #sind<-c(5,6,7,8)
 #sind<-c(5,7,3,8)
-sind<-c(1,4,6,7,8)
+#sind<-c(1,4,6,7,8)
 
 D.samp<-D.full[1:4,sind]
 
@@ -104,6 +103,53 @@ x.diag<-matrix(rep(x.diag,dim(D.nsamp)[2]),dim(D.nsamp)[1],dim(D.nsamp)[2])
 D.nsamp<-x.diag-D.nsamp^2
 nsamp.ins<-1/2*t(diag(1/d.mds$eig)%*%t(d.mds$points)%*%(D.nsamp))
 points(nsamp.ins,pch=as.character(c(1:8)[-sind]))
+
+
+# create a grid
+#xn<-seq(-1,1,len=10)
+#yn<-seq(-1,1,len=10)
+#xx<-rep(xn,10); yy<-rep(yn,rep(10,10))
+#gridd<-matrix(c(xx,yy),100,2)
+#
+#plot(gridd,type="n",cex=0.3,asp=1,main="full (red) with re-insert (black)",
+#      xlim=c(-1,1),ylim=c(-1,1),col="red")
+#text(gridd,labels=1:100)
+#points(full.pts[sind,],pch=19,col=rgb(1,0,0,0.5))
+#
+## grid mapping
+#grid.mds<-cmdscale(as.matrix(dist(gridd,upper=TRUE,diag=TRUE,method=meth)),eig=TRUE)
+#
+#plot(grid.mds$points,type="n",asp=1,main="GRID full (red) with re-insert (black)",
+#      xlim=c(-2,2),ylim=c(-2,2),col="red")
+#text(grid.mds$points,labels=1:100)
+#
+## insert
+#grid.full<-rbind(gridd,full.pts)
+#
+#D.gf<-as.matrix(dist(grid.full,upper=TRUE,diag=TRUE,method=meth))
+#
+#D.gsamp<-D.gf[1:100,sind]
+#
+#x.diag<-diag(grid.mds$points%*%t(grid.mds$points))
+#x.diag<-matrix(rep(x.diag,dim(D.gsamp)[2]),dim(D.gsamp)[1],dim(D.gsamp)[2])
+#
+#D.gsamp<-x.diag-D.gsamp^2
+#samp.ins<-1/2*t(diag(1/grid.mds$eig)%*%t(grid.mds$points)%*%(D.gsamp))
+#
+#
+#
+#points(samp.ins,pch=as.character(sind))
+#points(samp.ins,pch=19,col=rgb(1,0,0,0.5))
+#
+#
+#D.gnsamp<-D.gf[1:100,-sind]
+#x.diag<-diag(grid.mds$points%*%t(grid.mds$points))
+#x.diag<-matrix(rep(x.diag,dim(D.gnsamp)[2]),dim(D.gnsamp)[1],dim(D.gnsamp)[2])
+#D.gnsamp<-x.diag-D.gnsamp^2
+#nsamp.ins<-1/2*t(diag(1/grid.mds$eig)%*%t(grid.mds$points)%*%(D.gnsamp))
+#
+#points(nsamp.ins,pch=as.character(c(1:8)[-sind]))
+#points(nsamp.ins,pch=19,col=rgb(1,0,0,0.5))
 
 
 
