@@ -128,7 +128,7 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 
 It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation; for example when further data is collected, or in order to predict over points not in the sample. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years. Gower's interpolation (\cite{gower1968}) is covered here.
 
-Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from $\tilde{X}$ which is the same as that of $x_{\text{new}}$ to the points in $X$. This is easily extended to more than one point. 
+Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from $\tilde{X}$ which is the same as that of $x_{\text{new}}$ to the points in $X$. This is easily extended to more than one point by simply making $d$, below, an $n \cross m$ matrix (to insert $m$ new points.)
 
 
 \subsubsection{Gower's interpolation formula}
@@ -138,7 +138,7 @@ We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\t
 \tilde{x}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d},
 \label{gower}
 \end{equation}
-here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) is defined as the squared distance between $x_{\text{new}}$ and the points in $\tilde{X}$.
+here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) has $i^\text{th}$ element $d^2_i-d^2_{i,n+1}$, where $d^2_i$ is the square of the diagonal elements of $X\tr{X}$ and $d^2_{i,n+1}$ is the squared distance from the $i^\text{th}$ point in $X$ and the new point. As mentioned above, this extends simply to the case when we insert $m$ new points by making $d$ an $n \cross m$ matrix.
 
 
 \subsubsection{Problems arising}

@@ -30,13 +30,15 @@ d.pts<-list(x=c(0,0.5,0,-0.5),y=c(0.5,0,-0.5,0))
 # crosses
 c.pts<-list(x=c(0.5,0.5,-0.5,-0.5),y=c(0.5,-0.5,-0.5,0.5))
 
+full.pts<-matrix(c(d.pts$x,c.pts$x,d.pts$y,c.pts$y),8,2)
+
 #d.pts$x<-d.pts$x+6
 #d.pts$y<-d.pts$y+3
 #c.pts$x<-c.pts$x+6
 #c.pts$y<-c.pts$y+3
 
 meth="manhattan"
-meth="euclidean"
+#meth="euclidean"
 
 # plot original config
 plot(d.pts,pch=19,asp=1,main=paste("using the",meth,"metric"))
@@ -70,15 +72,14 @@ plot(full.mds$points,pch=19,asp=1,main="MDS dots and crosses",
 # sample 
 
 plot(full.mds$points,pch=as.character(1:8),asp=1,main="full (red) with re-insert (black)",
-      xlim=c(-3,3),ylim=c(-1,1),col="red")
+      xlim=c(-1,1),ylim=c(-1,1),col="red")
 
 # sample index
 sind<-sample(1:8,4)
 #sind<-c(1,2,3,4)
 #sind<-c(5,6,7,8)
+#sind<-c(5,7,3,8)
 
-
-D.samp<-D.full[sind,1:4]
 D.samp<-D.full[1:4,sind]
 
 x.diag<-diag(d.mds$points%*%t(d.mds$points))
@@ -95,8 +96,7 @@ points(samp.ins,pch=as.character(sind))
 #points(samp,pch=as.character(1:4),col="light blue")
 
 # not sample points
-D.nsamp<-D.full[-sind,1:4]
-D.nsamp<-D.full[1:4,sind]
+D.nsamp<-D.full[1:4,-sind]
 
 D.nsamp<-x.diag-D.nsamp^2
 nsamp.ins<-1/2*t(diag(1/d.mds$eig)%*%t(d.mds$points)%*%(D.nsamp))
