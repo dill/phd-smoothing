@@ -92,11 +92,17 @@ points(samp.mds$points,pch=19,cex=0.3,col="red")
 
 
 # sample points insertion
-samp.ins<-insert.mds(gendatai.samp,gendata.samp,samp.mds,bnd)
-
-
-plot(pred.mds,pch=19,cex=0.3,asp=1)
-points(samp.ins,pch=19,cex=0.3,col="red")
+samp.ins<-insert.mds(gendata.samp,gendata.samp,samp.mds,bnd)
 
 
 
+library(vegan)
+
+pp<-procrustes(samp.ins,samp.mds$points,scale=TRUE)
+pred.pp<-pred.mds
+pred.pp<-cbind(pred.pp[,1]-pp$translation[1,1],pred.pp[,2]-pp$translation[1,2])
+p.fix<-pred.pp%*%pp$rotation
+
+
+plot(p.fix,pch=19,cex=0.3,asp=1)
+points(samp.mds$points,pch=19,cex=0.3,col="red")
