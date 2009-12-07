@@ -79,6 +79,7 @@ sind<-sample(1:8,4)
 #sind<-c(1,2,3,4)
 #sind<-c(5,6,7,8)
 #sind<-c(5,7,3,8)
+sind<-c(1,4,6,7,8)
 
 D.samp<-D.full[1:4,sind]
 
@@ -97,6 +98,8 @@ points(samp.ins,pch=as.character(sind))
 
 # not sample points
 D.nsamp<-D.full[1:4,-sind]
+x.diag<-diag(d.mds$points%*%t(d.mds$points))
+x.diag<-matrix(rep(x.diag,dim(D.nsamp)[2]),dim(D.nsamp)[1],dim(D.nsamp)[2])
 
 D.nsamp<-x.diag-D.nsamp^2
 nsamp.ins<-1/2*t(diag(1/d.mds$eig)%*%t(d.mds$points)%*%(D.nsamp))
