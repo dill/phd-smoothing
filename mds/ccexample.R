@@ -49,7 +49,7 @@ D.d<-as.matrix(dist(matrix(c(d.pts$x,d.pts$y),4,2),diag=TRUE,upper=TRUE,method=m
 #D.c<-as.matrix(dist(matrix(c(c.pts$x,c.pts$y),4,2),diag=TRUE,upper=TRUE))
 
 # MDS on the dots
-#d.mds<-mymds(D.d)
+d.mds<-mymds(D.d)
 d.mds<-cmdscale(D.d,eig=TRUE)
 
 plot(d.mds$points,pch=19,asp=1,main="MDS dots, insert crosses",xlim=c(-1,1),ylim=c(-1,1))
@@ -63,7 +63,7 @@ points(c.ins,pch=4)
 
 # MDS both
 
-#full.mds<-mymds(D.full)
+full.mds<-mymds(D.full)
 full.mds<-cmdscale(D.full,eig=TRUE)
 plot(full.mds$points,pch=19,asp=1,main="MDS dots and crosses",
       xlim=c(-1,1),ylim=c(-1,1))
