@@ -76,8 +76,8 @@ The cause of leakage can be thought of in two ways: the smooth not respecting th
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[trim=0.5in 1in 0in 1in, width=4in]{figs/leakageexample.pdf} \\
-\caption{An example of leakage. Here we can see that the model fit smooths accross the gap in the middle of the domain.}
+\includegraphics[width=4in]{figs/ramsay-leak.pdf}\\
+\caption{An example of leakage. A thin plate spline basis was fit to the function on the left, here the model smooths accross the gap in the middle of the domain (right.)}
 \label{leakage}
 \end{figure}
 
@@ -198,126 +198,115 @@ Given that the grid over the transformed space is smooth, how do the ``errors'' 
 \end{figure}
 
 
-\subsubsection{Consistency of interpolated points}
-
-It is important to note that those points found by simultaneous insertion via Gower's method are self-consistent but not consistent with the MDS configuration used to generate the inserted set. The following example shows this.
-
-Take three points, equidistant, 1 unit apart, they have the following (Euclidean) distance matrix:
-\begin{equation*}
-D_3 = \begin{pmatrix} 0 & 1& 1\\1 & 0 & 1\\ 1 & 1 & 0\end{pmatrix},
-\end{equation*}
-graphically: \fig{cexample}, top left pane.
-
-We find the MDS representation of the points in the same manner as \cite{diaconis08}.
-
-First, double centring the matrix (making row and column means zero):
-\begin{equation*}
-\begin{aligned}
-S &= -\frac{1}{2} HD_3H\\
-    &= \begin{pmatrix} 1/3 & -1/6 & -1/6\\-1/6 & 1/3 & -1/6\\ -1/6 & -1/6 & 1/3\end{pmatrix},
-\end{aligned}
-\end{equation*}
-where $H=I-\frac{1}{n}\mathbf{1}\mathbf{1}^\text{T}$.
-
-Now, performing an eigen-decomposition on $S$,
-\begin{equation*}
-S = U \Lambda U^\text{T},
-\end{equation*}
-we obtain:
-\begin{equation*}
-U = \begin{pmatrix} 
-	0 & 0.8164 & -0.5773\\
-	-0.7071 & -0.4082 & -0.5773\\ 
-	0.7071 & -0.4082 & -0.5773
-	\end{pmatrix},\qquad
-\Lambda = \begin{pmatrix} 
-	1/2 & 0 & 0\\
-	0 & 1/2 & 0\\ 
-	0 & 0 & 2.2\cross10^{-16}
-\end{pmatrix}.
-\end{equation*}
-Finally finding $X$,
-\begin{equation*}
-X=U\Lambda^{\frac{1}{2}}= \begin{pmatrix} 
-	0 & 0.5773 & -8\cross10^{-9}\\
-	-0.5 & -0.2886 & -8\cross10^{-9}\\ 
-	0.5 & -0.2886 & -8\cross10^{-9}
-	\end{pmatrix}.
-\end{equation*}
-Discarding the last column, we obtain the MDS coordinates:
-\begin{equation}
-\begin{pmatrix} 
-	0 & 0.5773\\
-	-0.5 & -0.2887\\ 
-	0.5 & -0.2887
-	\end{pmatrix},
-\label{origMDScoords}
-\end{equation}
-giving the representation seen in \fig{cexample}, top right pane.
-
-% grid to map
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=3.5in]{figs/cexample-fig.pdf} \\
-\caption{Example showing how the insertion of points is not consistent with previous point locations. Clockwise from top left: initial point configuration, MDS configuration of points, second point inserted and all points re-inserted.}
-\label{cexample}
-% generated using figs/cexample-figs.R 
-\end{figure}
-
-So, taking these points and re-inserting the second point into their MDS representation, we use equation (\ref{gower}). First, finding the vector of distances from point 2 to the other points in the non-MDS space:
-\begin{equation*}
-\mathbf{d}=\begin{pmatrix} 
-	1\\
-	0\\ 
-	1
-	\end{pmatrix},
-\end{equation*}
-and centring it to have mean zero:
-\begin{equation*}
-\mathbf{d}=\begin{pmatrix} 
-	1/3\\
-	-2/3\\ 
-	1/3
-	\end{pmatrix}.
-\end{equation*}
-And using Gower's formula:
-\begin{equation*}
-\begin{aligned}
-\tilde{x}_{\text{new}} &= \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d}\\
-&=\begin{pmatrix}
-0.5\\
-0.2887\\
--2.4 \cross 10^{-9}\\
-\end{pmatrix},
-\end{aligned}
-\end{equation*}
-which is a reflection of the second point in equation (\ref{origMDScoords}). This can be seen in \fig{cexample}, bottom left pane. This is not necessarily a problem since, by inspection, we can see that this is happening and correct it.
-
-Let us now see what happens when all three points are re-inserted. First generalise $\mathbf{d}$ to be a matrix, $\mathbb{D}$, giving the distances from the ``old'' points to our ``new'' points which double centred as above, by pre- and post-multiplying by the $H$ matrix. Now, equation (\ref{gower}) becomes:
-\begin{equation*}
-\tilde{X}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbb{D}\\
-\end{equation*}
-and so the coordinates obtained are:
-\begin{equation*}
-\tilde{X}_\text{new}=\begin{pmatrix}
--1.9\cross 10^{-17} & -0.25 & 0.25\\
- 0.2887 & -0.1443 & -0.1443\\
--2.04\cross 10^{-9} &  1.2\cross 10^{-9} & 1.3\cross 10^-{9}\\
-\end{pmatrix}
-\end{equation*}
-By analogy with the single point case, we take the transpose and remove the final column, thus obtaining:
-\begin{equation*}
-\begin{pmatrix}
--1.8\cross 10^{-17} &  0.2887\\
--0.25 & -0.1443\\
- 0.25 & -0.1443\\
-\end{pmatrix}
-\end{equation*}
-which are different from our original coordinates but, as can be seen from \fig{cexample}, bottom right pane, the distances and shape are preserved.
-
-The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again. Here the it can be seen that both sets of points are internally consistent but not consistent with each other. 
-
+%\subsubsection{Consistency of interpolated points}
+%
+%It is important to note that those points found by simultaneous insertion via Gower's method are self-consistent but not consistent with the MDS configuration used to generate the inserted set. The following example shows this.
+%
+%Take three points, equidistant, 1 unit apart, they have the following (Euclidean) distance matrix:
+%\begin{equation*}
+%D_3 = \begin{pmatrix} 0 & 1& 1\\1 & 0 & 1\\ 1 & 1 & 0\end{pmatrix},
+%\end{equation*}
+%
+%We find the MDS representation of the points in the same manner as \cite{diaconis08}.
+%
+%First, double centring the matrix (making row and column means zero):
+%\begin{equation*}
+%\begin{aligned}
+%S &= -\frac{1}{2} HD_3H\\
+%    &= \begin{pmatrix} 1/3 & -1/6 & -1/6\\-1/6 & 1/3 & -1/6\\ -1/6 & -1/6 & 1/3\end{pmatrix},
+%\end{aligned}
+%\end{equation*}
+%where $H=I-\frac{1}{n}\mathbf{1}\mathbf{1}^\text{T}$.
+%
+%Now, performing an eigen-decomposition on $S$,
+%\begin{equation*}
+%S = U \Lambda U^\text{T},
+%\end{equation*}
+%we obtain:
+%\begin{equation*}
+%U = \begin{pmatrix} 
+%	0 & 0.8164 & -0.5773\\
+%	-0.7071 & -0.4082 & -0.5773\\ 
+%	0.7071 & -0.4082 & -0.5773
+%	\end{pmatrix},\qquad
+%\Lambda = \begin{pmatrix} 
+%	1/2 & 0 & 0\\
+%	0 & 1/2 & 0\\ 
+%	0 & 0 & 2.2\cross10^{-16}
+%\end{pmatrix}.
+%\end{equation*}
+%Finally finding $X$,
+%\begin{equation*}
+%X=U\Lambda^{\frac{1}{2}}= \begin{pmatrix} 
+%	0 & 0.5773 & -8\cross10^{-9}\\
+%	-0.5 & -0.2886 & -8\cross10^{-9}\\ 
+%	0.5 & -0.2886 & -8\cross10^{-9}
+%	\end{pmatrix}.
+%\end{equation*}
+%Discarding the last column, we obtain the MDS coordinates:
+%\begin{equation}
+%\begin{pmatrix} 
+%	0 & 0.5773\\
+%	-0.5 & -0.2887\\ 
+%	0.5 & -0.2887
+%	\end{pmatrix},
+%\label{origMDScoords}
+%\end{equation}
+%
+%
+%So, taking these points and re-inserting the second point into their MDS representation, we use equation (\ref{gower}). First, finding the vector of distances from point 2 to the other points in the non-MDS space:
+%\begin{equation*}
+%\mathbf{d}=\begin{pmatrix} 
+%	1\\
+%	0\\ 
+%	1
+%	\end{pmatrix},
+%\end{equation*}
+%and centring it to have mean zero:
+%\begin{equation*}
+%\mathbf{d}=\begin{pmatrix} 
+%	1/3\\
+%	-2/3\\ 
+%	1/3
+%	\end{pmatrix}.
+%\end{equation*}
+%And using Gower's formula:
+%\begin{equation*}
+%\begin{aligned}
+%\tilde{x}_{\text{new}} &= \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d}\\
+%&=\begin{pmatrix}
+%0.5\\
+%0.2887\\
+%-2.4 \cross 10^{-9}\\
+%\end{pmatrix},
+%\end{aligned}
+%\end{equation*}
+%which is a reflection of the second point in equation (\ref{origMDScoords}). This can be seen in \fig{cexample}, bottom left pane. This is not necessarily a problem since, by inspection, we can see that this is happening and correct it.
+%
+%Let us now see what happens when all three points are re-inserted. First generalise $\mathbf{d}$ to be a matrix, $\mathbb{D}$, giving the distances from the ``old'' points to our ``new'' points which double centred as above, by pre- and post-multiplying by the $H$ matrix. Now, equation (\ref{gower}) becomes:
+%\begin{equation*}
+%\tilde{X}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbb{D}\\
+%\end{equation*}
+%and so the coordinates obtained are:
+%\begin{equation*}
+%\tilde{X}_\text{new}=\begin{pmatrix}
+%-1.9\cross 10^{-17} & -0.25 & 0.25\\
+% 0.2887 & -0.1443 & -0.1443\\
+%-2.04\cross 10^{-9} &  1.2\cross 10^{-9} & 1.3\cross 10^-{9}\\
+%\end{pmatrix}
+%\end{equation*}
+%By analogy with the single point case, we take the transpose and remove the final column, thus obtaining:
+%\begin{equation*}
+%\begin{pmatrix}
+%-1.8\cross 10^{-17} &  0.2887\\
+%-0.25 & -0.1443\\
+% 0.25 & -0.1443\\
+%\end{pmatrix}
+%\end{equation*}
+%which are different from our original coordinates but, as can be seen from \fig{cexample}, bottom right pane, the distances and shape are preserved.
+%
+%The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again. Here the it can be seen that both sets of points are internally consistent but not consistent with each other. 
+%
 % offline insertion error in Gower
 \begin{figure}
 \centering
@@ -328,7 +317,7 @@ The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In
 % generated (roughly) using wt2-insert-error.R
 \end{figure}
 
-Carrying out further investigation it is clear that when two insertions are performed the points are consistent between insertion sets. This can be seen in \fig{wt2-double-insert}. It is for these reasons that we insert both the sample and the prediction from a regular grid.
+%Carrying out further investigation it is clear that when two insertions are performed the points are consistent between insertion sets. This can be seen in \fig{wt2-double-insert}. It is for these reasons that we insert both the sample and the prediction from a regular grid.
 
 
 % wt2 with prediction and sample inserted
@@ -374,7 +363,7 @@ Taking a cue from \cite{soap} simulations were conducted on the so-called modifi
 
 \subsection{Modified horseshoe}
 
-For the modified horseshoe, 100 replications of samples of 250 points with normal errors (at 3 levels) were run. From these samples, three models were fit to the data and predictions over 718 points (including the sample locations) and the mean squared error was calculated between the model prediction and the true function value for the horseshoe. The three models fit were as follows using the \textsf{R} packages \texttt{mgcv} and \texttt{soap}:
+For the modified horseshoe (\fig{leakage}), 100 replications of samples of 250 points with normal errors (at 3 levels) were run. From these samples, three models were fit to the data and predictions over 718 points (including the sample locations) and the mean squared error was calculated between the model prediction and the true function value for the horseshoe. The three models fit were as follows using the \textsf{R} packages \texttt{mgcv} and \texttt{soap}:
 
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100.
@@ -382,6 +371,7 @@ For the modified horseshoe, 100 replications of samples of 250 points with norma
 \item \emph{MDS}: Used a thin plate spline of basis dimension 100.
 \end{enumerate} 
 
+As can be seen from \fig{ramsay-fit-1}
 
 \begin{table}[ht]
 \centering
@@ -396,21 +386,38 @@ $\sigma^2$ & MDS & Soap film & Thin plate\\
 \caption{}
 \end{table}
 
+% Ramsay fit with error=1 
+\begin{figure}
+\centering
+\includegraphics[width=6in]{figs/ramsay-fit-1.pdf} \\
+\caption{}
+\label{ramsay-fit-1}
+% generated (roughly) using ramsay-smooth-test.R
+\end{figure}
 
 \subsection{Peninsulae domain}
 
-The Ramsay horseshoe is, in a sense, easy domain to smooth over since it is obvious what the transformation should be doing. For this reason a more complex and more realistic domain would provide more insights into the efficacy of the method. The domain shown in [FIG] is an approximation to a coastline with a strong trend along both peninsulae (in a manner similar to that of the horseshoe) but with the added complication of a further peak in the lower right corner.
+The Ramsay horseshoe is, in a sense, easy domain to smooth over since it is obvious what the transformation should be doing. For this reason a more complex and more realistic domain would provide more insights into the efficacy of the method. The domain shown in \fig{wt2-truth} is an approximation to a coastline with a strong trend along both peninsulae (in a manner similar to that of the horseshoe) but with the added complication of a further peak in the lower right corner.
 
-The models used were
+Again, 100 realisations from the domain shown in \fig{wt2-truth} were used with Normal errors at 3 levels of $\sigma^2$. Mean squared error over 1253 prediction points was calculated from fitting models with 250 samples. The models fit were:
+
+% wt2 truth 
+\begin{figure}
+\centering
+\includegraphics[width=3in]{figs/wt2-truth.pdf} \\
+\caption{True function for the domain with multiple peninsulae.}
+\label{wt2-truth}
+% generated (roughly) using wt2-smooth-test.R
+\end{figure}
 
 \begin{enumerate}
-\item \emph{Thin plate spline}: 
-\item \emph{Soap film smoother}: 
-\item \emph{MDS}: 
-\item \emph{MDS with tensor product}: tensor product of two thin plate splines, each of basis dimension ??
+\item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100. 
+\item \emph{Soap film smoother}: cyclic spline on boundary of basis size 60, 109 internal knots evenly spaced over the domain on a grid.
+\item \emph{MDS}: after transform a thin plate spline with basis size 100 was fit. 
+\item \emph{MDS with tensor product}: tensor product of two thin plate splines, each of basis dimension 12.
 \end{enumerate} 
 
-
+The final option was chosen after it appeared that the MDS with a bivariate thin plate spline did not adequately model the peak in the right corner of the domain see [FIG panel blah]. After using a tensor product of thin plate splines a better fit to the right peak was found (see [FIG panel], although this is not reflected particularly well in terms of mean squared error (see table \ref{wt2resultstable}.) The visual improvement in fit can be explained by thin plate splines in two dimensions being an isotropic smooth and since space has not been transformed in a uniform way in both dimensions (see [FIG].)
 
 \begin{table}[ht]
 \centering
@@ -425,6 +432,14 @@ $\sigma^2$ & MDS & MDS (tensor) & Soap film & Thin plate\\
 \caption{}
 \end{table}
 
+% wt2 fit with error=0.5
+\begin{figure}
+\centering
+\includegraphics[width=6in]{figs/wt2-fit-05.pdf} \\
+\caption{A typical realisation of fits from the multiple peninsulae domain when $\sigma^2$ is set to 0.5.}
+\label{wt2-fit-0.5}
+% generated (roughly) using wt2-smooth-test.R
+\end{figure}
 
 
 

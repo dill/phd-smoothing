@@ -110,10 +110,13 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
  
    ### Now do some fitting and prediction
    ### mapping
-   b.mapped<-gam(z~te(x,y,k=12),data=samp.data)
-   #b.mapped<-gam(z~s(x,y,k=100),data=samp.data)
-   fv <- predict(b.mapped,newdata=pred.data)
-   
+   b.mapped.te<-gam(z~te(x,y,k=12),data=samp.data)
+   fv.te <- predict(b.mapped.te,newdata=pred.data)
+
+   # tensor thin plate   
+   b.mapped.s<-gam(z~s(x,y,k=100),data=samp.data)
+   fv.s <- predict(b.mapped.s,newdata=pred.data)
+
    ### normal tprs
    b.tprs<-gam(z~s(x,y,k=100),data=nsamp.data)
    fv.tprs <- predict(b.tprs,newdata=npred.data)
@@ -142,39 +145,47 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
  
       # plot for truth, mds, tprs and soap
       par(mfrow=c(2,2))
+      par(mar=c(3,3,3,3))
       
       # axis scales
       xscale<-seq(min(gendata$x),max(gendata$x),length.out=50)
       yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
    
-      pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-gendata.ind$z[ind]
-      pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="True",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
+#      pred.mat<-rep(NA,length(gendata.ind$x))
+#      pred.mat[ind]<-gendata.ind$z[ind]
+#      pred.mat<-matrix(pred.mat,50,50)
+#      image(xscale,yscale,pred.mat,main="True",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+#      contour(xscale,yscale,pred.mat,add=T)
    
       pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-fv
+      pred.mat[ind]<-fv.s
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="Multidimensional scaling + thin plate",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="MDS + tp",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
       
       pred.mat<-rep(NA,length(gendata.ind$x))
+      pred.mat[ind]<-fv.te
+      pred.mat<-matrix(pred.mat,50,50)
+      image(xscale,yscale,pred.mat,main="MDS + tptp",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      contour(xscale,yscale,pred.mat,add=T)
+
+      pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.tprs
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="Thin plate regression splines",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="tprs",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
       
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.soap
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="Soap film smoother",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="soap",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
  
    }
  
    ### calculate MSEs
-   mses<-list(mds=mean((fv-gendata.ind$z[ind])^2,na.rm=T),
+   mses<-list(mds=mean((fv.s-gendata.ind$z[ind])^2,na.rm=T),
+              mdstp=mean((fv.te-gendata.ind$z[ind])^2,na.rm=T),
               tprs=mean((fv.tprs-gendata.ind$z[ind])^2,na.rm=T),
               soap=mean((fv.soap-gendata.ind$z[ind])^2,na.rm=T))
  

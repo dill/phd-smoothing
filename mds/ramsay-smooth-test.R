@@ -15,6 +15,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    onoff[c(143,279)]<-FALSE ### UGLY HACK
    xx<-xx[onoff];yy<-yy[onoff]
 
+
    # map the grid xx,yy
    my.grid<-list(x=xx,y=yy)
    D.grid<-create_distance_matrix(xx,yy,bnd)
@@ -60,11 +61,11 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    z.truth[onoff]<-fs.test(xx,yy)
    
    ### mapping
-   b.mapped<-gam(z~s(x,y,k=49),data=samp.data.mds)
+   b.mapped<-gam(z~s(x,y,k=100),data=samp.data.mds)
    fv.mapped <- predict(b.mapped,newdata=pred.data.mds)
    
    ### normal tprs
-   b.tprs<-gam(z~s(x,y,k=49),data=samp.data)
+   b.tprs<-gam(z~s(x,y,k=100),data=samp.data)
    fv.tprs <- predict(b.tprs,newdata=pred.data)
    
    ### soap
@@ -73,13 +74,14 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
                        y=rep(c(-.6,-.3,.3,.6),rep(8,4)))
    knots.ind<-inSide(bnd,x=knots$x,y=knots$y)
    knots<-list(x=knots$x[knots.ind],y=knots$y[knots.ind])
-   b.soap<-gam(z~s(x,y,k=20,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
+   b.soap<-gam(z~s(x,y,k=39,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
    fv.soap<-predict(b.soap,newdata=pred.data,block.size=-1)
    
 
    # plot
    if(plot.it){
       par(mfrow=c(2,2))
+      par(mar=c(3,3,3,3))
 
       # truth
       image(xm,yn,z.truth,col=heat.colors(100),xlab="x",ylab="y",main="truth",las=1,asp=1)
