@@ -45,7 +45,6 @@ gendata<-list(x=gendata$x[-samp.ind],
 # create D
 D.samp<-create_distance_matrix(gendata.samp$x,gendata.samp$y,bnd)
 
-
 mymds<-function(D){
 
    n<-dim(D)[1]
@@ -64,16 +63,11 @@ mymds<-function(D){
    U<-eS$vectors
    lambda<-eS$values[1:2]
 
-#   X<-U%*%chol(lambda)
    X<-U[,1:2]%*%diag(sqrt(eS$values[1:2]),2)
 
-#   X<-X[,1:2]
-
-#   lambda<-lambda[1:2,1:2]
-
    return(list(points=X,eig=lambda))
-
 }
+
 
 #library(debug)
 #mtrace(cmdscale)
@@ -96,13 +90,13 @@ samp.ins<-insert.mds(gendata.samp,gendata.samp,samp.mds,bnd)
 
 
 
-library(vegan)
-
-pp<-procrustes(samp.ins,samp.mds$points,scale=TRUE)
-pred.pp<-pred.mds
-pred.pp<-cbind(pred.pp[,1]-pp$translation[1,1],pred.pp[,2]-pp$translation[1,2])
-p.fix<-pred.pp%*%pp$rotation
-
-
-plot(p.fix,pch=19,cex=0.3,asp=1)
-points(samp.mds$points,pch=19,cex=0.3,col="red")
+#library(vegan)
+#
+#pp<-procrustes(samp.ins,samp.mds$points,scale=TRUE)
+#pred.pp<-pred.mds
+#pred.pp<-cbind(pred.pp[,1]-pp$translation[1,1],pred.pp[,2]-pp$translation[1,2])
+#p.fix<-pred.pp%*%pp$rotation
+#
+#
+#plot(p.fix,pch=19,cex=0.3,asp=1)
+#points(samp.mds$points,pch=19,cex=0.3,col="red")
