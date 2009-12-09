@@ -23,8 +23,8 @@ gendata<-list(x=gendata$x[na.ind],
                z=gendata$z[na.ind])
 
 # attempt to get around the inside bug
-bnd.neg<-list(x=-bnd$x,y=-bnd$y)
-onoff<-inSide(bnd.neg,-gendata$x,-gendata$y)
+#bnd.neg<-list(x=-bnd$x,y=-bnd$y)
+#onoff<-inSide(bnd.neg,-gendata$x,-gendata$y)
 
 gendata<-list(x=gendata$x[onoff],
                y=gendata$y[onoff],
@@ -77,17 +77,17 @@ mymds<-function(D){
 samp.mds<-mymds(D.samp)
 
 # prediction points insertion
-pred.mds<-insert.mds(gendata,gendata.samp,samp.mds,bnd)
+#pred.mds<-insert.mds(gendata,gendata.samp,samp.mds,bnd)
 
 
-par(mfrow=c(1,2))
-plot(pred.mds,pch=19,cex=0.3,asp=1)
-points(samp.mds$points,pch=19,cex=0.3,col="red")
+#par(mfrow=c(1,2))
+plot(samp.mds$points,pch=19,cex=0.3,asp=1)
 
 
 # sample points insertion
 samp.ins<-insert.mds(gendata.samp,gendata.samp,samp.mds,bnd)
 
+points(samp.ins,pch=19,cex=0.3,col="red")
 
 
 #library(vegan)
@@ -97,6 +97,6 @@ samp.ins<-insert.mds(gendata.samp,gendata.samp,samp.mds,bnd)
 #pred.pp<-cbind(pred.pp[,1]-pp$translation[1,1],pred.pp[,2]-pp$translation[1,2])
 #p.fix<-pred.pp%*%pp$rotation
 #
-#
+#cat("translation=",pp$translation[1,1],pp$translation[1,2],"\n")
 #plot(p.fix,pch=19,cex=0.3,asp=1)
 #points(samp.mds$points,pch=19,cex=0.3,col="red")
