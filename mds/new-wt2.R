@@ -3,6 +3,8 @@
 source("mds.R")
  
 samp.size=250
+samp.size=100
+
  
 ## create a boundary...
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
@@ -26,9 +28,9 @@ gendata<-list(x=gendata$x[na.ind],
 #bnd.neg<-list(x=-bnd$x,y=-bnd$y)
 #onoff<-inSide(bnd.neg,-gendata$x,-gendata$y)
 
-gendata<-list(x=gendata$x[onoff],
-               y=gendata$y[onoff],
-               z=gendata$z[onoff])
+#gendata<-list(x=gendata$x[onoff],
+#               y=gendata$y[onoff],
+#               z=gendata$z[onoff])
 
 # create the sample index
 samp.ind<-sample(1:length(gendata$x),samp.size)
