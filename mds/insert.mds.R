@@ -27,11 +27,8 @@
    new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
                       bnd,start=length(old.points$x))
 
-   # the ith element of d is d_i^2-d_{i,n+1}^2
-   #d<-diag(X%*%t(X))-new.dist^2
-   x.diag<-diag(X%*%t(X))
-   x.diag<-matrix(rep(x.diag,dim(new.dist)[2]),dim(new.dist)[1],dim(new.dist)[2])
-   d<-x.diag-new.dist^2
+   # the ith element of d is -(d_{i,n+1}^2 - (its column means)
+   d<- -(new.dist^2-colMeans(new.dist^2))
 
    # finally construct the product
    ret<-1/2*(lambda.inverse %*% t(X) %*% d)

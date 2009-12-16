@@ -3,7 +3,7 @@
 source("mds.R")
  
 samp.size=250
-samp.size=100
+#samp.size=100
 
  
 ## create a boundary...
