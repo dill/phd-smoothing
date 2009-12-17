@@ -14,6 +14,7 @@
  
 \usepackage{multirow}
 \usepackage{graphicx}
+\usepackage{rotating}
 
 % top matter
 \title{Multidimensional scaling as a tool for smoothing over complex regions}
@@ -140,7 +141,7 @@ We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\t
 \tilde{x}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d},
 \label{gower}
 \end{equation}
-here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) has $i^\text{th}$ element $-(d^2_{i,n+1}-\frac{1}{n}\sum_{j=1}^n d^2_{i,n+1})$, \emph{ie.} the negative of the centred, squared, distance from each point in the original MDS configuration. Note that in Gower's paper, he defines $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(\tilde{X}\tr{\tilde{X}}))$, which is equivalent to our expression in the Euclidean distance case, but not when using within-area distances.
+here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) has $i^\text{th}$ element $-(d^2_{i,n+1}-\frac{1}{n}\sum_{j=1}^n d^2_{j,n+1})$, \emph{ie.} the negative of the centred, squared, distance from each point in the original MDS configuration. Note that in Gower's paper, he defines $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(\tilde{X}\tr{\tilde{X}}))$, which is equivalent to our expression in the Euclidean distance case, but not when using within-area distances.
 
 Gower's interpolation extends simply to the case when we insert $m$ new points by making $\mathbf{d}$ an $n \cross m$ matrix.
 
@@ -149,18 +150,22 @@ Gower's interpolation extends simply to the case when we insert $m$ new points b
 
 Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. However, he only shows that this is true for the case when we consider Euclidean distance between the data. 
 
-If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ may not represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. This problem can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered.
+Given that the insertion relies on the eigenvalues of the original MDS configuration, obtaining those eigenvalues correctly is important. If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ may not represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. 
 
-In the course of the projection onto the original MDS axes, we lose one of the coordinates (effectively truncating a dimension.) If the MDS axes were in two dimensions, it is possible that the point was not supposed to lie in the plane but rather this an extra dimension and its distance was truncated. This can cause distortions in the point configuration. A more complete explanation and characterisation of this problem is given in \cite{Boj2009}. 
+SHOW THAT THE ABOVE IS TRUE!
 
-This distortion is compounded when extra points are added to the MDS configuration in an ``online'' manner. For example, say MDS has been performed on some set of points and then mapped them into the plane. Then suppose that new points are added into this configuration using Gower's interpolation. When the first point is added, say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2dia} panel 2. It is for this reason that we do not insert the points online, but rather simultaneously insert all points.
+This problem can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered.
+
+EXPLAIN WHAT ONLINE MEANS
+
+Note that we do not insert the points in an ``online'' fashion... This distortion is compounded when extra points are added to the MDS configuration in an ``online'' manner. For example, say MDS has been performed on some set of points and then mapped them into the plane. Then suppose that new points are added into this configuration using Gower's interpolation. When the first point is added, say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2-grid-orig} panel 2. It is for this reason that we do not insert the points online, but rather simultaneously insert all points.
 
 % online insertion error in Gower
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[width=4in]{figs/gowererror.pdf} \\
-\caption{MDS configuration for the domain in \fig{wt2dia}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation online. The red points should be positioned in the ``holes'' in the black grid.}
+\includegraphics[width=4in]{figs/online-gowererror.pdf} \\
+\caption{MDS configuration for the domain in \fig{wt2-grid-orig}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation online. The red points should be positioned in the ``holes'' in the black grid.}
 \label{gowererror}
 \end{figure}
 
@@ -178,8 +183,6 @@ Following from this, it is important to make sure that the MDS space is smooth i
 \label{wt2-grid-orig}
 % generated using wt2-grid.R
 \end{figure}
-
-Given that the grid over the transformed space is smooth, how do the ``errors'' that can be seen in \fig{gowerfullinsert} occur? It turns out that although insertions using Gower's method are self-consistent, they are not consistent with the original MDS space. The following example shows that re-inserting points does not recover their MDS coordinates, but that the shape and distances are preserved.
 
 % mapped grid (full)
 \begin{figure}
@@ -227,14 +230,14 @@ Given that there is no direct path ($\mathcal{P}$) within the domain ($\Gamma$, 
 \end{enumerate}
 
 % diagram for finding the shortest path in W
-\begin{figure}
+\begin{sidewaysfigure}
 \centering
 % trim order l b r t
-\includegraphics[trim=0in 0.5in 0in 0.25in, width=7in]{figs/wdia.pdf} \\
+\includegraphics[trim=0in 0.5in 0in 0.25in, width=9.5in]{figs/wdia.pdf} \\
 \caption{The green lines in ($i$) to ($vi$) show the path as the algorithm progresses from initial state to final, shortest path (bottom right.) }
 \label{wdia}
 % generate /phd-smoothing/mds-writeup/figs/distanceexplanation.R
-\end{figure}
+\end{sidewaysfigure}
 
 Of course, if there is a direct path between $p_1$ and $p_2$ the the Euclidean distance between the points can be used.
 
@@ -338,7 +341,6 @@ from:
 In the case of the MDS, the integral would need to be split over a grid such that each cell captured the distortion in space over the area of the cell. Mathematically, $\Omega$ would be split into a subsets, $\omega_i$ (where $\bigcup_{\forall j} \omega_j = \Omega$) and (\ref{adjustedintegral}) becomes:
 \begin{equation}
 \sum_{\forall j} \int\int_{\omega_j} l_j^3 \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2k_jl_j\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + k_j^3\Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y,
-\label{adjustedintegral}
 \end{equation}
 where $k_j$ is the scaling in the $y$ direction and $l_j$ is the scaling in the $x$ direction for the $j^{\text{th}}$ cell. We assume here that $f(x,y)$ is ``nice''.
 
