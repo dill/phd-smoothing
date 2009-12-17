@@ -118,17 +118,19 @@ S = -\frac{1}{2}HDH.
 \end{equation}
 See \cite{diaconis08} for a simple proof of this.
 
-After this $\tilde{X}$ is an $n \cross n$ matrix, not only does this make the problem more complicated, also the aim is to smooth in two dimensions. So, the first 2 directions with the largest eigenvalues are chosen to represent the space. This gives the two dimensional representation of the data, taking into account the within-area distance. From here on $\tilde{X}$ refers to the 2 dimensional matrix obtained from truncating the full new coordinate set to the first two columns (in eigenvalue order.)
+Following these steps $\tilde{X}$ is an $n \cross n$ matrix. The aim here is two smooth in two dimensions, so, the directions with the two largest eigenvalues are chosen to represent the space. This gives the two dimensional representation of the data, taking into account the within-area distance. From here on $\tilde{X}$ refers to the 2 dimensional matrix obtained from truncating the full new coordinate set to the first two columns (in eigenvalue order.)
 
 So, in order to obtain a the new configuration of points using MDS (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition on the resulting matrix, $S$. 
+
+Note that an additive constant can be computed and added to the non-diagonal entries of $D$ such that the eigenvalues of $S$ are non-negative.
 
 Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function. 
 
 \subsection{Gower's interpolation} 
 
-It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation; for example when further data is collected, or in order to predict over points not in the sample. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years. Gower's interpolation (\cite{gower1968}) is covered here.
+It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation; for example when further data is collected, or in order to predict over points not in the sample. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years; Gower's interpolation (\cite{gower1968}) is covered here.
 
-Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from $\tilde{X}$ which is the same as that of $x_{\text{new}}$ to the points in $X$. This is easily extended to more than one point by simply making $d$, below, an $n \cross m$ matrix (to insert $m$ new points.)
+Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from $\tilde{X}$ which is the same as that of $x_{\text{new}}$ to the points in $X$. 
 
 
 \subsubsection{Gower's interpolation formula}
@@ -138,12 +140,14 @@ We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\t
 \tilde{x}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d},
 \label{gower}
 \end{equation}
-here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) has $i^\text{th}$ element $d^2_i-d^2_{i,n+1}$, where $d^2_i$ is the square of the diagonal elements of $X\tr{X}$ and $d^2_{i,n+1}$ is the squared distance from the $i^\text{th}$ point in $X$ and the new point. As mentioned above, this extends simply to the case when we insert $m$ new points by making $d$ an $n \cross m$ matrix.
+here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) has $i^\text{th}$ element $-(d^2_{i,n+1}-\frac{1}{n}\sum_{j=1}^n d^2_{i,n+1})$, \emph{ie.} the negative of the centred, squared, distance from each point in the original MDS configuration. Note that in Gower's paper, he defines $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(\tilde{X}\tr{\tilde{X}}))$, which is equivalent to our expression in the Euclidean distance case, but not when using within-area distances.
+
+Gower's interpolation extends simply to the case when we insert $m$ new points by making $\mathbf{d}$ an $n \cross m$ matrix.
 
 
 \subsubsection{Practical considerations}
 
-In Gower's 1968 paper, he proves that in the case where the distances are measured using Euclidean distance, the inserted points' locations will be exactly as those if the points had been included in the full MDS to begin with. However, this is not the end of the story.
+Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. However, he only shows that this is true for the case when we consider Euclidean distance between the data. 
 
 If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ may not represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. This problem can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered.
 
@@ -197,129 +201,6 @@ Given that the grid over the transformed space is smooth, how do the ``errors'' 
 % generated using wt2-grid.R
 \end{figure}
 
-
-%\subsubsection{Consistency of interpolated points}
-%
-%It is important to note that those points found by simultaneous insertion via Gower's method are self-consistent but not consistent with the MDS configuration used to generate the inserted set. The following example shows this.
-%
-%Take three points, equidistant, 1 unit apart, they have the following (Euclidean) distance matrix:
-%\begin{equation*}
-%D_3 = \begin{pmatrix} 0 & 1& 1\\1 & 0 & 1\\ 1 & 1 & 0\end{pmatrix},
-%\end{equation*}
-%
-%We find the MDS representation of the points in the same manner as \cite{diaconis08}.
-%
-%First, double centring the matrix (making row and column means zero):
-%\begin{equation*}
-%\begin{aligned}
-%S &= -\frac{1}{2} HD_3H\\
-%    &= \begin{pmatrix} 1/3 & -1/6 & -1/6\\-1/6 & 1/3 & -1/6\\ -1/6 & -1/6 & 1/3\end{pmatrix},
-%\end{aligned}
-%\end{equation*}
-%where $H=I-\frac{1}{n}\mathbf{1}\mathbf{1}^\text{T}$.
-%
-%Now, performing an eigen-decomposition on $S$,
-%\begin{equation*}
-%S = U \Lambda U^\text{T},
-%\end{equation*}
-%we obtain:
-%\begin{equation*}
-%U = \begin{pmatrix} 
-%	0 & 0.8164 & -0.5773\\
-%	-0.7071 & -0.4082 & -0.5773\\ 
-%	0.7071 & -0.4082 & -0.5773
-%	\end{pmatrix},\qquad
-%\Lambda = \begin{pmatrix} 
-%	1/2 & 0 & 0\\
-%	0 & 1/2 & 0\\ 
-%	0 & 0 & 2.2\cross10^{-16}
-%\end{pmatrix}.
-%\end{equation*}
-%Finally finding $X$,
-%\begin{equation*}
-%X=U\Lambda^{\frac{1}{2}}= \begin{pmatrix} 
-%	0 & 0.5773 & -8\cross10^{-9}\\
-%	-0.5 & -0.2886 & -8\cross10^{-9}\\ 
-%	0.5 & -0.2886 & -8\cross10^{-9}
-%	\end{pmatrix}.
-%\end{equation*}
-%Discarding the last column, we obtain the MDS coordinates:
-%\begin{equation}
-%\begin{pmatrix} 
-%	0 & 0.5773\\
-%	-0.5 & -0.2887\\ 
-%	0.5 & -0.2887
-%	\end{pmatrix},
-%\label{origMDScoords}
-%\end{equation}
-%
-%
-%So, taking these points and re-inserting the second point into their MDS representation, we use equation (\ref{gower}). First, finding the vector of distances from point 2 to the other points in the non-MDS space:
-%\begin{equation*}
-%\mathbf{d}=\begin{pmatrix} 
-%	1\\
-%	0\\ 
-%	1
-%	\end{pmatrix},
-%\end{equation*}
-%and centring it to have mean zero:
-%\begin{equation*}
-%\mathbf{d}=\begin{pmatrix} 
-%	1/3\\
-%	-2/3\\ 
-%	1/3
-%	\end{pmatrix}.
-%\end{equation*}
-%And using Gower's formula:
-%\begin{equation*}
-%\begin{aligned}
-%\tilde{x}_{\text{new}} &= \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d}\\
-%&=\begin{pmatrix}
-%0.5\\
-%0.2887\\
-%-2.4 \cross 10^{-9}\\
-%\end{pmatrix},
-%\end{aligned}
-%\end{equation*}
-%which is a reflection of the second point in equation (\ref{origMDScoords}). This can be seen in \fig{cexample}, bottom left pane. This is not necessarily a problem since, by inspection, we can see that this is happening and correct it.
-%
-%Let us now see what happens when all three points are re-inserted. First generalise $\mathbf{d}$ to be a matrix, $\mathbb{D}$, giving the distances from the ``old'' points to our ``new'' points which double centred as above, by pre- and post-multiplying by the $H$ matrix. Now, equation (\ref{gower}) becomes:
-%\begin{equation*}
-%\tilde{X}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbb{D}\\
-%\end{equation*}
-%and so the coordinates obtained are:
-%\begin{equation*}
-%\tilde{X}_\text{new}=\begin{pmatrix}
-%-1.9\cross 10^{-17} & -0.25 & 0.25\\
-% 0.2887 & -0.1443 & -0.1443\\
-%-2.04\cross 10^{-9} &  1.2\cross 10^{-9} & 1.3\cross 10^-{9}\\
-%\end{pmatrix}
-%\end{equation*}
-%By analogy with the single point case, we take the transpose and remove the final column, thus obtaining:
-%\begin{equation*}
-%\begin{pmatrix}
-%-1.8\cross 10^{-17} &  0.2887\\
-%-0.25 & -0.1443\\
-% 0.25 & -0.1443\\
-%\end{pmatrix}
-%\end{equation*}
-%which are different from our original coordinates but, as can be seen from \fig{cexample}, bottom right pane, the distances and shape are preserved.
-%
-%The above effect can be seen on a much larger scale in \fig{gowerfullinsert}. In this case 250 points were inserted simultaneously from the 1253 used to construct the MDS configuration. In this case we are inserting the same points as were in the original configuration again. Here the it can be seen that both sets of points are internally consistent but not consistent with each other. 
-%
-% offline insertion error in Gower
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=4in]{figs/wt2-gowererr-fullover.pdf} \\
-\caption{Error from inserting 250 points from the full MDS configuration back into the domain.}
-\label{gowerfullinsert}
-% generated (roughly) using wt2-insert-error.R
-\end{figure}
-
-%Carrying out further investigation it is clear that when two insertions are performed the points are consistent between insertion sets. This can be seen in \fig{wt2-double-insert}. It is for these reasons that we insert both the sample and the prediction from a regular grid.
-
-
 % wt2 with prediction and sample inserted
 \begin{figure}
 \centering
@@ -336,7 +217,7 @@ In order to perform multidimensional scaling the matrix of distances must be fir
 
 Thinking of the boundary of the domain as a polygon, the within-area distances are found by tracing the edges of this polygon from the first point to the second. The path between the points is then modified by deleting and replacing segments of it. Put more mathematically:
 
-Given that there is no direct path within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
+Given that there is no direct path ($\mathcal{P}$) within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
 
 \begin{enumerate}
 \item Draw a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)). Start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary (\fig{wdia}, ($ii$).) Choose the shorter of these, add the paths between $p_1$, $p_2$ and the boundary and this is the starting path, $\mathcal{P}$ (\fig{wdia}, ($iii$).) 
@@ -435,9 +316,9 @@ $\sigma^2$ & MDS & MDS (tensor) & Soap film & Thin plate\\
 % wt2 fit with error=0.5
 \begin{figure}
 \centering
-\includegraphics[width=6in]{figs/wt2-fit-05.pdf} \\
-\caption{A typical realisation of fits from the multiple peninsulae domain when $\sigma^2$ is set to 0.5.}
-\label{wt2-fit-0.5}
+\includegraphics[width=6in]{figs/wt2-fit-005.pdf} \\
+\caption{A typical realisation of fits from the multiple peninsulae domain when $\sigma^2$ is set to 0.05.}
+\label{wt2-fit-0.05}
 % generated (roughly) using wt2-smooth-test.R
 \end{figure}
 
