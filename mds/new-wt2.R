@@ -75,11 +75,11 @@ mymds<-function(D){
 #mtrace(cmdscale)
 #mtrace(insert.mds)
 # perform mds on D
-#samp.mds<-cmdscale(D.samp,eig=TRUE,k=2,x.ret=TRUE)
-samp.mds<-mymds(D.samp)
+samp.mds<-cmdscale(D.samp,eig=TRUE,k=2,x.ret=TRUE)
+#samp.mds<-mymds(D.samp)
 
 # prediction points insertion
-#pred.mds<-insert.mds(gendata,gendata.samp,samp.mds,bnd)
+pred.mds<-insert.mds(gendata,gendata.samp,samp.mds,bnd)
 
 
 #par(mfrow=c(1,2))
@@ -91,6 +91,8 @@ samp.ins<-insert.mds(gendata.samp,gendata.samp,samp.mds,bnd)
 
 points(samp.ins,pch=19,cex=0.3,col="red")
 
+
+points(pred.mds,pch=19,cex=0.3)
 
 #library(vegan)
 #

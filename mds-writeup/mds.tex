@@ -71,7 +71,7 @@ Generalized additive models (GAMs) are a popular way of performing spatial smoot
 
 When the geographical region has a complex boundary then features from one part of the domain can unduely influence other parts. This phenomenon is known as leakage. A typical example of this can be seen in \fig{leakage}. Leakage is problematic since it causes incorrect estimates of the density surface. This can then lead to incorrect abundance estimates, which is clearly not desirable.
 
-The cause of leakage can be thought of in two ways: the smooth not respecting the boundary conditions of the domain, or the smooth not taking into account the geometry of the domain in particular with regard to the distance between points in the domain. Previous work in this area has been to combat leakage along these lines. Work of \cite{ramsay} and \cite{soap} try to use boundary conditions to prevent leakage, where as \cite{wangranalli} attempt to approximate the within-area distances.
+The cause of leakage can be thought of in two ways: that the smooth does not respect the boundary conditions of the domain, or the smooth not taking into account the geometry of the domain; in particular with regard to the distance between points in the domain. Previous work in this area has been to combat leakage along these two lines. Work of \cite{ramsay} and \cite{soap} try to use boundary conditions to prevent leakage, where as \cite{wangranalli} attempt to approximate the within-area distances.
 
 % leakage example 
 \begin{figure}
@@ -85,7 +85,7 @@ The cause of leakage can be thought of in two ways: the smooth not respecting th
 
 \subsection{Proposition}
 
-Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis to find a new configuration of the data based on the distances between the points (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a projection of data into lower dimensional space, while still retaining information about the distances between the points. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}.)
+Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis. MDS relocates the points such that although their coordinates have changed the distances between points are preserved (\cite{chatfieldcollins}, p. 187.) In this new configuration, the Euclidean inter-point distances are approximately the same as their distances in the original data. Most often, MDS is used as a dimension reduction technique, finding a projection of data into lower dimensional space, while still retaining information about the distances between the points. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}.)
 
 Multidimensional scaling offers an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points such that the distances between the points are (approximately) preserved.
 
@@ -103,7 +103,7 @@ We first define $d_{ij}$ as the distance between the points $i$ and $j$. These f
 
 \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points given we know the $d_{ij}$s which is outlined below.
 
-First, suppose that the $n$ the unknown new locations are an $n \times n$ matrix, $\tilde{X}$. Let $S=\tilde{X}\tr{\tilde{X}}$; performing an eigen-decomposition such that $S=U\Lambda\tr{U}$. Where $U$ is the $n \cross n$ matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues.
+First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our new configuration are entries in an $n \times n$ matrix, $\tilde{X}$. Let $S=\tilde{X}\tr{\tilde{X}}$. Then performing an eigen-decomposition such that $S=U\Lambda\tr{U}$, where $U$ is the $n \cross n$ matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues.
 
 Then, since $S$ is symmetric, we are interested in:
 \begin{equation}
@@ -119,11 +119,11 @@ S = -\frac{1}{2}HDH.
 \end{equation}
 See \cite{diaconis08} for a simple proof of this.
 
-Following these steps $\tilde{X}$ is an $n \cross n$ matrix. The aim here is two smooth in two dimensions, so, the directions with the two largest eigenvalues are chosen to represent the space. This gives the two dimensional representation of the data, taking into account the within-area distance. From here on $\tilde{X}$ refers to the 2 dimensional matrix obtained from truncating the full new coordinate set to the first two columns (in eigenvalue order.)
+Following these steps $\tilde{X}$ is an $n \cross n$ matrix. The aim here is two smooth in two dimensions, so, the directions with the two largest eigenvalues are chosen to represent the space. This gives the two dimensional representation of the data, taking into account the within-area distance. From here on $\tilde{X}$ refers to the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns (in eigenvalue order.)
 
 So, in order to obtain a the new configuration of points using MDS (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition on the resulting matrix, $S$. 
 
-Note that an additive constant can be computed and added to the non-diagonal entries of $D$ such that the eigenvalues of $S$ are non-negative.
+Note that an additive constant can be computed and added to the non-diagonal entries of $D$ to ensure that the eigenvalues of $S$ are non-negative.
 
 Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function. 
 
@@ -146,9 +146,9 @@ here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, 
 Gower's interpolation extends simply to the case when we insert $m$ new points by making $\mathbf{d}$ an $n \cross m$ matrix.
 
 
-\subsubsection{Practical considerations}
+\subsection{Practical considerations}
 
-Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. However, he only shows that this is true for the case when we consider Euclidean distance between the data. 
+Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points.
 
 Given that the insertion relies on the eigenvalues of the original MDS configuration, obtaining those eigenvalues correctly is important. If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ may not represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. 
 
@@ -329,7 +329,7 @@ $\sigma^2$ & MDS & MDS (tensor) & Soap film & Thin plate\\
 
 \section{Conclusions}
 
-Although these results are encouraging, the inability of the smooth to capture the features in the right side of the domain is disappointing. Proposed further work is to follow the lead from \cite{wood2000}, which shows that given some transform of a variable, $y$ say, such that $y_i^\prime=y_i/k$, then $f(x,y^\prime k)$ will give the same fit as $f(x,y)$ (ie. the fit will be the same under the new coordinates) but the penalty will change to:
+Although these results are encouraging, the inability of the smooth to capture the features in the right side of the domain when an isotropic smoother is disappointing. Proposed further work is to follow the lead from \cite{wood2000}, which shows that given some transform of a variable, $y$ say, such that $y_i^\prime=y_i/k$, then $f(x,y^\prime k)$ will give the same fit as $f(x,y)$ (ie. the fit will be the same under the new coordinates) but the penalty will change to:
 \begin{equation}
 \int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2k\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + k^3\Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y,
 \label{adjustedintegral}
@@ -344,9 +344,13 @@ In the case of the MDS, the integral would need to be split over a grid such tha
 \end{equation}
 where $k_j$ is the scaling in the $y$ direction and $l_j$ is the scaling in the $x$ direction for the $j^{\text{th}}$ cell. We assume here that $f(x,y)$ is ``nice''.
 
-Using this penalty may allow for the distortions in space to be taken account of and therefore get around the problem of the details being smoothed over, as seen above. It will be easiest to first build this using a tensor product of $P$-splines, since their penalty is discrete to test its utility and then move on to the thin plate spline penalty.
+Using this penalty may allow for the distortions in space to be taken account of and therefore get around the problem of the details being smoothed over, as seen above. It will be easiest to first build this using a tensor product of $P$-splines to test its utility (since their penalty is discrete) and then move on to the thin plate spline penalty.
 
-Finally, in order to make this technique competative with \texttt{soap} (assuming that the above distortion adjustment is successful) a speed-up in the computation of the within-area distances must be achieved. At the moment this is the major bottleneck in the calculation since model fitting consists only of fitting a thin plate spline. Speed-ups can be achieved not only by further optimizing and refining the algorithm above, but also by minimizing the number of calculations for within-area distance that are needed. In \cite{landmark} a method to calculate MDS coordinates using a sparse grid of landmark points is suggested; although the authors are skeptical about how this will perform with non-Euclidean distances. There is clearly some work here in finding some minimal set of landmark points for the within-area distance metric obtained from the above algorithm.
+Finally, in order to make this technique competitive with \texttt{soap} (assuming that the above distortion adjustment is successful) a speed-up in the computation of the within-area distances must be achieved. At the moment this is the major bottleneck in the calculation since model fitting consists only of fitting a thin plate spline. 
+
+Speed-ups can be achieved by minimizing the number of calculations for within-area distance that are needed. In \cite{landmark} a method to calculate MDS coordinates using a sparse grid of landmark points is suggested; although the authors are sceptical about how this will perform with non-Euclidean distances. There is clearly some work here in finding some minimal set of landmark points for the within-area distance metric obtained from the above algorithm.
+
+The calculation of within-area distances could be linked into a ``landmark''-type process by calculating the within-area distances between a set of points in a sparse grid, then saving those paths. The distances between desired points can then be found by modifying the path with the end points nearest to those of the desired points.
 
 
 \bibliographystyle{plainnat}

@@ -16,11 +16,10 @@ m<-res;n<-res
 xm <- seq(-3,3.5,length=m);yn<-seq(-3,3,length=n)
 xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 onoff<-inSide(bnd,xx,yy)
-onoff2<-inSide(bnd=list(x=-bnd$x,y=-bnd$y),-xx,-yy)
+onoff2<-inSide(list(x=-bnd$x,y=-bnd$y),-xx,-yy)
+
 gendata$x<-xx
 gendata$y<-yy
-
-# need to do this!!!
 gendata$inside<-onoff&onoff2
 
 ###################
@@ -181,11 +180,17 @@ for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
 
 # create the sample
 samp.size<-250
-samp.ind<-sample(1:length(gendata$x),samp.size)
 
-gendata.samp<- list(x=gendata$x[samp.ind],
-                    y=gendata$y[samp.ind],
-                    z=gendata$z[samp.ind])
+
+gendata.samp<- list(x=gendata$x[gendata$inside],
+                    y=gendata$y[gendata$inside],
+                    z=gendata$z[gendata$inside])
+
+samp.ind<-sample(1:length(gendata.samp$x),samp.size)
+
+gendata.samp<- list(x=gendata.samp$x[samp.ind],
+                    y=gendata.samp$y[samp.ind],
+                    z=gendata.samp$z[samp.ind])
 
 ### do the PCO and construct the data frame
 # create D
@@ -199,6 +204,23 @@ v.part.mds<-insert.mds(vgrid.set,gendata.samp,samp.mds,bnd)
 
 
 plot(x=samp.mds$points[,1],y=samp.mds$points[,2],asp=1,type="n",main="",xlab="",ylab="")
+
+#plot(gendata,asp=1,type="n",main="",xlab="",ylab="")
+#for(i in unique(hgrid.set$ind)){
+#   if(length(hgrid.set$x[hgrid.set$ind==i])==2){
+#      points(x=hgrid.set$x[hgrid.set$ind==i],
+#             y=hgrid.set$y[hgrid.set$ind==i],pch=19,cex=0.3)
+#   }else{
+#      lines(x=hgrid.set$x[hgrid.set$ind==i],
+#             y=hgrid.set$y[hgrid.set$ind==i],pch=19,cex=0.3)
+#   }
+#}
+#for(i in 1:max(vgrid.set$ind,na.rm=TRUE)){
+#      lines(x=vgrid.set$x[vgrid.set$ind==i],
+#             y=vgrid.set$y[vgrid.set$ind==i],pch=19,cex=0.3)
+#}
+
+
 
 for(i in unique(hgrid.set$ind)){
    if(length(h.part.mds[hgrid.set$ind==i,])==2){
