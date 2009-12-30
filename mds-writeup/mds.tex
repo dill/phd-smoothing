@@ -165,24 +165,19 @@ A simple example of this problem is show in \fig{tshape}. Here, a regular grid h
 % generated using figs/gridtest.R
 \end{figure}
 
+Although these cases are pathological, investigating situations where some of the other area is in the original MDS configuration still leaves wildly different results. In \fig{tshaperand} the black and green points make up the original MDS configuration; the green points are chosen at random. The red points are then inserted. As can be seen in these four realisations, the shape of the MDS space is dependent on those points used to create the initial MDS configuration.
 
-SHOW THAT THE ABOVE IS TRUE!
-
-This problem can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered.
-
-EXPLAIN WHAT ONLINE MEANS
-
-Note that we do not insert the points in an ``online'' fashion... This distortion is compounded when extra points are added to the MDS configuration in an ``online'' manner. For example, say MDS has been performed on some set of points and then mapped them into the plane. Then suppose that new points are added into this configuration using Gower's interpolation. When the first point is added, say there is some error in its projection onto the plane from a third dimension, orthogonal to the first two. The second has the same problem, but now the second's position is calculated with respect to the first's (potentially incorrect) position too. The third is then calculated using the first and second and so on. This can be observed in \fig{gowererror}, where the red points should correspond to the gaps in the grid of black points, and the whole configuration should be identical to that of \fig{wt2-grid-orig} panel 2. It is for this reason that we do not insert the points online, but rather simultaneously insert all points.
-
-% online insertion error in Gower
+% showing the the grid is necessary using the T shape (random samples
 \begin{figure}
 \centering
 % trim order l b r t
-\includegraphics[width=4in]{figs/online-gowererror.pdf} \\
-\caption{MDS configuration for the domain in \fig{wt2-grid-orig}. Black points are formed by the initial eigen-decomposition, where as the red points are positioned using Gower's interpolation online. The red points should be positioned in the ``holes'' in the black grid.}
-\label{gowererror}
+\includegraphics[width=4in]{figs/tshaperand.pdf} \\
+\caption{TEXT}
+\label{tshaperand}
+% generated using figs/gridtest.R
 \end{figure}
 
+This problem can be rectified by using an appropriately spaced grid on the domain to calculate the eigen-decomposition, thus ensuring that the whole area is covered.
 
 Following from this, it is important to make sure that the MDS space is smooth in the sense that a grid of straight lines over the domain is mapped to a series of smooth lines. Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using the method of Gower. The grid produced under the insertion can be seen in \fig{wt2-grid-full}. Taking a sample of 250 points from the 1253, an MDS configuration was also found and the same grid inserted (see \fig{wt2-grid-samp}.) From this it is clear that those points mapped into the domain are smooth but in the sample case the features in the far right of the shape (the less pronounced peninsulae) are squashed down.
 

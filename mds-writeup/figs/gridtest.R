@@ -65,20 +65,22 @@ scan()
 
 # now MDS the "tail" plus random sample, 4 times
 for(i in 1:4){
-   samp.ind<-sample(1:length(samp$x),5)
-   s.x<-c(samp$x[samp$x>0.2],samp$x[samp.ind])
-   s.y<-c(samp$y[samp$x>0.2],samp$y[samp.ind])
+   samp.ind<-sample(c(1:length(samp$x))[samp$x<0.2],5)
+   s.x<-c(samp$x[samp$x>=0.2],samp$x[samp.ind])
+   s.y<-c(samp$y[samp$x>=0.2],samp$y[samp.ind])
    D.tail<-create_distance_matrix(s.x,s.y,bnd)
    mds.tail<-cmdscale(D.tail,k=2,eig=TRUE,x.ret=TRUE)
    
-   plot(mds.tail$points,xlim=c(-0.55,0.3),asp=1,xlab="",ylab="")
    # insert the remaining points
-   ns.x<-c(samp$x[samp$x<0.2])#,samp$x[-samp.ind])
-   ns.y<-c(samp$y[samp$x<0.2])#,samp$y[-samp.ind])
+   ns.x<-c(samp$x[samp$x<0.2])
+   ns.y<-c(samp$y[samp$x<0.2])
    ins.tail<-insert.mds(list(x=ns.x,y=ns.y),
                         list(x=s.x,y=s.y),
                         mds.tail,bnd)
+   # plot
+   plot(mds.tail$points,xlim=c(-0.55,0.3),asp=1,xlab="",ylab="")
    points(ins.tail,col="red")
+   points(mds.tail$points[(length(s.x)-4):length(s.x),],col="green")
 }
 
 
