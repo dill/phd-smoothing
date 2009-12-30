@@ -1,11 +1,10 @@
 # test to see if grids are necessary
 # run from phd-smoothing/mds
 
-
 source("mds.R")
 
 # plot control
-par(mfrow=c(2,2),cex=0.3,pch=19)
+par(mfrow=c(2,2),cex=0.4,pch=19)
 
 
 # points for the polygon, sideways T shape
@@ -59,3 +58,29 @@ ins.head<-insert.mds(list(x=samp$x[samp$x>0.2],y=samp$y[samp$x>0.2]),
                      list(x=samp$x[samp$x<=0.2],y=samp$y[samp$x<=0.2]),
                      mds.head,bnd)
 points(ins.head,col="red")
+
+cat("press ctrl+c here if you want the first plot\n")
+scan()
+
+
+# now MDS the "tail" plus random sample, 4 times
+for(i in 1:4){
+   samp.ind<-sample(1:length(samp$x),5)
+   s.x<-c(samp$x[samp$x>0.2],samp$x[samp.ind])
+   s.y<-c(samp$y[samp$x>0.2],samp$y[samp.ind])
+   D.tail<-create_distance_matrix(s.x,s.y,bnd)
+   mds.tail<-cmdscale(D.tail,k=2,eig=TRUE,x.ret=TRUE)
+   
+   plot(mds.tail$points,xlim=c(-0.55,0.3),asp=1,xlab="",ylab="")
+   # insert the remaining points
+   ns.x<-c(samp$x[samp$x<0.2])#,samp$x[-samp.ind])
+   ns.y<-c(samp$y[samp$x<0.2])#,samp$y[-samp.ind])
+   ins.tail<-insert.mds(list(x=ns.x,y=ns.y),
+                        list(x=s.x,y=s.y),
+                        mds.tail,bnd)
+   points(ins.tail,col="red")
+}
+
+
+
+
