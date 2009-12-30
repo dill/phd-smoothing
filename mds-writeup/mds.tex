@@ -103,23 +103,23 @@ We first define $d_{ij}$ as the distance between the points $i$ and $j$. These f
 
 \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points given we know the $d_{ij}$s which is outlined below.
 
-First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our new configuration are entries in an $n \times n$ matrix, $\tilde{X}$. Let $S=\tilde{X}\tr{\tilde{X}}$. Then performing an eigen-decomposition such that $S=U\Lambda\tr{U}$, where $U$ is the $n \cross n$ matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues.
+First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our new configuration are entries in an $n \times n$ matrix, $\tilde{X^*}$. Let $S=\tilde{X^*} \tr{\tilde{X^*}} $. Then performing an eigen-decomposition such that $S=U\Lambda\tr{U}$, where $U$ is the $n \cross n$ matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues.
 
 Then, since $S$ is symmetric, we are interested in:
 \begin{equation}
-\tilde{X}=U\Lambda^{\frac{1}{2}}.
+\tilde{X^*}=U\Lambda^{\frac{1}{2}}.
 \end{equation}
 We can relate $D$ to $S$ by first defining:
 \begin{equation}
 H = I-\frac{1}{n}\mathbf{1}\tr{\mathbf{1}}.
 \end{equation}
-By pre- and post-multiplying any matrix by $H$ we double centre it (such that row and column means are 0.) We then obtain:
+By pre- and post-multiplying any matrix by $H$ the matrix is double centred it (such that row and column means are 0.) We then obtain:
 \begin{equation}
 S = -\frac{1}{2}HDH.
 \end{equation}
 See \cite{diaconis08} for a simple proof of this.
 
-Following these steps $\tilde{X}$ is an $n \cross n$ matrix. The aim here is two smooth in two dimensions, so, the directions with the two largest eigenvalues are chosen to represent the space. This gives the two dimensional representation of the data, taking into account the within-area distance. From here on $\tilde{X}$ refers to the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns (in eigenvalue order.)
+Following these steps $\tilde{X^*}$ is an $n \cross n$ matrix. The aim here is two smooth in two dimensions, so, the directions with the two largest eigenvalues are chosen to represent the space. This gives the two dimensional representation of the data, taking into account the within-area distance. From here on $\tilde{X}$ refers to the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns (in eigenvalue order.)
 
 So, in order to obtain a the new configuration of points using MDS (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition on the resulting matrix, $S$. 
 
@@ -129,26 +129,26 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 
 \subsection{Gower's interpolation} 
 
-It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation; for example when further data is collected, or in order to predict over points not in the sample. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years; Gower's interpolation (\cite{gower1968}) is covered here.
+It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation for example when further data is collected, or in order to predict over points not in the sample. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years; Gower's interpolation (\cite{gower1968}) is covered here.
 
-Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from $\tilde{X}$ which is the same as that of $x_{\text{new}}$ to the points in $X$. 
-
+Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from the points in $\tilde{X}$ which is the same as that of $x_{\text{new}}$ to the points in $X$. 
 
 \subsubsection{Gower's interpolation formula}
 
-We may find the new position, $\tilde{x}_{\text{new}}$, of some new datum $x_{\text{new}}$ using:
+We may find the new position, $\tilde{x}_{\text{new}}$ ($k \cross 1$), of some new datum $x_{\text{new}}$ using:
 \begin{equation}
 \tilde{x}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d},
 \label{gower}
 \end{equation}
-here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) has $i^\text{th}$ element $-(d^2_{i,n+1}-\frac{1}{n}\sum_{j=1}^n d^2_{j,n+1})$, \emph{ie.} the negative of the centred, squared, distance from each point in the original MDS configuration. Note that in Gower's paper, he defines $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(\tilde{X}\tr{\tilde{X}}))$, which is equivalent to our expression in the Euclidean distance case, but not when using within-area distances.
+here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) is the centred distance from the points in the original configuration to the new point.
 
-Gower's interpolation extends simply to the case when we insert $m$ new points by making $\mathbf{d}$ an $n \cross m$ matrix.
+In Gower's paper, he defines the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(\tilde{X^*}\tr{\tilde{X^*}}))$, with $d^2_{i,n+1}$ being the distance from the $i^\text{th}$ point to the $(n+1)^\text{th}$. The centring is given by the diagonal elements of $\tilde{X^*}\tr{\tilde{X^*}}$ \emph{ie}. the squared distances from the original points to their centroid in the new configuration. To avoid confusion (and to emphasise that we use the full $\tilde{X^*}$ matrix, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(S))$.
 
+Gower's interpolation extends simply to the case when we insert $m$ new points by making $\tilde{x}_{\text{new}}$ a $k \cross m$ matrix and $\mathbf{d}$ an $n \cross m$ matrix.
 
 \subsection{Practical considerations}
 
-Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points.
+Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. Before performing any analysis we must confirm that the method will be reliable and that the mapping that MDS produces is smooth (in terms of the spatial coordinates that it produces.)
 
 Given that the insertion relies on the eigenvalues of the original MDS configuration, obtaining those eigenvalues correctly is important. If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ may not represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. 
 

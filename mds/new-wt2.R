@@ -67,7 +67,7 @@ mymds<-function(D){
 
    X<-U[,1:2]%*%diag(sqrt(eS$values[1:2]),2)
 
-   return(list(points=X,eig=lambda))
+   return(list(points=X,eig=lambda,S=S))
 }
 
 
@@ -92,15 +92,15 @@ samp.ins<-insert.mds(gendata.samp,gendata.samp,samp.mds,bnd)
 points(samp.ins,pch=19,cex=0.3,col="red")
 
 
-points(pred.mds,pch=19,cex=0.3)
+points(pred.mds,pch=19,cex=0.3,col=rgb(0,1,0,0.5))
 
-#library(vegan)
-#
-#pp<-procrustes(samp.ins,samp.mds$points,scale=TRUE)
-#pred.pp<-pred.mds
-#pred.pp<-cbind(pred.pp[,1]-pp$translation[1,1],pred.pp[,2]-pp$translation[1,2])
-#p.fix<-pred.pp%*%pp$rotation
-#
-#cat("translation=",pp$translation[1,1],pp$translation[1,2],"\n")
+library(vegan)
+
+pp<-procrustes(samp.ins,samp.mds$points,scale=TRUE)
+pred.pp<-pred.mds
+pred.pp<-cbind(pred.pp[,1]-pp$translation[1,1],pred.pp[,2]-pp$translation[1,2])
+p.fix<-pred.pp%*%pp$rotation
+
+cat("translation=",pp$translation[1,1],pp$translation[1,2],"\n")
 #plot(p.fix,pch=19,cex=0.3,asp=1)
 #points(samp.mds$points,pch=19,cex=0.3,col="red")

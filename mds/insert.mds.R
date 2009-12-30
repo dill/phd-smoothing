@@ -27,12 +27,16 @@
    new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
                       bnd,start=length(old.points$x))
 
-   # the ith element of d is -(d_{i,n+1}^2 - (its column means)
-   d<- -(new.dist^2-colMeans(new.dist^2))
+   # the ith element of d is -(d_{i,n+1}^2 - diag(S))
 
+   # cmd.object$x is the doubly centered symmetric distance matrix
+   # from the original MDS configuration
+   S<- -1/2*cmd.object$x
+   #S<- -1/2*X%*%t(X)
+   d<- -(new.dist^2-diag(S))
+ 
    # finally construct the product
    ret<-1/2*(lambda.inverse %*% t(X) %*% d)
- 
 
 #### This code does online insertion
 # for this to work, need to modify wood.c too
