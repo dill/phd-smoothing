@@ -146,11 +146,25 @@ In Gower's paper, he defines the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2
 
 Gower's interpolation extends simply to the case when we insert $m$ new points by making $\tilde{x}_{\text{new}}$ a $k \cross m$ matrix and $\mathbf{d}$ an $n \cross m$ matrix.
 
+
 \subsection{Practical considerations}
 
-Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. Before performing any analysis we must confirm that the method will be reliable and that the mapping that MDS produces is smooth (in terms of the spatial coordinates that it produces.)
+Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. Before performing any analysis we must confirm that the method will be reliable and that the mapping that MDS produces is smooth (in terms of the spatial coordinates that it produces.) I first motivate the need for using a grid as a start point for the MDS, then show that the mapping produces smooth lines when within-area distances are used.
 
 Given that the insertion relies on the eigenvalues of the original MDS configuration, obtaining those eigenvalues correctly is important. If our sample is not representative of the whole of the domain, the eigenvalues in $\Lambda$ may not represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the sample is taken from only half of the space or, more pathologically, there were a trend in the sample locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what this criteria would be for the shortest paths used here. 
+
+A simple example of this problem is show in \fig{tshape}
+
+% showing the the grid is necessary using the T shape
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=4in]{figs/tshape.pdf} \\
+\caption{TEXT}
+\label{tshape}
+% generated using figs/gridtest.R
+\end{figure}
+
 
 SHOW THAT THE ABOVE IS TRUE!
 

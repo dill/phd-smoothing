@@ -1,4 +1,7 @@
 # test to see if grids are necessary
+# run from phd-smoothing/mds
+
+
 source("mds.R")
 
 # plot control
