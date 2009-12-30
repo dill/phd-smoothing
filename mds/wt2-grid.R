@@ -1,4 +1,5 @@
 # test of lines across the domain for wt2
+# run from phd-smoothing/mds
 source("mds.R")
 library(soap)
 

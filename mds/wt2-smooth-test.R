@@ -53,7 +53,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
  
    # perform mds on D
-   grid.mds<-cmdscale(D.grid,eig=TRUE,k=2)
+   grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
  
    # sample points insertion
    samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd)
