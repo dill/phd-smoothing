@@ -215,15 +215,6 @@ ANOTHER EXAMPLE HERE?
 % generated using wt2-grid.R
 \end{figure}
 
-% wt2 with prediction and sample inserted
-\begin{figure}
-\centering
-\includegraphics[width=4in]{figs/wt2-double-insert.pdf} \\
-\caption{Here both black and red points were inserted into an MDS configuration of a 1007 point, evenly spaced grid over the domain. Both point sets are consistent.}
-\label{wt2-double-insert}
-% generated (roughly) using wt2-smooth-test.R
-\end{figure}
-
 
 \section{Finding the within-area distances}
 
@@ -357,7 +348,7 @@ where $k_j$ is the scaling in the $y$ direction and $l_j$ is the scaling in the 
 
 Using this penalty may allow for the distortions in space to be taken account of and therefore get around the problem of the details being smoothed over, as seen above. It will be easiest to first build this using a tensor product of $P$-splines to test its utility (since their penalty is discrete) and then move on to the thin plate spline penalty.
 
-In order to make this technique competitive with \texttt{soap} (assuming that the above distortion adjustment is successful) a speed-up in the computation of the within-area distances must be achieved. At the moment this is the major bottleneck in the calculation since model fitting consists only of fitting a thin plate spline. 
+In order to make this MDS approach competitive with \texttt{soap} (assuming that the above distortion adjustment is successful) a speed-up in the computation of the within-area distances must be achieved. At the moment this is the major bottleneck in the calculation since model fitting consists only of fitting a thin plate spline. 
 
 Speed-ups can be achieved by minimizing the number of calculations for within-area distance that are needed. In \cite{landmark} a method to calculate MDS coordinates using a sparse grid of landmark points is suggested; although the authors are sceptical about how this will perform with non-Euclidean distances. There is clearly some work here in finding some minimal set of landmark points for the within-area distance metric obtained from the above algorithm.
 

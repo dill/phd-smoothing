@@ -19,7 +19,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    # map the grid xx,yy
    my.grid<-list(x=xx,y=yy)
    D.grid<-create_distance_matrix(xx,yy,bnd)
-   grid.mds<-cmdscale(D.grid,eig=TRUE,k=2)
+   grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
    # make the sample
    samp.ind<-sample(1:length(xx),samp.size)
