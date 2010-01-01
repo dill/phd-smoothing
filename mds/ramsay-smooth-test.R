@@ -12,7 +12,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    xm <- seq(-1,3.5,length=m);yn<-seq(-1,1,length=n)
    xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
    onoff<-inSide(bnd,xx,yy)
-   onoff[c(143,279)]<-FALSE ### UGLY HACK
+#   onoff[c(143,279)]<-FALSE ### UGLY HACK
    xx<-xx[onoff];yy<-yy[onoff]
 
 

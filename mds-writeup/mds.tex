@@ -350,6 +350,28 @@ Using this penalty may allow for the distortions in space to be taken account of
 
 In order to make this MDS approach competitive with \texttt{soap} (assuming that the above distortion adjustment is successful) a speed-up in the computation of the within-area distances must be achieved. At the moment this is the major bottleneck in the calculation since model fitting consists only of fitting a thin plate spline. 
 
+
+TABLE OF TIMINGS
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c || c c c}
+ & MDS & Thin plate & Soap film\\ 
+\hline
+Fit & 1.105 & 10.72  & 0.6016 \\
+Prediction & 0.684 & 8.906 & 0.1106 \\
+\end{tabular}
+\label{ramsaytime}
+\caption{}
+\end{table}
+
+
+
+
+
+
+
+
 Speed-ups can be achieved by minimizing the number of calculations for within-area distance that are needed. In \cite{landmark} a method to calculate MDS coordinates using a sparse grid of landmark points is suggested; although the authors are sceptical about how this will perform with non-Euclidean distances. There is clearly some work here in finding some minimal set of landmark points for the within-area distance metric obtained from the above algorithm.
 
 The calculation of within-area distances could be linked into a ``landmark''-type process by calculating the within-area distances between a set of points in a sparse grid, then saving those paths. The distances between desired points can then be found by modifying the path with the end points nearest to those of the desired points.
