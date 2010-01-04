@@ -5,6 +5,7 @@
 basefilename<-"ramsay-250-"
 errlevs<-c(0.1,1,10)
 
+sqrtn<-sqrt(250)
 cat(" & MDS & soap & thin plate\\\\ \n")
 
 for(errlev in errlevs){
@@ -12,13 +13,13 @@ for(errlev in errlevs){
    cat(errlev," & ")
    dat<-read.csv(paste(basefilename,errlev,".csv",sep=""))
    mses<-c(mean(dat$mds),mean(dat$soap),mean(dat$tprs))
-   ses<-c(sd(dat$mds),sd(dat$soap),sd(dat$tprs))
+   ses<-c(sd(dat$mds),sd(dat$soap),sd(dat$tprs))/sqrtn
 
 
 
-   cat(round(mses[1],4)," (",round(ses[1],4),") & ",sep="")
-   cat(round(mses[2],4)," (",round(ses[2],4),") & ",sep="")
-   cat(round(mses[3],4)," (",round(ses[3],4),")\\\\ \n",sep="")
+   cat(round(mses[1],4)," (",round(ses[1],5),") & ",sep="")
+   cat(round(mses[2],4)," (",round(ses[2],5),") & ",sep="")
+   cat(round(mses[3],4)," (",round(ses[3],5),")\\\\ \n",sep="")
 
 }
 
@@ -37,8 +38,9 @@ for(errlev in errlevs){
    # line up and cause soap to fail
 
    mses<-c(mean(dat$mds),mean(dat$mdstp),mean(dat$soap[dat$soap<10]),mean(dat$tprs))
-   ses<-c(sd(dat$mds),sd(dat$mdstp),sd(dat$soap[dat$soap<10]),sd(dat$tprs))
+   ses<-c(sd(dat$mds),sd(dat$mdstp),sd(dat$soap[dat$soap<10]),sd(dat$tprs))/sqrtn
 
+   cat(errlev," & ")
    cat(round(mses[1],4)," (",round(ses[1],4),") & ",sep="")
    cat(round(mses[2],4)," (",round(ses[2],4),") & ",sep="")
    cat(round(mses[3],4)," (",round(ses[3],4),") & ",sep="")
