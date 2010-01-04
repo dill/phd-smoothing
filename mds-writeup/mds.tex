@@ -91,7 +91,7 @@ Multidimensional scaling (MDS) or, as it is often referred to, principle coordin
 
 Multidimensional scaling offers an obvious framework for the problem of smoothing over a region with a complex boundary. We can use the within-area distances to configure the points such that the distances between the points are (approximately) preserved.
 
-The modelling strategy is to find the MDS configuration for the domain in which we are working based on the within-domain distances. From there the configuration for the observations, thus obtaining a new configuration of the data. Using this new configuration of the data, we fit the GAM. Inference can then be performed using this model. Should predictions be required then the those points at which predictions are needed should be inserted into the MDS configuration.
+The modelling strategy is to find the MDS configuration for the domain in which we are working based on the within-domain distances. From there the MDS configuration for the observations, thus obtaining a new configuration for the sample. Using this new configuration of the data, we fit the GAM. Inference can then be performed using this model. Should predictions be required then the those points at which predictions are needed should be inserted into the MDS configuration.
 
 The rest of this report is structured as follows: in section 2 an overview of MDS is given, along with technical details of how the MDS configuration is calculated; section 3 focuses on how the within-area distances are found; section 4 shows some examples of this method on simulated data. I conclude with a proposed course of action to improve the method.
 
@@ -107,12 +107,11 @@ First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our MDS
 \begin{equation}
 \tilde{X}^*=U\Lambda^{\frac{1}{2}}.
 \end{equation}
-
 We now wish to relate $D$ to $S$. First, define:
 \begin{equation}
 H = I-\frac{1}{n}\mathbf{1}\tr{\mathbf{1}},
 \end{equation}
-by pre- and post-multiplying any matrix by $H$ the matrix is double centred (such that row and column means are 0.) We then obtain:
+where $I$ is the identity matrix, as usual, and $\mathbf{1}$ is an $n \cross 1$ vector of 1s such that $\mathbf{1}\tr{\mathbf{1}}$ is an $n \cross n$ matrix of 1s. By pre- and post-multiplying any matrix by $H$ the matrix is double centred (such that row and column means are 0.) Performing this pre- and post-multiplication on $D$ we then obtain:
 \begin{equation}
 S = -\frac{1}{2}HDH.
 \end{equation}
@@ -130,7 +129,7 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 
 It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation for example when further data is collected, or in order to predict over points not in $\tilde{X}$. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years; Gower's interpolation (\cite{gower1968}) is covered here.
 
-Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from the points in $\tilde{X}$ which is the same as that of $x_{\text{new}}$ to the points in $X$. 
+Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from the points in $\tilde{X}$ which is the same as that of $x_{\text{new}}$ to the points in the non-transformed space.
 
 \subsubsection{Gower's interpolation formula}
 
@@ -141,14 +140,16 @@ We may find the new position, $\tilde{x}_{\text{new}}$ ($k \cross 1$), of some n
 \end{equation}
 Here $\Lambda$ ($k \cross k$) and $\tr{\tilde{X}}$ ($k \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) is the centred distance from the points in the original configuration to the new point. Here $k$ can be thought of as the dimension of the MDS configuration.
 
-In Gower's paper, he defines the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,n+1}$ being the distance from the $i^\text{th}$ point to the $(n+1)^\text{th}$ (ie. the new point.) The centring is given by the diagonal elements of $\tilde{X}^*\tilde{X^{* \text{T}}}$ \emph{ie}. the squared distances from the original points to their centroid in the new configuration. To avoid confusion (and to emphasise that we use the full $\tilde{X}^*$ matrix, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(S)_{ii})$.
+In Gower's paper, he defines the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,n+1}$ being the distance from the $i^\text{th}$ point to the $(n+1)^\text{th}$ (ie. the new point.) The centring is given by the diagonal elements of $\tilde{X}^*\tilde{X^{* \text{T}}}$ \emph{ie}. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{X}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(S)_{ii})$.
 
-Gower's interpolation extends simply to the case when we insert $m$ new points by making $\tilde{x}_{\text{new}}$ a $k \cross m$ matrix and $\mathbf{d}$ an $n \cross m$ matrix.
+Gower's interpolation extends simply to the case when we insert $m$ new points by thinking of $\tilde{x}_{\text{new}}$ as $k \cross m$ matrix and $\mathbf{d}$ an $n \cross m$ matrix.
 
 
 \subsection{Practical considerations}
 
-Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points when the Euclidean metric is used to calculate the distances between the points. Before performing any analysis we must test that the method will be reliable and that the mapping that MDS produces is smooth (in terms of the spatial coordinates that it produces.) I first motivate the need for using a grid as a start point for the MDS configuration, and then show that the mapping produces smooth lines when within-area distances are used.
+Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points when the Euclidean metric is used to calculate the distances between the points. Extensive testing on a number of different domains has shown this to be true.
+
+Before performing any analysis we must test that the method will be reliable and that the mapping that MDS produces is smooth (in terms of the spatial coordinates that it produces.) I first motivate the need for using a grid as a start point for the MDS configuration, and then show that the mapping produces smooth lines when within-area distances are used.
 
 \subsubsection{Using grids as a starting point}
 
@@ -156,7 +157,7 @@ Given that both the finding of the MDS configuration of the points and Gower's i
 
 When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what a similar criteria would be for the shortest paths used here. 
 
-A simple example of this problem is show in \fig{tshape}. Here, a regular grid has been generated inside a ``T'' shape (top left panel.) The point configuration found by using the full set of points is given in the top right panel. In the pathological case when either only the ``head'' or ``tail'' of the T are sampled and used to generate the MDS and the other half inserted (bottom left for head (red) inserted from tail (black), bottom right of tail (red) inserted from head (black)), one can see that the point configuration generated begins to not resemble the the full MDS configuration. Hence, although there are the usual problems with predicting outside of one's dataset, the added problem of the instability of MDS insertion can only confound results further.
+A simple example of this problem is show in \fig{tshape}. Here, a regular grid has been generated inside a ``T'' shape (top left panel.) The point configuration found by using the full set of points is given in the top right panel. In the pathological case when either only the ``head'' or ``tail'' of the T are sampled and used to generate the MDS and the other half inserted (bottom left for head (red) inserted from tail (black), bottom right of tail (red) inserted from head (black)), one can see that those points inserted into the configuration become warped. Hence, although there are the usual problems with predicting outside of one's dataset, the added problem of the instability of MDS insertion can only confound results further. (Again, this is mentioned at the end of Gower's paper.)
 
 % showing the the grid is necessary using the T shape
 \begin{figure}
@@ -184,7 +185,7 @@ This problem can be rectified by using an appropriately spaced grid on the domai
 
 \subsubsection{Smoothness of mapping}
 
-Following from this, it is important to make sure that the MDS space is smooth in the sense that a grid of smooth lines over the domain is mapped to a series of smooth lines. Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using the method of Gower. The grid produced under the insertion can be seen in \fig{wt2-grid-full}. Taking a sample of 250 points from the 1253, an MDS configuration was also found and the same grid inserted (see \fig{wt2-grid-samp}.) From this it is clear that those points mapped into the domain are smooth but in the sample case the features in the far right of the shape (the less pronounced peninsulae) are squashed down.
+Following from this, it is important to make sure that the MDS space is smooth in the sense that a grid of smooth lines over the domain is mapped to a series of smooth lines without discontinuities or sudden changes in direction. Taking the evenly spaced grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using the method of Gower. The grid produced under the insertion can be seen in \fig{wt2-grid-full}. Taking a sample of 250 points from the 1253, an MDS configuration was also found and the same grid inserted (see \fig{wt2-grid-samp}.) From this it is clear that those points mapped into the domain are smooth but in the sample case the features in the far right of the shape (the less pronounced peninsulae) are squashed down.
 
 % grid to map
 \begin{figure}
@@ -225,7 +226,7 @@ In order to perform multidimensional scaling the matrix of distances must be fir
 
 Thinking of the boundary of the domain as a polygon, the within-area distances are found by tracing the edges of this polygon from the first point to the second. The path between the points is then modified by deleting and replacing segments of it. Put more mathematically:
 
-Given that there is no direct path ($\mathcal{P}$) within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows:
+Given that there is no direct path within the domain ($\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path $\mathcal{P}$:
 
 \begin{enumerate}
 \item Draw a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)). Start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$. Then find the distance between these two intersection points in both directions, along the boundary (\fig{wdia}, ($ii$).) Choose the shorter of these, add the paths between $p_1$, $p_2$ and the boundary and this is the starting path, $\mathcal{P}$ (\fig{wdia}, ($iii$).) 
@@ -253,14 +254,13 @@ Taking a cue from \cite{soap} simulations were conducted on the so-called modifi
 \begin{equation}
 \text{MSE}(\hat{f}) = \mathbb{E}_P [\hat{f}(\mathbf{x,y}) - \mathbf{z}],
 \end{equation}
-
-the mean difference between the model ($\hat{f}$) and the true value of the function ($\mathbf{z}$) over the prediction data ($P$) (in Hastie \emph{et al}'s terminology, the training set.) This gives the MSE per model, since here many realisations are run, the mean of these over all simulations is taken and the standard error is calculated.
+the mean difference between the model ($\hat{f}$) and the true value of the function ($\mathbf{z}$) over the prediction data ($P$.) This gives the MSE per model, since here many realisations are run, the mean of these over all simulations is taken and the standard error is calculated.
 
 \subsection{Modified horseshoe}
 
 The domain in \fig{leakage} is known as the modified Ramsay horseshoe. It is based on the horseshoe-like shape used in \cite{ramsay} and clearly illustrates the problem of leakage. It differs from the figure in \cite{ramsay} in that a slight curvature in the function along the major axis has been added such that the gradient is not perpendicular to the boundary (this was added in \cite{soap} to show problems with the boundary condition of Ramsay's FELSPLINE).
 
-For the modified horseshoe, 100 replications of samples of 250 points with normal errors (at 3 levels) were run. From these samples, three models were fit to the data and predictions over 718 points (including the sample locations) and the mean squared error was calculated between the model prediction and the true function value for the horseshoe. The three models fit were as follows using the \textsf{R} packages \texttt{mgcv} and \texttt{soap}:
+For the modified horseshoe, 100 replications of samples of 250 points with normal errors (at 3 levels: 0.1, 1 and 10) were run. From these samples, three models were fit to the data and predictions over 718 points (including the sample locations) and the mean squared error was calculated between the model prediction and the true function value for the horseshoe. The three models fit were as follows using the \textsf{R} packages \texttt{mgcv} and \texttt{soap}:
 
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100.
@@ -283,7 +283,7 @@ $\sigma^2$ & MDS & Soap film & Thin plate\\
 \label{ramsayresultstable}
 \end{table}
 
-A typical realisation from the models can be seen from \fig{ramsay-fit-1}, where $\sigma^2=1$ with a sample size of 250. Both the soap film smoother and MDS have respected the boundary and, even with relatively high noise and low sample size, they reproduce the true function fairly well. The thin plate regression spline, on the other hand, show leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and MDS approach perform significantly better in terms of mean squared error. It also seems that the MDS performs better than the soap film when there is a high degree of noise in the data.
+A typical realisation from the models can be seen from \fig{ramsay-fit-1}, where $\sigma^2=1$ with a sample size of 250. Both the soap film smoother and MDS have respected the boundary and, even with relatively high noise and low sample size, they reproduce the true function fairly well. The thin plate regression spline, on the other hand, shows leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and MDS perform significantly better in terms of mean squared error. It also seems that the MDS performs better than the soap film when there is a high degree of noise in the data.
 
 
 % Ramsay fit with error=1 
@@ -299,7 +299,7 @@ A typical realisation from the models can be seen from \fig{ramsay-fit-1}, where
 
 The Ramsay horseshoe is, in a sense, easy domain to smooth over since it is obvious what the transformation should be doing. For this reason a more complex and more realistic domain would provide more insights into the efficacy of the method. The domain shown in \fig{wt2-truth} is an approximation to a coastline with a strong trend along both peninsulae (in a manner similar to that of the horseshoe) but with the added complication of a further peak in the lower right corner.
 
-Again, 200 realisations from the domain shown in \fig{wt2-truth} were used with Normal errors at 3 levels of $\sigma^2$ (0.05, 0.5 and 5.) Mean squared error over 1253 prediction points was calculated from fitting models with 250 samples. The models fit were:
+Again, 200 realisations from the domain shown in \fig{wt2-truth} were used with Normal errors at 3 levels of $\sigma^2$ (0.05, 0.5 and 5.) Mean squared error over 1253 prediction points (including those points in the sample) was calculated from fitting models with 250 samples. The models fit were:
 
 % wt2 truth 
 \begin{figure}
@@ -313,11 +313,11 @@ Again, 200 realisations from the domain shown in \fig{wt2-truth} were used with 
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100. 
 \item \emph{Soap film smoother}: cyclic spline on boundary of basis size 60, 109 internal knots evenly spaced over the domain on a grid.
-\item \emph{MDS}: after transform a thin plate spline with basis size 100 was fit. 
+\item \emph{MDS}: after transform a bivariate thin plate spline with basis size 100 was fit. 
 \item \emph{MDS with tensor product}: tensor product of two thin plate splines, each of basis dimension 12.
 \end{enumerate} 
 
-Looking at \fig{wt2-fit-0.5}, we see that soap (bottom right panel) does very well, as can be expected, and the thin plate spline (\fig{wt2-fit-0.5}, bottom left panel) fit shows leakage (again, as can be expected.) 
+Looking at a typical realisation in \fig{wt2-fit-0.5}, we see that soap (bottom right panel) does very well, as can be expected, and the thin plate spline (\fig{wt2-fit-0.5}, bottom left panel) fit shows leakage (again, as can be expected.) 
 
 The final model, above, was chosen after it appeared that the MDS with a bivariate thin plate spline did not adequately model the peak in the right corner of the domain (\fig{wt2-fit-0.5}, top left panel.) After using a tensor product of thin plate splines a better fit to the right peak was found (\fig{wt2-fit-0.5}, top right panel), although this is not reflected particularly well in terms of mean squared error (see table \ref{wt2resultstable}.) The visual improvement in fit can be explained by thin plate splines in two dimensions being an isotropic smooth and since space has not been transformed in a uniform way in both dimensions.
 
@@ -378,7 +378,7 @@ Fit & 3.39225 & 10.87688 & 0.61492\\
 Prediction & 4.80357 & 8.87535 & 0.10845\\
 \end{tabular}
 \label{ramsaytime}
-\caption{Ramsay}
+\caption{Average time (in seconds) to fit a realisation of the modified Ramsay horseshoe for the three models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function.}
 \end{table}
 
 
@@ -391,11 +391,8 @@ Fit & 84.85242 & 85.35168 & 36.24865 & 0.51721\\
 Prediction & 155.4004 & 155.2419 & 44.22065 & 0.20994 \\
 \end{tabular}
 \label{wt2time}
-\caption{wt2}
+\caption{Average time (in seconds) to fit a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function.}
 \end{table}
-
-
-
 
 
 Speed-ups can be achieved by minimizing the number of calculations for within-area distance that are needed. In \cite{landmark} a method to calculate MDS coordinates using a sparse grid of landmark points is suggested; although the authors are sceptical about how this will perform with non-Euclidean distances. There is clearly some work here in finding some minimal set of landmark points for the within-area distance metric obtained from the above algorithm.
