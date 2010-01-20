@@ -1,6 +1,7 @@
 # do large scale simulations for wt2
 # Copyright David Lawrence Miller 2009.
 
+# run from phd-smoothing/mds
 
 source("mds.R")
 source("ramsay-smooth-test.R")
@@ -27,7 +28,7 @@ onoffg<-inSide(bnd,xg,yg)
 xg<-xg[onoffg];yg<-yg[onoffg]
 my.grid<-list(x=xg,y=yg)
 D.grid<-create_distance_matrix(xg,yg,bnd)
-grid.mds<-cmdscale(D.grid,eig=TRUE,k=2)
+grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
 
 
@@ -36,9 +37,10 @@ grid.mds<-cmdscale(D.grid,eig=TRUE,k=2)
 
 sim.size<-200
 samp.size<-250
-noise.level<-0.1
+noise.level<-10
 
 res.mse<-list(mds=rep(0,sim.size), soap=rep(0,sim.size),tprs=rep(0,sim.size))
+res.edf<-list(mds=rep(0,sim.size), soap=rep(0,sim.size),tprs=rep(0,sim.size))
 
 for(i in 1:sim.size){
    res<-ramsay_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
@@ -46,6 +48,10 @@ for(i in 1:sim.size){
    res.mse$mds[i]<- res$mds
    res.mse$soap[i]<-res$soap
    res.mse$tprs[i]<-res$tprs
+   res.edf$mds[i]<- res$mds.edf
+   res.edf$soap[i]<-res$soap.edf
+   res.edf$tprs[i]<-res$tprs.edf
 }
-write.csv(res.mse,file=paste("ramsay-",samp.size,"-",noise.level,".csv",sep=""))
+write.csv(res.mse,file=paste("ramsay-mse-",samp.size,"-",noise.level,".csv",sep=""))
+write.csv(res.edf,file=paste("ramsay-edf-",samp.size,"-",noise.level,".csv",sep=""))
 

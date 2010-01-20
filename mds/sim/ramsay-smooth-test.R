@@ -59,10 +59,13 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    b.soap<-gam(z~s(x,y,k=39,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
    fv.soap<-predict(b.soap,newdata=pred.data,block.size=-1)
    
-   ### calculate MSEs
-   mses<-list(mds=mean((fv.mapped-pred.data$z)^2,na.rm=T),
+   ### calculate MSEs and EDFs
+   res<-list(mds=mean((fv.mapped-pred.data$z)^2,na.rm=T),
               tprs=mean((fv.tprs-pred.data$z)^2,na.rm=T),
-              soap=mean((fv.soap-pred.data$z)^2,na.rm=T))
+              soap=mean((fv.soap-pred.data$z)^2,na.rm=T),
+              mds.edf=sum(b.mapped$edf),
+              tprs.edf=sum(b.tprs$edf),
+              soap.edf=sum(b.soap$edf))
 
-   return(mses)
+   return(res)
 }
