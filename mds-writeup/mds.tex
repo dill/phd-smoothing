@@ -121,7 +121,7 @@ Following these steps $\tilde{X}^*$ is an $n \cross n$ matrix. The aim here is t
 
 So, in order to obtain a the MDS configuration of points (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition on the resulting matrix, $S$. 
 
-Note that an additive constant can be computed and added to the non-diagonal entries of $D$ to ensure that the eigenvalues of $S$ are non-negative.
+Note that an additive constant can be computed and added to the non-diagonal entries of $D$ to ensure that the eigenvalues of $S$ are non-negative. However, this does not occur in any of the examples shown here.
 
 Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function. 
 
@@ -153,7 +153,7 @@ Before performing any analysis we must test that the method will be reliable and
 
 \subsubsection{Using grids as a starting point}
 
-Given that both the finding of the MDS configuration of the points and Gower's insertion rely on the eigenvalues of the original MDS configuration, correctly obtaining those eigenvalues is important. If those points used to create the initial MDS configuration are not representative of the whole domain, the eigenvalues in $\Lambda$ may not represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the initial MDS configuration is created using only points from one half of the domain or, more pathologically, there were some trend in the locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. Indeed, Gower points this out at the end of his 1968 paper.
+Given that both the finding of the MDS configuration of the points and Gower's insertion rely on the eigenvalues of the original MDS configuration, correctly obtaining those eigenvalues is important. If those points used to create the initial MDS configuration are not representative of the whole domain, the eigenvalues and eigenvectors may fail to represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the initial MDS configuration is created using only points from one half of the domain or, more pathologically, there were some trend in the locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. Indeed, Gower points this out at the end of his 1968 paper.
 
 When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what a similar criteria would be for the shortest paths used here. 
 
