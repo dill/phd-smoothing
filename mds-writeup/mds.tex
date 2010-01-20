@@ -311,19 +311,19 @@ Note that due to time and computational restrictions, the boundary was reduced f
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{c || c c c}
-$\sigma$ & MDS & Soap film & Thin plate\\ 
+\begin{tabular}{c || c c c | c c c}
+ & & MSE & &  & EDF & \\ 
+$\sigma$ & MDS & soap & thin plate & MDS & soap & thin plate\\ 
 \hline
-0.1  & 0.0032 (3$\cross10^{-5}$) & 0.0022 (3$\cross10^{-5}$) & 0.0402 (0.0008)\\ 
-1  & 0.0436 (0.0015) & 0.0482 (0.0014) & 0.2306 (0.0024)\\ 
-10  & 2.0652 (0.1215) & 3.0702 (0.2382) & 3.3713 (0.1133)\\ 
+0.1  & 0.0032 (3$\cross10^{-5}$) & 0.0022 (3$\cross10^{-5}$) & 0.0402 (0.0008) & 47.613 (0.3497) & 39.164 (0.26) & 92.5996 (0.1020)\\ 
+1  & 0.0436 (0.0015) & 0.0482 (0.0014) & 0.2306 (0.0024) & 8.3828 (0.3452) & 11.868 (0.4010) & 46.607 (0.4238)\\ 
+10  & 2.0652 (0.1215) & 3.0702 (0.2382) & 3.3713 (0.1133) & 5.0577 (0.3324) & 5.5863 (0.2876) & 5.9786 (0.2511)\\ 
 \end{tabular}
-\caption{Mean MSE for the three models fit to the modified Ramsay horseshoe function with standard errors (in brackets) over 200 realisations.}
+\caption{Mean MSE and estimated degrees of freedom (EDF) for the three models fit to the modified Ramsay horseshoe function with standard errors (in brackets) over 200 realisations.}
 \label{ramsayresultstable}
 \end{table}
 
 A typical realisation from the models can be seen from \fig{ramsay-fit-1}, where $\sigma=1$ with a sample size of 250. Both the soap film smoother and MDS have respected the boundary and, even with relatively high noise and low sample size, they reproduce the true function fairly well. The thin plate regression spline, on the other hand, shows leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and MDS perform significantly better in terms of mean squared error. It also seems that the MDS performs better than the soap film when there is a high degree of noise in the data.
-
 
 % Ramsay fit with error=1 
 \begin{figure}
