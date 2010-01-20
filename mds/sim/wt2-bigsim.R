@@ -2,8 +2,8 @@
 # Copyright David Lawrence Miller 2009.
 
 source("mds.R")
-#source("wt2-smooth-test.R")
-source("wt2-soapfind.R")
+source("wt2-smooth-test.R")
+#source("wt2-soapfind.R")
 
 ###############################
 # initial setup
@@ -43,7 +43,7 @@ my.grid<-wt2_create_grid()
 D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
 
 # perform mds on D
-grid.mds<-cmdscale(D.grid,eig=TRUE,k=2)
+grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
 
 ### setup the soap knots
@@ -68,11 +68,14 @@ predd<-gendata.ind$z[ind]
 
 #################################
 
-sim.size<-200
+sim.size<-1
 samp.size<-250
 noise.level<-0.5
 
 res.mse<-list(mds=rep(0,sim.size), mdstp=rep(0,sim.size), 
+              soap=rep(0,sim.size),tprs=rep(0,sim.size))
+
+res.edf<-list(mds=rep(0,sim.size), mdstp=rep(0,sim.size), 
               soap=rep(0,sim.size),tprs=rep(0,sim.size))
 
 for(i in 1:sim.size){
@@ -82,7 +85,13 @@ for(i in 1:sim.size){
    res.mse$mdstp[i]<- res$mdstp
    res.mse$soap[i]<-res$soap
    res.mse$tprs[i]<-res$tprs
+   res.edf$mds[i]<- res$mds.edf
+   res.edf$mdstp[i]<- res$mdstp.edf
+   res.edf$soap[i]<-res$soap.edf
+   res.edf$tprs[i]<-res$tprs.edf
+
 }
-#write.csv(res.mse,file=paste("wt2-",samp.size,"-",noise.level,".csv",sep=""))
+#write.csv(res.mse,file=paste("wt2-mse-",samp.size,"-",noise.level,".csv",sep=""))
+#write.csv(res.edf,file=paste("wt2-edf-",samp.size,"-",noise.level,".csv",sep=""))
 
 

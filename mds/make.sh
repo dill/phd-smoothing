@@ -18,5 +18,5 @@
 #gcc -lm -g ll-test.c inout.c 
 
 # shared object file
-gcc  -Wall -pedantic -lm -g -std=gnu99 -shared inout.c utils.c wood.c -o wood.so -L/usr/lib/R/lib  -fPIC #-lR
+gcc  -Wall -pedantic -lm -g -std=gnu99 -shared inout.c utils.c wood.c -o wood.so -L/usr/lib/R/lib  -fPIC -lR
 #rm *.o

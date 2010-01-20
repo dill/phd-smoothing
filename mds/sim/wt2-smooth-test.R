@@ -76,10 +76,14 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    fv.soap <- predict(b.soap,newdata=npred.data)
  
    ### calculate MSEs
-   mses<-list(mds=mean((fv-predd)^2,na.rm=T),
-              mdstp=mean((fv.tp-predd)^2,na.rm=T),
-              tprs=mean((fv.tprs-predd)^2,na.rm=T),
-              soap=mean((fv.soap-predd)^2,na.rm=T))
+   res<-list(mds=mean((fv-predd)^2,na.rm=T),
+             mdstp=mean((fv.tp-predd)^2,na.rm=T),
+             tprs=mean((fv.tprs-predd)^2,na.rm=T),
+             soap=mean((fv.soap-predd)^2,na.rm=T),
+             mds.edf=sum(b.mapped$edf),
+             mdstp.edf=sum(b.mapped.tp$edf),
+             tprs.edf=sum(b.tprs$edf),
+             soap.edf=sum(b.soap$edf))
  
-   return(mses)
+   return(res)
 }
