@@ -69,13 +69,11 @@
 
 \subsection{Motivation}
 
-Splines are a popular way of performing spatial smoothing in two dimensions. In this context, they are used to fit smooth functions of location over a geographical region. A typical application of this is in ecological modelling; particularly when the spatial distribution of a species is sought. In this case the locations of observations of species in question are recorded and fed into the model which can then be used to perform inference on the population, whether that be an abundance estimate, density map or a more sophisticated inferential goal.
+Splines are a popular way of performing spatial smoothing in two dimensions. In this context, they are used to fit smooth functions of location over a geographical region. A typical application of this is in ecological modelling; particularly when the spatial distribution of a species is sought. In this case the locations of where the species in question were observed are recorded and fed into the model which can then be used to perform inference on the population, whether that be an abundance estimate, density map or a more sophisticated inferential goal.
 
-When the geographical region has a complex boundary, features from one part of the domain can unduely influence other parts. This phenomenon is known as leakage; a typical example can be seen in \fig{leakage}. Leakage is problematic since it causes the fitted surface to be mis-estimated. This can then lead to incorrect inference (eg. incorrect abundance estimates), which is clearly not desirable. This can be seen in \fig{leakage} where the high values in the upper part of the domain leak across the gap to the lower values below and vice versa.
+When the geographical region has a complex boundary, features from one part of the domain can unduly influence other parts. Typically a ``complex boundary'' consists of having some peninsula-like feature(s) in the domain with notably different values on either side of the feature; there must also be some scientific motivation as to why those parts of the domain should not affect each other. Features such as peninsulae give rise to a phenomenon known as leakage; a typical example can be seen in \fig{leakage}. Leakage is problematic since it causes the fitted surface to be mis-estimated; this can then lead to incorrect inference (eg. incorrect abundance estimates), which is clearly not desirable. This can be seen in \fig{leakage} where the high values in the upper part of the domain leak across the gap to the lower values below and vice versa.
 
-The cause of leakage can be thought of in two ways: either the smooth does not respect the boundary of the domain, or the smooth does not take into account the internal geometry of the domain; in particular with regard to the distance between points in the domain. Previous work in this area has been to combat leakage along these two lines. Work of \cite{ramsay} and \cite{soap} both use a PDE boundary condition approach to try to prevent leakage where as \cite{wangranalli} attempt to approximate the within-area distances. In this report I will be adopting the the latter approach.
-
-Typically a ``complex boundary'' consists of having some peninsula-like feature in the domain with notably different values on either side of the feature. There must also be some reasoning behind why a link between those features cannot be drawn and hence that modelling such a feature explicitly makes sense.
+The cause of leakage can be thought of in two ways: either the smooth does not respect the boundary of the domain, or the smooth does not take into account the internal geometry of the domain; in particular with regard to the distance between points in the domain. Previous work in this area has been to combat leakage along these two lines. Work of \cite{ramsay} and \cite{soap} both use a PDE boundary condition approach to try to prevent leakage, where as \cite{wangranalli} attempt to approximate the within-area distances. In this report I will be adopting the the latter approach.
 
 % leakage example 
 \begin{figure}
@@ -89,27 +87,17 @@ Typically a ``complex boundary'' consists of having some peninsula-like feature 
 
 \subsection{Proposition}
 
-Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis. The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example the Euclidean distance between locations or could be distance that occurs in the data naturally for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225.) 
+Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}.) The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example the Euclidean distance between locations or could be distance that occurs in the data naturally, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225.) 
 
-MDS takes this matrix of distances and projects the data in such a way that Euclidean inter-point distances in the projection are approximately the same as the distances in the matrix (\cite{chatfieldcollins}, p. 187.) If the matrix of distances is of rank $m$ then a projection in $m-1$ or less can be output, although a projection into 2 dimensions is a typical choice.
-
-For this reason one can also think of MDS as a dimension reduction technique, finding a projection of a data cloud into lower dimensional space, while still retaining information about the distances between the points.
+MDS takes this matrix of distances and projects the data in such a way that Euclidean inter-point distances in the projection are approximately the same as the distances in the matrix (\cite{chatfieldcollins}, p. 187.) If the matrix of distances is of rank $m$ then a projection in $m-1$ or less can be output, although a projection into 2 dimensions is a typical choice. For this reason one can also think of MDS as a dimension reduction technique, finding a projection of a data cloud into lower dimensional space, while still retaining information about the distances between the points.
 
 When MDS is performed on some categorised set of dissimilarities (as is often the case in social science and psychology) it is referred to as non-metric MDS, where as on a continuous scale it is known as metric MDS, though they have different names, the calculations are identical. Discussion here will focus on metric MDS.
 
-%It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}.)
-
-
-
-
 Multidimensional scaling offers a framework for the problem of smoothing over a region with a complex boundary. Given the set of distances between the points in the domain, we can project those points into a configuration such that the distances between those points are approximately preserved. Now, if the Euclidean metric were to be used to calculate the distances between the points then the result from the projection would be identical to the starting point configuration. However, if it were possible to use a metric that took into account the distance within the boundary (a within-area distance) then the resulting configuration of points would (approximately) respect the boundary of the domain.
 
-WHY WITHIN AREA DISTANCES MAKE SENSE
+This approach can be justified in the following way. In many applications within-area distances is meaningful, given (as stated above) that there is some reasoning behind why certain areas of the domain should not affect one another. When within-area distances are meaningful, it makes sense to work with the structure of the domain rather than the somewhat arbitrary choice of Euclidean geometry. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
 
-
-The proposed procedure is as follows:
-
-Given a sample $\{x_i, y_i, z_i : i=1\dots n\}$: the set of points in the domain which you want to smooth, $(x_i, y_i)$ is the location of the $i^\text{th}$ point with response $z_i$. Here it is assumed that finding an MDS configuration of a set of points includes calculating the within-area distances between the points and then the distance matrix, as well as actually performing the MDS calculation.
+The proposed procedure is as follows: Given a sample $\{x_i, y_i, z_i : i=1\dots n\}$: the set of points in the domain over which smoothing is to be performed, $(x_i, y_i)$ is the location of the $i^\text{th}$ point with response $z_i$. Here it is assumed that finding an MDS configuration of a set of points includes calculating the within-area distances between the points and then the distance matrix, as well as actually performing the MDS calculation.
 
 \begin{enumerate}
 \item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to define the configuration, they are discarded afterward. Representative points could be a grid over the domain or just $\{x_i, y_i : i=1\dots n\}$, more detail and justification is provided in section BLAH, below.
@@ -132,7 +120,11 @@ The basic concept behind MDS is to take the data, calculate their inter-point di
 
 We first define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a (symmetric) matrix, $D$, with $ij^{\text{th}}$ element $d^2_{ij}$. In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. Finding $d_{ij}$ is discussed in the next section, for the moment let us assume that $D$ is known and $d_{ij}$ gives the shortest within-domain distance between points $i$ and $j$. \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points, which is outlined below.
 
-First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our MDS configuration are entries in an $n \times n$ matrix, $\tilde{X}^*$. Let $S=\tilde{X}^{*} \tilde{X}^{*\text{T}} $. Then performing an eigen-decomposition such that $S=U\Lambda\tr{U}$, where $U$ is the $n \cross n$ matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues. We can then obtain $\tilde{X}^*$ in the usual way:
+First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our MDS configuration are entries in an $n \times n$ matrix, $\tilde{X}^*$. Now let $S=\tilde{X}^{*} \tilde{X}^{*\text{T}} $, such that $S$ is a matrix of scalar products of the point vectors, \emph{ie.} the $(r,s)^\text{th}$ element of $S$ is:
+\begin{equation}
+[S]_{rs} = \sum_{t=1}^n x_{rt}x_{st},
+\end{equation}
+if $S$ is an $(n\cross n)$ matrix. Performing an eigen-decomposition such that $S=U\Lambda\tr{U}$, where $U$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues, we obtain $\tilde{X}^*$ in the usual way:
 \begin{equation}
 \tilde{X}^*=U\Lambda^{\frac{1}{2}}.
 \end{equation}
@@ -146,7 +138,7 @@ S = -\frac{1}{2}HDH.
 \end{equation}
 See \cite{diaconis08} for a simple proof of this.
 
-Following these steps $\tilde{X}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions (and in general we would preform MDS to reduce dimensionality) so, the directions with the two largest eigenvalues are chosen to represent the space since they contain the wto largest sources in variation in distance. This gives the two dimensional representation of the data, taking into account the within-area distance. So, defining $\tilde{X}$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a lower dimensional representation has been obtained. More generally, we can reduce the $\tilde{X}^*$ to an $n \cross k$ matrix, where $k$ is the number of dimensions for the MDS representation of the data.
+Following these steps $\tilde{X}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions (and in general we would preform MDS and want to see a reduction in dimensionality) so, the directions with the two largest eigenvalues are chosen to represent the space since they contain the two largest sources in variation in distance (since they are the two largest contributions to $S$.) This gives the two dimensional representation of the data, taking into account the within-area distance. So, defining $\tilde{X}$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a lower dimensional representation has been obtained. More generally, we can reduce the $\tilde{X}^*$ to an $n \cross k$ matrix, where $k$ is the number of dimensions for the MDS representation of the data.
 
 So, in order to obtain a the MDS configuration of points (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition on the resulting matrix, $S$. 
 
