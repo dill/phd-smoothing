@@ -100,9 +100,9 @@ This approach can be justified in the following way. In many applications within
 The proposed procedure is as follows: Given a sample $\{x_i, y_i, z_i : i=1\dots n\}$: the set of points in the domain over which smoothing is to be performed, $(x_i, y_i)$ is the location of the $i^\text{th}$ point with response $z_i$. Here it is assumed that finding an MDS configuration of a set of points includes calculating the within-area distances between the points and then the distance matrix, as well as actually performing the MDS calculation.
 
 \begin{enumerate}
-\item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to define the configuration, they are discarded afterward. Representative points could be a grid over the domain or just $\{x_i, y_i : i=1\dots n\}$, more detail and justification is provided in section BLAH, below.
+\item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to define the configuration, they are discarded afterward. Representative points could be a grid over the domain or just $\{x_i, y_i : i=1\dots n\}$, more detail and justification is provided in section \ref{grids}, below.
 
-\item Using the MDS configuration obtained above along with Gower's interpolation (see section BLAH) obtain the location of the sample in the MDS configuration: $\{\tilde{x}_i, \tilde{y}_i, z_i : i=1\dots n\}$.
+\item Using the MDS configuration obtained above along with Gower's interpolation (see section \ref{gowers}) obtain the location of the sample in the MDS configuration: $\{\tilde{x}_i, \tilde{y}_i, z_i : i=1\dots n\}$.
 
 \item Smooth $\{\tilde{x}_i, \tilde{y}_i, z_i : i=1\dots n\}$ using a thin plate regression spline.
 
@@ -118,16 +118,14 @@ The basic concept behind MDS is to take the data, calculate their inter-point di
 
 \subsection{Finding the new point configuration}
 
-We first define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a (symmetric) matrix, $D$, with $ij^{\text{th}}$ element $d^2_{ij}$. In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. Finding $d_{ij}$ is discussed in the next section, for the moment let us assume that $D$ is known and $d_{ij}$ gives the shortest within-domain distance between points $i$ and $j$. \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35}) for finding the new locations of points, which is outlined below.
+We first define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a (symmetric) matrix, $D$, with $ij^{\text{th}}$ element $d^2_{ij}$. In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. Finding $d_{ij}$ is discussed in the next section, for the moment let us assume that $D$ is known and $d_{ij}$ gives the shortest within-domain distance between points $i$ and $j$. \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \cite{principlesofMA}, pp. 104-108 and \cite{chatfieldcollins}, pp. 189-200.
 
-First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our MDS configuration are entries in an $n \times n$ matrix, $\tilde{X}^*$. Now let $S=\tilde{X}^{*} \tilde{X}^{*\text{T}} $, such that $S$ is a matrix of scalar products of the point vectors, \emph{ie.} the $(r,s)^\text{th}$ element of $S$ is:
+First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our MDS configuration are entries in an $n \times n$ matrix, $\tilde{X}^*$. Now let $S=\tilde{X}^{*} \tilde{X}^{*\text{T}} $, so $S$ is a matrix of scalar products of the point vectors, \emph{ie.} the $(q,r)^\text{th}$ element of $S$ is:
 \begin{equation}
-[S]_{rs} = \sum_{t=1}^n x_{rt}x_{st},
+s_{qr} = \sum_{t=1}^n x_{rt}x_{qt},
 \end{equation}
-if $S$ is an $(n\cross n)$ matrix. Performing an eigen-decomposition such that $S=U\Lambda\tr{U}$, where $U$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues, we obtain $\tilde{X}^*$ in the usual way:
-\begin{equation}
-\tilde{X}^*=U\Lambda^{\frac{1}{2}}.
-\end{equation}
+if $S$ is an $(n\cross n)$ matrix. 
+
 We now wish to relate $D$ to $S$. First, define:
 \begin{equation}
 H = I-\frac{1}{n}\mathbf{1}\tr{\mathbf{1}},
@@ -135,8 +133,20 @@ H = I-\frac{1}{n}\mathbf{1}\tr{\mathbf{1}},
 where $I$ is the identity matrix, as usual, and $\mathbf{1}$ is an $n \cross 1$ vector of 1s such that $\mathbf{1}\tr{\mathbf{1}}$ is an $n \cross n$ matrix of 1s. By pre- and post-multiplying any matrix by $H$ the matrix is double centred (such that row and column means are 0.) Performing this pre- and post-multiplication on $D$ we then obtain:
 \begin{equation}
 S = -\frac{1}{2}HDH.
+\label{eqH}
 \end{equation}
-See \cite{diaconis08} for a simple proof of this.
+See \cite{diaconis08} for a simple proof of this. Now, $S$ must be factored to find $\tilde{X}^{*}$. Note that there is no unique way to find $\tilde{X}^{*}$ from $D$, however by imposing the centring constraint in (\ref{eqH}) to obtain $S$, a unique solution can be found.
+
+
+Given we want to factor $S$ to find $\tilde{X}^{*} \tilde{X}^{*\text{T}}$ and we would like to find the biggest sources of variation in $S$ we use eigen-decomposition
+
+
+
+
+Performing an eigen-decomposition such that $S=U\Lambda\tr{U}$, where $U$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues, we obtain $\tilde{X}^*$ in the usual way:
+\begin{equation}
+\tilde{X}^*=U\Lambda^{\frac{1}{2}}.
+\end{equation}
 
 Following these steps $\tilde{X}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions (and in general we would preform MDS and want to see a reduction in dimensionality) so, the directions with the two largest eigenvalues are chosen to represent the space since they contain the two largest sources in variation in distance (since they are the two largest contributions to $S$.) This gives the two dimensional representation of the data, taking into account the within-area distance. So, defining $\tilde{X}$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a lower dimensional representation has been obtained. More generally, we can reduce the $\tilde{X}^*$ to an $n \cross k$ matrix, where $k$ is the number of dimensions for the MDS representation of the data.
 
@@ -147,7 +157,7 @@ Note that an additive constant can be computed and added to the non-diagonal ent
 Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdscale} function. 
 
 \subsection{Gower's interpolation} 
-
+\label{gowers}
 It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation for example when further data is collected, or in order to predict over points not in $\tilde{X}$. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years; Gower's interpolation (\cite{gower1968}) is covered here.
 
 Say we have some point, $(x_{\text{new}},y_{\text{new}})$ and we wish to find its new location, $(\tilde{x}_{\text{new}}, \tilde{y}_{\text{new}})$ in the MDS configuration, $\tilde{X}$. The position of $(\tilde{x}_{\text{new}}, \tilde{y}_{\text{new}})$ is at a distance from the points in $\tilde{X}$ which is approximately the same as that of $(x_{\text{new}},y_{\text{new}})$ to the points in the non-transformed space. 
@@ -178,7 +188,7 @@ Gower's paper shows that performing MDS on a dataset is equivalent to performing
 Before performing any analysis we must test that the method will be reliable and that the mapping that MDS produces is smooth (in terms of the spatial coordinates that it produces.) I first motivate the need for using a grid as a start point for the MDS configuration, and then show that the mapping produces smooth lines when within-area distances are used.
 
 \subsubsection{Using grids as a starting point}
-
+\label{grids}
 Given that both the finding of the MDS configuration of the points and Gower's insertion rely on the eigenvalues of the original MDS configuration, correctly obtaining those eigenvalues is important. If those points used to create the initial MDS configuration are not representative of the whole domain, the eigenvalues and eigenvectors may fail to represent the space correctly and, as such, we may then insert the point(s) incorrectly. This could happen if the initial MDS configuration is created using only points from one half of the domain or, more pathologically, there were some trend in the locations, in this case only a portion of the full information about the domain would be included in the model. This would lead to the incorrect eigenvalues being calculated. Indeed, Gower points this out at the end of his 1968 paper.
 
 When Euclidean distances are used to calculate $D$ the eigenvalues are found correctly given that there is one more point than there are dimensions in the space (\cite{landmark},) provided that the points are not collinear. However, it is not clear what a similar criteria would be for the shortest paths used here. 
