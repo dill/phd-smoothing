@@ -36,7 +36,7 @@
 % Table reference command
 \newcommand{\Tabref}[1]{\emph{Table} \ref{#1}}
 % equation reference command
-\newcommand{\eqn}[1]{\emph{eqn.} (\ref{#1})}
+\newcommand{\eqn}[1]{(\ref{#1})}
 % phi inverse
 \newcommand{\phiinv}{\phi^{-1}}
 % use other phi
@@ -114,31 +114,54 @@ The rest of this report is structured as follows: in section 2 an overview of MD
 
 \section{Multidimensional Scaling}
 
-The basic concept behind MDS is to take the data, calculate their inter-point distances and then find a new coordinate system based on those inter-point distances. We do this by simply performing an eigen-decomposition on the (centred) matrix of distances between points.
+The basic concept behind MDS is to take the data, calculate their inter-point distances and then find a new coordinate system based on those inter-point distances. We do this by simply performing an eigen-decomposition on the (centred) matrix of distances between points. First a description of the MDS procedure when Euclidean distances are used is given, followed by the justification for the use of the same procedure when using within-area distances.
 
 \subsection{Finding the new point configuration}
 
-We first define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a (symmetric) matrix, $D$, with $ij^{\text{th}}$ element $d^2_{ij}$. In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. Finding $d_{ij}$ is discussed in the next section, for the moment let us assume that $D$ is known and $d_{ij}$ gives the shortest within-domain distance between points $i$ and $j$. \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \cite{principlesofMA}, pp. 104-108 and \cite{chatfieldcollins}, pp. 189-200.
+We first define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a (symmetric) matrix, $D$, with $ij^{\text{th}}$ element $d^2_{ij}$.
 
-First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our MDS configuration are entries in an $n \times n$ matrix, $\tilde{X}^*$. Now let $S=\tilde{X}^{*} \tilde{X}^{*\text{T}} $, so $S$ is a matrix of scalar products of the point vectors, \emph{ie.} the $(q,r)^\text{th}$ element of $S$ is:
+ 
+ 
+For the moment let us assume that $D$ is known and $d_{ij}$ Euclidean distance between points $i$ and $j$. \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \cite{principlesofMA}, pp. 104-108 and \cite{chatfieldcollins}, pp. 189-200.
+
+First, suppose that the $n$ the unknown locations (in $n$ dimensions) in our MDS configuration are entries in an $n \times n$ matrix, $\tilde{X}^*$. Now let $S=\tilde{X}^{*} \tilde{X}^{*\text{T}} $, so $S$ is a matrix of scalar products of the point vectors, \emph{ie.} the $(i,j)^\text{th}$ element of $S$ is:
 \begin{equation}
-s_{qr} = \sum_{t=1}^n x_{rt}x_{qt},
+s_{ij} = x_i\tr{x_j},
+\label{selem}
 \end{equation}
-if $S$ is an $(n\cross n)$ matrix. 
+if $S$ is an $(n\cross n)$ matrix. Note that we may only find $\tilde{X}^*$ up to a translation and rotation, so it is assumed that the values in $\tilde{X}^*$ have been centred about the origin.
 
-We now wish to relate $D$ to $S$. First, define:
+We now wish to relate $D$ to $S$. First, note that that $(i,j)^\text{th}$ element of D is 
+\begin{equation}
+d_{ij}^2 = (x_i-x_j)\tr{(x_i-x_j)} = x_i\tr{x_i} + x_j\tr{x_j}  -2 x_i\tr{x_j}.
+\label{dij}
+\end{equation}
+Using \eqn{selem}, we can re-write \eqn{dij} as
+\begin{equation}
+D=\mathbf{s}_\text{diag}\tr{\mathbf{1}} + \mathbf{1}\tr{\mathbf{s}_\text{diag}} -2S.
+\label{dijmat}
+\end{equation}
+where $\mathbf{1}$ is an $n \cross 1$ vector of 1s and $s_\text{diag}$ is the $n \cross 1$ vector of diagonal elements of $S$.
+
+
+Defining:
 \begin{equation}
 H = I-\frac{1}{n}\mathbf{1}\tr{\mathbf{1}},
 \end{equation}
-where $I$ is the identity matrix, as usual, and $\mathbf{1}$ is an $n \cross 1$ vector of 1s such that $\mathbf{1}\tr{\mathbf{1}}$ is an $n \cross n$ matrix of 1s. By pre- and post-multiplying any matrix by $H$ the matrix is double centred (such that row and column means are 0.) Performing this pre- and post-multiplication on $D$ we then obtain:
+where $I$ is the identity matrix, as usual, and $\mathbf{1}$ is an $n \cross 1$ vector of 1s such that $\mathbf{1}\tr{\mathbf{1}}$ is an $n \cross n$ matrix of 1s, the following relation between $S$ and $D$ holds:
 \begin{equation}
 S = -\frac{1}{2}HDH.
 \label{eqH}
 \end{equation}
-See \cite{diaconis08} for a simple proof of this. Now, $S$ must be factored to find $\tilde{X}^{*}$. Note that there is no unique way to find $\tilde{X}^{*}$ from $D$, however by imposing the centring constraint in (\ref{eqH}) to obtain $S$, a unique solution can be found.
 
+By pre- and post-multiplying any matrix by $H$ the matrix is double centred (such that row and column means are 0.) This is true since, pre- and post-multiplying \eqn{dijmat} by $H$ yields:
+\begin{equation}
+HDH = -2HSH.
+\label{eqH}
+\end{equation}
+The first two terms in on the right hand side of \eqn{dijmat} going to zero since the rows of $\mathbf{s}_\text{diag}\tr{\mathbf{1}}$ and the columns of  $\mathbf{1}\tr{\mathbf{s}_\text{diag}}$ are constant. Since the values of $x_i$ were centred, $HDH=D$, so $S = -\frac{1}{2}HDH$, as claimed.
 
-Given we want to factor $S$ to find $\tilde{X}^{*} \tilde{X}^{*\text{T}}$ and we would like to find the biggest sources of variation in $S$ we use eigen-decomposition
+Now we know we can deal with $S$ rather than $D$, we must factor it find $\tilde{X}^{*}$. 
 
 
 
@@ -151,6 +174,13 @@ Performing an eigen-decomposition such that $S=U\Lambda\tr{U}$, where $U$ is the
 Following these steps $\tilde{X}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions (and in general we would preform MDS and want to see a reduction in dimensionality) so, the directions with the two largest eigenvalues are chosen to represent the space since they contain the two largest sources in variation in distance (since they are the two largest contributions to $S$.) This gives the two dimensional representation of the data, taking into account the within-area distance. So, defining $\tilde{X}$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a lower dimensional representation has been obtained. More generally, we can reduce the $\tilde{X}^*$ to an $n \cross k$ matrix, where $k$ is the number of dimensions for the MDS representation of the data.
 
 So, in order to obtain a the MDS configuration of points (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition on the resulting matrix, $S$. 
+
+
+ In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. Finding $d_{ij}$ is discussed in the next section,
+
+
+
+
 
 Note that an additive constant can be computed and added to the non-diagonal entries of $D$ to ensure that the eigenvalues of $S$ are non-negative. However, this does not occur in any of the examples shown here.
 
