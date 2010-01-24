@@ -97,17 +97,17 @@ Multidimensional scaling offers a framework for the problem of smoothing over a 
 
 This approach can be justified in the following way. In many applications within-area distances is meaningful, given (as stated above) that there is some reasoning behind why certain areas of the domain should not affect one another. When within-area distances are meaningful, it makes sense to work with the structure of the domain rather than the somewhat arbitrary choice of Euclidean geometry. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
 
-The proposed procedure is as follows: Given a sample $\{x_i, y_i, z_i : i=1\dots n\}$: the set of points in the domain over which smoothing is to be performed, $(x_i, y_i)$ is the location of the $i^\text{th}$ point with response $z_i$. Here it is assumed that finding an MDS configuration of a set of points includes calculating the within-area distances between the points and then the distance matrix, as well as actually performing the MDS calculation.
+The proposed procedure is as follows: Given a sample $\{x_i, z_i : i=1\dots n\}$: the set of points in the domain over which smoothing is to be performed, $x_i$ is the location (a $k$-vector, although here 2-vectors are assumed throughout) of the $i^\text{th}$ point with response $z_i$. Here it is assumed that finding an MDS configuration of a set of points includes calculating the within-area distances between the points and then the distance matrix, as well as actually performing the MDS calculation.
 
 \begin{enumerate}
-\item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to define the configuration, they are discarded afterward. Representative points could be a grid over the domain or just $\{x_i, y_i : i=1\dots n\}$, more detail and justification is provided in section \ref{grids}, below.
+\item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to define the configuration, they are discarded afterward. Representative points could be a grid over the domain or just $\{x_i : i=1\dots n\}$, more detail and justification is provided in section \ref{grids}, below.
 
-\item Using the MDS configuration obtained above along with Gower's interpolation (see section \ref{gowers}) obtain the location of the sample in the MDS configuration: $\{\tilde{x}_i, \tilde{y}_i, z_i : i=1\dots n\}$.
+\item Using the MDS configuration obtained above along with Gower's interpolation (see section \ref{gowers}) obtain the location of the sample in the MDS configuration: $\{\tilde{x}_i, z_i : i=1\dots n\}$.
 
-\item Smooth $\{\tilde{x}_i, \tilde{y}_i, z_i : i=1\dots n\}$ using a thin plate regression spline.
+\item Smooth $\{\tilde{x}_i, z_i : i=1\dots n\}$ using a thin plate regression spline.
 
-\item To predict at a location $(x_j, y_j)$ in the original domain, use Gower's interpolation to 
-obtain the point's location in the MDS space: $(\tilde{x}_j, \tilde{y}_j)$. Predict $\hat{z}_j$ using the smooth at $(\tilde{x}_j, \tilde{y}_j)$: this is the prediction at $(x_j, y_j)$.
+\item To predict at a location $x_j$ in the original domain, use Gower's interpolation to 
+obtain the point's location in the MDS space: $\tilde{x}_j$. Predict $\hat{z}_j$ using the smooth at $\tilde{x}_j$: this is the prediction at $x_j$.
 \end{enumerate}
 
 The rest of this report is structured as follows: in section 2 an overview of MDS is given, along with technical details of how the MDS configuration is calculated; section 3 focuses on how the within-area distances are found; section 4 shows some examples of this method on simulated data. I conclude with a proposed course of action to improve the method.
@@ -157,24 +157,22 @@ By pre- and post-multiplying any matrix by $H$ the matrix is double centred (suc
 HDH = -2HSH.
 \label{eqH}
 \end{equation}
-The first two terms in on the right hand side of \eqn{dijmat} going to zero since the rows of $\mathbf{s}_\text{diag}\tr{\mathbf{1}}$ and the columns of  $\mathbf{1}\tr{\mathbf{s}_\text{diag}}$ are constant. Since the values of $x_i$ were centred, $HDH=D$, so $S = -\frac{1}{2}HDH$, as claimed.
+The first two terms in on the right hand side of \eqn{dijmat} going to zero since the rows of $\mathbf{s}_\text{diag}\tr{\mathbf{1}}$ and the columns of  $\mathbf{1}\tr{\mathbf{s}_\text{diag}}$ are constant. Since $S$ is already centred, $HSH=S$, so $S = -\frac{1}{2}HDH$, as claimed.
 
-Now we know we can deal with $S$ rather than $D$, we must factor it find $\tilde{X}^{*}$. 
+Now we know we can deal with $S$ rather than $D$, we must factor it find $\tilde{X}^{*}$. One option to factor $S$ is to use the Cholesky decomposition, however, with MDS we are looking to decompose the space based on the directions of largest variation, \emph{ie.} those that have the largest contribution to $s_{ij}$. For that reason we use the eigen-decomposition.
 
-
-
-
-Performing an eigen-decomposition such that $S=U\Lambda\tr{U}$, where $U$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues, we obtain $\tilde{X}^*$ in the usual way:
+Performing an eigen-decomposition n $S$, we obtain $S=U\Lambda\tr{U}$. Here $U$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues, we obtain $\tilde{X}^*$ as:
 \begin{equation}
 \tilde{X}^*=U\Lambda^{\frac{1}{2}}.
 \end{equation}
 
-Following these steps $\tilde{X}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions (and in general we would preform MDS and want to see a reduction in dimensionality) so, the directions with the two largest eigenvalues are chosen to represent the space since they contain the two largest sources in variation in distance (since they are the two largest contributions to $S$.) This gives the two dimensional representation of the data, taking into account the within-area distance. So, defining $\tilde{X}$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a lower dimensional representation has been obtained. More generally, we can reduce the $\tilde{X}^*$ to an $n \cross k$ matrix, where $k$ is the number of dimensions for the MDS representation of the data.
+Following these steps $\tilde{X}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions (and in general we would preform MDS and want to see a reduction in dimensionality) so, the directions with the two largest eigenvalues are chosen to represent the space since they contain the two largest sources in variation in distance (since they are the two largest contributions to $S$.) This gives the two dimensional representation of the data. So, defining $\tilde{X}$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a lower dimensional representation has been obtained. More generally, we can reduce the $\tilde{X}^*$ to an $n \cross k$ matrix, where $k$ is the number of dimensions for the MDS representation of the data.
 
 So, in order to obtain a the MDS configuration of points (given that we have some set of inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition on the resulting matrix, $S$. 
 
+In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. Finding $d_{ij}$ is discussed in the next section, however it is first important to justify the use of these steps when non-Euclidean distances are used. 
 
- In our case, we would like $d_{ij}$ to be the shortest distance between the points, given the path between the points remains within the domain. Finding $d_{ij}$ is discussed in the next section,
+One can think of the justification in the following way: given that the distances in $D$ obey the triangle inequality, all of the points in $D$ ($n$ of them if $D$ is $n \cross n$) may be represented in $n$ dimensional Euclidean space (at worst.) Hence, in the case where the $d_{ij}$ are Euclidean distances in two dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in $n$-dimensional space with no loss of information about the distances. So, in the case when the distances in $D$ are within-area distances, one can just think of the points in $D$ as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
 
 
 
@@ -188,18 +186,15 @@ Multidimensional scaling may be performed in \textsf{R} using the \texttt{cmdsca
 \label{gowers}
 It is likely that we may be in a position where the coordinate system has been found by MDS but we need to insert further points into our MDS representation for example when further data is collected, or in order to predict over points not in $\tilde{X}$. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years; Gower's interpolation (\cite{gower1968}) is covered here.
 
-Say we have some point, $(x_{\text{new}},y_{\text{new}})$ and we wish to find its new location, $(\tilde{x}_{\text{new}}, \tilde{y}_{\text{new}})$ in the MDS configuration, $\tilde{X}$. The position of $(\tilde{x}_{\text{new}}, \tilde{y}_{\text{new}})$ is at a distance from the points in $\tilde{X}$ which is approximately the same as that of $(x_{\text{new}},y_{\text{new}})$ to the points in the non-transformed space. 
+Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from the points in $\tilde{X}$ which is approximately the same as that of $x_{\text{new}}$ to the points in the non-transformed space. 
 
 Note that here we are assuming that a 2 dimensional projection has been used in the initial MDS configuration, obviously Gower's interpolation remains valid for the case in which the initial MDS projection is in $k$ dimensions.
 
 \subsubsection{Gower's interpolation formula}
 
-We may find the new position, $(\tilde{x}_{\text{new}}, \tilde{y}_{\text{new}})$ , of some new datum $(x_{\text{new}},y_{\text{new}})$ using:
+We may find the new position, $\tilde{x}_{\text{new}}$ , of some new datum $x_{\text{new}}$ using:
 \begin{equation}
-\begin{pmatrix}
-\tilde{x}_{\text{new}}\\
-\tilde{y}_{\text{new}}
-\end{pmatrix} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d}.
+\tilde{x}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbf{d}.
 \label{gower}
 \end{equation}
 Here $\Lambda$ ($2 \cross 2$) and $\tr{\tilde{X}}$ ($2 \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) is the centred distance from the points in the original configuration to the new point.
@@ -321,9 +316,9 @@ Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean 
 Taking a cue from \cite{soap} simulations were conducted on the so-called modified Ramsay horseshoe and another domain supposed to mimic the shape of a coastline. Results are compared using the mean squared error (MSE) criterion, defined (as in \cite{elements}) as:
 
 \begin{equation}
-\text{MSE}(\hat{f}) = \frac{1}{P} \sum_{j=1}^P (\hat{f}(x_j, y_j) - z_j)^2,
+\text{MSE}(\hat{f}) = \frac{1}{P} \sum_{j=1}^P (\hat{f}(x_j) - z_j)^2,
 \end{equation}
-the mean difference between the model ($\hat{f}$) evaluated at the prediction points ($\{x_j, y_j : j=1 \dots P\}$) and the true value of the function ($\{z_j : j=1 \dots P\}$.) This gives the MSE per model, since here many realisations are run, the mean of these over all simulations is taken and the standard error is calculated.
+the mean difference between the model ($\hat{f}$) evaluated at the prediction points ($\{x_j : j=1 \dots P\}$) and the true value of the function ($\{z_j : j=1 \dots P\}$.) This gives the MSE per model, since here many realisations are run, the mean of these over all simulations is taken and the standard error is calculated.
 
 \subsection{Modified horseshoe}
 
