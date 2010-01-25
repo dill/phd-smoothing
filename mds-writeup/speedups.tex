@@ -1,0 +1,140 @@
+% Speeding up MDS
+% David Lawrence Miller
+% d.l.miller@bath.ac.uk
+  
+\documentclass[a4paper,10pt]{article}
+\setlength{\textheight}{22.5cm}
+\setlength{\textwidth}{6.47in}
+\setlength{\oddsidemargin}{-1mm}
+\setlength{\topmargin}{0.1cm}
+\setlength{\evensidemargin}{-5mm} 
+ 
+% Load some packages
+\usepackage{times, amsmath, amssymb, amsfonts, url, natbib, bm, rotating}
+ 
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{rotating}
+
+% top matter
+\title{Improvements to the MDS+TPRS approach}
+\author{David Lawrence Miller\\Mathematical Sciences\\University of Bath\\\texttt{d.l.miller@bath.ac.uk}}
+ 
+% Shortcuts
+% Probability
+\newcommand{\prob}[1]{\mathbb{P}\left[ #1 \right]}
+% Schwarz-Christoffel
+\newcommand{\sch}{Schwarz-Christoffel }
+% fprime
+\newcommand{\fprime}{f^\prime(z)}
+% figure reference command
+\newcommand{\fig}[1]{\emph{fig.} \ref{#1}}
+% Figure reference command
+\newcommand{\Fig}[1]{\emph{Fig.} \ref{#1}}
+% table reference command
+\newcommand{\tabref}[1]{\emph{table} \ref{#1}}
+% Table reference command
+\newcommand{\Tabref}[1]{\emph{Table} \ref{#1}}
+% equation reference command
+\newcommand{\eqn}[1]{(\ref{#1})}
+% phi inverse
+\newcommand{\phiinv}{\phi^{-1}}
+% use other phi
+\renewcommand{\phi}{\varphi}
+%transpose
+\newcommand{\tr}[1]{#1^{\text{T}}}
+% diagonal
+\newcommand{\diag}{\text{diag}}
+% call \times \cross
+\newcommand{\cross}{\times}
+
+
+\begin{document}
+ 
+% The abstract
+%\begin{abstract}
+%Here.
+%\end{abstract}
+ 
+ 
+% New theorem for theorems
+\newtheorem{thm}{Theorem}[section]
+ 
+%New theorem for definitions
+\newtheorem{defn}{Definition}[section]
+ 
+\maketitle
+
+\section{Introduction}
+
+Clearly need to speed up.
+
+Also make things more accurate.
+
+\section{Calculating MDS by Lanczos iteration}
+
+\section{Partial path calculation}
+
+\section{Clever grids}
+
+\section{Dynamic $\lambda$}
+
+
+
+\section{Conclusions from last time}
+
+Although these results are encouraging, the inability of the smooth to capture all the features in the right side of the domain when using an isotropic smoother is disappointing. Proposed further work is to follow the lead from \cite{wood2000}, which shows that given some transform of a variable, $y$ say, such that $y_i^\prime=y_i/k$, then $f(x,y^\prime k)$ will give the same fit as $f(x,y)$ (ie. the fit will be the same under the new coordinates) but the penalty will change to:
+\begin{equation}
+\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2k\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + k^3\Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y,
+\label{adjustedintegral}
+\end{equation}
+from:
+\begin{equation*}
+\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + \Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y.
+\end{equation*}
+In the case of the MDS, the integral would need to be split over a grid such that each cell captured the distortion in space over the area of the cell. Mathematically, $\Omega$ would be split into a subsets, $\omega_i$ (where $\bigcup_{\forall j} \omega_j = \Omega$) and (\ref{adjustedintegral}) becomes:
+\begin{equation}
+\sum_{\forall j} \int\int_{\omega_j} l_j^3 \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2k_jl_j\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + k_j^3\Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y,
+\end{equation}
+where $k_j$ is the scaling in the $y$ direction and $l_j$ is the scaling in the $x$ direction for the $j^{\text{th}}$ cell. We assume here that $f(x,y)$ is ``nice''.
+
+Using this penalty may allow for the distortions in space to be taken account of and therefore get around the problem of the details being smoothed over, as seen above. It will be easiest to first build this using a tensor product of $P$-splines to test its utility (since their penalty is discrete) and then move on to the thin plate spline penalty.
+
+In order to make this MDS approach competitive with \texttt{soap} (assuming that the above distortion adjustment is successful) a speed-up in the computation of the within-area distances must be achieved. At the moment this is the major bottleneck in the calculation since model fitting consists only of fitting a thin plate spline. 
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c || c c c}
+ & MDS & Soap film & Thin plate\\ 
+\hline
+Fit & 3.39225 & 10.87688 & 0.61492\\
+Prediction & 4.80357 & 8.87535 & 0.10845\\
+\end{tabular}
+\label{ramsaytime}
+\caption{Average time (in seconds) to fit a realisation of the modified Ramsay horseshoe for the three models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function.}
+\end{table}
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c || c c c c}
+ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
+\hline
+Fit & 84.85242 & 85.35168 & 36.24865 & 0.51721\\
+Prediction & 155.4004 & 155.2419 & 44.22065 & 0.20994 \\
+\end{tabular}
+\label{wt2time}
+\caption{Average time (in seconds) to fit a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function.}
+\end{table}
+
+
+Speed-ups can be achieved by minimizing the number of calculations for within-area distance that are needed. In \cite{landmark} a method to calculate MDS coordinates using a sparse grid of landmark points is suggested; although the authors are sceptical about how this will perform with non-Euclidean distances. There is clearly some work here in finding some minimal set of landmark points for the within-area distance metric obtained from the above algorithm.
+
+The calculation of within-area distances could be linked into a ``landmark''-type process by calculating the within-area distances between a set of points in a sparse grid, then saving those paths. The distances between desired points can then be found by modifying the path with the end points nearest to those of the desired points.
+
+
+\bibliographystyle{plainnat}
+\bibliography{mds-refs}
+
+\end{document}
