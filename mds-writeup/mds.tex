@@ -80,31 +80,33 @@ The cause of leakage can be thought of in two ways: either the smooth does not r
 \centering
 % trim order l b r t
 \includegraphics[width=4in]{figs/ramsay-leak.pdf}\\
-\caption{An example of leakage. A thin plate spline basis was fit to data sampled from the function on the left, here the model smooths accross the gap in the middle of the domain (right.)}
+\caption{An example of leakage. A thin plate regression spline was fit to data sampled from the function on the left, here the model smooths across the gap in the middle of the domain (right.)}
 \label{leakage}
 \end{figure}
 
 
 \subsection{Proposition}
 
-Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}.) The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example the Euclidean distance between locations or could be distance that occurs in the data naturally, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225.) 
+Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) is a method commonly used in multivariate analysis. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}.) The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225), or could instead be distances that occur in the data naturally,  for example comparative distances between stimuli response in a psychological experiment (\cite{torgerson}.) Here we concentrate on geographical distances.
 
 MDS takes this matrix of distances and projects the data in such a way that Euclidean inter-point distances in the projection are approximately the same as the distances in the matrix (\cite{chatfieldcollins}, p. 187.) If the matrix of distances is of rank $m$ then a projection in $m-1$ or less can be output, although a projection into 2 dimensions is a typical choice. For this reason one can also think of MDS as a dimension reduction technique, finding a projection of a data cloud into lower dimensional space, while still retaining information about the distances between the points.
 
-When MDS is performed on some categorised set of dissimilarities (as is often the case in social science and psychology) it is referred to as non-metric MDS, where as on a continuous scale it is known as metric MDS, though they have different names, the calculations are identical. Discussion here will focus on metric MDS.
+When MDS is performed on some categorised set of dissimilarities (as is often the case in social science and psychology) it is referred to as non-metric MDS, where as on a continuous scale it is known as metric MDS, though they have different names, the calculations are identical (aside from the method of finding the distances.) Discussion here will focus on metric MDS.
 
-Multidimensional scaling offers a framework for the problem of smoothing over a region with a complex boundary. Given the set of distances between the points in the domain, we can project those points into a configuration such that the distances between those points are approximately preserved. Now, if the Euclidean metric were to be used to calculate the distances between the points then the result from the projection would be identical to the starting point configuration. However, if it were possible to use a metric that took into account the distance within the boundary (a within-area distance) then the resulting configuration of points would (approximately) respect the boundary of the domain.
+Multidimensional scaling offers a framework for the problem of smoothing over a region with a complex boundary. Given the set of distances between the points in the domain, we can project those points into a configuration such that the distances between those points are approximately preserved. Now, if the Euclidean metric were to be used to calculate the distances between the points then the result from the projection would be identical to the starting point configuration (provided that we projected back into the same number of dimensions.) However, if it were possible to use a metric that took into account the distance within the boundary (a within-area distance) then the resulting configuration of points would (approximately) respect the boundary of the domain.
 
-This approach can be justified in the following way. In many applications within-area distances is meaningful, given (as stated above) that there is some reasoning behind why certain areas of the domain should not affect one another. When within-area distances are meaningful, it makes sense to work with the structure of the domain rather than the somewhat arbitrary choice of Euclidean geometry. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
+This approach can be justified in the following way. In many applications within-area distances is meaningful, given (as stated above) that there is some reasoning behind why certain parts of the domain should not affect one another. When within-area distances are meaningful, it makes sense to work with the structure of the domain rather than the somewhat arbitrary choice of Euclidean geometry. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
+
+\subsection{Procedure}
 
 The proposed procedure is as follows: Given a sample $\{x_i, z_i : i=1\dots n\}$: the set of points in the domain over which smoothing is to be performed, $x_i$ is the location (a $k$-vector, although here 2-vectors are assumed throughout) of the $i^\text{th}$ point with response $z_i$. Here it is assumed that finding an MDS configuration of a set of points includes calculating the within-area distances between the points and then the distance matrix, as well as actually performing the MDS calculation.
 
 \begin{enumerate}
-\item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to define the configuration, they are discarded afterward. Representative points could be a grid over the domain or just $\{x_i : i=1\dots n\}$, more detail and justification is provided in section \ref{grids}, below.
+\item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to define the configuration, they are discarded afterward. Representative points could be a grid over the domain or subset of $\{x_i : i=1\dots n\}$; more detail and justification is provided in section \ref{grids}, below.
 
 \item Using the MDS configuration obtained above along with Gower's interpolation (see section \ref{gowers}) obtain the location of the sample in the MDS configuration: $\{\tilde{x}_i, z_i : i=1\dots n\}$.
 
-\item Smooth $\{\tilde{x}_i, z_i : i=1\dots n\}$ using a thin plate regression spline.
+\item Smooth $\{\tilde{x}_i, z_i : i=1\dots n\}$ using a regression spline.
 
 \item To predict at a location $x_j$ in the original domain, use Gower's interpolation to 
 obtain the point's location in the MDS space: $\tilde{x}_j$. Predict $\hat{z}_j$ using the smooth at $\tilde{x}_j$: this is the prediction at $x_j$.
@@ -161,7 +163,7 @@ The first two terms in on the right hand side of \eqn{dijmat} going to zero sinc
 
 Now we know we can deal with $S$ rather than $D$, we must factor it find $\tilde{X}^{*}$. One option to factor $S$ is to use the Cholesky decomposition, however, with MDS we are looking to decompose the space based on the directions of largest variation, \emph{ie.} those that have the largest contribution to $s_{ij}$. For that reason we use the eigen-decomposition.
 
-Performing an eigen-decomposition n $S$, we obtain $S=U\Lambda\tr{U}$. Here $U$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues, we obtain $\tilde{X}^*$ as:
+Performing an eigen-decomposition n $S$, we obtain $S=U\Lambda\tr{U}$. Here $U$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues, we may then obtain $\tilde{X}^*$ as:
 \begin{equation}
 \tilde{X}^*=U\Lambda^{\frac{1}{2}}.
 \end{equation}
@@ -199,7 +201,7 @@ We may find the new position, $\tilde{x}_{\text{new}}$ , of some new datum $x_{\
 \end{equation}
 Here $\Lambda$ ($2 \cross 2$) and $\tr{\tilde{X}}$ ($2 \cross n$) are as above, $\mathbf{d}$ ($n \cross 1$) is the centred distance from the points in the original configuration to the new point.
 
-In Gower's paper, he defines the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,n+1}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{X}^*\tilde{X^{* \text{T}}}$ \emph{ie}. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{X}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(S)_{ii})$. Using this expression in computation is more logical since $S$ is already known.
+In Gower's paper, he defines the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{X}^*\tilde{X^{* \text{T}}}$ \emph{ie}. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{X}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(S)_{ii})$. Using this expression in computation is more logical since $S$ is already known.
 
 Gower's interpolation extends simply to the case when $m$ new points are inserted by thinking of $\tilde{x}_{\text{new}}$ as $k \cross m$ matrix and $\mathbf{d}$ an $n \cross m$ matrix.
 
@@ -294,7 +296,7 @@ Given that there is no direct path within the domain ($\Gamma$, say) between two
 
 \item Given a triple of vertices, $(v_i, v_{i+1}, v_{i+2}) \in \mathcal{P}$ , if the line between $v_i$ and $v_{i+2}$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ and the line between $v_i$ and $v_{i+2}$ lies inside $\Gamma$ then delete $v_{i+1}$ (\fig{wdia}, ($iv$) and ($vi$).) This iterates over the entire path once, deleting all superfluous vertices. For example in \fig{wdia}, ($iii$) $v_2$ is deleted from $\mathcal{P}$ because the path straight between $v_1$ and $v_3$ is shorter. 
 
-\item Given a triple of vertices, $(v_i, v_{i+1}, v_{i+2})$ if the path $(v_i, v^1_1, v^1_1, \dots, v^1_j,, v_{i+2})$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ then replace $v_{i+1}$ with $v^1_1, \dots, v^1_j$ (\fig{wdia}, ($v$)). The points $v^1_1, \dots, v^1_j$ consist of $v^1_1$ and $v^1_j$, the first and last intersections of the line between $v_i$ and $v_{i+1}$ and the boundary of $\Gamma$, the elements inbetween are the vertices of $\Gamma$ between $v^1_1$ and $v^1_j$. For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the path $(v_1, v^1_1, v^1_2, v^1_3, v_3)$ so the former is replaced with the latter in $\mathcal{P}$.
+\item Given a triple of vertices, $(v_i, v_{i+1}, v_{i+2})$ if the path $(v_i, v^1_1, v^1_1, \dots, v^1_j,, v_{i+2})$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ then replace $v_{i+1}$ with $v^1_1, \dots, v^1_j$ (\fig{wdia}, ($v$)). The points $v^1_1, \dots, v^1_j$ consist of two parts $v^1_1$ and $v^1_j$, and the $\dots$. The $v^1_1$ and $v^1_j$ are the first and last intersections of the line between $v_i$ and $v_{i+1}$ and the boundary of $\Gamma$. The elements between $v^1_1$ and $v^1_j$ are the vertices of $\Gamma$ between $v^1_1$ and $v^1_j$. For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the path $(v_1, v^1_1, v^1_2, v^1_3, v_3)$ so the former is replaced with the latter in $\mathcal{P}$.
 
 \item We then iterate between steps 2 and 3 until there has been no change from one run to the next (ie. convergence) or there have been too many iterations (\fig{wdia}, ($vi$).)
 \end{enumerate}
