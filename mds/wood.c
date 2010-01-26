@@ -129,6 +129,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    make_bnd_path(p1,p2,nbnd,bnd,&mypath);
+   PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -148,9 +149,11 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
 
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
+   PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
+   PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -158,19 +161,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-//   printf("#******* END  ********** \n");
-//   printf("plot(bnd,type=\"l\")\n");
-//   printf("path<-list(x=c(),y=c())\n");
-//   
-//   current=mypath;
-//   while(current!=NULL){
-//      printf("path$x<-c(path$x,%f)\n",current->data[0]);
-//      printf("path$y<-c(path$y,%f)\n",current->data[1]);
-//      current=current->next;
-//   }
-//   printf("lines(path,lwd=2,col=\"red\")\n");
-//   printf("scan()\n");
-
+   PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
@@ -428,7 +419,11 @@ void delete_step(node** path, int nbnd, double **bnd)
 
             // go forward again (remember next has changed)
             current=current->next; // back to i+2
-            
+
+            // DEBUG
+            //printf("len=%d\n",Length(*path));
+//            PrintPath(*path);
+
             // free memory of i and i+1
             free(current->prev->prev);
             free(current->prev);
@@ -496,7 +491,9 @@ void delete_step(node** path, int nbnd, double **bnd)
       } // end iteration over path
       conv++; // increment run counter
 
-   } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );
+   } while( !(has_converged(prevpath,*path)) & (conv<conv_stop));// &
+//             (Length(*path)>3) );
+//             ^^ might be useful if it's deleting things that are too small
    // end of do loop
 
    // DEBUG
@@ -584,9 +581,14 @@ void alter_step(node** path, int nbnd, double **bnd)
 
             // create a new path
             make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
+//printf("### new path\n");
+//PrintPath(newpath);
+      delete_step(&newpath,nbnd,bnd);
+//printf("### delnew path\n");
+//PrintPath(newpath);
 
             // only insert the path if it's better!
-            if(hull_length(&newpath)<=triplen){
+            if(hull_length(&newpath)<triplen){
 
                // create new path, compare complete new path with old one, if the
                // new one is better then keep it.

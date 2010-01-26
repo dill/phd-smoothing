@@ -35,6 +35,7 @@ void AppendNode(node**, double[2]);
 void CopyList(node*, node**);
 int Length(node*);
 void FreeList(node**);
+void PrintPath(node*);
 
 // for in_out in separate file
 void in_out(double *, double *, double *,double *,double *,int *, int *, int * );

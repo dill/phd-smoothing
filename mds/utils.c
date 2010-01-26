@@ -654,6 +654,26 @@ int Length(node* head) {
     return count;
 }
 
+/*
+*  Debug printer for paths
+*/
+void PrintPath(node* mypath) {
+   node* current=mypath;
+
+   printf("#******* END  ********** \n");
+   printf("plot(bnd,type=\"l\")\n");
+   printf("path<-list(x=c(),y=c())\n");
+   
+   while(current!=NULL){
+      printf("path$x<-c(path$x,%f)\n",current->data[0]);
+      printf("path$y<-c(path$y,%f)\n",current->data[1]);
+      current=current->next;
+   }
+   printf("lines(path,lwd=2,col=\"red\")\n");
+   printf("scan()\n");
+   
+}
+
 ////////////////////////////
 
 /*
