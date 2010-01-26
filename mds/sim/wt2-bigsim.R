@@ -71,7 +71,7 @@ predd<-gendata.ind$z[ind]
 
 sim.size<-200
 samp.size<-250
-noise.level<-0.5
+noise.level<-0.05
 
 res.mse<-list(mds=rep(0,sim.size), mdstp=rep(0,sim.size), 
               soap=rep(0,sim.size),tprs=rep(0,sim.size))
@@ -92,7 +92,7 @@ for(i in 1:sim.size){
    res.edf$tprs[i]<-res$tprs.edf
 
 }
-#write.csv(res.mse,file=paste("wt2-mse-",samp.size,"-",noise.level,".csv",sep=""))
-#write.csv(res.edf,file=paste("wt2-edf-",samp.size,"-",noise.level,".csv",sep=""))
+write.csv(res.mse,file=paste("wt2-mse-",samp.size,"-",noise.level,".csv",sep=""))
+write.csv(res.edf,file=paste("wt2-edf-",samp.size,"-",noise.level,".csv",sep=""))
 
 
