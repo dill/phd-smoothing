@@ -84,9 +84,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p2[0]=x[j]; p2[1]=y[j];
  
             // DEBUG
-            printf("(i,j)=(%d,%d)\n",i,j);
-            printf("p1=(%f,%f)\n",p1[0],p1[1]);
-            printf("p2=(%f,%f)\n",p2[0],p2[1]);
+            //printf("(i,j)=(%d,%d)\n",i,j);
+            //printf("p1=(%f,%f)\n",p1[0],p1[1]);
+            //printf("p2=(%f,%f)\n",p2[0],p2[1]);
  
             // check to see if we have to do the path finding or
             // just the hypotenuse 
@@ -150,14 +150,14 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### delete_step ###\n");
-      PrintPath(mypath);
+      //printf("### delete_step ###\n");
+      //PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### alter_step ###\n");
-      PrintPath(mypath);
+      //printf("### alter_step ###\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -588,22 +588,25 @@ void alter_step(node** path, int nbnd, double **bnd)
 
             // create a new path
             make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
-//printf("### new path\n");
-//PrintPath(newpath);
-      delete_step(&newpath,nbnd,bnd);
-//printf("### del path\n");
-//PrintPath(newpath);
+            // DEBUG
+            //printf("### new path\n");
+            //PrintPath(newpath);
+            // make the new path as simple as possible (no simpler :))
+            delete_step(&newpath,nbnd,bnd);
+            // DEBUG
+            //printf("### del path\n");
+            //PrintPath(newpath);
 
             // only insert the path if it's better!
             if((hull_length(&newpath)<triplen)){// & (Length(newpath)>1)){
 
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
-//printf("before hullen\n");
-//PrintPath(newpath);
+            printf("### pre path\n");
+            PrintPath(newpath);
                DelTopBot(newpath);
-//printf("after hullen\n");
-//PrintPath(newpath);
+            printf("### del path\n");
+            PrintPath(newpath);
 
                // create new path, compare complete new path with old one, if the
                // new one is better then keep it.
