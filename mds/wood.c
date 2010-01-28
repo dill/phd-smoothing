@@ -149,11 +149,15 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
 
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
-   PrintPath(mypath);
+      // DEBUG
+      printf("### delete_step ###\n");
+      PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
-   PrintPath(mypath);
+      // DEBUG
+      printf("### alter_step ###\n");
+      PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -161,7 +165,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   PrintPath(mypath);
+   //printf("### final ###\n");
+   //PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
@@ -380,7 +385,7 @@ void delete_step(node** path, int nbnd, double **bnd)
       while(current!=NULL){
 
          // equivalent of some ANDs in the above, but doesn't cause a memory
-         // problem since the while() evaluates all of the conditions.
+         // problem that occurs when  the while() evaluates all of the conditions.
          if(current->next==NULL){
             break;
          }else if(current->next->next==NULL){
@@ -528,6 +533,8 @@ void alter_step(node** path, int nbnd, double **bnd)
    int conv=0;
    int conv_stop=10;
 
+int whilecount;
+
    // iterate over the points in the path:
    // alter the path, until on two(?) consecutive runs there are
    // no changes to the path
@@ -546,6 +553,9 @@ void alter_step(node** path, int nbnd, double **bnd)
       // start point for triplet selection
       //i<-2
       //while((i+1)<=length(path$x)){
+
+whilecount=0;
+
       while(current!=NULL){
          // equivalent of some ANDs in the above, but doesn't cause a memory
          // problem when the while() evaluates all of the conditions.
@@ -588,12 +598,15 @@ void alter_step(node** path, int nbnd, double **bnd)
 //printf("### del path\n");
 //PrintPath(newpath);
 
+printf("before hullen\n");
             // only insert the path if it's better!
             if(hull_length(&newpath)<triplen){
+printf("after hullen\n");
 
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
                DelTopBot(newpath,&inspath);
+//PrintPath(newpath);
 
                // create new path, compare complete new path with old one, if the
                // new one is better then keep it.
@@ -619,11 +632,13 @@ void alter_step(node** path, int nbnd, double **bnd)
 
                current->next=inspath; // point i-1 next to the head of newpath
       
+printf("### before\n");
                // fast forward to the end of newpath
                while(current->next!=NULL){
                   current=current->next;
                }
    
+printf("###after\n");
                // point the end of newpath to i+1
                end_ptr->prev=current; // set previous of i+1 to be the end of newpath
                current->next=end_ptr;
@@ -635,6 +650,11 @@ void alter_step(node** path, int nbnd, double **bnd)
          } // end facing
          
         	current=current->prev; // go back to i, need this to catch all triplets
+
+whilecount++;
+printf("wc=%d\n",whilecount);
+printf("conv=%d\n",conv);
+
       } // end of iteration over the path
       conv++;
    } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );

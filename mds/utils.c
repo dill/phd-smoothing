@@ -660,7 +660,6 @@ int Length(node* head) {
 void PrintPath(node* mypath) {
    node* current=mypath;
 
-   printf("#******* END  ********** \n");
    printf("plot(bnd,type=\"l\")\n");
    printf("path<-list(x=c(),y=c())\n");
    
@@ -671,6 +670,7 @@ void PrintPath(node* mypath) {
    }
    printf("lines(path,lwd=2,col=\"red\")\n");
    printf("scan()\n");
+   printf("#******* END  ********** \n");
    
 }
 
@@ -685,7 +685,7 @@ void DelTopBot(node* head, node** newList)
 
    // miss out the last node 
    while (current->next != NULL) {
-      AppendNode(newList, current->data);
+      Push(newList, current->data);
       current = current->next;
    }
 }

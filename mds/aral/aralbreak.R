@@ -42,9 +42,11 @@ mds.grid<-data.frame(x=xx[grid.onoff],y=yy[grid.onoff])
 # these points seem to be responsible
 #p1=(-90.138483,-78.331649)
 #p2=(15.789678,135.697684)
-tst<-list(x=c(-90.138483,15.789678),
-          y=c(-78.331649,135.697684))
+#tst<-list(x=c(-90.138483,15.789678),
+#          y=c(-78.331649,135.697684))
 
+tst<-list(x=c(-47.767218,-5.395954),
+          y=c(-24.824316,135.697684))
 
 #tst<-pe(mds.grid,c(14,243))
 #tst<-pe(mds.grid,c(14,244))
