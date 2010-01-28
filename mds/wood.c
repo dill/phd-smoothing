@@ -129,7 +129,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    make_bnd_path(p1,p2,nbnd,bnd,&mypath);
-   PrintPath(mypath);
+//   PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -522,6 +522,7 @@ void alter_step(node** path, int nbnd, double **bnd)
    node* newpath=NULL;
    node* end_ptr=NULL;
    node* current=NULL;
+   node* inspath=NULL;
 
    // convergence stop
    int conv=0;
@@ -584,11 +585,15 @@ void alter_step(node** path, int nbnd, double **bnd)
 //printf("### new path\n");
 //PrintPath(newpath);
       delete_step(&newpath,nbnd,bnd);
-//printf("### delnew path\n");
+//printf("### del path\n");
 //PrintPath(newpath);
 
             // only insert the path if it's better!
             if(hull_length(&newpath)<triplen){
+
+               // remove the first and last entries in newpath, since otherwise
+               // we duplicated ep1 and ep2
+               DelTopBot(newpath,&inspath);
 
                // create new path, compare complete new path with old one, if the
                // new one is better then keep it.
@@ -608,11 +613,11 @@ void alter_step(node** path, int nbnd, double **bnd)
                current=current->prev; // pointer at i-1
                
                // change where next points to
-               newpath->prev=current; // point head of newpath back 
+               inspath->prev=current; // point head of newpath back 
 
                free(current->next); // free the memory at i
 
-               current->next=newpath; // point i-1 next to the head of newpath
+               current->next=inspath; // point i-1 next to the head of newpath
       
                // fast forward to the end of newpath
                while(current->next!=NULL){
@@ -624,10 +629,9 @@ void alter_step(node** path, int nbnd, double **bnd)
                current->next=end_ptr;
    
                current=current->next; // current now at i+1
-            }else{
-               
-               FreeList(&newpath);
             }// end insert if 
+            // free newpath
+            FreeList(&newpath);
          } // end facing
          
         	current=current->prev; // go back to i, need this to catch all triplets
@@ -636,6 +640,8 @@ void alter_step(node** path, int nbnd, double **bnd)
    } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );
    //end of main do
 
+//printf("### final path\n");
+//PrintPath(*path);
    FreeList(&prevpath);
 
 }

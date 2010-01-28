@@ -36,6 +36,7 @@ void CopyList(node*, node**);
 int Length(node*);
 void FreeList(node**);
 void PrintPath(node*);
+void DelTopBot(node*, node**);
 
 // for in_out in separate file
 void in_out(double *, double *, double *,double *,double *,int *, int *, int * );
