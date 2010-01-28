@@ -527,13 +527,10 @@ void alter_step(node** path, int nbnd, double **bnd)
    node* newpath=NULL;
    node* end_ptr=NULL;
    node* current=NULL;
-   node* inspath=NULL;
 
    // convergence stop
    int conv=0;
    int conv_stop=10;
-
-int whilecount;
 
    // iterate over the points in the path:
    // alter the path, until on two(?) consecutive runs there are
@@ -554,7 +551,6 @@ int whilecount;
       //i<-2
       //while((i+1)<=length(path$x)){
 
-whilecount=0;
 
       while(current!=NULL){
          // equivalent of some ANDs in the above, but doesn't cause a memory
@@ -598,14 +594,15 @@ whilecount=0;
 //printf("### del path\n");
 //PrintPath(newpath);
 
-printf("before hullen\n");
             // only insert the path if it's better!
-            if(hull_length(&newpath)<triplen){
-printf("after hullen\n");
+            if((hull_length(&newpath)<triplen)){// & (Length(newpath)>1)){
 
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
-               DelTopBot(newpath,&inspath);
+//printf("before hullen\n");
+//PrintPath(newpath);
+               DelTopBot(newpath);
+//printf("after hullen\n");
 //PrintPath(newpath);
 
                // create new path, compare complete new path with old one, if the
@@ -626,35 +623,29 @@ printf("after hullen\n");
                current=current->prev; // pointer at i-1
                
                // change where next points to
-               inspath->prev=current; // point head of newpath back 
+               newpath->prev=current; // point head of newpath back 
 
                free(current->next); // free the memory at i
 
-               current->next=inspath; // point i-1 next to the head of newpath
+               current->next=newpath; // point i-1 next to the head of newpath
       
-printf("### before\n");
                // fast forward to the end of newpath
                while(current->next!=NULL){
                   current=current->next;
                }
    
-printf("###after\n");
                // point the end of newpath to i+1
                end_ptr->prev=current; // set previous of i+1 to be the end of newpath
                current->next=end_ptr;
    
                current=current->next; // current now at i+1
+            //}else{
+            //   // end facing
+               // free newpath
+            //   FreeList(&newpath);
             }// end insert if 
-            // free newpath
-            FreeList(&newpath);
-         } // end facing
-         
+         }
         	current=current->prev; // go back to i, need this to catch all triplets
-
-whilecount++;
-printf("wc=%d\n",whilecount);
-printf("conv=%d\n",conv);
-
       } // end of iteration over the path
       conv++;
    } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );

@@ -675,19 +675,25 @@ void PrintPath(node* mypath) {
 }
 
 // Delete the first and last entries of a list
-// based on CopyList()
-void DelTopBot(node* head, node** newList)
+void DelTopBot(node* head)
 {
-   node* current = head;      // used to iterate over the original list
+   node* current = NULL;      // used to iterate over the original list
 
    // miss out the first node
-   current=current->next;
+   *head=*(head->next);
+   current=head;
+   current->prev=NULL;
+   
+   current=head;
 
-   // miss out the last node 
-   while (current->next != NULL) {
-      Push(newList, current->data);
+   // skip to the end 
+   while (current->next->next != NULL) {
       current = current->next;
    }
+   
+//   free(current->next);
+   current->next=NULL;
+
 }
 
 ////////////////////////////
