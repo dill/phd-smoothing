@@ -559,14 +559,16 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
 // free a linked list's memory
 void FreeList(node** headRef) { 
    node* current = *headRef;// deref headRef to get the real head 
-   node* next; 
+   node* next=NULL; 
+
    while (current != NULL) { 
       next = current->next; // note the next pointer 
       free(current); // delete the node 
       current = next; // advance to the next node 
    } 
+
    *headRef = NULL; // Again, deref headRef to affect the real head back 
-   // in the caller. 
+                    // in the caller. 
 } 
 
 void Push(node** headRef, double data[2]) {
@@ -693,6 +695,38 @@ void DelTopBot(node* head)
    
 //   free(current->next);
    current->next=NULL;
+
+}
+
+// reverse the elements of a linked list
+//void ReverseList(node** head){
+//   node* tmp=NULL;   
+//   node* current=*head;
+//
+//   while(current!=NULL){
+//      tmp=current->next;
+//      current->next=current->prev;
+//      current->prev=tmp;
+//      if(current->prev == NULL){
+//         head=&current;
+//      }
+//      current=current->prev;
+//   }
+//}
+
+void ReverseList(node** head){
+   node* current=*head;
+
+   node* revlist = NULL;
+
+   while(current!=NULL){
+      Push(&revlist,current->data);
+      current=current->next;
+   }
+
+   FreeList(head);
+
+   *head=revlist;
 
 }
 
