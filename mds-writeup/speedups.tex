@@ -67,15 +67,21 @@
 
 \section{Introduction}
 
-Clearly need to speed up.
-
-Also make things more accurate.
+Clearly need to speed up. Also make things more accurate.
 
 \section{Calculating MDS by Lanczos iteration}
 
+This should be simple enough, just re-write \texttt{cmdscale} so that only the first $k$ eigenvalues are computed, rather than finding $n$, returning $k$ of them and discarding the rest.
+
 \section{Partial path calculation}
 
+\begin{enumerate}
+\item a thing
+\end{enumerate}
+
 \section{Clever grids}
+
+Initial grid calculations could be done on a much less dense grid, making things much faster. Possibly just shrinking the polygon and using points on the edges.
 
 \section{Dynamic $\lambda$}
 
