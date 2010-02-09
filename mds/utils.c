@@ -21,7 +21,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-10;
+   double eps=1e-16;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -129,6 +129,12 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
       tmpbnd[i]=tmpbnd[0]+i*2;
    }
 
+
+   // DEBUG
+//   printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+//   printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+
+
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
    for(j=0;j<(nbnd-1);j++){
@@ -162,6 +168,9 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
          do_intersect(p1, p2, tmpnbnd, tmpbnd, tmpbndint);
 
          bndint[j]=tmpbndint[0];
+
+         // DEBUG
+//         printf("bndint[%d]=%d\n",j,bndint[j]);
       }
    } // end for loop
 

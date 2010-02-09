@@ -385,8 +385,13 @@ void delete_step(node** path, int nbnd, double **bnd)
       // loop over the full path
       while(current!=NULL){
 
+//DEBUG
+//printf("----------------------\n");
+
+
          // equivalent of some ANDs in the above, but doesn't cause a memory
-         // problem that occurs when  the while() evaluates all of the conditions.
+         // problem that occurs when  the while() evaluates all of the 
+         // conditions.
          if(current->next==NULL){
             break;
          }else if(current->next->next==NULL){
@@ -425,10 +430,6 @@ void delete_step(node** path, int nbnd, double **bnd)
 
             // go forward again (remember next has changed)
             current=current->next; // back to i+2
-
-            // DEBUG
-            //printf("len=%d\n",Length(*path));
-            //PrintPath(*path);
 
             // free memory of i and i+1
             free(current->prev->prev);
