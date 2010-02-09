@@ -65,38 +65,34 @@ xm <- seq(min(aral.dat$x),max(aral.dat$x),length=m)
 yn<-seq(min(aral.dat$y),max(aral.dat$y),length=n)
 xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 grid.onoff<-inSide(bnd,xx,yy)
-
-
 mds.grid<-data.frame(x=xx[grid.onoff],y=yy[grid.onoff])
 
-
-
+# actually do the MDS
 D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd)
-
-
-
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
 
+# create the data frame and fit the model
+aral.mds<-insert.mds(aral.dat,mds.grid,grid.mds,bnd)
+aral.mds<-data.frame(x=aral.mds[,1],
+                     y=aral.mds[,2],
+                     chl=aral.dat$chl)
 
 
-tp.fit<-gam(chl~s(x,y,k=49),data=aral.dat)
+mds.fit<-gam(chl~s(x,y,k=49),data=aral.mds)
 
 # prediction grid
-#   pred.mds<-insert.mds(pred.data,my.grid,grid.mds,bnd)
-#
-#
-#
-#m<-50;n<-50
-#xm <- seq(min(aral.dat$x),max(aral.dat$x),length=m)
-#yn<-seq(min(aral.dat$y),max(aral.dat$y),length=n)
-#xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
-#pred.onoff<-inSide(bnd,xx,yy)
-#pred.grid<-data.frame(x=xx[pred.onoff],y=yy[pred.onoff])
-#
-#tp.pred<-predict(tp.fit,newdata=pred.grid)
-#pred.mat<-matrix(NA,m,n)
-#pred.mat[pred.onoff]<-tp.pred
-#image(pred.mat,x=unique(xx),y=unique(yy),main="tprs",xlab="km (East)",ylab="km (North)")
+m<-50;n<-50
+xm <- seq(min(aral.dat$x),max(aral.dat$x),length=m)
+yn<-seq(min(aral.dat$y),max(aral.dat$y),length=n)
+xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
+pred.onoff<-inSide(bnd,xx,yy)
+pred.grid<-data.frame(x=xx[pred.onoff],y=yy[pred.onoff])
+pred.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd)
+
+mds.pred<-predict(mds.fit,newdata=pred.mds)
+pred.mat<-matrix(NA,m,n)
+pred.mat[pred.onoff]<-tp.pred
+image(pred.mat,x=unique(xx),y=unique(yy),main="mds",xlab="km (East)",ylab="km (North)")
 
 #### soap 
 #tp.fit<-gam(chl~s(x,y,k=49),data=aral.dat)

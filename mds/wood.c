@@ -129,7 +129,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    make_bnd_path(p1,p2,nbnd,bnd,&mypath);
-//   PrintPath(mypath);
+   PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -150,14 +150,14 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      //printf("### delete_step ###\n");
-      //PrintPath(mypath);
+      printf("### delete_step ###\n");
+      PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      //printf("### alter_step ###\n");
-      //PrintPath(mypath);
+      printf("### alter_step ###\n");
+      PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -382,6 +382,7 @@ void delete_step(node** path, int nbnd, double **bnd)
       current = *path;   // iterator
 
       //while((i+1)<=length(path$x)){
+      // loop over the full path
       while(current!=NULL){
 
          // equivalent of some ANDs in the above, but doesn't cause a memory
@@ -397,9 +398,9 @@ void delete_step(node** path, int nbnd, double **bnd)
          for(i=0;i<3;i++){ 
             mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
 				// don't go to far...
-				if(i!=2){
-	            current=current->next; 
-				}
+            if(i!=2){
+               current=current->next; 
+            }
          }
 
          // pointer is now at i+1
@@ -427,7 +428,7 @@ void delete_step(node** path, int nbnd, double **bnd)
 
             // DEBUG
             //printf("len=%d\n",Length(*path));
-//            PrintPath(*path);
+            //PrintPath(*path);
 
             // free memory of i and i+1
             free(current->prev->prev);

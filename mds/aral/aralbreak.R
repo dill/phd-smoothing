@@ -45,8 +45,34 @@ mds.grid<-data.frame(x=xx[grid.onoff],y=yy[grid.onoff])
 #tst<-list(x=c(-90.138483,15.789678),
 #          y=c(-78.331649,135.697684))
 
-tst<-list(x=c(-47.767218,-5.395954),
-          y=c(-24.824316,135.697684))
+#tst<-list(x=c(-47.767218,-5.395954),
+#          y=c(-24.824316,135.697684))
+#plot(bnd,type="l")
+#path<-list(x=c(),y=c())
+#path$x<-c(path$x,-90.138483)
+#path$y<-c(path$y,15.306184)
+#path$x<-c(path$x,-46.146022)
+#path$y<-c(path$y,-40.248430)
+#path$x<-c(path$x,-46.537547)
+#path$y<-c(path$y,-21.805957)
+#path$x<-c(path$x,-52.598789)
+#path$y<-c(path$y,-21.805957)
+#path$x<-c(path$x,-59.195151)
+#path$y<-c(path$y,38.755778)
+#path$x<-c(path$x,-41.021036)
+#path$y<-c(path$y,63.601618)
+#path$x<-c(path$x,-26.836254)
+#path$y<-c(path$y,75.248106)
+#path$x<-c(path$x,-18.731849)
+#path$y<-c(path$y,63.601618)
+#path$x<-c(path$x,-11.732498)
+#path$y<-c(path$y,27.109291)
+#path$x<-c(path$x,5.196862)
+#path$y<-c(path$y,-105.085315)
+#lines(path,lwd=2,col="red")
+
+tst<-list(x=c(-90.138483,5.196862),
+          y=c(15.306184,-105.085315))
 
 #tst<-pe(mds.grid,c(14,243))
 #tst<-pe(mds.grid,c(14,244))
