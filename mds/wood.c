@@ -129,7 +129,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    make_bnd_path(p1,p2,nbnd,bnd,&mypath);
-   PrintPath(mypath);
+   //PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -150,14 +150,14 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### delete_step ###\n");
-      PrintPath(mypath);
+      //printf("### delete_step ###\n");
+      //PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### alter_step ###\n");
-      PrintPath(mypath);
+      //printf("### alter_step ###\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -165,8 +165,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   printf("### final ###\n");
-   PrintPath(mypath);
+   //printf("### final ###\n");
+   //PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
@@ -384,10 +384,6 @@ void delete_step(node** path, int nbnd, double **bnd)
       //while((i+1)<=length(path$x)){
       // loop over the full path
       while(current!=NULL){
-
-//DEBUG
-//printf("----------------------\n");
-
 
          // equivalent of some ANDs in the above, but doesn't cause a memory
          // problem that occurs when  the while() evaluates all of the 

@@ -87,11 +87,13 @@ yn<-seq(min(aral.dat$y),max(aral.dat$y),length=n)
 xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 pred.onoff<-inSide(bnd,xx,yy)
 pred.grid<-data.frame(x=xx[pred.onoff],y=yy[pred.onoff])
-pred.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd)
+pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd)
 
-mds.pred<-predict(mds.fit,newdata=pred.mds)
+pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
+                          y=pred.grid.mds[,2])
+mds.pred<-predict(mds.fit,newdata=pred.grid.mds)
 pred.mat<-matrix(NA,m,n)
-pred.mat[pred.onoff]<-tp.pred
+pred.mat[pred.onoff]<-mds.pred
 image(pred.mat,x=unique(xx),y=unique(yy),main="mds",xlab="km (East)",ylab="km (North)")
 
 #### soap 

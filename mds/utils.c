@@ -21,7 +21,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-16;
+   double eps=1e-10;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -77,6 +77,20 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
          // first find the intersection point
          intpoint(p1,p2,thisedge,ip);
 
+         // check the intersection point is not just one of p1 or p2
+         if(( (fabs(ip[0]-p1[0]) <=eps) & (fabs(ip[1]-p1[1]) <=eps) ) |
+            ( (fabs(ip[0]-p2[0]) <=eps) & (fabs(ip[1]-p2[1]) <=eps) )){
+            bndint[i]=0;
+         }
+
+         // or that it's one of the edge end points
+         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) & (fabs(ip[1]-thisedge[0][1]) <=eps)) |
+             ((fabs(ip[0]-thisedge[1][0]) <=eps) & (fabs(ip[1]-thisedge[1][1]) <=eps))){ 
+            bndint[i]=0;
+         }
+
+
+
          // first need to handle the horizontal and vertical line cases
          if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
             if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
@@ -107,6 +121,8 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
                if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
             }
          } // end of bounding box ip check
+
+
       }
    }// end iterate over boundary
 }
