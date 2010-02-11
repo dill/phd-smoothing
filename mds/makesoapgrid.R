@@ -1,5 +1,5 @@
 # function to create a grid for soap
-make_soap_grid<-function(bnd,n.grid){
+make_soap_grid<-function(bnd,n.grid,mat=FALSE){
 
    require(soap)
 
@@ -28,7 +28,16 @@ make_soap_grid<-function(bnd,n.grid){
    xx<-xx[onoff]
    yy<-yy[onoff]
 
-   return(list(x=xx,y=yy))
+   ret<-list(x=xx,y=yy)
+
+   # if we want an image plot, return a matrix
+   if(mat){
+     mat<-matrix(NA,m,n)
+     mat[onoff]<-0
+     ret$mat<-mat
+   }
+
+   return(ret)
 
 }
 

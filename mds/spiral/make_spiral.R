@@ -1,7 +1,9 @@
 # make the spiral...
 
-make_spiral<-function(spiral.res){
+# grid maker
+source("makesoapgrid.R")
 
+make_spiral<-function(spiral.res=100,n.grid=100){
 
    phi<-seq(0.5,5*pi,length.out=spiral.res)
 
@@ -9,25 +11,47 @@ make_spiral<-function(spiral.res){
    f1<-function(x){0.5*sqrt(x)*cos(x)}
    f2<-function(x){0.5*sqrt(x)*sin(x)}
 
+   # make the boundary
+   offset<-5
+   bnd1<-list(x=offset+f1(phi)*1.1,y=offset+f2(phi)*1.1)
+   bnd2<-list(x=offset+f1(phi)*0.9,y=offset+f2(phi)*0.9)
 
-   bnd1<-list(x=f1(phi)*1.1,y=f2(phi)*1.1)
-   bnd2<-list(x=f1(phi)*0.9,y=f2(phi)*0.9)
-
+   # join the two ends up
    bnd<-list(x=c(bnd1$x,rev(bnd2$x),bnd1$x[1]),
              y=c(bnd1$y,rev(bnd2$y),bnd1$y[1]))
 
-   # change phi so that the data only exists inside the boundary
-   phi<-phi[phi>0.5]
-   phi<-phi[-length(phi)]
+   # create a grid
+   sp.grid<-make_soap_grid(bnd,n.grid,mat=TRUE)
+   x<-sp.grid$x
+   y<-sp.grid$y
+   
+   # convert x and y back to find phis 
+   z<-rep(0,length(x))
 
-   dat<-list(x=f1(phi),y=f2(phi))
+   z[x>0]<-atan(y[x>0]/x[x>0])+pi
+   z[x<0]<-atan(y[x<0]/x[x<0])
+   z[x==0 & y>0]<-pi/2
+   z[x==0 & y<0]<-pi/2
 
-   return(list(dat=dat,bnd=bnd))
+   # create the data frame
+   dat<-data.frame(x=x,y=y,z=z)
+
+   # create a matrix for plotting
+   mat<-sp.grid$mat
+   mat[!is.na(mat)]<-z
+
+
+   return(list(dat=dat,bnd=bnd,mat=mat))
 
 
 }
 
-plot(make_spiral(100)$bnd,type="l",col="red")
-lines(make_spiral(100)$dat)
+### test code
+#spir.dat<-make_spiral()
+#image(z=spir.dat$mat,x=seq(min(spir.dat$bnd$x),max(spir.dat$bnd$x),len=dim(spir.dat$mat)[2]),
+#      y=seq(min(spir.dat$bnd$y),max(spir.dat$bnd$y),len=dim(spir.dat$mat)[1]),
+#      col=heat.colors(100))
+#lines(spir.dat$bnd)
+
 
 
