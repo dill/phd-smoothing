@@ -75,9 +75,37 @@ This should be simple enough, just re-write \texttt{cmdscale} so that only the f
 
 \section{Partial path calculation}
 
+Notation is as in algorithm for the path calculation. Taking points $p_i$ and $p_j$ in the set of all points in the domain and drawing a path between them, finding within-area distance with respect to the boundary of $\Gamma$.
+
+This is an outer loop to augment the schema in the original algorithm, the routines INIT, DELETE, ALTER, ITER are identical.
+
 \begin{enumerate}
-\item a thing
+\item First calculate the Euclidean distances between all unique $p_i$ and $p_j$ where $i=1,\dots, N$ and $j=1,\dots, N$ if possible (ie. if the path between them is a straight line.) Store these in two identical symmetric matrices, $D$ and $E$ (since the path from  $p_i$ to $p_j$ is the same as  $p_j$ to $p_i$.) $D$ is used to store the lengths of all paths and is updated, $E$ is not modified and just contains those paths which are Euclidean. We also store a series of previous paths $\mathcal{P}_1,\ldots, \mathcal{P}_M$ (where $M$ is at most $N-1$) which are updated through the algorithm.
+
+\item For each unique pairing of $p_i$ and $p_j$ calculate the path using \textbf{one} of the following options.
+
+\begin{enumerate}
+
+\item If there has been a previous path calculated (ie. $\mathcal{P}_k$ exists for some $k$), and $p_i$ is the same as either end point of a previous path ($p_i=p_{k}$ for $k \in \{1,\dots, i-1\} \cup \{1,\dots, j-1\}$, where $p_k$ is an end of $\mathcal{P}_*$) check to see if the path between the other end point ($p_l$, say) and current $p_j$ is Euclidean (ie. there is an entry in $E_{j,l}$.) In this case it is only necessary to replace the the element $p_l$ (either the first of last element) of $\mathcal{P}_{*}$ with $p_j$ to obtain the optimal path. Store this path in $\mathcal{P}_{j}$ and its length in $D_{ij}$.
+
+This handles the case when the start point is the same but the end point is moving slightly each time over the grid.
+
+\item If there has been a previous path calculated, and $p_j$ is the same as either end point of a previous path ($p_j=p_{k}$ for some $k \in \{1,\dots, i-1\} \cup \{1,\dots, j-1\}$, where $p_k \in \mathcal{P}_*$) check to see if the path between the other end point ($p_l$, say) and current $p_i$ is Euclidean (ie. there is an entry in $E_{i,l}$.) In this case it is only necessary to replace the element $p_l$ of $\mathcal{P}_{*}$ with $p_j$ to obtain the optimal path. Store this path in $\mathcal{P}_{j}$ and its length in $D_{ij}$.
+
+This handles the case when the end point is the same but the start point has jumped.
+
+\item If none of the above steps have been executed and $p_i$ is the same as either end point of a previous path ($p_i=p_{k}$ for some $k \in \{1,\dots, i-1\} \cup \{1,\dots, j-1\}$ where $p_k \in \mathcal{P}_*$) then run INIT using $p_j$ and $p_l$ (the other point in the current calculation pair and the other end of the matching previous path.) Take the resulting path ($\mathcal{P}_\text{INIT}=(p_j, \dots, p_l)$) and add it to the correct end of the matching previous path, then continue looping over the DELETE and ALTER steps until convergence as before. Save the optimal path in $\mathcal{P}_j$ and its length in $D_{ij}$.
+
+\item If none of the above steps have been executed and $p_j$ is the same as either end point of a previous path ($p_j=p_{k}$ for some $k \in \{1,\dots, i-1\} \cup \{1,\dots, j-1\}$) then run INIT using $p_i$ and $p_l$ (the other point in the current calculation pair and the other end of the matching previous path.) Take the resulting path ($\mathcal{P}_\text{INIT}=(p_i, \dots, p_l)$) and add it to the correct end of the matching previous path, then continue looping over the DELETE and ALTER steps until convergence as before. Save the optimal path in $\mathcal{P}_j$ and its length in $D_{ij}$.
+
+\item If none of (a)-(e) have been used, then use the original algorithm to calculate the path between $p_i$ and $p_j$. Store the path in $\mathcal{P}_{j}$ and calculate and store its length in $D_{ij}$.
+
 \end{enumerate}
+\end{enumerate}
+
+This might work well for a grid but for real data we probably want to order the data (top left to bottom right?) before running the algorithm. Some order is probably better than none.
+
+
 
 \section{Clever grids}
 
