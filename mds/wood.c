@@ -129,7 +129,9 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    make_bnd_path(p1,p2,nbnd,bnd,&mypath);
-   PrintPath(mypath);
+   // DEBUG
+   //printf("### make_bnd_path ###\n");
+   //PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -150,14 +152,14 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### delete_step ###\n");
-      PrintPath(mypath);
+      //printf("### delete_step ###\n");
+      //PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### alter_step ###\n");
-      PrintPath(mypath);
+      //printf("### alter_step ###\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -165,8 +167,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   printf("### final ###\n");
-   PrintPath(mypath);
+   //printf("### final ###\n");
+   //PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
@@ -581,35 +583,33 @@ void alter_step(node** path, int nbnd, double **bnd)
          triplen=hypot(mid[0]-ep1[0],mid[1]-ep1[1]);
          triplen=triplen+hypot(ep2[0]-mid[0],ep2[1]-mid[1]);
 
+// DEBU
+//printf("cat(\"-----%d----\\n\")\n",facing(ep1, ep2, nbnd, bnd));
+//printf("ep1<-list(x=%f,y=%f)\n",ep1[0],ep1[1]);
+//printf("ep2<-list(x=%f,y=%f)\n",ep2[0],ep2[1]);
+//printf("plot(bnd,type=\"l\")\n");
+//printf("lines(x=c(ep1$x,ep2$x),y=c(ep1$y,ep2$y))\n");
+//printf("scan()\n");
+//printf("#####\n");
+
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
 
             // create a new path
             make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
-            // DEBUG
-//            printf("### new path\n");
-//            PrintPath(newpath);
+
             // make the new path as simple as possible (no simpler :))
             if(Length(newpath)>3){
                delete_step(&newpath,nbnd,bnd);
             }
-            // DEBUG
-//            printf("### del path\n");
-//            PrintPath(newpath);
 
             // only insert the path if it's better!
             if((hull_length(&newpath)<triplen)){// & (Length(newpath)>1)){
 
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
-//            printf("### pre path\n");
-//            PrintPath(newpath);
                DelTopBot(newpath);
-//            printf("### del path\n");
-//            PrintPath(newpath);
                ReverseList(&newpath);
-//            printf("### rev path\n");
-//            PrintPath(newpath);
 
                // create new path, compare complete new path with old one, if the
                // new one is better then keep it.

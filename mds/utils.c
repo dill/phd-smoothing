@@ -212,7 +212,6 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
    int i, err, intind[2], tmpinout;
    double ip1[2],ip2[2], xmp[2], ymp[2];
    double *bx, *by, xmin, ymin, mina[2], break_code;
-   double mprop;
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
