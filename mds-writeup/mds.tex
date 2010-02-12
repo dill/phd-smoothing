@@ -69,7 +69,7 @@
 
 \subsection{Motivation}
 
-Splines are a popular way of performing spatial smoothing in two dimensions. In this context, they are used to fit smooth functions of location over a geographical region. A typical application of this is in ecological modelling; particularly when the spatial distribution of a species is sought. In this case the locations of where the species in question were observed are recorded and fed into the model which can then be used to perform inference on the population, whether that be an abundance estimate, density map or a more sophisticated inferential goal.
+Splines are a popular way of performing spatial smoothing in two dimensions. In this context, they are used to fit smooth functions over a geographical region. A typical application of this is in ecological modelling; particularly when the spatial distribution of a species is sought. In this case counts of the species in question at the locations at which they were observed are recorded and fed into the model which can then be used to perform inference on the population, whether that be an abundance estimate, density map or a more sophisticated inferential goal.
 
 When the geographical region has a complex boundary, features from one part of the domain can unduly influence other parts. Typically a ``complex boundary'' consists of having some peninsula-like feature(s) in the domain with notably different values on either side of the feature; there must also be some scientific motivation as to why those parts of the domain should not affect each other. Features such as peninsulae give rise to a phenomenon known as leakage; a typical example can be seen in \fig{leakage}. Leakage is problematic since it causes the fitted surface to be mis-estimated; this can then lead to incorrect inference (eg. incorrect abundance estimates), which is clearly not desirable. This can be seen in \fig{leakage} where the high values in the upper part of the domain leak across the gap to the lower values below and vice versa.
 
@@ -308,12 +308,17 @@ Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean 
 
 \section{Multidimensional scaling for smoothing over complex domains}
 
-Taking a cue from \cite{soap} simulations were conducted on the so-called modified Ramsay horseshoe and another domain supposed to mimic the shape of a coastline. Results are compared using the mean squared error (MSE) criterion, defined (as in \cite{elements}) as:
+Taking a cue from \cite{soap} simulations were conducted on the so-called modified Ramsay horseshoe and another domain supposed to mimic the shape of a coastline. Results are compared using the mean squared error (MSE) criterion and their estimated degrees of freedom (EDF.)
+
+The mean squared error is defined (as in \cite{simonbook} p. 131) as:
 
 \begin{equation}
 \text{MSE}(\hat{f}) = \frac{1}{P} \sum_{j=1}^P (\hat{f}(x_j) - z_j)^2,
 \end{equation}
 the mean difference between the model ($\hat{f}$) evaluated at the prediction points ($\{x_j : j=1 \dots P\}$) and the true value of the function ($\{z_j : j=1 \dots P\}$.) This gives the MSE per model, since here many realisations are run, the mean of these over all simulations is taken and the standard error is calculated.
+
+The estimated degrees of freedom of a model gives an idea of the complexity of the spline that was fit to the data, the higher the EDF, the more basis functions were used and  the more complex the model.  Since the models used here are penalised, it is the penalty term that controls the overall ``wigglyness'' of the spline and hence the EDF. Although the basis dimension is set in the model this is just an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite{simonbook}, p. 161.) 
+
 
 \subsection{Modified horseshoe}
 
@@ -331,13 +336,21 @@ Note that due to time and computational restrictions, the boundary was reduced f
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{c || c c c | c c c}
- & & MSE & &  & EDF & \\ 
-$\sigma$ & MDS & soap & thin plate & MDS & soap & thin plate\\ 
+\begin{tabular}{c c c c}
+ & & MSE & \\ 
+$\sigma$ & MDS & Soap film & Thin plate\\ 
 \hline
-0.1  & 0.0032 (3$\cross10^{-5}$) & 0.0022 (3$\cross10^{-5}$) & 0.0402 (0.0008) & 47.613 (0.3497) & 39.164 (0.26) & 92.5996 (0.1020)\\ 
-1  & 0.0436 (0.0015) & 0.0482 (0.0014) & 0.2306 (0.0024) & 8.3828 (0.3452) & 11.868 (0.4010) & 46.607 (0.4238)\\ 
-10  & 2.0652 (0.1215) & 3.0702 (0.2382) & 3.3713 (0.1133) & 5.0577 (0.3324) & 5.5863 (0.2876) & 5.9786 (0.2511)\\ 
+0.1  & 0.0032 (3$\cross10^{-5}$) & 0.0022 (3$\cross10^{-5}$) & 0.0402 (0.0008) \\ 
+1  & 0.0436 (0.0015) & 0.0482 (0.0014) & 0.2306 (0.0024) \\ 
+10  & 2.0652 (0.1215) & 3.0702 (0.2382) & 3.3713 (0.1133) \\ 
+\end{tabular}
+\begin{tabular}{c  c c c }
+&  & EDF & \\ 
+$\sigma$ & MDS & Soap film & Thin plate\\ 
+\hline
+0.1 & 47.613 (0.3497) & 39.164 (0.26) & 92.5996 (0.1020)\\ 
+1  & 8.3828 (0.3452) & 11.868 (0.4010) & 46.607 (0.4238)\\ 
+10 & 5.0577 (0.3324) & 5.5863 (0.2876) & 5.9786 (0.2511)\\ 
 \end{tabular}
 \caption{Mean MSE and estimated degrees of freedom (EDF) for the three models fitted to the modified Ramsay horseshoe function with standard errors (in brackets) over 200 realisations.}
 \label{ramsayresultstable}
@@ -384,16 +397,29 @@ Table \ref{wt2resultstable} shows that when there is low error, both the soap fi
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{c || c c c c}
+\begin{tabular}{c c c c c}
+ &  & MSE  & &\\ 
 $\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
 \hline
-0.05 & 0.0965 (0.00004) & 0.0643 (0.0043) & 0.0249 (0.00005) & 0.0525 (0.0014)\\ 
-0.5 & 0.1425 (0.00008) & 0.1111 (0.0019) & 0.0826 (0.0064) & 0.1128 (0.0017)\\ 
-5 & 0.9102 (0.0302) & 1.2509 (0.0593) & 1.1544 (0.0385) & 1.3853 (0.0304)\\ 
+0.05  & 0.0948 (0.00084) & 0.0603 (0.00352) & 0.0237 (0.00039) &0.0504 (0.00039) \\ 
+0.5  & 0.1426 (0.00078) & 0.1106 (0.00133) & 0.1013 (0.02151) &0.1123 (0.02151) \\ 
+5  & 0.9179 (0.02644) & 1.2481 (0.04159) & 1.1987 (0.04111) &1.3865 (0.04111)\\ 
 \end{tabular}
-\caption{Mean MSE for the three models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
+\begin{tabular}{c c c c c}
+ &  & EDF  & &\\ 
+$\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
+\hline
+0.05 &72.262 (0.89606) & 78.2691 (0.679) & 94.5187 (0.78697) & 86.9415 (0.78697)\\ 
+0.5 &40.7981 (0.46687) & 50.5025 (0.36223) & 45.2341 (0.74063) & 58.418 (0.74063)\\ 
+5  &6.8274 (0.36097) & 8.577 (0.3649) & 11.5419 (0.83982) & 11.9407 (0.83982)\\ 
+\end{tabular}
+
+\caption{Mean MSE and EDF for the four models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
 \label{wt2resultstable}
 \end{table}
+
+
+
 
 % wt2 fit with error=0.5
 \begin{figure}
