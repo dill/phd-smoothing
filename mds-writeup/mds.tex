@@ -332,6 +332,8 @@ For the modified horseshoe, 100 replications of samples of 250 points with norma
 \item \emph{MDS}: Used a thin plate spline of basis dimension 100. The initial MDS grid was 20 points wide by 10 points tall.
 \end{enumerate} 
 
+In all cases smoothing parameter estimation was performed using GCV.
+
 Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex.
 
 \begin{table}[ht]
@@ -390,6 +392,8 @@ Again, 200 realisations from the domain shown in \fig{wt2-truth} were used with 
 \item \emph{MDS}: after transform a bivariate thin plate spline with basis size 100 was fit. The initial MDS grid was 74 points square.
 \item \emph{MDS with tensor product}: tensor product of two thin plate splines, each of basis dimension 12. The initial MDS grid was 74 points square.
 \end{enumerate} 
+
+In all cases smoothing parameter estimation was performed using GCV.
 
 Looking at a typical realisation in \fig{wt2-fit-0.5}, we see that soap (bottom right panel) does very well, as can be expected, and the thin plate spline (\fig{wt2-fit-0.5}, bottom left panel) fit shows leakage (again, as can be expected.) 
 
