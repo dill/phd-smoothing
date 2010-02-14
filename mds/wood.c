@@ -167,8 +167,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   //printf("### final ###\n");
-   //PrintPath(mypath);
+   printf("### final ###\n");
+   PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
@@ -645,10 +645,6 @@ void alter_step(node** path, int nbnd, double **bnd)
                current->next=end_ptr;
    
                current=current->next; // current now at i+1
-            //}else{
-            //   // end facing
-               // free newpath
-            //   FreeList(&newpath);
             }// end insert if 
          }
         	current=current->prev; // go back to i, need this to catch all triplets

@@ -234,6 +234,21 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
          by[i]=bnd[i][1];
       }
 
+
+      // DEBUG
+      printf("----------\n");
+      printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+      printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+      printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+      printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+      printf("plot(bnd,type=\"l\")\n");
+      printf("points(p1,col=\"red\",pch=19)\n");
+      printf("points(p2,col=\"red\",pch=19)\n");
+      printf("points(ip1,col=\"blue\",pch=19)\n");
+      printf("points(ip2,col=\"blue\",pch=19)\n");
+      printf("----------\n");
+
+
       // find the midpoints between p1, p2 their first intersections
       // store in x and y blocks
       xmp[0]=(ip1[0]+p1[0])/2;
