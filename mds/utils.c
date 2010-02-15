@@ -21,7 +21,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-10;
+   double eps=1e-16;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -217,6 +217,20 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
 
    // if there are no errors, go ahead
    if(err==0){
+
+// EXPERIMENTAL
+
+//      if(onbnd(p1,nbnd,bnd)>0){
+//         ip1[0]=p1[0];
+//         ip1[1]=p1[1];
+//      }else if(onbnd(p2,nbnd,bnd)>0){
+//         ip2[0]=p2[0];
+//         ip2[1]=p2[1];
+//      }
+
+
+
+///////////////////
       // are the midpoints inside?
       // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
       // call the in_out routine from soap. Need to make sure that things are
@@ -236,17 +250,19 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
 
 
       // DEBUG
-      printf("----------\n");
-      printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-      printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-      printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-      printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
-      printf("plot(bnd,type=\"l\")\n");
-      printf("points(p1,col=\"red\",pch=19)\n");
-      printf("points(p2,col=\"red\",pch=19)\n");
-      printf("points(ip1,col=\"blue\",pch=19)\n");
-      printf("points(ip2,col=\"blue\",pch=19)\n");
-      printf("----------\n");
+//      printf("----------\n");
+//      printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//      printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//      printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+//      printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+//      printf("plot(bnd,type=\"l\")\n");
+//      printf("points(p1,col=\"red\",pch=19)\n");
+//      printf("points(p2,col=\"red\",pch=19)\n");
+//      printf("points(ip1,col=\"blue\",pch=19)\n");
+//      printf("points(ip2,col=\"blue\",pch=19)\n");
+//      printf("----------\n");
+//
+//      printf("rly? %d\n",onbnd(p1,nbnd,bnd));
 
 
       // find the midpoints between p1, p2 their first intersections
@@ -360,8 +376,7 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 
 
 /* find if a point is on a line */
-int online(double p1[],double thisline[][2])
-{
+int online(double p1[],double thisline[][2]){
    // uses: twosort
    // returns 1 if the point is on the line, 0 otherwise
 
@@ -370,7 +385,7 @@ int online(double p1[],double thisline[][2])
    double eps, leftside, rightside,xarr[2],yarr[2];
    
    /* Take this global at some point*/
-   eps=1.0e-10;
+   eps=1.0e-16;
 
    /* left hand side of equation */
    /* difference between y values */
@@ -421,6 +436,35 @@ int online(double p1[],double thisline[][2])
 
 }
 
+// is a point on the boundary? Just calls online repeatedly...
+int onbnd(double point[], int nbnd, double** bnd){
+//int online(double p1[],double thisline[][2])
+
+   int i,ind=0;
+   double thisline[2][2];
+
+
+   // iterate over the whole boundary
+   for(i=0;i<(nbnd-1);i++){
+      thisline[0][0]=bnd[i][0];
+      thisline[0][1]=bnd[i][1];
+      thisline[1][0]=bnd[i+1][0];
+      thisline[1][1]=bnd[i+1][1];
+
+      ind=ind+online(point,thisline);
+
+      // DEBUG
+      if(online(point,thisline)!=0){
+         printf("on[%d]=%d\n",(i-1),online(point,thisline));
+
+         printf("plot(bnd,type=\"l\",asp=1)\n");
+         printf("lines(pe(bnd,c(%d,%d)),lwd=5,col=\"red\")\n",i,i+1);
+         printf("p1<-list(x=%f,y=%f)\n",point[0],point[1]);
+         printf("points(p1,col=\"red\",pch=19)\n");
+      }
+   }
+   return(ind);
+}
 
 // calculate the length of the hull by iterating over
 // the list object

@@ -4,7 +4,7 @@ source("spiral/make_spiral.R")
 
 
 
-spir.dat<-make_spiral(n.grid=50)
+spir.dat<-make_spiral(spiral.res=20,n.grid=50)
 bnd<-spir.dat$bnd
 
 
