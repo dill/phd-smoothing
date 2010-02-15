@@ -236,17 +236,27 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
 
 
       // DEBUG
-//      printf("----------\n");
-//      printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-//      printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-//      printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-//      printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
-//      printf("plot(bnd,type=\"l\")\n");
-//      printf("points(p1,col=\"red\",pch=19)\n");
-//      printf("points(p2,col=\"red\",pch=19)\n");
-//      printf("points(ip1,col=\"blue\",pch=19)\n");
-//      printf("points(ip2,col=\"blue\",pch=19)\n");
-//      printf("----------\n");
+      printf("#----------\n");
+      printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+      printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+      printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+      printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+      printf("plot(bnd,type=\"l\")\n");
+      printf("points(p1,col=\"red\",pch=19)\n");
+      printf("points(p2,col=\"red\",pch=19)\n");
+      printf("points(ip1,col=\"blue\",pch=19)\n");
+      printf("points(ip2,col=\"blue\",pch=19)\n");
+      printf("scan();\n");
+
+      if(onbnd(p1,nbnd,bnd)>0){
+         ip1[0]=p1[0];
+         ip1[1]=p1[1];
+      }
+
+      if(onbnd(p2,nbnd,bnd)>0){
+         ip2[0]=p2[0];
+         ip2[1]=p2[1];
+      }
 
 
       // find the midpoints between p1, p2 their first intersections
@@ -370,7 +380,7 @@ int online(double p1[],double thisline[][2])
    double eps, leftside, rightside,xarr[2],yarr[2];
    
    /* Take this global at some point*/
-   eps=1.0e-10;
+   eps=1.0e-16;
 
    /* left hand side of equation */
    /* difference between y values */
@@ -419,6 +429,35 @@ int online(double p1[],double thisline[][2])
       return(0);
    }
 
+}
+// is a point on the boundary? Just calls online repeatedly...
+int onbnd(double point[2], int nbnd, double** bnd){
+//int online(double p1[],double thisline[][2])
+ 
+   int i,ind=0;
+   double thisline[2][2];
+ 
+ 
+   // iterate over the whole boundary
+   for(i=0;i<(nbnd-1);i++){
+      thisline[0][0]=bnd[i][0];
+      thisline[0][1]=bnd[i][1];
+      thisline[1][0]=bnd[i+1][0];
+      thisline[1][1]=bnd[i+1][1];
+ 
+      ind=ind+online(point,thisline);
+ 
+//      // DEBUG
+//      if(online(point,thisline)!=0){
+//         printf("on[%d]=%d\n",(i-1),online(point,thisline));
+// 
+//         printf("plot(bnd,type=\"l\",asp=1)\n");
+//         printf("lines(pe(bnd,c(%d,%d)),lwd=5,col=\"red\")\n",i,i+1);
+//         printf("p1<-list(x=%f,y=%f)\n",point[0],point[1]);
+//         printf("points(p1,col=\"red\",pch=19)\n");
+//      }
+   }
+   return(ind);
 }
 
 

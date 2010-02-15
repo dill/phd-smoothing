@@ -122,13 +122,14 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    double hulllen;
    node* prevpath=NULL;
    node* mypath=NULL;
+   int err;
    
    // used for debugging, below...
    //node* current=NULL;
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   make_bnd_path(p1,p2,nbnd,bnd,&mypath);
+   err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
    // DEBUG
    //printf("### make_bnd_path ###\n");
    //PrintPath(mypath);
@@ -187,7 +188,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
 
 
 // create a path between p1 and p2 using the boundary
-void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** path)
+int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** path)
 {
    /* Args:
     *  p1, p2           points
@@ -313,10 +314,12 @@ void make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pa
          FreeList(&bnd1);
       }
 
+      return 0;
 
    }else{ // end of error if()
       printf("ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
       printf("DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
+      return 1;
    }
 
 }
@@ -532,6 +535,8 @@ void alter_step(node** path, int nbnd, double **bnd)
    int conv=0;
    int conv_stop=10;
 
+   int err;
+
    // iterate over the points in the path:
    // alter the path, until on two(?) consecutive runs there are
    // no changes to the path
@@ -596,7 +601,8 @@ void alter_step(node** path, int nbnd, double **bnd)
          if(facing(ep1, ep2, nbnd, bnd)){
 
             // create a new path
-            make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
+            err=make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
+//         if(err==0){
 
             // make the new path as simple as possible (no simpler :))
             if(Length(newpath)>3){
