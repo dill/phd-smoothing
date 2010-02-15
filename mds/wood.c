@@ -113,7 +113,6 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    double hulllen;
    node* prevpath=NULL;
    node* mypath=NULL;
-   int err;
    
    // used for debugging, below...
    //node* current=NULL;
@@ -160,8 +159,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   //printf("### final ###\n");
-   //PrintPath(mypath);
+   printf("### final ###\n");
+   PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
@@ -528,7 +527,6 @@ void alter_step(node** path, int nbnd, double **bnd)
    int conv=0;
    int conv_stop=10;
 
-   int err;
 
    // iterate over the points in the path:
    // alter the path, until on two(?) consecutive runs there are

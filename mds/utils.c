@@ -219,27 +219,27 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd){
       }
 
       // DEBUG
-      printf("#----------\n");
-      printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-      printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-      printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-      printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
-      printf("plot(bnd,type=\"l\")\n");
-      printf("points(p1,col=\"red\",pch=19)\n");
-      printf("points(p2,col=\"red\",pch=19)\n");
-      printf("points(ip1,col=\"blue\",pch=19)\n");
-      printf("points(ip2,col=\"blue\",pch=19)\n");
-      printf("scan();\n");
+//      printf("#----------\n");
+//      printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//      printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//      printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+//      printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+//      printf("plot(bnd,type=\"l\")\n");
+//      printf("points(p1,col=\"red\",pch=19)\n");
+//      printf("points(p2,col=\"red\",pch=19)\n");
+//      printf("points(ip1,col=\"blue\",pch=19)\n");
+//      printf("points(ip2,col=\"blue\",pch=19)\n");
+//      printf("scan();\n");
 
-      if(onbnd(p1,nbnd,bnd)>0){
-         ip1[0]=p1[0];
-         ip1[1]=p1[1];
-      }
-
-      if(onbnd(p2,nbnd,bnd)>0){
-         ip2[0]=p2[0];
-         ip2[1]=p2[1];
-      }
+//      if(onbnd(p1,nbnd,bnd)>0){
+//         ip1[0]=p1[0];
+//         ip1[1]=p1[1];
+//      }
+//
+//      if(onbnd(p2,nbnd,bnd)>0){
+//         ip2[0]=p2[0];
+//         ip2[1]=p2[1];
+//      }
 
 
       // find the midpoints between p1, p2 their first intersections
@@ -350,62 +350,64 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 }
 
 
-// find if a point is on a line
+ 
+/* find if a point is on a line */
 int online(double p1[],double thisline[][2]){
-
+   // uses: twosort
+   // returns 1 if the point is on the line, 0 otherwise
+ 
    /* So here we just use an n by 2 matrix to represent
-      the points, first col is x, second y, obv.*/
+the points, first col is x, second y, obv.*/
    double eps, leftside, rightside,xarr[2],yarr[2];
    
    /* Take this global at some point*/
    eps=1.0e-16;
-
+ 
    /* left hand side of equation */
    /* difference between y values */
    if(fabs(thisline[1][1]-thisline[0][1])<eps){
       /* first handle if it's a horizontal line */
-
+ 
       xarr[0]=thisline[0][0];
       xarr[1]=thisline[1][0];
       twosort(xarr);
       // need to make sure this kind of thing makes sense
-
+ 
       if((fabs(thisline[1][1]-p1[1])<eps) &&
          ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
          return 1;
-      }else{ 
+      }else{
          return 0;
       }
-}
-
-// is a point on the boundary? Just calls online repeatedly...
-int onbnd(double point[2], int nbnd, double** bnd){
-//int online(double p1[],double thisline[][2])
- 
-   int i,ind=0;
-   double thisline[2][2];
- 
- 
-   // iterate over the whole boundary
-   for(i=0;i<(nbnd-1);i++){
-      thisline[0][0]=bnd[i][0];
-      thisline[0][1]=bnd[i][1];
-      thisline[1][0]=bnd[i+1][0];
-      thisline[1][1]=bnd[i+1][1];
- 
-      ind=ind+online(point,thisline);
- 
-//      // DEBUG
-//      if(online(point,thisline)!=0){
-//         printf("on[%d]=%d\n",(i-1),online(point,thisline));
-// 
-//         printf("plot(bnd,type=\"l\",asp=1)\n");
-//         printf("lines(pe(bnd,c(%d,%d)),lwd=5,col=\"red\")\n",i,i+1);
-//         printf("p1<-list(x=%f,y=%f)\n",point[0],point[1]);
-//         printf("points(p1,col=\"red\",pch=19)\n");
-//      }
+   }else{
+      leftside=(p1[1]-thisline[0][1])/(thisline[1][1]-thisline[0][1]);
    }
-   return(ind);
+ 
+   /* right hand side of equation */
+   if(fabs(thisline[1][0]-thisline[0][0])<eps){
+      /* first handle if it's a vertical line */
+ 
+      yarr[0]=thisline[0][1];
+      yarr[1]=thisline[1][1];
+      twosort(yarr);
+ 
+      if((fabs(thisline[1][0]-p1[0])<eps) &&
+         ((p1[1]<yarr[1])&&(p1[1]>yarr[0]))){
+         return 1;
+      }else{
+         return 0;
+      }
+ 
+   }else{
+      rightside=(p1[0]-thisline[0][0])/(thisline[1][0]-thisline[0][0]);
+   }
+ 
+   /* If nothing went wrong then do the comparison*/
+   if(fabs(leftside-rightside)<eps){
+      return(1);
+   }else{
+      return(0);
+   }
 }
 
 
@@ -462,14 +464,14 @@ int onbnd(double point[], int nbnd, double** bnd){
       ind=ind+online(point,thisline);
 
       // DEBUG
-      if(online(point,thisline)!=0){
-         printf("on[%d]=%d\n",(i-1),online(point,thisline));
-
-         printf("plot(bnd,type=\"l\",asp=1)\n");
-         printf("lines(pe(bnd,c(%d,%d)),lwd=5,col=\"red\")\n",i,i+1);
-         printf("p1<-list(x=%f,y=%f)\n",point[0],point[1]);
-         printf("points(p1,col=\"red\",pch=19)\n");
-      }
+//      if(online(point,thisline)!=0){
+//         printf("on[%d]=%d\n",(i-1),online(point,thisline));
+//
+//         printf("plot(bnd,type=\"l\",asp=1)\n");
+//         printf("lines(pe(bnd,c(%d,%d)),lwd=5,col=\"red\")\n",i,i+1);
+//         printf("p1<-list(x=%f,y=%f)\n",point[0],point[1]);
+//         printf("points(p1,col=\"red\",pch=19)\n");
+//      }
    }
    return(ind);
 }
