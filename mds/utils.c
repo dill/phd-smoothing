@@ -326,67 +326,6 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 }
 
 
-/* find if a point is on a line */
-//int online(double p1[],double thisline[][2]){
-//   // uses: twosort
-//   // returns 1 if the point is on the line, 0 otherwise
-//
-//   /* So here we just use an n by 2 matrix to represent
-//      the points, first col is x, second y, obv.*/
-//   double eps, leftside, rightside,xarr[2],yarr[2];
-//   
-//   /* Take this global at some point*/
-//   eps=1.0e-16;
-//
-//   /* left hand side of equation */
-//   /* difference between y values */
-//   if(fabs(thisline[1][1]-thisline[0][1])<eps){
-//      /* first handle if it's a horizontal line */
-//
-//      xarr[0]=thisline[0][0];
-//      xarr[1]=thisline[1][0];
-//      twosort(xarr);
-//      // need to make sure this kind of thing makes sense
-//
-//      if((fabs(thisline[1][1]-p1[1])<eps) &&
-//         ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
-//         return 1;
-//      }else{ 
-//         return 0;
-//      }
-//
-//   }else{
-//      leftside=(p1[1]-thisline[0][1])/(thisline[1][1]-thisline[0][1]);
-//   }
-//
-//   /* right hand side of equation */
-//   if(fabs(thisline[1][0]-thisline[0][0])<eps){
-//      /* first handle if it's a vertical line */
-//
-//      yarr[0]=thisline[0][1];
-//      yarr[1]=thisline[1][1];
-//      twosort(yarr);
-//
-//      if((fabs(thisline[1][0]-p1[0])<eps) &&
-//         ((p1[1]<yarr[1])&&(p1[1]>yarr[0]))){
-//         return 1;
-//      }else{
-//         return 0;
-//      }
-//
-//   }else{
-//      rightside=(p1[0]-thisline[0][0])/(thisline[1][0]-thisline[0][0]);
-//   }
-//
-//   /* If nothing went wrong then do the comparison*/
-//   if(fabs(leftside-rightside)<eps){
-//      return(1);
-//   }else{
-//      return(0);
-//   }
-//
-//}
-
 // find if a point is on a line
 int online(double p1[],double thisline[][2]){
 
