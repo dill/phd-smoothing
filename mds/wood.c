@@ -82,17 +82,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             // set p2
             p2[0]=x[j]; p2[1]=y[j];
  
-            // DEBUG
-            //printf("(i,j)=(%d,%d)\n",i,j);
-            //printf("p1=(%f,%f)\n",p1[0],p1[1]);
-            //printf("p2=(%f,%f)\n",p2[0],p2[1]);
- 
             // check to see if we have to do the path finding or
             // just the hypotenuse 
             do_intersect(p1, p2, *nbnd, bnd, retint);
-   
-            // DEBUG
-            //printf("ints=%d\n",iarrsum((*nbnd-1),retint));
    
             //                           vvv just hypot when we touch only 1 vertex 
             if(iarrsum((*nbnd-1), retint)>1){
@@ -117,7 +109,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
 double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
 {
-   int conv, conv_stop;
+   int conv, conv_stop,err;
    double hulllen;
    node* prevpath=NULL;
    node* mypath=NULL;
@@ -129,6 +121,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
+   // don't do anything if there is an error at the moment...
    // DEBUG
    //printf("### make_bnd_path ###\n");
    //PrintPath(mypath);
@@ -167,8 +160,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   printf("### final ###\n");
-   PrintPath(mypath);
+   //printf("### final ###\n");
+   //PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
@@ -321,6 +314,7 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
       return 1;
    }
 
+   return 0;
 }
 
 
@@ -524,7 +518,7 @@ void alter_step(node** path, int nbnd, double **bnd)
    //           revised path with added/ammended vertices
 
    double ep1[2], ep2[2], mid[2], triplen;
-
+   int err;
    node* prevpath=NULL;
    node* newpath=NULL;
    node* end_ptr=NULL;
@@ -540,7 +534,6 @@ void alter_step(node** path, int nbnd, double **bnd)
    // alter the path, until on two(?) consecutive runs there are
    // no changes to the path
    do{
-
       // iterator
       current = *path;
 
@@ -554,8 +547,6 @@ void alter_step(node** path, int nbnd, double **bnd)
       // start point for triplet selection
       //i<-2
       //while((i+1)<=length(path$x)){
-
-
       while(current!=NULL){
          // equivalent of some ANDs in the above, but doesn't cause a memory
          // problem when the while() evaluates all of the conditions.
@@ -587,29 +578,20 @@ void alter_step(node** path, int nbnd, double **bnd)
          triplen=hypot(mid[0]-ep1[0],mid[1]-ep1[1]);
          triplen=triplen+hypot(ep2[0]-mid[0],ep2[1]-mid[1]);
 
-// DEBU
-//printf("cat(\"-----%d----\\n\")\n",facing(ep1, ep2, nbnd, bnd));
-//printf("ep1<-list(x=%f,y=%f)\n",ep1[0],ep1[1]);
-//printf("ep2<-list(x=%f,y=%f)\n",ep2[0],ep2[1]);
-//printf("plot(bnd,type=\"l\")\n");
-//printf("lines(x=c(ep1$x,ep2$x),y=c(ep1$y,ep2$y))\n");
-//printf("scan()\n");
-//printf("#####\n");
-
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
 
             // create a new path
             err=make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
-//         if(err==0){
 
+         //if(err==0){
             // make the new path as simple as possible (no simpler :))
             if(Length(newpath)>3){
                delete_step(&newpath,nbnd,bnd);
             }
 
             // only insert the path if it's better!
-            if((hull_length(&newpath)<triplen)){// & (Length(newpath)>1)){
+            if((hull_length(&newpath)<triplen) & (Length(newpath)>1)){
 
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
@@ -650,6 +632,10 @@ void alter_step(node** path, int nbnd, double **bnd)
                current->next=end_ptr;
    
                current=current->next; // current now at i+1
+            //}else{
+            //   // end facing
+               // free newpath
+            //   FreeList(&newpath);
             }// end insert if 
          }
         	current=current->prev; // go back to i, need this to catch all triplets

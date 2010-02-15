@@ -21,7 +21,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-10;
+   double eps=1e-16;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -78,18 +78,16 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
          intpoint(p1,p2,thisedge,ip);
 
          // check the intersection point is not just one of p1 or p2
-         if(( (fabs(ip[0]-p1[0]) <=eps) & (fabs(ip[1]-p1[1]) <=eps) ) |
-            ( (fabs(ip[0]-p2[0]) <=eps) & (fabs(ip[1]-p2[1]) <=eps) )){
+         if(( (fabs(ip[0]-p1[0]) <=eps) && (fabs(ip[1]-p1[1]) <=eps) ) |
+            ( (fabs(ip[0]-p2[0]) <=eps) && (fabs(ip[1]-p2[1]) <=eps) )){
             bndint[i]=0;
          }
 
          // or that it's one of the edge end points
-         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) & (fabs(ip[1]-thisedge[0][1]) <=eps)) |
-             ((fabs(ip[0]-thisedge[1][0]) <=eps) & (fabs(ip[1]-thisedge[1][1]) <=eps))){ 
+         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) && (fabs(ip[1]-thisedge[0][1]) <=eps)) |
+            ((fabs(ip[0]-thisedge[1][0]) <=eps) && (fabs(ip[1]-thisedge[1][1]) <=eps))){
             bndint[i]=0;
          }
-
-
 
          // first need to handle the horizontal and vertical line cases
          if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
@@ -121,8 +119,6 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
                if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
             }
          } // end of bounding box ip check
-
-
       }
    }// end iterate over boundary
 }
@@ -134,7 +130,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
 {
    int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
-   double eps=1e-10;
+   double eps=1e-16;
 
    tmpnbnd=2;
 
@@ -144,12 +140,6 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
    for(i=0; i<tmpnbnd; i++){
       tmpbnd[i]=tmpbnd[0]+i*2;
    }
-
-
-   // DEBUG
-//   printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-//   printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
-
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
@@ -168,10 +158,10 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
            (fabs(p1[1]-bnd[j+1][1]) <= eps) )) bndint[j]=0;
      
       // start/end points the same
-      if(( (fabs(p1[0]-bnd[j][0])  <= eps) & (fabs(p1[1]-bnd[j][1])  <= eps) )|
-         ( (fabs(p2[0]-bnd[j][0])  <= eps) & (fabs(p2[1]-bnd[j][1])  <= eps) )|
-         ( (fabs(p1[0]-bnd[j+1][0])<= eps) & (fabs(p1[1]-bnd[j+1][1])<= eps) )|
-         ( (fabs(p2[0]-bnd[j+1][0])<= eps) & (fabs(p2[1]-bnd[j+1][1])<= eps) ) )
+      if(( (fabs(p1[0]-bnd[j][0])  <= eps) && (fabs(p1[1]-bnd[j][1])  <= eps) )|
+         ( (fabs(p2[0]-bnd[j][0])  <= eps) && (fabs(p2[1]-bnd[j][1])  <= eps) )|
+         ( (fabs(p1[0]-bnd[j+1][0])<= eps) && (fabs(p1[1]-bnd[j+1][1])<= eps) )|
+         ( (fabs(p2[0]-bnd[j+1][0])<= eps) && (fabs(p2[1]-bnd[j+1][1])<= eps) ) )
             bndint[j]=0;
 
       // call original routine if this doesn't work
@@ -184,20 +174,15 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
          do_intersect(p1, p2, tmpnbnd, tmpbnd, tmpbndint);
 
          bndint[j]=tmpbndint[0];
-
-         // DEBUG
-//         printf("bndint[%d]=%d\n",j,bndint[j]);
       }
    } // end for loop
-
    free(tmpbnd[0]);
    free(tmpbnd);
 }
 
 
 /* determine whether the line between two points is facing inside or outside */
-int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
-{
+int facing(double p1[2], double p2[2] , int nbnd, double **bnd){
    /*
    Args:
       p1, p2      the points
@@ -206,7 +191,6 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
       Return:
             1 if facing inside, 0 otherwise
    */
-
    int ret=0;
    int in[2]={0,0};
    int i, err, intind[2], tmpinout;
@@ -233,7 +217,6 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
          bx[i]=bnd[i][0]; 
          by[i]=bnd[i][1];
       }
-
 
       // DEBUG
       printf("#----------\n");
@@ -286,11 +269,9 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
       free(bx);free(by);
    }
 
-
    // if err returned >0 then return 0
    return(ret);
 }
-
 
 // find the intersection point between two points and a line
 void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
@@ -369,11 +350,8 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 }
 
 
-/* find if a point is on a line */
-int online(double p1[],double thisline[][2])
-{
-   // uses: twosort
-   // returns 1 if the point is on the line, 0 otherwise
+// find if a point is on a line
+int online(double p1[],double thisline[][2]){
 
    /* So here we just use an n by 2 matrix to represent
       the points, first col is x, second y, obv.*/
@@ -398,38 +376,8 @@ int online(double p1[],double thisline[][2])
       }else{ 
          return 0;
       }
-
-   }else{
-      leftside=(p1[1]-thisline[0][1])/(thisline[1][1]-thisline[0][1]);
-   }
-
-   /* right hand side of equation */
-   if(fabs(thisline[1][0]-thisline[0][0])<eps){
-      /* first handle if it's a vertical line */
-
-      yarr[0]=thisline[0][1];
-      yarr[1]=thisline[1][1];
-      twosort(yarr);
-
-      if((fabs(thisline[1][0]-p1[0])<eps) &&
-         ((p1[1]<yarr[1])&&(p1[1]>yarr[0]))){
-         return 1;
-      }else{
-         return 0;
-      }
-
-   }else{
-      rightside=(p1[0]-thisline[0][0])/(thisline[1][0]-thisline[0][0]);
-   }
-
-   /* If nothing went wrong then do the comparison*/
-   if(fabs(leftside-rightside)<eps){
-      return(1);
-   }else{
-      return(0);
-   }
-
 }
+
 // is a point on the boundary? Just calls online repeatedly...
 int onbnd(double point[2], int nbnd, double** bnd){
 //int online(double p1[],double thisline[][2])
@@ -494,6 +442,37 @@ int onbnd(double point[2], int nbnd, double** bnd){
 //   }
 //}
 
+
+
+// is a point on the boundary? Just calls online repeatedly...
+int onbnd(double point[], int nbnd, double** bnd){
+//int online(double p1[],double thisline[][2])
+
+   int i,ind=0;
+   double thisline[2][2];
+
+
+   // iterate over the whole boundary
+   for(i=0;i<(nbnd-1);i++){
+      thisline[0][0]=bnd[i][0];
+      thisline[0][1]=bnd[i][1];
+      thisline[1][0]=bnd[i+1][0];
+      thisline[1][1]=bnd[i+1][1];
+
+      ind=ind+online(point,thisline);
+
+      // DEBUG
+      if(online(point,thisline)!=0){
+         printf("on[%d]=%d\n",(i-1),online(point,thisline));
+
+         printf("plot(bnd,type=\"l\",asp=1)\n");
+         printf("lines(pe(bnd,c(%d,%d)),lwd=5,col=\"red\")\n",i,i+1);
+         printf("p1<-list(x=%f,y=%f)\n",point[0],point[1]);
+         printf("points(p1,col=\"red\",pch=19)\n");
+      }
+   }
+   return(ind);
+}
 
 // calculate the length of the hull by iterating over
 // the list object
@@ -775,7 +754,7 @@ int Length(node* head) {
 void PrintPath(node* mypath) {
    node* current=mypath;
 
-   printf("plot(bnd,type=\"l\")\n");
+   printf("plot(bnd,type=\"l\",asp=1)\n");
    printf("path<-list(x=c(),y=c())\n");
    
    while(current!=NULL){
@@ -932,8 +911,9 @@ int compare_doubles (const void *a, const void *b)
 
 // my very own, very poor find
 // returns the first element of the array to match the value
+// returns -1 if not found
 int crapfind(int narr, double *arr, double val){
-   int i, index;
+   int i, index=-1;
 
    for(i=0;i<narr;i++){
       if(arr[i]==val){
