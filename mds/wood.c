@@ -647,6 +647,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                current=current->next; // current now at i+1
             }// end insert if 
          }
+
         	current=current->prev; // go back to i, need this to catch all triplets
       } // end of iteration over the path
       conv++;
