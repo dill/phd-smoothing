@@ -702,7 +702,7 @@ int Length(node* head) {
 void PrintPath(node* mypath) {
    node* current=mypath;
 
-   printf("plot(bnd,type=\"l\")\n");
+   printf("plot(bnd,type=\"l\",asp=1)\n");
    printf("path<-list(x=c(),y=c())\n");
    
    while(current!=NULL){
