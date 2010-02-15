@@ -236,17 +236,17 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd)
 
 
       // DEBUG
-      printf("----------\n");
-      printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-      printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-      printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-      printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
-      printf("plot(bnd,type=\"l\")\n");
-      printf("points(p1,col=\"red\",pch=19)\n");
-      printf("points(p2,col=\"red\",pch=19)\n");
-      printf("points(ip1,col=\"blue\",pch=19)\n");
-      printf("points(ip2,col=\"blue\",pch=19)\n");
-      printf("----------\n");
+//      printf("----------\n");
+//      printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//      printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//      printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+//      printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+//      printf("plot(bnd,type=\"l\")\n");
+//      printf("points(p1,col=\"red\",pch=19)\n");
+//      printf("points(p2,col=\"red\",pch=19)\n");
+//      printf("points(ip1,col=\"blue\",pch=19)\n");
+//      printf("points(ip2,col=\"blue\",pch=19)\n");
+//      printf("----------\n");
 
 
       // find the midpoints between p1, p2 their first intersections
@@ -420,6 +420,40 @@ int online(double p1[],double thisline[][2])
    }
 
 }
+
+
+//int online(double p1[],double thisline[][2]){
+// 
+//   double m,c, eps=1e-16;
+//   double xarr[2], yarr[2];
+// 
+//   xarr[0]=thisline[0][0];
+//   xarr[1]=thisline[1][0];
+//   yarr[0]=thisline[0][1];
+//   yarr[1]=thisline[1][1];
+// 
+//   twosort(xarr);
+//   twosort(yarr); // make xarr, yarr small->large
+// 
+//   // check p1 is inside the bounding box
+//   if((p1[0]>=xarr[1]) && (p1[0]<=xarr[0]) &&
+//      (p1[1]>=yarr[1]) && (p1[1]<=yarr[0])){
+//      return 0;
+//   }
+// 
+//   // calculate gradient of the line
+//   m = (thisline[1][1]-thisline[0][1])/(thisline[1][0]-thisline[0][0]);
+// 
+//   // calculate intercept
+//   c = thisline[1][1]-m*thisline[1][0];
+// 
+//   // does is p1 a solution?
+//   if(fabs(p1[1]-(m*p1[0]+c))<=eps){
+//      return 1;
+//   }else{
+//      return 0;
+//   }
+//}
 
 
 // calculate the length of the hull by iterating over
