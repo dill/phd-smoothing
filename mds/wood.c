@@ -260,7 +260,7 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
       line2[1][0]=bnd[intind[1]+1][0];
       line2[1][1]=bnd[intind[1]+1][1];
 
-      if( online(ip1,line1) & online(ip2,line2)){
+      if((online(ip1,line1) && online(ip2,line2) )){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert); 
@@ -592,9 +592,9 @@ void alter_step(node** path, int nbnd, double **bnd)
 
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
-               if(Length(newpath)>3){
-                  DelTopBot(newpath);
-               }
+//               if(Length(newpath)>3){
+//                  DelTopBot(newpath);
+//               }
 
                // only reverse the order if we need to...
                // that is when the line joining current element of the full path
@@ -608,8 +608,8 @@ void alter_step(node** path, int nbnd, double **bnd)
 
 //               do_intersect(tp1, tp2, nbnd, bnd,bndint);
 //printf("cat(\"iarr= %d \\n\")\n",iarrsum(nbnd-1,bndint));
-//               if(iarrsum(nbnd-1,bndint)>0){ 
-                  ReverseList(&newpath);
+//               if(iarrsum(nbnd-1,bndint)==0){ 
+//                  ReverseList(&newpath);
 //               }
 
                // create new path, compare complete new path with old one, if the
@@ -646,10 +646,6 @@ void alter_step(node** path, int nbnd, double **bnd)
                current->next=end_ptr;
    
                current=current->next; // current now at i+1
-            //}else{
-            //   // end facing
-               // free newpath
-            //   FreeList(&newpath);
             }// end insert if 
          }
         	current=current->prev; // go back to i, need this to catch all triplets
