@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include "utils.h"
 
-// do two points and the boundary intersect?
+// does the line between two points and the boundary intersect?
 void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint)
 {
    /*

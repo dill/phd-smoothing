@@ -516,8 +516,8 @@ void alter_step(node** path, int nbnd, double **bnd)
    // Return:
    //           revised path with added/ammended vertices
 
-   double ep1[2], ep2[2], mid[2], triplen;
-   int err;
+   double ep1[2], ep2[2], mid[2], triplen, tp1[2], tp2[2];
+   int err, bndint[nbnd-1];
    node* prevpath=NULL;
    node* newpath=NULL;
    node* end_ptr=NULL;
@@ -526,7 +526,6 @@ void alter_step(node** path, int nbnd, double **bnd)
    // convergence stop
    int conv=0;
    int conv_stop=10;
-
 
    // iterate over the points in the path:
    // alter the path, until on two(?) consecutive runs there are
@@ -589,14 +588,27 @@ void alter_step(node** path, int nbnd, double **bnd)
             }
 
             // only insert the path if it's better!
-            if((hull_length(&newpath)<triplen) & (Length(newpath)>1)){
+            if((hull_length(&newpath)<triplen) & (Length(newpath)>3)){
 
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
                DelTopBot(newpath);
 
                // only reverse the order if we need to...
-               ReverseList(&newpath);
+               // that is when the line joining current element of the full path
+               // and the first element of the new path is not inside the domain. 
+
+
+               tp1[0]=current->data[0];
+               tp1[1]=current->data[1];
+               tp2[0]=newpath->data[0];
+               tp2[1]=newpath->data[1];
+
+               sp_do_intersect(tp1, tp2, nbnd, bnd,bndint);
+printf("cat(\"iarr= %d \\n\")\n",iarrsum(nbnd-1,bndint));
+               if(iarrsum(nbnd-1,bndint)==0){ 
+                  ReverseList(&newpath);
+               }
 
                // create new path, compare complete new path with old one, if the
                // new one is better then keep it.
