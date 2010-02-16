@@ -200,11 +200,6 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
-//printf("ip1[0]=%f\n",ip1[0]);
-//printf("ip1[1]=%f\n",ip1[1]);
-//printf("ip2[0]=%f\n",ip2[0]);
-//printf("ip2[1]=%f\n",ip2[1]);
-
 	// if there are no errors
    if(err==0){
 
@@ -301,11 +296,9 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
-//         CopyList(bnd1,path);
          *path=bnd1;
          FreeList(&bnd2);
       }else{
-//         CopyList(bnd2,path);
          *path=bnd2;
          FreeList(&bnd1);
       }
