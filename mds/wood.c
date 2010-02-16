@@ -588,11 +588,13 @@ void alter_step(node** path, int nbnd, double **bnd)
             }
 
             // only insert the path if it's better!
-            if((hull_length(&newpath)<triplen) & (Length(newpath)>3)){
+            if((hull_length(&newpath)<triplen) & (Length(newpath)>1)){
 
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
-               DelTopBot(newpath);
+               if(Length(newpath)>3){
+                  DelTopBot(newpath);
+               }
 
                // only reverse the order if we need to...
                // that is when the line joining current element of the full path
@@ -604,11 +606,11 @@ void alter_step(node** path, int nbnd, double **bnd)
                tp2[0]=newpath->data[0];
                tp2[1]=newpath->data[1];
 
-               sp_do_intersect(tp1, tp2, nbnd, bnd,bndint);
-printf("cat(\"iarr= %d \\n\")\n",iarrsum(nbnd-1,bndint));
-               if(iarrsum(nbnd-1,bndint)==0){ 
+//               do_intersect(tp1, tp2, nbnd, bnd,bndint);
+//printf("cat(\"iarr= %d \\n\")\n",iarrsum(nbnd-1,bndint));
+//               if(iarrsum(nbnd-1,bndint)>0){ 
                   ReverseList(&newpath);
-               }
+//               }
 
                // create new path, compare complete new path with old one, if the
                // new one is better then keep it.
