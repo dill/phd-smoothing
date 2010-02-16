@@ -560,7 +560,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
 
 
 // DEBUG
-printf("lbbindex=%d\n",lbbindex);
+//printf("lbbindex=%d\n",lbbindex);
 
 
    // setup bbindex, dists, sortdists

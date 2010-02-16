@@ -122,8 +122,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
    // don't do anything if there is an error at the moment...
    // DEBUG
-   printf("### make_bnd_path ###\n");
-   PrintPath(mypath);
+   //printf("### make_bnd_path ###\n");
+   //PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -200,10 +200,10 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
-printf("ip1[0]=%f\n",ip1[0]);
-printf("ip1[1]=%f\n",ip1[1]);
-printf("ip2[0]=%f\n",ip2[0]);
-printf("ip2[1]=%f\n",ip2[1]);
+//printf("ip1[0]=%f\n",ip1[0]);
+//printf("ip1[1]=%f\n",ip1[1]);
+//printf("ip2[0]=%f\n",ip2[0]);
+//printf("ip2[1]=%f\n",ip2[1]);
 
 	// if there are no errors
    if(err==0){
@@ -597,9 +597,9 @@ void alter_step(node** path, int nbnd, double **bnd)
 
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
-//               if(Length(newpath)>3){
-//                  DelTopBot(newpath);
-//               }
+               if(Length(newpath)>=3){
+                  DelTopBot(newpath);
+               }
 
                // only reverse the order if we need to...
                // that is when the line joining current element of the full path
@@ -611,11 +611,11 @@ void alter_step(node** path, int nbnd, double **bnd)
                tp2[0]=newpath->data[0];
                tp2[1]=newpath->data[1];
 
-//               do_intersect(tp1, tp2, nbnd, bnd,bndint);
-//printf("cat(\"iarr= %d \\n\")\n",iarrsum(nbnd-1,bndint));
-//               if(iarrsum(nbnd-1,bndint)==0){ 
-//                  ReverseList(&newpath);
-//               }
+               do_intersect(tp1, tp2, nbnd, bnd,bndint);
+printf("cat(\"iarr= %d \\n\")\n",iarrsum(nbnd-1,bndint));
+               if(iarrsum(nbnd-1,bndint)>0){ 
+                  ReverseList(&newpath);
+               }
 
                // create new path, compare complete new path with old one, if the
                // new one is better then keep it.
