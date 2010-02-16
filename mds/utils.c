@@ -21,7 +21,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-16;
+   double eps=1e-12;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -77,18 +77,18 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
          // first find the intersection point
          intpoint(p1,p2,thisedge,ip);
 
-         // check the intersection point is not just one of p1 or p2
-         if(( (fabs(ip[0]-p1[0]) <=eps) && (fabs(ip[1]-p1[1]) <=eps) ) |
-            ( (fabs(ip[0]-p2[0]) <=eps) && (fabs(ip[1]-p2[1]) <=eps) )){
-            bndint[i]=0;
-         }
+//         // check the intersection point is not just one of p1 or p2
+//         if(( (fabs(ip[0]-p1[0]) <=eps) && (fabs(ip[1]-p1[1]) <=eps) ) |
+//            ( (fabs(ip[0]-p2[0]) <=eps) && (fabs(ip[1]-p2[1]) <=eps) )){
+//            bndint[i]=0;
+//         }
 
-         // or that it's one of the edge end points
-         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) && (fabs(ip[1]-thisedge[0][1]) <=eps)) |
-            ((fabs(ip[0]-thisedge[1][0]) <=eps) && (fabs(ip[1]-thisedge[1][1]) <=eps))){
-            bndint[i]=0;
-         }
-
+//         // or that it's one of the edge end points
+//         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) && (fabs(ip[1]-thisedge[0][1]) <=eps)) |
+//            ((fabs(ip[0]-thisedge[1][0]) <=eps) && (fabs(ip[1]-thisedge[1][1]) <=eps))){
+//            bndint[i]=0;
+//         }
+//
          // first need to handle the horizontal and vertical line cases
          if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
             if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
@@ -130,7 +130,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
 {
    int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
-   double eps=1e-16;
+   double eps=1e-12;
 
    tmpnbnd=2;
 
@@ -285,7 +285,7 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 
    double eps,a1,b1,c1,a2,b2,c2;
 
-   eps=1.0e-16;
+   eps=1.0e-10;
 
    // calculation of intersection is straight from 
    // Handbook of Mathematics Bronstein et al. pp. 195,196
@@ -309,9 +309,9 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
       a1=0;
       b1=1;
       c1=-p1[1];
-   // point line vertical
    }
 
+   // point line vertical
    if( (fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
       a1=1;
       b1=0;
@@ -324,9 +324,9 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
       a2=0;
       b2=1;
       c2=-edge[0][1];
-   // edge vertical
    }
 
+   // edge vertical
    if( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
             isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))){
       a2=1;
@@ -352,96 +352,25 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 
  
 /* find if a point is on a line */
-//int online(double p1[],double thisline[][2])
-//{
-//   // uses: twosort
-//   // returns 1 if the point is on the line, 0 otherwise
-// 
-//   double eps, leftside, rightside,xarr[2],yarr[2];
-//   
-//   /* Take this global at some point*/
-//   eps=1.0e-16;
-//
-//   /* left hand side of equation */
-//   /* difference between y values */
-//   if(fabs(thisline[1][1]-thisline[0][1])<eps){
-//      /* first handle if it's a horizontal line */
-// 
-//      xarr[0]=thisline[0][0];
-//      xarr[1]=thisline[1][0];
-//      twosort(xarr);
-//      // need to make sure this kind of thing makes sense
-// 
-//      if((fabs(thisline[1][1]-p1[1])<eps) &&
-//         ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
-//         return 1;
-//      }else{
-//         return 0;
-//      }
-//   }else{
-//      leftside=(p1[1]-thisline[0][1])/(thisline[1][1]-thisline[0][1]);
-//   }
-// 
-//   /* right hand side of equation */
-//   if(fabs(thisline[1][0]-thisline[0][0])<eps){
-//      /* first handle if it's a vertical line */
-// 
-//      yarr[0]=thisline[0][1];
-//      yarr[1]=thisline[1][1];
-//      twosort(yarr);
-// 
-//      if((fabs(thisline[1][0]-p1[0])<eps) &&
-//         ((p1[1]<yarr[1])&&(p1[1]>yarr[0]))){
-//         return 1;
-//      }else{
-//         return 0;
-//      }
-// 
-//   }else{
-//      rightside=(p1[0]-thisline[0][0])/(thisline[1][0]-thisline[0][0]);
-//   }
-// 
-//   /* If nothing went wrong then do the comparison*/
-//   if(fabs(leftside-rightside)<eps){
-//      return(1);
-//   }else{
-//      return(0);
-//   }
-//}
+int online(double p1[],double thisline[][2])
+{
+   // uses: twosort
+   // returns 1 if the point is on the line, 0 otherwise
+ 
+   double eps, leftside, rightside,xarr[2],yarr[2];
+   
+   /* Take this global at some point*/
+   eps=1.0e-12;
 
-int online(double p1[],double thisline[][2]){
+   /* left hand side of equation */
+   /* difference between y values */
+   if(fabs(thisline[1][1]-thisline[0][1])<eps){
+      /* first handle if it's a horizontal line */
  
-   double m,c, eps=1e-12;
-   double xarr[2], yarr[2];
- 
-   xarr[0]=thisline[0][0];
-   xarr[1]=thisline[1][0];
-   yarr[0]=thisline[0][1];
-   yarr[1]=thisline[1][1];
- 
-   twosort(xarr);
-   twosort(yarr); // make xarr, yarr small->large
- 
-   // check p1 is inside the bounding box
-   if((p1[0]>=xarr[1]) && (p1[0]<=xarr[0]) &&
-      (p1[1]>=yarr[1]) && (p1[1]<=yarr[0])){
-      return 0;
-   }
- 
-   // calculate gradient of the line
-   /* first handle if it's a vertical/horizontal line */
-   if(fabs(thisline[1][0]-thisline[0][0])<eps){
-      /* vertical line */
- 
-      if((fabs(thisline[1][0]-p1[0])<eps) &&
-         ((p1[1]<yarr[1])&&(p1[1]>yarr[0]))){
-         return 1;
-      }else{
-         return 0;
-      }
- 
-   }else if(fabs(thisline[1][1]-thisline[0][1])<eps){
-      /* horizontal line */
+      xarr[0]=thisline[0][0];
+      xarr[1]=thisline[1][0];
+      twosort(xarr);
+      // need to make sure this kind of thing makes sense
  
       if((fabs(thisline[1][1]-p1[1])<eps) &&
          ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
@@ -450,19 +379,90 @@ int online(double p1[],double thisline[][2]){
          return 0;
       }
    }else{
-      m = (thisline[1][1]-thisline[0][1])/(thisline[1][0]-thisline[0][0]);
+      leftside=(p1[1]-thisline[0][1])/(thisline[1][1]-thisline[0][1]);
    }
  
-   // calculate intercept
-   c = thisline[1][1]-m*thisline[1][0];
+   /* right hand side of equation */
+   if(fabs(thisline[1][0]-thisline[0][0])<eps){
+      /* first handle if it's a vertical line */
  
-   // does is p1 a solution?
-   if(fabs(p1[1]-(m*p1[0]+c))<=eps){
-      return 1;
+      yarr[0]=thisline[0][1];
+      yarr[1]=thisline[1][1];
+      twosort(yarr);
+ 
+      if((fabs(thisline[1][0]-p1[0])<eps) &&
+         ((p1[1]<yarr[1])&&(p1[1]>yarr[0]))){
+         return 1;
+      }else{
+         return 0;
+      }
+ 
    }else{
-      return 0;
+      rightside=(p1[0]-thisline[0][0])/(thisline[1][0]-thisline[0][0]);
+   }
+ 
+   /* If nothing went wrong then do the comparison*/
+   if(fabs(leftside-rightside)<eps){
+      return(1);
+   }else{
+      return(0);
    }
 }
+
+//int online(double p1[],double thisline[][2]){
+// 
+//   double m,c, eps=1e-12;
+//   double xarr[2], yarr[2];
+// 
+//   xarr[0]=thisline[0][0];
+//   xarr[1]=thisline[1][0];
+//   yarr[0]=thisline[0][1];
+//   yarr[1]=thisline[1][1];
+// 
+//   twosort(xarr);
+//   twosort(yarr); // make xarr, yarr small->large
+// 
+//   // check p1 is inside the bounding box
+//   if((p1[0]>=xarr[1]) && (p1[0]<=xarr[0]) &&
+//      (p1[1]>=yarr[1]) && (p1[1]<=yarr[0])){
+//      return 0;
+//   }
+// 
+//   // calculate gradient of the line
+//   /* first handle if it's a vertical/horizontal line */
+//   if(fabs(thisline[1][0]-thisline[0][0])<eps){
+//      /* vertical line */
+// 
+//      if((fabs(thisline[1][0]-p1[0])<=eps) &&
+//         ((p1[1]<=yarr[1])&&(p1[1]>=yarr[0]))){
+//         return 1;
+//      }else{
+//         return 0;
+//      }
+// 
+//   }else if(fabs(thisline[1][1]-thisline[0][1])<=eps){
+//      /* horizontal line */
+// 
+//      if((fabs(thisline[1][1]-p1[1])<eps) &&
+//         ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
+//         return 1;
+//      }else{
+//         return 0;
+//      }
+//   }else{
+//      m = (thisline[1][1]-thisline[0][1])/(thisline[1][0]-thisline[0][0]);
+//   }
+// 
+//   // calculate intercept
+//   c = thisline[1][1]-m*thisline[1][0];
+// 
+//   // does is p1 a solution?
+//   if(fabs(p1[1]-(m*p1[0]+c))<=eps){
+//      return 1;
+//   }else{
+//      return 0;
+//   }
+//}
 
 
 
@@ -519,8 +519,7 @@ double hull_length(node** hull) {
 // find the first intersection points of p1 and p2
 // with bnd
 int first_ips(double p1[2], double p2[2], int nbnd, double **bnd, 
-               double ip1[2], double ip2[2],int intind[2])
-{   
+               double ip1[2], double ip2[2],int intind[2]){   
    /* Args:
    *   p1, p2        the points
    *   nbnd          length of boundary
@@ -558,6 +557,11 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
    
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
+
+
+// DEBUG
+printf("lbbindex=%d\n",lbbindex);
+
 
    // setup bbindex, dists, sortdists
    bbindex=(int*)malloc(sizeof(int)*lbbindex);
@@ -932,7 +936,7 @@ int compare_doubles (const void *a, const void *b)
 // returns the first element of the array to match the value
 // returns -1 if not found
 int crapfind(int narr, double *arr, double val){
-   int i, index=-1;
+   int i, index;
 
    for(i=0;i<narr;i++){
       if(arr[i]==val){

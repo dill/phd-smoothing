@@ -122,8 +122,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
    // don't do anything if there is an error at the moment...
    // DEBUG
-   //printf("### make_bnd_path ###\n");
-   //PrintPath(mypath);
+   printf("### make_bnd_path ###\n");
+   PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -200,6 +200,11 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
+printf("ip1[0]=%f\n",ip1[0]);
+printf("ip1[1]=%f\n",ip1[1]);
+printf("ip2[0]=%f\n",ip2[0]);
+printf("ip2[1]=%f\n",ip2[1]);
+
 	// if there are no errors
    if(err==0){
 
@@ -260,7 +265,7 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
       line2[1][0]=bnd[intind[1]+1][0];
       line2[1][1]=bnd[intind[1]+1][1];
 
-      if((online(ip1,line1) && online(ip2,line2) )){
+      if((online(ip1,line1) & online(ip2,line2) )){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert); 
