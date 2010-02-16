@@ -38,7 +38,6 @@ void FreeList(node**);
 void PrintPath(node*);
 void DelTopBot(node*);
 void ReverseList(node**);
-int onbnd(double[2], int, double**);
 
 
 // for in_out in separate file

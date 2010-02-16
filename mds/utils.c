@@ -21,7 +21,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-16;
+   double eps=1e-10;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -352,7 +352,8 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 
  
 /* find if a point is on a line */
-int online(double p1[],double thisline[][2]){
+int online(double p1[],double thisline[][2])
+{
    // uses: twosort
    // returns 1 if the point is on the line, 0 otherwise
  
@@ -362,7 +363,7 @@ the points, first col is x, second y, obv.*/
    
    /* Take this global at some point*/
    eps=1.0e-16;
- 
+
    /* left hand side of equation */
    /* difference between y values */
    if(fabs(thisline[1][1]-thisline[0][1])<eps){
@@ -409,7 +410,6 @@ the points, first col is x, second y, obv.*/
       return(0);
    }
 }
-
 
 //int online(double p1[],double thisline[][2]){
 // 

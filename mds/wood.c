@@ -594,6 +594,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                // remove the first and last entries in newpath, since otherwise
                // we duplicated ep1 and ep2
                DelTopBot(newpath);
+
+               // only reverse the order if we need to...
                ReverseList(&newpath);
 
                // create new path, compare complete new path with old one, if the
