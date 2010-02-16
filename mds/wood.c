@@ -144,14 +144,14 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### delete_step ###\n");
-      PrintPath(mypath);
+      //printf("### delete_step ###\n");
+      //PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### alter_step ###\n");
-      PrintPath(mypath);
+      //printf("### alter_step ###\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -605,7 +605,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                tp2[1]=newpath->data[1];
 
                do_intersect(tp1, tp2, nbnd, bnd,bndint);
-printf("cat(\"iarr= %d \\n\")\n",iarrsum(nbnd-1,bndint));
+// DEBUG
+//printf("cat(\"iarr= %d \\n\")\n",iarrsum(nbnd-1,bndint));
                if(iarrsum(nbnd-1,bndint)>0){ 
                   ReverseList(&newpath);
                }
