@@ -15,6 +15,7 @@
 \usepackage{multirow}
 \usepackage{graphicx}
 \usepackage{rotating}
+\usepackage{psfrag}
 
 % top matter
 \title{Multidimensional scaling as a tool for \\smoothing over complex regions}
@@ -282,14 +283,20 @@ So, here we have seen that the mapping can be both reliable and also produces a 
 
 In order to perform multidimensional scaling the matrix of distances must be first found. In this case it makes sense to find the shortest distances between each pair of points where the path between the points lies entirely within the domain.
 
-Given that there is no direct path within the domain (which can be considered as some polygon, $\Gamma$, say) between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path (ie. set of edges and vertices), $\mathcal{P}$:
+Let the domain boundary be some polygon, $\Gamma$. Given that there is no direct path within the domain between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path (ie. a set of edges and vertices), $\mathcal{P}$:
 
 \begin{enumerate}
-\item (INIT) Start by drawing a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)). Start the path as the lines from $p_1$, $p_2$ to their first intersection with the boundary of $\Gamma$ ($p_1^1$, $p_2^1$, say.) Then form two paths between $p_1^1$ and $p_2^1$, composed of the intersection points and the vertices of $\Gamma$, one path in one direction $p_1^1$ to $p_2^1$ ($\mathcal{P}_1$), the other in the other direction, $p_2^1$ to $p_1^1$ ($\mathcal{P}_2$.) It is easy to see that $\{\mathcal{P}_1 \cup \mathcal{P}_2\} \setminus \{p_1^1, p_2^1\} = \Gamma$ (\fig{wdia}, ($ii$).) Finding the length of $\mathcal{P}_1$ and $\mathcal{P}_2$ and choosing the shorter ($\mathcal{P^*}$), the initial path is formed as $\mathcal{P}=(p_1,p_1^1,\mathcal{P}^*,p_2^1,p_2)$ (\fig{wdia}, ($iii$).) 
+\item (INIT) Start by drawing a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)). Start the path as the lines from $p_1$, $p_2$ to their nearest intersection with the boundary of $\Gamma$ ($p_1^1$, $p_2^1$, say.) Then form two paths. The first path from $p_1^1$ to $p_2^1$ ($\mathcal{P}_1$) contains the vertices of $\Gamma$ found moving along the boundary from $p_1^1$ to $p_2^1$. The second ($\mathcal{P}_2$), is found by taking those vertices on the boundary from $p_2^1$ to $p_1^1$, ie. the vertices of $\Gamma$ not in the first path. It is easy to see that $\{\mathcal{P}_1 \cup \mathcal{P}_2\} \setminus \{p_1^1, p_2^1\} = \Gamma$. Finding the length of $\mathcal{P}_1$ and $\mathcal{P}_2$ and choosing the shorter ($\mathcal{P^*}$), the initial path is formed as $\mathcal{P}=(p_1,p_1^1,\mathcal{P}^*,p_2^1,p_2)$. 
 
-\item (DELETE) Given a triple of vertices, $(v_i, v_{i+1}, v_{i+2}) \in \mathcal{P}$ , if the line between $v_i$ and $v_{i+2}$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ and the line between $v_i$ and $v_{i+2}$ lies inside $\Gamma$ then delete $v_{i+1}$ (\fig{wdia}, ($iv$) and ($vi$).) The entire path is iterated over deleting all superfluous vertices until there are no changes in successive runs. For example in \fig{wdia}, ($iii$) $v_2$ is deleted from $\mathcal{P}$ because the path straight between $v_1$ and $v_3$ is shorter. 
+In \fig{wdia}, ($iii$), $\mathcal{P}_1$ is marked in green and is chosen to form the initial path, $\mathcal{P}=(p_1,p_1^1,\mathcal{P}_1,p_2^1,p_2)$, as $\mathcal{P}_1$ is shorter than $\mathcal{P}_2$, in red.
 
-\item (ALTER) Given a triple of vertices $(v_i, v_{i+1}, v_{i+2})$, if the path $(v_i, v^1_1, \mathcal{P}_I, v^1_j, v_{i+2})$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ then replace $v_{i+1}$ with $v^1_1, \mathcal{P}_I, v^1_j$ (\fig{wdia}, ($v$)). The candidate replacement path can be thought of as the result of running INIT with $p_1$ and $p_2$ replaced with $v_i$ and $v_{i+2}$ and then using DELETE to remove superfluous vertices. Here $v^1_1$ and $v^1_j$ are equivalent to $p_1^1$ and $p_2^1$ in INIT and $\mathcal{P}_I$ to $\mathcal{P}^*$ (but after having had DELETE remove the unnecessary vertices.) For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the path $(v_1, v^1_1, v^1_2, v^1_3, v_3)$ so the former is replaced with the latter in $\mathcal{P}$.
+\item (DELETE) Given a triple of vertices, $(v_i, v_{i+1}, v_{i+2}) \in \mathcal{P}$ , if the line between $v_i$ and $v_{i+2}$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ and the line between $v_i$ and $v_{i+2}$ lies inside $\Gamma$ then delete $v_{i+1}$ (\fig{wdia}, ($iv$) and ($vi$).) The entire path is iterated over deleting all superfluous vertices until there are no changes in successive runs. 
+
+For example in \fig{wdia}, ($iii$) $v_2$ is deleted from $\mathcal{P}$ because the path straight between $v_1$ and $v_3$ is shorter, and within $\Gamma$.
+
+\item (ALTER) Given a triple of vertices $(v_i, v_{i+1}, v_{i+2})$, if the path $(v_i, v^1_1, \mathcal{P}_{ID}, v^1_j, v_{i+2})$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ then replace $v_{i+1}$ with $v^1_1, \mathcal{P}_{ID}, v^1_j$ (\fig{wdia}, ($v$)). The candidate replacement path can be thought of as the result of running INIT with $p_1$ and $p_2$ replaced by $v_i$ and $v_{i+2}$, producing $\mathcal{P}_I$, and then using DELETE on $\mathcal{P}_I$ to remove superfluous vertices giving $\mathcal{P}_{ID}$. Here $v^1_1$ and $v^1_j$ are equivalent to $p_1^1$ and $p_2^1$ in INIT and $\mathcal{P}_I$ to $\mathcal{P}^*$.
+
+For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the path $\mathcal{P}_{ID}=(v_1, v^1_2, v_3)$ (green dashed line in ($iv$)) so the former is replaced with the latter in $\mathcal{P}$. The path created by INIT is marked as $\mathcal{P}_{I}$ in  ($iv$) in red.
 
 \item (ITER) We then iterate between the DELETE and ALTER steps until there has been no change from one run to the next (ie. convergence) or there have been too many iterations (\fig{wdia}, ($vi$).)
 \end{enumerate}
@@ -298,8 +305,9 @@ Given that there is no direct path within the domain (which can be considered as
 \begin{sidewaysfigure}
 \centering
 % trim order l b r t
+\psfrag{exp1}[]{$\mathcal{P}_1$}
 \includegraphics[trim=0in 0.5in 0in 0.25in, width=9.5in]{figs/wdia.pdf} \\
-\caption{The green lines in ($i$) to ($vi$) show the path as the algorithm progresses from initial state to final, shortest path (bottom right.) }
+\caption{The green lines in ($i$) to ($vi$) show the steps forming the shortest path as the algorithm progresses from initial state to final, shortest path (bottom right.) }
 \label{wdia}
 % generate /phd-smoothing/mds-writeup/figs/distanceexplanation.R
 \end{sidewaysfigure}

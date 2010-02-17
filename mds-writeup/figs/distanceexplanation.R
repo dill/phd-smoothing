@@ -42,10 +42,13 @@ text(x=c(x[1],x[2]),y=c(y[1],y[2]),labels=c(expression(p[1]),
 plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1,main="(ii)")
 points(x=x[1],y=y[1],pch=19);points(x=x[2],y=y[2],pch=19)
 lines(bndpath$path.1,lwd=2,col="green")
-lines(bndpath$path.2,lwd=2,col="green",lty=2)
-# labels
+lines(bndpath$path.2,lwd=2,col="red")
+# point labels
 text(x=c(x[1],x[2]),y=c(y[1],y[2]),labels=c(expression(p[1]),
       expression(p[2])),pos=c(3,4))
+# path labels
+text(x[1]+1,y[1]-1,expression(italic(P)[1]))
+text(x[2]+0.2,y[2]-1,expression(italic(P)[2]))
 
 
 #### third, initial path 
@@ -80,17 +83,31 @@ text(x=3.987,y=1,labels=expression(v[3]),pos=1)
 alt<-make_bnd_path(p1=pe(bndpath$path.1,2),p2=pe(bndpath$path.1,length(bndpath$path.1$x)-1),bnd)
 plot(bnd,type="l",axes=FALSE,xlab="",ylab="",lwd=2,asp=1,main="(v)")
 points(x=x[1],y=y[1],pch=19);points(x=x[2],y=y[2],pch=19)
-lines(x=c(x[1],bndpath$path.1$x[2],alt$path.1$x,bndpath$path.1$x[length(bndpath$path.1$x)-1],x[2]),y=c(y[1],bndpath$path.1$y[2],alt$path.1$y,bndpath$path.1$y[length(bndpath$path.1$y)-1],y[2]),,col="green",lwd=2)
-# labels
+
+lines(x=c(x[1],bndpath$path.1$x[2]),y=c(y[1],bndpath$path.1$y[2]),col="green",lwd=2)
+lines(x=c(bndpath$path.1$x[length(bndpath$path.1$x)-1],x[2]),y=c(bndpath$path.1$y[length(bndpath$path.1$y)-1],y[2]),col="green",lwd=2)
+
+# P_I
+lines(x=c(bndpath$path.1$x[2],alt$path.1$x,bndpath$path.1$x[length(bndpath$path.1$x)-1]),y=c(bndpath$path.1$y[2],alt$path.1$y,bndpath$path.1$y[length(bndpath$path.1$y)-1]),col="red",lwd=2)
+# P_{ID}
+lines(x=c(bndpath$path.1$x[2],alt$path.1$x[2],bndpath$path.1$x[length(bndpath$path.1$x)-1]),y=c(bndpath$path.1$y[2],alt$path.1$y[2],bndpath$path.1$y[length(bndpath$path.1$y)-1]),col="green",lwd=2,lty=2)
+
+# point labels
 text(x=c(x[1],x[2]),y=c(y[1],y[2]),labels=c(expression(p[1]),
       expression(p[2])),pos=c(3,4))
 text(x=2,y=1,labels=expression(v[1]),pos=1)
 
-text(x=2.65,y=1.25,labels=expression(v[1]^{1}),pos=1)
-text(x=2.99,y=1.6,labels=expression(v[2]^{1}),pos=1)
-text(x=3.27,y=1.25,labels=expression(v[3]^{1}),pos=1)
+text(x=2.85,y=1.1,labels=expression(v[1]^{1}),pos=1)
+text(x=2.99,y=1.63,labels=expression(v[2]^{1}),pos=1)
+text(x=3.11,y=1.1,labels=expression(v[3]^{1}),pos=1)
 
 text(x=3.987,y=1,labels=expression(v[3]),pos=1)
+
+# path labels
+text(3.55,1,expression(italic(P)[I]),pos=1)
+text(2.65,1.52,expression(italic(P)[I][D]),pos=1)
+
+
 
 
 #### sixth, done! 
