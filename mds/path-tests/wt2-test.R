@@ -30,9 +30,10 @@ D<-create_distance_matrix(x,y,bnd)
 D.t<-read.csv("path-tests/wt2-D.csv")
 
 D.t<-as.matrix(D.t)
+D.t<-D.t[,2:49]
 
-if(max(D-D)>0){
-   cat("Uh oh! Not the same as \"truth\"\n")
+if(max(D-D.t)>0){
+   cat("Uh oh!",max(D-D.t)," not the same as \"truth\"\n")
 }
 
 
