@@ -284,8 +284,9 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
    */
 
    double eps,a1,b1,c1,a2,b2,c2;
+   double arr[4];
 
-   eps=1.0e-10;
+   eps=1.0e-16;
 
    // calculation of intersection is straight from 
    // Handbook of Mathematics Bronstein et al. pp. 195,196
@@ -302,53 +303,68 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
    b2=1/(edge[1][1]-edge[0][1]);
    c2= edge[0][0]/(edge[1][0]-edge[0][0]) - edge[0][1]/(edge[1][1]-edge[0][1]);
 
-   // handle the horizontal/vertical line case...
+   // handle the horizontal/vertical line cases
 
-   // point line horizontal
-   if( (fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))){
-      a1=0;
-      b1=1;
-      c1=-p1[1];
+
+   // when the both lines are colinear
+
+   // both horizontal
+   if( ((fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))) &
+       ((fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
+              isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))) ){
+
+      arr[0]=p1[0];
+      arr[1]=p2[0];
+      arr[2]=edge[0][0];
+      arr[3]=edge[1][0];
+
+
+
+      ip[0]=minarr(4,arr);
+      ip[1]=p1[1]; // since we have a horizontal line
+
+   }else{
+      // point line horizontal
+      if( (fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))){
+         a1=0;
+         b1=1;
+         c1=-p1[1];
+      }
+   
+      // point line vertical
+      if( (fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
+         a1=1;
+         b1=0;
+         c1=-p1[0];
+      }
+   
+      // edge horizontal
+      if( (fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
+               isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))){
+         a2=0;
+         b2=1;
+         c2=-edge[0][1];
+      }
+   
+      // edge vertical
+      if( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
+               isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))){
+         a2=1;
+         b2=0;
+         c2=-edge[0][0];
+      }
+   
+      /// do something to check for infinities...
+      //   if(all(c(a1,a2,b1,b2,c1,c2)!=Inf) & all(c(a1,a2,b1,b2,c1,c2)!=-Inf)){
+      // calculate the intersection
+   
+      // want to calculate...
+      //      intx<-det(matrix(c(b1,b2,c1,c2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
+      //      inty<-det(matrix(c(c1,c2,a1,a2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
+         ip[0]=(b1*c2-(b2*c1))/(a1*b2-(a2*b1));
+         ip[1]=(c1*a2-(a1*c2))/(a1*b2-(b1*a2));
    }
-
-   // point line vertical
-   if( (fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
-      a1=1;
-      b1=0;
-      c1=-p1[0];
-   }
-
-   // edge horizontal
-   if( (fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
-            isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))){
-      a2=0;
-      b2=1;
-      c2=-edge[0][1];
-   }
-
-   // edge vertical
-   if( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
-            isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))){
-      a2=1;
-      b2=0;
-      c2=-edge[0][0];
-   }
-
-   /// do something to check for infinities...
-   //   if(all(c(a1,a2,b1,b2,c1,c2)!=Inf) & all(c(a1,a2,b1,b2,c1,c2)!=-Inf)){
-   // calculate the intersection
-
-   // want to calculate...
-   //      intx<-det(matrix(c(b1,b2,c1,c2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
-   //      inty<-det(matrix(c(c1,c2,a1,a2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
-      ip[0]=(b1*c2-(b2*c1))/(a1*b2-(a2*b1));
-      ip[1]=(c1*a2-(a1*c2))/(a1*b2-(b1*a2));
-
-//   }else{
-//      ret<-list(x=Inf,y=Inf)
-//   }
 }
-
 
  
 /* find if a point is on a line */
@@ -560,7 +576,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
 
 
 // DEBUG
-//printf("lbbindex=%d\n",lbbindex);
+printf("#lbbindex=%d\n",lbbindex);
 
 
    // setup bbindex, dists, sortdists
