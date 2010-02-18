@@ -114,9 +114,6 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    node* prevpath=NULL;
    node* mypath=NULL;
    
-   // used for debugging, below...
-   //node* current=NULL;
-
    // DEBUG
    //printf("plot(bnd,type=\"l\",asp=1)\n");
    //printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
@@ -652,11 +649,14 @@ void alter_step(node** path, int nbnd, double **bnd)
                current->next=end_ptr;
    
                current=current->next; // current now at i+1
+            }else{
+               // free the path we made
+               FreeList(&newpath);
             }// end insert if 
-            // free the path we made
-            //FreeList(&newpath);
+         }else{
+               current=current->next; // current now at i+1
+            
          } // end facing
-        	current=current->prev; // go back to i, need this to catch all triplets
       } // end of iteration over the path
       conv++;
    } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );
