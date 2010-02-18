@@ -380,7 +380,6 @@ void delete_step(node** path, int nbnd, double **bnd)
       // start point for triplet selection
       current = *path;   // iterator
 
-      //while((i+1)<=length(path$x)){
       // loop over the full path
       while(current!=NULL){
 
@@ -393,17 +392,27 @@ void delete_step(node** path, int nbnd, double **bnd)
             break;
          }
 
-         // create the current triplet to inspect
-         //my.trip<-pe(path,c(i-1,i,i+1))
-         for(i=0;i<3;i++){ 
-            mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
-				// don't go to far...
-            if(i!=2){
-               current=current->next; 
-            }
-         }
+         // given current is at point i here...
 
-         // pointer is now at i+1
+         // create the current triplet to inspect
+         mytrip[0][0]=current->data[0];
+         mytrip[0][1]=current->data[1];
+        	current=current->next;
+         mytrip[1][0]=current->data[0];
+         mytrip[1][1]=current->data[1];
+        	current=current->next;
+         mytrip[2][0]=current->data[0];
+         mytrip[2][1]=current->data[1];
+
+//         for(i=0;i<3;i++){ 
+//            mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
+//				// don't go to far...
+//            if(i!=2){
+//               current=current->next; 
+//            }
+//         }
+
+         // pointer is now at i+2
 
          // if we are going forward and back again, just remove the point
          // in this case we remove the ith and (i+1)th entries, point (i-1)th
@@ -459,36 +468,37 @@ void delete_step(node** path, int nbnd, double **bnd)
             // first part asks if there are any intersections, if there are
             // none then that's okay. Second part asks if midpoints are inside.
             if((iarrsum((nbnd-1),intbnd)==0) & in[0]){
-               // remove point i by setting next pointer from i-1 to 
-               // i+1, and prev from i+1 to i-1
+               // remove point i+1 by setting next pointer from i to 
+               // i+2, and prev from i+2 to i
 
                // current is sitting at the 3rd entry
                // create a pointer to that
-               end_ptr=current; // pointer to i+1
+               end_ptr=current; // pointer to i+2
 
                // go back twice
-               current=current->prev; // pointer now at i
-               current=current->prev; // pointer at i-1
+               current=current->prev; // pointer now at i+1
+               current=current->prev; // pointer at i
 
                // change where next points to
-               current->next=end_ptr; // point i-1 next to i+1
-               start_ptr=current; // pointer to i-1
+               current->next=end_ptr; // point i next to i+2
+               start_ptr=current; // pointer to i
 
                // go forward again (remember next has changed)
-               current=current->next; // back to i+1
+               current=current->next; // current at i+2
                
-               // free i's memory
+               // free (i+1)'s memory
                free(current->prev);
 
                // change previous
-               current->prev=start_ptr; //set i+1 prev to i-1
+               current->prev=start_ptr; //set i+2 prev to i
 
-               //current=current->next;
-               // now current is sitting at i+2
-            } // end if on del middle
-         } // end of if del back-and-forth
+             // end if on del middle
+         }else{ 
 
         	current=current->prev; // go back to i, need this to catch all triplets
+
+         }// end of if del back-and-forth
+      }
 
       } // end iteration over path
       conv++; // increment run counter
@@ -554,13 +564,10 @@ void alter_step(node** path, int nbnd, double **bnd)
          }else if(current->next->next==NULL){
             break;
          }
-         // for each point i, look at the line i-1 to i+1
+         // for each point i, look at the line i to i+2
 
          // create the current triplet to inspect
          // make a copy of it and work out its length
-         //my.trip<-pe(path,c(i-1,i,i+1))
-         //ep1<-pe(my.trip,1)
-         //ep2<-pe(my.trip,3)
    
          ep1[0]=current->data[0];
          ep1[1]=current->data[1];
@@ -571,7 +578,7 @@ void alter_step(node** path, int nbnd, double **bnd)
          ep2[0]=current->data[0];
          ep2[1]=current->data[1];
 
-         // current at i+1
+         // current at i+2
          
          // calculate old trip length...
          triplen=hypot(mid[0]-ep1[0],mid[1]-ep1[1]);
@@ -583,86 +590,86 @@ void alter_step(node** path, int nbnd, double **bnd)
             // create a new path
             err=make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
 
-         //if(err==0){
-            // make the new path as simple as possible (no simpler :))
-            if(Length(newpath)>=3){
-               delete_step(&newpath,nbnd,bnd);
-            }
+            // provided there were no errors in the path making...
+            if(err==0){
 
-            // only insert the path if it's better!
-            if((hull_length(&newpath)<triplen) & (Length(newpath)>1)){
-
-               // remove the first and last entries in newpath, since otherwise
-               // we duplicated ep1 and ep2
+               // make the new path as simple as possible (no simpler :))
                if(Length(newpath)>=3){
-                  DelTopBot(newpath);
+                  delete_step(&newpath,nbnd,bnd);
                }
 
-               // only reverse the order if we need to...
-               // that is when the line joining current element of the full path
-               // and the first element of the new path is not inside the domain. 
+               // only insert the path if it's better!
+               if((hull_length(&newpath)<=triplen) & (Length(newpath)>1)){
+
+                  // remove the first and last entries in newpath, since otherwise
+                  // we duplicated ep1 and ep2
+                  if(Length(newpath)>=3){
+                     DelTopBot(newpath);
+                  }
+
+                  // only reverse the order if we need to...
+                  // that is when the line joining current element of the full path
+                  // and the first element of the new path is not inside the domain. 
+                  tp1[0]=current->data[0];
+                  tp1[1]=current->data[1];
+                  tp2[0]=newpath->data[0];
+                  tp2[1]=newpath->data[1];
+                  do_intersect(tp1, tp2, nbnd, bnd,bndint);
+
+                  if(iarrsum(nbnd-1,bndint)>0){ 
+                     ReverseList(&newpath);
+                  }
 
 
-               tp1[0]=current->data[0];
-               tp1[1]=current->data[1];
-               tp2[0]=newpath->data[0];
-               tp2[1]=newpath->data[1];
+                  // create new path, compare complete new path with old one, if the
+                  // new one is better then keep it.
+                  //new.path<-delete_step(list(
+                  //   x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
+                  //   y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)])),bnd)
+                  
+                  // modify path
+                  // from i, stitch in newpath up to i+2
+                  // current is at i+2 now
+                  
+                  // create a pointer to that
+                  end_ptr=current; // pointer to i+2
+                  
+                  // go back twice
+                  current=current->prev; // pointer now at i+1
+                  current=current->prev; // pointer at i
+                  
+                  // change where next points to
+                  newpath->prev=current; // point head of newpath back 
 
-               do_intersect(tp1, tp2, nbnd, bnd,bndint);
-// DEBUG
-//printf("cat(\"iarr= %d \\n\")\n",iarrsum(nbnd-1,bndint));
-               if(iarrsum(nbnd-1,bndint)>0){ 
-                  ReverseList(&newpath);
-               }
+                  free(current->next); // free the memory at i+1
 
-               // create new path, compare complete new path with old one, if the
-               // new one is better then keep it.
-               //new.path<-delete_step(list(
-               //   x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
-               //   y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)])),bnd)
-               
-               // modify path
-               // from i-1, stitch in newpath up to i+1
-               // current is at i+1 now
-               
-               // create a pointer to that
-               end_ptr=current; // pointer to i+1
-               
-               // go back twice
-               current=current->prev; // pointer now at i
-               current=current->prev; // pointer at i-1
-               
-               // change where next points to
-               newpath->prev=current; // point head of newpath back 
-
-               free(current->next); // free the memory at i
-
-               current->next=newpath; // point i-1 next to the head of newpath
+                  current->next=newpath; // point i next to the head of newpath
       
-               // fast forward to the end of newpath
-               while(current->next!=NULL){
-                  current=current->next;
-               }
+                  // fast forward to the end of newpath
+                  while(current->next!=NULL){
+                     current=current->next;
+                  }
+                  // current now at end of newpath
    
-               // point the end of newpath to i+1
-               end_ptr->prev=current; // set previous of i+1 to be the end of newpath
-               current->next=end_ptr;
+                  // point the end of newpath to i+2
+                  end_ptr->prev=current; // set previous of i+2 to be the end of newpath
+                  current->next=end_ptr;
    
-               current=current->next; // current now at i+1
-            }else{
-               // free the path we made
-               FreeList(&newpath);
-            }// end insert if 
+                  current=current->next; // current now at i+2
+               }else{
+                  // free the path we made
+                  FreeList(&newpath);
+                  current=current->prev;
+               }// end insert if 
+            }
          }else{
-            current=current->next; // current now at i+1
+            current=current->prev;
          } // end facing
       } // end of iteration over the path
       conv++;
    } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );
    //end of main do
 
-//printf("### final path\n");
-//PrintPath(*path);
    FreeList(&prevpath);
 
 }

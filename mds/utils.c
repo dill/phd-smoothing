@@ -286,7 +286,7 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
    double eps,a1,b1,c1,a2,b2,c2, pmin, emin;
    double arr[2];
 
-   eps=1.0e-16;
+   eps=1.0e-12;
 
    // calculation of intersection is straight from 
    // Handbook of Mathematics Bronstein et al. pp. 195,196
