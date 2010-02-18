@@ -117,6 +117,13 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    // used for debugging, below...
    //node* current=NULL;
 
+   // DEBUG
+   //printf("plot(bnd,type=\"l\",asp=1)\n");
+   //printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+   //printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+   //printf("points(p1,pch=19)\n");
+   //printf("points(p2,pch=19)\n");
+
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);

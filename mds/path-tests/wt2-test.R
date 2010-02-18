@@ -26,6 +26,14 @@ source("mds.R")
 
 D<-create_distance_matrix(x,y,bnd)
 
-newcoords<-cmdscale(D)
+# "true" D
+D.t<-read.csv("path-tests/wt2-D.csv")
+
+D.t<-as.matrix(D.t)
+
+if(max(D-D)>0){
+   cat("Uh oh! Not the same as \"truth\"\n")
+}
+
 
 options(echo=TRUE)

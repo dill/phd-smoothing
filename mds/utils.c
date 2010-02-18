@@ -283,8 +283,8 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
         intersection point
    */
 
-   double eps,a1,b1,c1,a2,b2,c2;
-   double arr[4];
+   double eps,a1,b1,c1,a2,b2,c2, pmin, emin;
+   double arr[2];
 
    eps=1.0e-16;
 
@@ -305,23 +305,51 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 
    // handle the horizontal/vertical line cases
 
-
    // when the both lines are colinear
-
    // both horizontal
    if( ((fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))) &
        ((fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
               isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))) ){
 
+      // find the min of each pair then the min of them 
       arr[0]=p1[0];
       arr[1]=p2[0];
-      arr[2]=edge[0][0];
-      arr[3]=edge[1][0];
 
+      pmin=minarr(2,arr);
 
+      arr[0]=edge[0][0];
+      arr[1]=edge[1][0];
 
-      ip[0]=minarr(4,arr);
+      emin=minarr(2,arr);
+
+      arr[0]=pmin;
+      arr[1]=emin;
+
+      ip[0]=minarr(2,arr);
       ip[1]=p1[1]; // since we have a horizontal line
+
+   // both vertical
+   }else if( ((fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))) &
+          ( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
+               isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))) ){
+
+      // find the min of each pair then the min of them 
+      arr[0]=p1[1];
+      arr[1]=p2[1];
+
+      pmin=minarr(2,arr);
+
+      arr[0]=edge[0][1];
+      arr[1]=edge[1][1];
+
+      emin=minarr(2,arr);
+
+      arr[0]=pmin;
+      arr[1]=emin;
+
+      ip[1]=minarr(2,arr);
+      ip[0]=p1[0]; // since we have a horizontal line
+
 
    }else{
       // point line horizontal
@@ -576,7 +604,7 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
 
 
 // DEBUG
-printf("#lbbindex=%d\n",lbbindex);
+//printf("#lbbindex=%d\n",lbbindex);
 
 
    // setup bbindex, dists, sortdists
