@@ -126,8 +126,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
    // don't do anything if there is an error at the moment...
    // DEBUG
-   //printf("### make_bnd_path ###\n");
-   //PrintPath(mypath);
+   printf("### make_bnd_path ###\n");
+   PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -148,14 +148,14 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      //printf("### delete_step ###\n");
-      //PrintPath(mypath);
+      printf("### delete_step ###\n");
+      PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      //printf("### alter_step ###\n");
-      //PrintPath(mypath);
+      printf("### alter_step ###\n");
+      PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -271,8 +271,8 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
    
          curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
          AppendNode(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert); 
-   
+         Push(&bnd2,curr_insert);
+
          curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
          Push(&bnd1,curr_insert);
          AppendNode(&bnd2,curr_insert); 
@@ -600,6 +600,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen) & (Length(newpath)>1)){
 
+//// OLD
                   // remove the first and last entries in newpath, since otherwise
                   // we duplicated ep1 and ep2
                   if(Length(newpath)>=3){
@@ -618,8 +619,19 @@ void alter_step(node** path, int nbnd, double **bnd)
                   if(iarrsum(nbnd-1,bndint)>0){ 
                      ReverseList(&newpath);
                   }
+//// OLD
 
-
+//// NEW
+//                  if((newpath->data[0]!=ep1[0]) & (newpath->data[0]!=ep1[0])){
+//                     ReverseList(&newpath);
+//                  }
+//
+//                  // remove the first and last entries in newpath, since otherwise
+//                  // we duplicated ep1 and ep2
+//                  if(Length(newpath)>=3){
+//                     DelTopBot(newpath);
+//                  }
+//// NEW
                   // create new path, compare complete new path with old one, if the
                   // new one is better then keep it.
                   //new.path<-delete_step(list(
