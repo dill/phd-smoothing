@@ -21,7 +21,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-12;
+   double eps=1e-10;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -77,18 +77,18 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
          // first find the intersection point
          intpoint(p1,p2,thisedge,ip);
 
-//         // check the intersection point is not just one of p1 or p2
-//         if(( (fabs(ip[0]-p1[0]) <=eps) && (fabs(ip[1]-p1[1]) <=eps) ) |
-//            ( (fabs(ip[0]-p2[0]) <=eps) && (fabs(ip[1]-p2[1]) <=eps) )){
-//            bndint[i]=0;
-//         }
+         // check the intersection point is not just one of p1 or p2
+         if(( (fabs(ip[0]-p1[0]) <=eps) && (fabs(ip[1]-p1[1]) <=eps) ) |
+            ( (fabs(ip[0]-p2[0]) <=eps) && (fabs(ip[1]-p2[1]) <=eps) )){
+            bndint[i]=0;
+         }
 
-//         // or that it's one of the edge end points
-//         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) && (fabs(ip[1]-thisedge[0][1]) <=eps)) |
-//            ((fabs(ip[0]-thisedge[1][0]) <=eps) && (fabs(ip[1]-thisedge[1][1]) <=eps))){
-//            bndint[i]=0;
-//         }
-//
+         // or that it's one of the edge end points
+         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) && (fabs(ip[1]-thisedge[0][1]) <=eps)) |
+            ((fabs(ip[0]-thisedge[1][0]) <=eps) && (fabs(ip[1]-thisedge[1][1]) <=eps))){
+            bndint[i]=0;
+         }
+
          // first need to handle the horizontal and vertical line cases
          if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
             if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
@@ -130,7 +130,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
 {
    int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
-   double eps=1e-12;
+   double eps=1e-10;
 
    tmpnbnd=2;
 
@@ -908,8 +908,7 @@ double minarr(int narr, double *arr)
 
 
 // sum an array of integers 
-int iarrsum(int narr, int *arr)
-{
+int iarrsum(int narr, int *arr){
    int i;
    int val=0;
 
@@ -924,17 +923,15 @@ int iarrsum(int narr, int *arr)
  * see:
  * http://www.gnu.org/software/libc/manual/html_mono/libc.html#Search_002fSort-Example
  */
-int compare_doubles (const void *a, const void *b)
-{
+int compare_doubles (const void *a, const void *b){
    const double *da = (const double *) a;
    const double *db = (const double *) b;
-   
    return (*da > *db) - (*da < *db);
 }
 
+
 // my very own, very poor find
 // returns the first element of the array to match the value
-// returns -1 if not found
 int crapfind(int narr, double *arr, double val){
    int i, index;
 
