@@ -126,8 +126,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
    // don't do anything if there is an error at the moment...
    // DEBUG
-   printf("### make_bnd_path ###\n");
-   PrintPath(mypath);
+   //printf("### make_bnd_path ###\n");
+   //PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -148,14 +148,14 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### delete_step ###\n");
-      PrintPath(mypath);
+      //printf("### delete_step ###\n");
+      //PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### alter_step ###\n");
-      PrintPath(mypath);
+      //printf("### alter_step ###\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -264,7 +264,7 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
       line2[1][0]=bnd[intind[1]+1][0];
       line2[1][1]=bnd[intind[1]+1][1];
 
-      if((online(ip1,line1) & online(ip2,line2) )){
+      if(online(ip1,line1) | online(ip2,line2)){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert); 
@@ -315,7 +315,6 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
       return 1;
    }
 
-   return 0;
 }
 
 
