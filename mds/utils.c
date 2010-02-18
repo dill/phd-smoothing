@@ -352,96 +352,25 @@ void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
 
  
 /* find if a point is on a line */
-int online(double p1[],double thisline[][2])
-{
-   // uses: twosort
-   // returns 1 if the point is on the line, 0 otherwise
- 
-   double eps, leftside, rightside,xarr[2],yarr[2];
-   
-   /* Take this global at some point*/
-   eps=1.0e-12;
-
-   /* left hand side of equation */
-   /* difference between y values */
-   if(fabs(thisline[1][1]-thisline[0][1])<eps){
-      /* first handle if it's a horizontal line */
- 
-      xarr[0]=thisline[0][0];
-      xarr[1]=thisline[1][0];
-      twosort(xarr);
-      // need to make sure this kind of thing makes sense
- 
-      if((fabs(thisline[1][1]-p1[1])<eps) &&
-         ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
-         return 1;
-      }else{
-         return 0;
-      }
-   }else{
-      leftside=(p1[1]-thisline[0][1])/(thisline[1][1]-thisline[0][1]);
-   }
- 
-   /* right hand side of equation */
-   if(fabs(thisline[1][0]-thisline[0][0])<eps){
-      /* first handle if it's a vertical line */
- 
-      yarr[0]=thisline[0][1];
-      yarr[1]=thisline[1][1];
-      twosort(yarr);
- 
-      if((fabs(thisline[1][0]-p1[0])<eps) &&
-         ((p1[1]<yarr[1])&&(p1[1]>yarr[0]))){
-         return 1;
-      }else{
-         return 0;
-      }
- 
-   }else{
-      rightside=(p1[0]-thisline[0][0])/(thisline[1][0]-thisline[0][0]);
-   }
- 
-   /* If nothing went wrong then do the comparison*/
-   if(fabs(leftside-rightside)<eps){
-      return(1);
-   }else{
-      return(0);
-   }
-}
-
-//int online(double p1[],double thisline[][2]){
+//int online(double p1[],double thisline[][2])
+//{
+//   // uses: twosort
+//   // returns 1 if the point is on the line, 0 otherwise
 // 
-//   double m,c, eps=1e-12;
-//   double xarr[2], yarr[2];
+//   double eps, leftside, rightside,xarr[2],yarr[2];
+//   
+//   /* Take this global at some point*/
+//   eps=1.0e-12;
+//
+//   /* left hand side of equation */
+//   /* difference between y values */
+//   if(fabs(thisline[1][1]-thisline[0][1])<eps){
+//      /* first handle if it's a horizontal line */
 // 
-//   xarr[0]=thisline[0][0];
-//   xarr[1]=thisline[1][0];
-//   yarr[0]=thisline[0][1];
-//   yarr[1]=thisline[1][1];
-// 
-//   twosort(xarr);
-//   twosort(yarr); // make xarr, yarr small->large
-// 
-//   // check p1 is inside the bounding box
-//   if((p1[0]>=xarr[1]) && (p1[0]<=xarr[0]) &&
-//      (p1[1]>=yarr[1]) && (p1[1]<=yarr[0])){
-//      return 0;
-//   }
-// 
-//   // calculate gradient of the line
-//   /* first handle if it's a vertical/horizontal line */
-//   if(fabs(thisline[1][0]-thisline[0][0])<eps){
-//      /* vertical line */
-// 
-//      if((fabs(thisline[1][0]-p1[0])<=eps) &&
-//         ((p1[1]<=yarr[1])&&(p1[1]>=yarr[0]))){
-//         return 1;
-//      }else{
-//         return 0;
-//      }
-// 
-//   }else if(fabs(thisline[1][1]-thisline[0][1])<=eps){
-//      /* horizontal line */
+//      xarr[0]=thisline[0][0];
+//      xarr[1]=thisline[1][0];
+//      twosort(xarr);
+//      // need to make sure this kind of thing makes sense
 // 
 //      if((fabs(thisline[1][1]-p1[1])<eps) &&
 //         ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
@@ -450,19 +379,90 @@ int online(double p1[],double thisline[][2])
 //         return 0;
 //      }
 //   }else{
-//      m = (thisline[1][1]-thisline[0][1])/(thisline[1][0]-thisline[0][0]);
+//      leftside=(p1[1]-thisline[0][1])/(thisline[1][1]-thisline[0][1]);
 //   }
 // 
-//   // calculate intercept
-//   c = thisline[1][1]-m*thisline[1][0];
+//   /* right hand side of equation */
+//   if(fabs(thisline[1][0]-thisline[0][0])<eps){
+//      /* first handle if it's a vertical line */
 // 
-//   // does is p1 a solution?
-//   if(fabs(p1[1]-(m*p1[0]+c))<=eps){
-//      return 1;
+//      yarr[0]=thisline[0][1];
+//      yarr[1]=thisline[1][1];
+//      twosort(yarr);
+// 
+//      if((fabs(thisline[1][0]-p1[0])<eps) &&
+//         ((p1[1]<yarr[1])&&(p1[1]>yarr[0]))){
+//         return 1;
+//      }else{
+//         return 0;
+//      }
+// 
 //   }else{
-//      return 0;
+//      rightside=(p1[0]-thisline[0][0])/(thisline[1][0]-thisline[0][0]);
+//   }
+// 
+//   /* If nothing went wrong then do the comparison*/
+//   if(fabs(leftside-rightside)<eps){
+//      return(1);
+//   }else{
+//      return(0);
 //   }
 //}
+
+int online(double p1[],double thisline[][2]){
+ 
+   double m,c, eps=1e-12;
+   double xarr[2], yarr[2];
+ 
+   xarr[0]=thisline[0][0];
+   xarr[1]=thisline[1][0];
+   yarr[0]=thisline[0][1];
+   yarr[1]=thisline[1][1];
+ 
+   twosort(xarr);
+   twosort(yarr); // make xarr, yarr small->large
+ 
+   // check p1 is inside the bounding box
+   if((p1[0]>=xarr[1]) && (p1[0]<=xarr[0]) &&
+      (p1[1]>=yarr[1]) && (p1[1]<=yarr[0])){
+      return 0;
+   }
+ 
+   // calculate gradient of the line
+   /* first handle if it's a vertical/horizontal line */
+   if(fabs(thisline[1][0]-thisline[0][0])<eps){
+      /* vertical line */
+ 
+      if((fabs(thisline[1][0]-p1[0])<=eps) &&
+         ((p1[1]<=yarr[1])&&(p1[1]>=yarr[0]))){
+         return 1;
+      }else{
+         return 0;
+      }
+ 
+   }else if(fabs(thisline[1][1]-thisline[0][1])<=eps){
+      /* horizontal line */
+ 
+      if((fabs(thisline[1][1]-p1[1])<eps) &&
+         ((p1[0]<xarr[1])&&(p1[0]>xarr[0]))){
+         return 1;
+      }else{
+         return 0;
+      }
+   }else{
+      m = (thisline[1][1]-thisline[0][1])/(thisline[1][0]-thisline[0][0]);
+   }
+ 
+   // calculate intercept
+   c = thisline[1][1]-m*thisline[1][0];
+ 
+   // does is p1 a solution?
+   if(fabs(p1[1]-(m*p1[0]+c))<=eps){
+      return 1;
+   }else{
+      return 0;
+   }
+}
 
 
 
@@ -704,30 +704,6 @@ void Push(node** headRef, double data[2]) {
    *headRef = newNode;
 }
 
-// Normal AppendNode 
-//void AppendNode(node** headRef, double data[2]) {
-//   node* current = *headRef;
-//   node* newNode = malloc(sizeof(node));
-//
-//   newNode->data[0] = data[0];
-//   newNode->data[1] = data[1];
-//   newNode->next = NULL;
-//
-//   // special case for length 0
-//   if (current == NULL) {
-//      newNode->prev = NULL;
-//      *headRef = newNode;
-//   }else{
-//      // Locate the last node
-//      while (current->next != NULL) {
-//         current = current->next;
-//      }
-//      // insert the new node
-//      newNode->prev = current;
-//      current->next = newNode;
-//   }
-//}
-
 // AppendNode with Push()
 void AppendNode(node** headRef, double data[2]) { 
    node* current = *headRef; 
@@ -813,25 +789,8 @@ void DelTopBot(node* head)
 
 }
 
-// reverse the elements of a linked list
-//void ReverseList(node** head){
-//   node* tmp=NULL;   
-//   node* current=*head;
-//
-//   while(current!=NULL){
-//      tmp=current->next;
-//      current->next=current->prev;
-//      current->prev=tmp;
-//      if(current->prev == NULL){
-//         head=&current;
-//      }
-//      current=current->prev;
-//   }
-//}
-
 void ReverseList(node** head){
    node* current=*head;
-
    node* revlist = NULL;
 
    while(current!=NULL){
@@ -840,9 +799,7 @@ void ReverseList(node** head){
    }
 
    FreeList(head);
-
    *head=revlist;
-
 }
 
 ////////////////////////////
