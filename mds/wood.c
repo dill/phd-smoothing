@@ -163,8 +163,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   //printf("### final ###\n");
-   //PrintPath(mypath);
+   printf("### final ###\n");
+   PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
@@ -256,13 +256,13 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
 
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
-      line1[1][0]=bnd[intind[0]+1][0];
-      line1[1][1]=bnd[intind[0]+1][1];
+      line1[1][0]=bnd[(intind[0]+1)%nbnd][0];
+      line1[1][1]=bnd[(intind[0]+1)%nbnd][1];
 
       line2[0][0]=bnd[intind[1]][0];
       line2[0][1]=bnd[intind[1]][1];
-      line2[1][0]=bnd[intind[1]+1][0];
-      line2[1][1]=bnd[intind[1]+1][1];
+      line2[1][0]=bnd[(intind[1]+1)%nbnd][0];
+      line2[1][1]=bnd[(intind[1]+1)%nbnd][1];
 
       if(online(ip1,line1) | online(ip2,line2)){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
@@ -297,6 +297,52 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
       }
+/////////////////////////////////////////////////////////////
+//      if(online(ip1,line1)){
+//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+//         AppendNode(&bnd1,curr_insert);
+//         Push(&bnd2,curr_insert); 
+//   
+//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+//         AppendNode(&bnd1,curr_insert);
+//         Push(&bnd2,curr_insert);
+//
+//
+//
+//      }else{
+//
+//
+//
+//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+//         Push(&bnd1,curr_insert);
+//         AppendNode(&bnd2,curr_insert); 
+//   
+//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+//         Push(&bnd1,curr_insert);
+//         AppendNode(&bnd2,curr_insert); 
+//      if(online(ip1,line1) | online(ip2,line2)){
+//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+//         Push(&bnd1,curr_insert);
+//         AppendNode(&bnd2,curr_insert);
+//   
+//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+//         Push(&bnd1,curr_insert);
+//         AppendNode(&bnd2,curr_insert);
+//
+//
+//
+//      }else{
+//
+//   
+//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+//         AppendNode(&bnd1,curr_insert);
+//         Push(&bnd2,curr_insert);
+//   
+//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+//         AppendNode(&bnd1,curr_insert);
+//         Push(&bnd2,curr_insert);
+//      }
+////////////////////////////////////////////////////////
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
@@ -677,7 +723,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                   current=current->prev;
                }// end insert if 
             }
-            newpath=NULL;
+            newpath=NULL; // make sure that newpath doesn't point anywhere
          }else{
             current=current->prev;
          } // end facing
