@@ -126,8 +126,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
    // don't do anything if there is an error at the moment...
    // DEBUG
-   printf("### make_bnd_path ###\n");
-   PrintPath(mypath);
+   //printf("### make_bnd_path ###\n");
+   //PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -148,14 +148,14 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### delete_step ###\n");
-      PrintPath(mypath);
+      //printf("### delete_step ###\n");
+      //PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("### alter_step ###\n");
-      PrintPath(mypath);
+      //printf("### alter_step ###\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -163,8 +163,8 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   printf("### final ###\n");
-   PrintPath(mypath);
+   //printf("### final ###\n");
+   //PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
 //      printf("conv = %d\n",conv);
@@ -300,11 +300,15 @@ int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** pat
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
-         *path=bnd1;
+         //*path=bnd1;
+         CopyList(bnd1,path);
+         FreeList(&bnd1);
          FreeList(&bnd2);
       }else{
-         *path=bnd2;
+         //*path=bnd2;
+         CopyList(bnd2,path);
          FreeList(&bnd1);
+         FreeList(&bnd2);
       }
 
       return 0;
@@ -673,6 +677,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                   current=current->prev;
                }// end insert if 
             }
+            newpath=NULL;
          }else{
             current=current->prev;
          } // end facing
