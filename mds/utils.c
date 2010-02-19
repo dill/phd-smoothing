@@ -7,7 +7,7 @@
 #include "utils.h"
 
 // does the line between two points and the boundary intersect?
-void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint)
+void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
 {
    /*
     * p1,p2    points we wish to test
@@ -126,7 +126,7 @@ void do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint
 
 // special do_intersect, thinks that points that start/end at the same
 // place don't intersect. Neither do exactly overlapping lines.
-void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bndint)
+void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
 {
    int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
@@ -182,7 +182,7 @@ void sp_do_intersect(double p1[2], double p2[2], int nbnd, double **bnd,int *bnd
 
 
 /* determine whether the line between two points is facing inside or outside */
-int facing(double p1[2], double p2[2] , int nbnd, double **bnd){
+int facing(double p1[], double p2[] , int nbnd, double **bnd){
    /*
    Args:
       p1, p2      the points
@@ -274,7 +274,7 @@ int facing(double p1[2], double p2[2] , int nbnd, double **bnd){
 }
 
 // find the intersection point between two points and a line
-void intpoint(double p1[2], double p2[2],double edge[2][2], double ip[2])
+void intpoint(double p1[], double p2[],double edge[][2], double ip[])
 {
    /*args:
       p1, p2      the two points making up the end points of the line
@@ -562,8 +562,8 @@ double hull_length(node** hull) {
 ///////////////////////////////////
 // find the first intersection points of p1 and p2
 // with bnd
-int first_ips(double p1[2], double p2[2], int nbnd, double **bnd, 
-               double ip1[2], double ip2[2],int intind[2]){   
+int first_ips(double p1[], double p2[], int nbnd, double **bnd, 
+               double ip1[], double ip2[],int intind[]){   
    /* Args:
    *   p1, p2        the points
    *   nbnd          length of boundary
@@ -597,15 +597,14 @@ int first_ips(double p1[2], double p2[2], int nbnd, double **bnd,
   
    // find intersections 
    // this is what is used in the R code.
+
    do_intersect(p1,p2,nbnd,bnd,retint);
    
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
 
-
 // DEBUG
-//printf("#lbbindex=%d\n",lbbindex);
-
+printf("#lbbindex=%d\n",lbbindex);
 
    // setup bbindex, dists, sortdists
    bbindex=(int*)malloc(sizeof(int)*lbbindex);
@@ -730,7 +729,7 @@ void FreeList(node** headRef) {
                     // in the caller. 
 } 
 
-void Push(node** headRef, double data[2]) {
+void Push(node** headRef, double data[]) {
    node* newNode = malloc(sizeof(node));
    newNode->data[0] = data[0];
    newNode->data[1] = data[1];
@@ -749,7 +748,7 @@ void Push(node** headRef, double data[2]) {
 }
 
 // AppendNode with Push()
-void AppendNode(node** headRef, double data[2]) { 
+void AppendNode(node** headRef, double data[]) { 
    node* current = *headRef; 
    // special case for the empty list 
    if (current == NULL) { 
@@ -812,24 +811,26 @@ void PrintPath(node* mypath) {
 }
 
 // Delete the first and last entries of a list
-void DelTopBot(node* head)
+void DelTopBot(node** head)
 {
-   node* current = NULL;      // used to iterate over the original list
+   node* current = *head;      // used to iterate over the original list
+   node* top = NULL;
 
    // miss out the first node
-   *head=*(head->next);
-   current=head;
+   current=current->next;
+   free(current->prev);
    current->prev=NULL;
-   
-   current=head;
+   top=current; 
 
    // skip to the end 
    while (current->next->next != NULL) {
       current = current->next;
    }
    
-//   free(current->next);
+   free(current->next);
    current->next=NULL;
+
+   *head=top;
 
 }
 

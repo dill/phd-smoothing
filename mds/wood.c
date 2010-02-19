@@ -50,7 +50,6 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    //    point vector
    if(*start != 0){
       // #### Main loop for INSERTION
-      //for(i=0; i<(*len); i++){
       for(i=0; i<(*start); i++){
          // set p1
          p1[0]=x[i]; p1[1]=y[i];
@@ -88,7 +87,11 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    
             //                           vvv just hypot when we touch only 1 vertex 
             if(iarrsum((*nbnd-1), retint)>1){
+               // DEBUG
+               printf("# p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+               printf("# p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
                pathlen[k]=make_path(p1,p2,*nbnd,bnd);
+               printf("########################\n");
             }else{
                pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
             }
@@ -107,7 +110,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 }
 
 
-double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
+double make_path(double p1[], double p2[], int nbnd, double **bnd)
 {
    int conv, conv_stop,err;
    double hulllen;
@@ -183,7 +186,7 @@ double make_path(double p1[2], double p2[2], int nbnd, double **bnd)
 
 
 // create a path between p1 and p2 using the boundary
-int make_bnd_path(double p1[2], double p2[2], int nbnd, double **bnd, node** path)
+int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
 {
    /* Args:
     *  p1, p2           points
@@ -654,7 +657,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                   // remove the first and last entries in newpath, since otherwise
                   // we duplicated ep1 and ep2
                   if(Length(newpath)>=3){
-                     DelTopBot(newpath);
+                     DelTopBot(&newpath);
                   }
 
                   // only reverse the order if we need to...
@@ -668,6 +671,8 @@ void alter_step(node** path, int nbnd, double **bnd)
 
                   if(iarrsum(nbnd-1,bndint)>0){ 
                      ReverseList(&newpath);
+// DEBUG
+printf("# yep\n" );
                   }
 //// OLD
 

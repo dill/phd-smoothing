@@ -36,7 +36,7 @@ void CopyList(node*, node**);
 int Length(node*);
 void FreeList(node**);
 void PrintPath(node*);
-void DelTopBot(node*);
+void DelTopBot(node**);
 void ReverseList(node**);
 
 
