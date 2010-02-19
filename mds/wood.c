@@ -88,10 +88,10 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             //                           vvv just hypot when we touch only 1 vertex 
             if(iarrsum((*nbnd-1), retint)>1){
                // DEBUG
-               printf("# p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-               printf("# p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+//               printf("# p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+//               printf("# p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
                pathlen[k]=make_path(p1,p2,*nbnd,bnd);
-               printf("########################\n");
+//               printf("########################\n");
             }else{
                pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
             }
@@ -638,7 +638,6 @@ void alter_step(node** path, int nbnd, double **bnd)
 
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
-
             // create a new path
             err=make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
 
@@ -671,8 +670,6 @@ void alter_step(node** path, int nbnd, double **bnd)
 
                   if(iarrsum(nbnd-1,bndint)>0){ 
                      ReverseList(&newpath);
-// DEBUG
-printf("# yep\n" );
                   }
 //// OLD
 
