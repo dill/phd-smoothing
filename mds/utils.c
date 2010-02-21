@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include "utils.h"
 
+double eps=1e-6;
+
+
 // does the line between two points and the boundary intersect?
 void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
 {
@@ -21,9 +24,18 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   double eps=1e-10;
+extern double eps;
+//   double eps=1e-6;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
+
+   if( (abs(p1[0]-4.241647) < eps) &&
+       (abs(p1[1]-(-110.319262)) < eps) &&
+       (abs(p2[0]-(-70.534624)) < eps) &&
+       (abs(p2[1]-21.674263) < eps)){
+      printf("#stop\n");
+      printf("# nbnd = %d\n",nbnd);
+   }
 
    // bounding box around the points p1,p2
    //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
@@ -61,13 +73,16 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
 
       // establish whether the bounding boxes intersect
       // if max edge x less than min point x
-      if(ebbox[0][0]+eps <= pbbox[1][0]) bndint[i]=0;
+      if((ebbox[0][0]+eps) <= pbbox[1][0]) bndint[i]=0;
       // if max point x less than min edge x
-      if(pbbox[0][0]+eps <= ebbox[1][0]) bndint[i]=0;
+      if((pbbox[0][0]+eps) <= ebbox[1][0]) bndint[i]=0;
       // if max edge y less than min point y
-      if(ebbox[0][1]+eps <= pbbox[1][1]) bndint[i]=0;
+      if((ebbox[0][1]+eps) <= pbbox[1][1]) bndint[i]=0;
       // if max point y less than min edge y
-      if(pbbox[0][1]+eps <= ebbox[1][1]) bndint[i]=0;
+      if((pbbox[0][1]+eps) <= ebbox[1][1]) bndint[i]=0;
+
+
+
 
       // if the bounding boxes do intersect, check that the
       // intersection of the two lines lies within the bounding
@@ -77,15 +92,35 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
          // first find the intersection point
          intpoint(p1,p2,thisedge,ip);
 
+   if( (abs(p1[0]-4.241647) < eps) &&
+       (abs(p1[1]-(-110.319262)) < eps) &&
+       (abs(p2[0]-(-70.534624)) < eps) &&
+       (abs(p2[1]-21.674263) < eps)){
+   
+
+printf("#### p1=(%.16f,%.16f)\n",p1[0],p1[1]);
+printf("#### p2=(%.16f,%.16f)\n",p2[0],p2[1]);
+printf("#### ip=(%.16f,%.16f)\n",ip[0],ip[1]);
+printf("#### eps=%.16f\n",eps);
+
+
+printf("#### before %d=%d\n",i,bndint[i]);
+}
          // check the intersection point is not just one of p1 or p2
-         if(( (fabs(ip[0]-p1[0]) <=eps) && (fabs(ip[1]-p1[1]) <=eps) ) |
-            ( (fabs(ip[0]-p2[0]) <=eps) && (fabs(ip[1]-p2[1]) <=eps) )){
+         if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
+            ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
             bndint[i]=0;
          }
-
+   if( (abs(p1[0]-4.241647) < eps) &&
+       (abs(p1[1]-(-110.319262)) < eps) &&
+       (abs(p2[0]-(-70.534624)) < eps) &&
+       (abs(p2[1]-21.674263) < eps)){
+printf("#### after %d=%d\n",i,bndint[i]);
+printf("#### eps=%f\n",eps);
+}
          // or that it's one of the edge end points
-         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) && (fabs(ip[1]-thisedge[0][1]) <=eps)) |
-            ((fabs(ip[0]-thisedge[1][0]) <=eps) && (fabs(ip[1]-thisedge[1][1]) <=eps))){
+         if(( (fabs(ip[0]-thisedge[0][0]) <eps) & (fabs(ip[1]-thisedge[0][1]) <eps)) |
+            ((fabs(ip[0]-thisedge[1][0]) <eps) & (fabs(ip[1]-thisedge[1][1]) <eps))){
             bndint[i]=0;
          }
 
@@ -120,6 +155,12 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
             }
          } // end of bounding box ip check
       }
+   if( (abs(p1[0]-4.241647) < eps) &&
+       (abs(p1[1]-(-110.319262)) < eps) &&
+       (abs(p2[0]-(-70.534624)) < eps) &&
+       (abs(p2[1]-21.674263) < eps)){
+printf("#%d",bndint[i]);
+   }
    }// end iterate over boundary
 }
 
@@ -130,7 +171,8 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
 {
    int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
-   double eps=1e-10;
+extern double eps;
+//   double eps=1e-6;
 
    tmpnbnd=2;
 
@@ -259,10 +301,11 @@ void intpoint(double p1[], double p2[],double edge[][2], double ip[])
         intersection point
    */
 
-   double eps,a1,b1,c1,a2,b2,c2, pmin, emin;
+   double a1,b1,c1,a2,b2,c2, pmin, emin;
    double arr[2];
 
-   eps=1.0e-12;
+//   double eps=1.0e-12;
+extern double eps;
 
    // calculation of intersection is straight from 
    // Handbook of Mathematics Bronstein et al. pp. 195,196
@@ -431,7 +474,9 @@ void intpoint(double p1[], double p2[],double edge[][2], double ip[])
 
 int online(double p1[],double thisline[][2]){
  
-   double m,c, eps=1e-12;
+   double m,c;
+//  double eps=1e-12;
+extern double eps;
    double xarr[2], yarr[2];
  
    xarr[0]=thisline[0][0];
@@ -544,7 +589,8 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    *                 crapfind, qsort
    */
 
-   int i, lbbindex, firstel, lastel, *retint, *bbindex;
+   int i, firstel, lastel, *retint, *bbindex;
+   int lbbindex=0;
    double thisedge[2][2], **ips, *dists, *sortdists;
    double ip[2];
    int j=0;
@@ -569,7 +615,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    lbbindex=iarrsum((nbnd-1),retint);
 
 // DEBUG
-//printf("#lbbindex=%d\n",lbbindex);
+printf("#lbbindex=%d\n",lbbindex);
 
    // setup bbindex, dists, sortdists
    bbindex=(int*)malloc(sizeof(int)*lbbindex);
