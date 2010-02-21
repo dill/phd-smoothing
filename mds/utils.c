@@ -112,10 +112,10 @@ printf("#### after %d=%d\n",i,bndint[i]);
 printf("#### eps=%f\n",eps);
 }
          // or that it's one of the edge end points
-         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) & (fabs(ip[1]-thisedge[0][1]) <=eps)) |
-            ((fabs(ip[0]-thisedge[1][0]) <=eps) & (fabs(ip[1]-thisedge[1][1]) <=eps))){
-            bndint[i]=0;
-         }
+//         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) & (fabs(ip[1]-thisedge[0][1]) <=eps)) |
+//            ((fabs(ip[0]-thisedge[1][0]) <=eps) & (fabs(ip[1]-thisedge[1][1]) <=eps))){
+//            bndint[i]=0;
+//         }
 
          // first need to handle the horizontal and vertical line cases
          if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
