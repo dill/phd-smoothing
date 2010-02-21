@@ -81,9 +81,6 @@ extern double eps;
       // if max point y less than min edge y
       if((pbbox[0][1]+eps) <= ebbox[1][1]) bndint[i]=0;
 
-
-
-
       // if the bounding boxes do intersect, check that the
       // intersection of the two lines lies within the bounding
       // boxes.
@@ -92,23 +89,19 @@ extern double eps;
          // first find the intersection point
          intpoint(p1,p2,thisedge,ip);
 
-   if( (abs(p1[0]-4.241647) < eps) &&
-       (abs(p1[1]-(-110.319262)) < eps) &&
-       (abs(p2[0]-(-70.534624)) < eps) &&
-       (abs(p2[1]-21.674263) < eps)){
-   
-
+if( (abs(p1[0]-4.241647) < eps) &&
+    (abs(p1[1]-(-110.319262)) < eps) &&
+    (abs(p2[0]-(-70.534624)) < eps) &&
+    (abs(p2[1]-21.674263) < eps)){
 printf("#### p1=(%.16f,%.16f)\n",p1[0],p1[1]);
 printf("#### p2=(%.16f,%.16f)\n",p2[0],p2[1]);
 printf("#### ip=(%.16f,%.16f)\n",ip[0],ip[1]);
 printf("#### eps=%.16f\n",eps);
-
-
 printf("#### before %d=%d\n",i,bndint[i]);
 }
          // check the intersection point is not just one of p1 or p2
-         if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
-            ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
+         if(( (fabs(ip[0]-p1[0]) <=eps) & (fabs(ip[1]-p1[1]) <=eps) ) |
+            ( (fabs(ip[0]-p2[0]) <=eps) & (fabs(ip[1]-p2[1]) <=eps) )){
             bndint[i]=0;
          }
    if( (abs(p1[0]-4.241647) < eps) &&
@@ -119,8 +112,8 @@ printf("#### after %d=%d\n",i,bndint[i]);
 printf("#### eps=%f\n",eps);
 }
          // or that it's one of the edge end points
-         if(( (fabs(ip[0]-thisedge[0][0]) <eps) & (fabs(ip[1]-thisedge[0][1]) <eps)) |
-            ((fabs(ip[0]-thisedge[1][0]) <eps) & (fabs(ip[1]-thisedge[1][1]) <eps))){
+         if(( (fabs(ip[0]-thisedge[0][0]) <=eps) & (fabs(ip[1]-thisedge[0][1]) <=eps)) |
+            ((fabs(ip[0]-thisedge[1][0]) <=eps) & (fabs(ip[1]-thisedge[1][1]) <=eps))){
             bndint[i]=0;
          }
 
@@ -155,12 +148,6 @@ printf("#### eps=%f\n",eps);
             }
          } // end of bounding box ip check
       }
-   if( (abs(p1[0]-4.241647) < eps) &&
-       (abs(p1[1]-(-110.319262)) < eps) &&
-       (abs(p2[0]-(-70.534624)) < eps) &&
-       (abs(p2[1]-21.674263) < eps)){
-printf("#%d",bndint[i]);
-   }
    }// end iterate over boundary
 }
 
@@ -697,7 +684,7 @@ printf("#lbbindex=%d\n",lbbindex);
 
    }else{
       // let the Robot warn us...
-      //printf("DANGER, WILL ROBINSON! lbbindex=%d (< 2)\n",lbbindex);
+      printf("### DANGER, WILL ROBINSON! lbbindex=%d (< 2)\n",lbbindex);
       err++;
    } // end of lbbindex<2 check
 

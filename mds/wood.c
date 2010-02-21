@@ -129,8 +129,8 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
    // don't do anything if there is an error at the moment...
    // DEBUG
-   //printf("### make_bnd_path ###\n");
-   //PrintPath(mypath);
+   printf("cat(\"### make_bnd_path ###\\n\")\n");
+   PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -151,14 +151,14 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      //printf("### delete_step ###\n");
-      //PrintPath(mypath);
+      printf("cat(\"### delete_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      //printf("### alter_step ###\n");
-      //PrintPath(mypath);
+      printf("cat(\"### alter_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -166,7 +166,7 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   printf("### final ###\n");
+   printf("cat(\"### final ###\\n\")\n");
    PrintPath(mypath);
 //   if(conv==conv_stop){
 //      printf("WARNING: path find finished without convergence!\n");
@@ -652,7 +652,6 @@ void alter_step(node** path, int nbnd, double **bnd)
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen) & (Length(newpath)>1)){
 
-//// OLD
                   // remove the first and last entries in newpath, since otherwise
                   // we duplicated ep1 and ep2
                   if(Length(newpath)>=3){
@@ -668,22 +667,12 @@ void alter_step(node** path, int nbnd, double **bnd)
                   tp2[1]=newpath->data[1];
                   do_intersect(tp1, tp2, nbnd, bnd,bndint);
 
-                  if(iarrsum(nbnd-1,bndint)>0){ 
+   printf("# alter sum=%d\n",iarrsum((nbnd-1),bndint));
+
+                  if(iarrsum((nbnd-1),bndint)>0){ 
                      ReverseList(&newpath);
                   }
-//// OLD
 
-//// NEW
-//                  if((newpath->data[0]!=ep1[0]) & (newpath->data[0]!=ep1[0])){
-//                     ReverseList(&newpath);
-//                  }
-//
-//                  // remove the first and last entries in newpath, since otherwise
-//                  // we duplicated ep1 and ep2
-//                  if(Length(newpath)>=3){
-//                     DelTopBot(newpath);
-//                  }
-//// NEW
                   // create new path, compare complete new path with old one, if the
                   // new one is better then keep it.
                   //new.path<-delete_step(list(
