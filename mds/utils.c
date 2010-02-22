@@ -516,7 +516,7 @@ extern double eps;
    // calculate intercept
    c = thisline[1][1]-m*thisline[1][0];
  
-   // does is p1 a solution?
+   // is p1 a solution?
    if(fabs(p1[1]-(m*p1[0]+c))<=eps){
       return 1;
    }else{
