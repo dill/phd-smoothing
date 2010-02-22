@@ -259,13 +259,13 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
 
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
-      line1[1][0]=bnd[(intind[0]+1)%nbnd][0];
-      line1[1][1]=bnd[(intind[0]+1)%nbnd][1];
+      line1[1][0]=bnd[(intind[0]+1)][0];
+      line1[1][1]=bnd[(intind[0]+1)][1];
 
       line2[0][0]=bnd[intind[1]][0];
       line2[0][1]=bnd[intind[1]][1];
-      line2[1][0]=bnd[(intind[1]+1)%nbnd][0];
-      line2[1][1]=bnd[(intind[1]+1)%nbnd][1];
+      line2[1][0]=bnd[(intind[1]+1)][0];
+      line2[1][1]=bnd[(intind[1]+1)][1];
 
       if(online(ip1,line1) | online(ip2,line2)){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
@@ -300,6 +300,15 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
       }
+
+printf("# path1 ###\n");
+PrintPath(bnd1);
+printf("# path1 ###\n");
+printf("scan()\n");
+printf("# path2 ###\n");
+PrintPath(bnd2);
+printf("# path2 ###\n");
+
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
