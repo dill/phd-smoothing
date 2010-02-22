@@ -219,6 +219,8 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
       //bnd.1.sort<-pe(bnd,picker)
 
       // since we ordered intind first, we don't need to worry too much
+      // we put the bit that is contiguous in first eg:
+      // 0 1 2 3} [4 5 6] {7 8 9  <<<- do the [ ] bit first!
 
       // push everything in
       //                     vvvvvvvvvv <- since we want it to be inclusive
@@ -235,11 +237,10 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
       // bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),
       //       length(bnd.2.sort$x):picker[1]))
 
-      // handle the case where start is actually the end
       if(intind[1]!=nbnd){
          start=intind[1];
       }else{
-         start=1;
+         start=1; // handle the case where start is actually the end
       }
 
       // insert until we hit the end 
@@ -251,22 +252,36 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
 
       // insert from the end back to intend[0] 
       //             vvvvvvv don't include intind[0] twice
-      for(i=(nbnd-1);i>=intind[0];i--){
+//      for(i=(nbnd-1);i>=intind[0];i--){
+//         curr_insert[0]=bnd[i][0];
+//         curr_insert[1]=bnd[i][1];
+//         AppendNode(&bnd2,curr_insert);
+//      }
+
+      if(intind[0]!=0){
+
+      for(i=0;i<intind[0];i++){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
          AppendNode(&bnd2,curr_insert);
       }
 
+
+      }
+
+
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
-      line1[1][0]=bnd[(intind[0]+1)][0];
-      line1[1][1]=bnd[(intind[0]+1)][1];
+      line1[1][0]=bnd[(intind[0]+1)%nbnd][0];
+      line1[1][1]=bnd[(intind[0]+1)%nbnd][1];
 
       line2[0][0]=bnd[intind[1]][0];
       line2[0][1]=bnd[intind[1]][1];
-      line2[1][0]=bnd[(intind[1]+1)][0];
-      line2[1][1]=bnd[(intind[1]+1)][1];
+      line2[1][0]=bnd[(intind[1]+1)%nbnd][0];
+      line2[1][1]=bnd[(intind[1]+1)%nbnd][1];
 
+// OLD
+//
       if(online(ip1,line1) | online(ip2,line2)){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
@@ -300,15 +315,79 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
       }
+// OLD
+///////////////////////////////////////////////////////
 
+printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
+printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+
+
+
+      // bnd1
+//      if(online(ip1,line1) | online(ip2,line2)){
+//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+//         AppendNode(&bnd1,curr_insert);
+//   
+//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+//         AppendNode(&bnd1,curr_insert);
+//
+//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+//         Push(&bnd1,curr_insert);
+//   
+//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+//         Push(&bnd1,curr_insert);
+//      }else{
+//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+//         Push(&bnd1,curr_insert);
+//   
+//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+//         Push(&bnd1,curr_insert);
+//   
+//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+//         AppendNode(&bnd1,curr_insert);
+//   
+//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+//         AppendNode(&bnd1,curr_insert);
+//      }
+//
+//      // bnd2
+//      if(online(ip1,line1) | online(ip2,line2)){
+//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+//         Push(&bnd2,curr_insert); 
+//   
+//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+//         Push(&bnd2,curr_insert);
+//
+//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+//         AppendNode(&bnd2,curr_insert); 
+//   
+//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+//         AppendNode(&bnd2,curr_insert); 
+//      }else{
+//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
+//         AppendNode(&bnd2,curr_insert);
+//   
+//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+//         AppendNode(&bnd2,curr_insert);
+//   
+//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
+//         Push(&bnd2,curr_insert);
+//   
+//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+//         Push(&bnd2,curr_insert);
+//      }
+
+////////////////////////////////////////////////////////
 // DEBUG
-//printf("# path1 ###\n");
-//PrintPath(bnd1);
-//printf("# path1 ###\n");
-//printf("scan()\n");
-//printf("# path2 ###\n");
-//PrintPath(bnd2);
-//printf("# path2 ###\n");
+printf("cat(\" path1 ###\\n\")\n");
+PrintPath(bnd1);
+printf("# path1 ###\n");
+printf("scan()\n");
+printf("cat(\" path2 ###\\n\")\n");
+PrintPath(bnd2);
+printf("# path2 ###\n");
 
 
       // pick the shorter path to return
