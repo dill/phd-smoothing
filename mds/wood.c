@@ -300,52 +300,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
       }
-/////////////////////////////////////////////////////////////
-//      if(online(ip1,line1)){
-//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-//         AppendNode(&bnd1,curr_insert);
-//         Push(&bnd2,curr_insert); 
-//   
-//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-//         AppendNode(&bnd1,curr_insert);
-//         Push(&bnd2,curr_insert);
-//
-//
-//
-//      }else{
-//
-//
-//
-//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
-//         Push(&bnd1,curr_insert);
-//         AppendNode(&bnd2,curr_insert); 
-//   
-//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-//         Push(&bnd1,curr_insert);
-//         AppendNode(&bnd2,curr_insert); 
-//      if(online(ip1,line1) | online(ip2,line2)){
-//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-//         Push(&bnd1,curr_insert);
-//         AppendNode(&bnd2,curr_insert);
-//   
-//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-//         Push(&bnd1,curr_insert);
-//         AppendNode(&bnd2,curr_insert);
-//
-//
-//
-//      }else{
-//
-//   
-//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
-//         AppendNode(&bnd1,curr_insert);
-//         Push(&bnd2,curr_insert);
-//   
-//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-//         AppendNode(&bnd1,curr_insert);
-//         Push(&bnd2,curr_insert);
-//      }
-////////////////////////////////////////////////////////
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
@@ -648,13 +602,14 @@ void alter_step(node** path, int nbnd, double **bnd)
             if(err==0){
 
                // make the new path as simple as possible (no simpler :))
+               // NB. we would be fine just passing newpath to delete, but
+               // if we check the length first, we save a call (ish)
                if(Length(newpath)>=3){
                   delete_step(&newpath,nbnd,bnd);
                }
 
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen) & (Length(newpath)>1)){
-
 
                   // only reverse the order if we need to...
                   // that is when the line joining current element of the full path
@@ -665,11 +620,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                   tp2[1]=newpath->data[1];
                   do_intersect(tp1, tp2, nbnd, bnd,bndint);
 
-   printf("# alter sum=%d\n",iarrsum((nbnd-1),bndint));
-
                   if( (iarrsum((nbnd-1),bndint)>0) |
-                     ((fabs(tp2[0]-tp1[0]) <=eps) & (fabs(tp2[1]-tp1[1]) <=eps) )) {
-                  //){
+                      ((fabs(tp2[0]-tp1[0]) <=eps) & (fabs(tp2[1]-tp1[1]) <=eps) )) {
                      ReverseList(&newpath);
                   }else{
                      end1=current;
@@ -690,14 +642,9 @@ void alter_step(node** path, int nbnd, double **bnd)
                      
                      if( (iarrsum((nbnd-1),bndint)>0) |
                         ((fabs(tp2[0]-tp1[0]) <=eps) & (fabs(tp2[1]-tp1[1]) <=eps) )) {
-                     //){
                         ReverseList(&newpath);
                      }
                   }
-
-
-
-
 
                   // remove the first and last entries in newpath, since otherwise
                   // we duplicated ep1 and ep2
