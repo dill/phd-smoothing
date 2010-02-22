@@ -119,8 +119,8 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
    
    // DEBUG
    //printf("plot(bnd,type=\"l\",asp=1)\n");
-   //printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-   //printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+   printf("p1<-list(x=%.16f,y=%.16f)\n",p1[0],p1[1]);
+   printf("p2<-list(x=%.16f,y=%.16f)\n",p2[0],p2[1]);
    //printf("points(p1,pch=19)\n");
    //printf("points(p2,pch=19)\n");
 
@@ -301,13 +301,14 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
          Push(&bnd2,curr_insert);
       }
 
-printf("# path1 ###\n");
-PrintPath(bnd1);
-printf("# path1 ###\n");
-printf("scan()\n");
-printf("# path2 ###\n");
-PrintPath(bnd2);
-printf("# path2 ###\n");
+// DEBUG
+//printf("# path1 ###\n");
+//PrintPath(bnd1);
+//printf("# path1 ###\n");
+//printf("scan()\n");
+//printf("# path2 ###\n");
+//PrintPath(bnd2);
+//printf("# path2 ###\n");
 
 
       // pick the shorter path to return

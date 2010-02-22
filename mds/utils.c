@@ -25,7 +25,6 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
    // from Mastering Algorithms with Perl, p 451
 
    extern double eps;
-//   double eps=1e-6;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -166,11 +165,9 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
 {
    int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
-extern double eps;
-//   double eps=1e-6;
+   extern double eps;
 
    tmpnbnd=2;
-
    tmpbnd=(double**)malloc(sizeof(double*)*tmpnbnd);
    tmpbnd[0]=(double*)malloc(sizeof(double)*tmpnbnd*2);
 
@@ -298,8 +295,6 @@ void intpoint(double p1[], double p2[],double edge[][2], double ip[])
 
    double a1,b1,c1,a2,b2,c2, pmin, emin;
    double arr[2];
-
-//   double eps=1.0e-12;
    extern double eps;
 
    // calculation of intersection is straight from 
@@ -470,8 +465,7 @@ void intpoint(double p1[], double p2[],double edge[][2], double ip[])
 int online(double p1[],double thisline[][2]){
  
    double m,c;
-//  double eps=1e-12;
-extern double eps;
+   extern double eps;
    double xarr[2], yarr[2];
  
    xarr[0]=thisline[0][0];
@@ -554,7 +548,7 @@ double hull_length(node** hull) {
    node* current = *hull;
 
    if(current ==NULL){
-      return(1e16);
+      return(1e10);
    }
 
    while (current->next != NULL) {
@@ -608,9 +602,6 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
-
-// DEBUG
-printf("#lbbindex=%d\n",lbbindex);
 
    // setup bbindex, dists, sortdists
    bbindex=(int*)malloc(sizeof(int)*lbbindex);
