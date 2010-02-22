@@ -126,7 +126,7 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
+   err=make_bnd_path(p1,p2,nbnd,bnd,&mypath,0);
    // don't do anything if there is an error at the moment...
    // DEBUG
    //printf("cat(\"### make_bnd_path ###\\n\")\n");
@@ -186,14 +186,14 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
 
 
 // create a path between p1 and p2 using the boundary
-int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
+int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path, int delfirst)
 {
    /* Args:
     *  p1, p2           points
     *  nbnd             length of boundary
     *  bnd              boundary
-    * Return:
-    *          head node of the linked list
+    *  path             head node of the linked list          
+    *  delfirst         delete before finding the lengths? 1=yes,0=no
     */
 
    // find the first intersection between p1, p2 and the boundary side that 
@@ -244,7 +244,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
       }
 
       // insert until we hit the end 
-      for(i=start;i<nbnd;i++){
+      for(i=(start+1);i<nbnd;i++){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
          Push(&bnd2,curr_insert);
@@ -260,11 +260,11 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
 
       if(intind[0]!=0){
 
-      for(i=0;i<intind[0];i++){
-         curr_insert[0]=bnd[i][0];
-         curr_insert[1]=bnd[i][1];
-         AppendNode(&bnd2,curr_insert);
-      }
+         for(i=0;i<(intind[0]+1);i++){
+            curr_insert[0]=bnd[i][0];
+            curr_insert[1]=bnd[i][1];
+            Push(&bnd2,curr_insert);
+         }
 
 
       }
@@ -318,10 +318,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path)
 // OLD
 ///////////////////////////////////////////////////////
 
-printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
-printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
 
 
 
@@ -381,14 +377,36 @@ printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
 
 ////////////////////////////////////////////////////////
 // DEBUG
-printf("cat(\" path1 ###\\n\")\n");
-PrintPath(bnd1);
-printf("# path1 ###\n");
-printf("scan()\n");
-printf("cat(\" path2 ###\\n\")\n");
-PrintPath(bnd2);
-printf("# path2 ###\n");
+//printf("cat(\" path1 ###\\n\")\n");
+//PrintPath(bnd1);
+//printf("# path1 ###\n");
+//printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
+//printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+//printf("points(ip1)\n");
+//printf("points(ip2)\n");
+//printf("points(p1,pch=19)\n");
+//printf("points(p2,pch=19)\n");
+//printf("scan()\n");
+//printf("cat(\" path2 ###\\n\")\n");
+//PrintPath(bnd2);
+//printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
+//printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+//printf("points(ip1)\n");
+//printf("points(ip2)\n");
+//printf("points(p1,pch=19)\n");
+//printf("points(p2,pch=19)\n");
+//printf("scan()\n");
+//printf("# path2 ###\n");
 
+      // delete before testing length?
+      if(delfirst==1){
+         delete_step(&bnd1, nbnd, bnd);
+         delete_step(&bnd2, nbnd, bnd);
+      }
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
@@ -682,7 +700,7 @@ void alter_step(node** path, int nbnd, double **bnd)
          // does it go inside-outside-inside?
          if(facing(ep1, ep2, nbnd, bnd)){
             // create a new path
-            err=make_bnd_path(ep1,ep2,nbnd,bnd,&newpath);
+            err=make_bnd_path(ep1,ep2,nbnd,bnd,&newpath,1);
 
             // provided there were no errors in the path making...
             if(err==0){
