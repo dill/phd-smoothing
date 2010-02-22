@@ -129,8 +129,8 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath);
    // don't do anything if there is an error at the moment...
    // DEBUG
-   printf("cat(\"### make_bnd_path ###\\n\")\n");
-   PrintPath(mypath);
+   //printf("cat(\"### make_bnd_path ###\\n\")\n");
+   //PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -151,14 +151,14 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("cat(\"### delete_step ###\\n\")\n");
-      PrintPath(mypath);
+      //printf("cat(\"### delete_step ###\\n\")\n");
+      //PrintPath(mypath);
 
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("cat(\"### alter_step ###\\n\")\n");
-      PrintPath(mypath);
+      //printf("cat(\"### alter_step ###\\n\")\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
