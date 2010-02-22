@@ -498,13 +498,10 @@ void delete_step(node** path, int nbnd, double **bnd)
                // change previous
                current->prev=start_ptr; //set i+2 prev to i
 
-             // end if on del middle
-         }else{ 
+            } // end if on del middle 
 
-        	current=current->prev; // go back to i, need this to catch all triplets
-
-         }// end of if del back-and-forth
-      }
+         }// end of main if 
+        	   current=current->prev; // go back to i, need this to catch all triplets
 
       } // end iteration over path
       conv++; // increment run counter
@@ -610,7 +607,6 @@ void alter_step(node** path, int nbnd, double **bnd)
 
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen) & (Length(newpath)>1)){
-
                   // only reverse the order if we need to...
                   // that is when the line joining current element of the full path
                   // and the first element of the new path is not inside the domain. 
@@ -686,7 +682,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                   end_ptr->prev=current; // set previous of i+2 to be the end of newpath
                   current->next=end_ptr;
    
-                  current=current->next; // current now at i+2
+                  //current=current->next; // current now at i+2
                }else{
                   // free the path we made
                   FreeList(&newpath);
