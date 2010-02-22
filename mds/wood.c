@@ -580,11 +580,14 @@ void alter_step(node** path, int nbnd, double **bnd)
    // Return:
    //           revised path with added/ammended vertices
 
+   extern double eps;
    double ep1[2], ep2[2], mid[2], triplen, tp1[2], tp2[2];
    int err, bndint[nbnd-1];
    node* prevpath=NULL;
    node* newpath=NULL;
    node* end_ptr=NULL;
+   node* end1=NULL;
+   node* end2=NULL;
    node* current=NULL;
 
    // convergence stop
@@ -652,11 +655,6 @@ void alter_step(node** path, int nbnd, double **bnd)
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen) & (Length(newpath)>1)){
 
-                  // remove the first and last entries in newpath, since otherwise
-                  // we duplicated ep1 and ep2
-                  if(Length(newpath)>=3){
-                     DelTopBot(&newpath);
-                  }
 
                   // only reverse the order if we need to...
                   // that is when the line joining current element of the full path
@@ -669,8 +667,42 @@ void alter_step(node** path, int nbnd, double **bnd)
 
    printf("# alter sum=%d\n",iarrsum((nbnd-1),bndint));
 
-                  if(iarrsum((nbnd-1),bndint)>0){ 
+                  if( (iarrsum((nbnd-1),bndint)>0) |
+                     ((fabs(tp2[0]-tp1[0]) <=eps) & (fabs(tp2[1]-tp1[1]) <=eps) )) {
+                  //){
                      ReverseList(&newpath);
+                  }else{
+                     end1=current;
+                     end2=newpath;
+
+                     while(end1->next !=NULL){
+                        end1=end1->next;
+                     }
+                     while(end2->next !=NULL){
+                        end2=end2->next;
+                     }
+
+                     tp1[0]=end1->data[0];
+                     tp1[1]=end1->data[1];
+                     tp2[0]=end2->data[0];
+                     tp2[1]=end2->data[1];
+                     do_intersect(tp1, tp2, nbnd, bnd,bndint);
+                     
+                     if( (iarrsum((nbnd-1),bndint)>0) |
+                        ((fabs(tp2[0]-tp1[0]) <=eps) & (fabs(tp2[1]-tp1[1]) <=eps) )) {
+                     //){
+                        ReverseList(&newpath);
+                     }
+                  }
+
+
+
+
+
+                  // remove the first and last entries in newpath, since otherwise
+                  // we duplicated ep1 and ep2
+                  if(Length(newpath)>=3){
+                     DelTopBot(&newpath);
                   }
 
                   // create new path, compare complete new path with old one, if the
