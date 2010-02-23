@@ -122,8 +122,8 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath,0);
    // don't do anything if there is an error at the moment...
    // DEBUG
-   //printf("cat(\"### make_bnd_path ###\\n\")\n");
-   //PrintPath(mypath);
+   printf("cat(\"### make_bnd_path ###\\n\")\n");
+   PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -607,6 +607,16 @@ void alter_step(node** path, int nbnd, double **bnd)
          ep2[0]=current->data[0];
          ep2[1]=current->data[1];
 
+//printf("plot(bnd,type=\"l\")\n");
+//printf("lines(path,lwd=2,col=\"red\")\n");
+//printf("ep1<-list(x=%f,y=%f)\n",ep1[0],ep1[1]);
+//printf("ep2<-list(x=%f,y=%f)\n",ep2[0],ep2[1]);
+//printf("mid<- list(x=%f,y=%f)\n",mid[0],mid[1]);
+//printf("points(ep1)\n");
+//printf("points(ep2)\n");
+//printf("points(mid,pch=19)\n");
+//printf("scan()\n");
+
          // current at i+2
          
          // calculate old trip length...
@@ -627,7 +637,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                delete_step(&newpath,nbnd,bnd);
 
                // only insert the path if it's better!
-               if((hull_length(&newpath)<=triplen) & (Length(newpath)>1)){
+               if((hull_length(&newpath)<=triplen)){
                   // only reverse the order if we need to...
                   // that is when the line joining current element of the full path
                   // and the first element of the new path is not inside the domain. 
@@ -668,6 +678,9 @@ void alter_step(node** path, int nbnd, double **bnd)
                   if(Length(newpath)>=3){
                      DelTopBot(&newpath);
                   }
+
+
+
 
                   // create new path, compare complete new path with old one, if the
                   // new one is better then keep it.
