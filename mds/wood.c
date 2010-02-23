@@ -87,11 +87,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    
             //                           vvv just hypot when we touch only 1 vertex 
             if(iarrsum((*nbnd-1), retint)>1){
-               // DEBUG
-//               printf("# p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
-//               printf("# p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
                pathlen[k]=make_path(p1,p2,*nbnd,bnd);
-//               printf("########################\n");
             }else{
                pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
             }
@@ -100,9 +96,6 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
          }    
       }
    }
-
-   // loop over all point pairs
-   // insertion case: go from old points to new points
 
    free(bnd[0]);
    free(bnd);
