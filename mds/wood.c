@@ -144,14 +144,14 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      //printf("cat(\"### alter_step ###\\n\")\n");
-      //PrintPath(mypath);
+      printf("cat(\"### alter_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      //printf("cat(\"### delete_step ###\\n\")\n");
-      //PrintPath(mypath);
+      printf("cat(\"### delete_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -161,11 +161,12 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
    // DEBUG
    printf("cat(\"### final ###\\n\")\n");
    PrintPath(mypath);
-//   if(conv==conv_stop){
-//      printf("WARNING: path find finished without convergence!\n");
-//      printf("conv = %d\n",conv);
-//      printf("convergence = %d\n",has_converged(prevpath,mypath) );
-//   }
+
+   if(conv==conv_stop){
+      printf("WARNING: path find finished without convergence!\n");
+      printf("conv = %d\n",conv);
+      printf("convergence = %d\n",has_converged(prevpath,mypath) );
+   }
 
    // return the length of the path
    hulllen=hull_length(&mypath);
@@ -186,7 +187,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
     *  nbnd             length of boundary
     *  bnd              boundary
     *  path             head node of the linked list          
-    *  delfirst         delete before finding the lengths? 1=yes,0=no
+    *  delfirst         delete before finding the lengths? 0=yes,1=no
     */
 
    // find the first intersection between p1, p2 and the boundary side that 
@@ -324,12 +325,12 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 
       // delete before testing length?
       if(delfirst==0){
-         if(Length(bnd1)>3){
+//         if(Length(bnd1)>3){
             delete_step(&bnd1, nbnd, bnd);
-         }
-         if(Length(bnd2)>3){
+//         }
+//         if(Length(bnd2)>3){
             delete_step(&bnd2, nbnd, bnd);
-         }
+//         }
       }
 
       // pick the shorter path to return
@@ -440,14 +441,6 @@ void delete_step(node** path, int nbnd, double **bnd)
         	current=current->next;
          mytrip[2][0]=current->data[0];
          mytrip[2][1]=current->data[1];
-
-//         for(i=0;i<3;i++){ 
-//            mytrip[i][0]=current->data[0]; mytrip[i][1]=current->data[1];
-//				// don't go to far...
-//            if(i!=2){
-//               current=current->next; 
-//            }
-//         }
 
          // pointer is now at i+2
 
@@ -605,7 +598,6 @@ void alter_step(node** path, int nbnd, double **bnd)
 
          // create the current triplet to inspect
          // make a copy of it and work out its length
-   
          ep1[0]=current->data[0];
          ep1[1]=current->data[1];
         	current=current->next;
@@ -632,9 +624,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                // make the new path as simple as possible (no simpler :))
                // NB. we would be fine just passing newpath to delete, but
                // if we check the length first, we save a call (ish)
-               if(Length(newpath)>=3){
-                  delete_step(&newpath,nbnd,bnd);
-               }
+               delete_step(&newpath,nbnd,bnd);
 
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen) & (Length(newpath)>1)){
