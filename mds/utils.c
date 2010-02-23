@@ -802,7 +802,7 @@ void PrintPath(node* mypath) {
       current=current->next;
    }
    printf("lines(path,lwd=2,col=\"red\")\n");
-//   printf("scan()\n");
+   printf("scan()\n");
    printf("#******* END  ********** \n");
    
 }

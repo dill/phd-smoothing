@@ -148,16 +148,16 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
       //prev.path<-my.path
       CopyList(mypath,&prevpath);
 
-      // delete step, remove anything that doesn't need to be there
-      delete_step(&mypath,nbnd,bnd);
-      // DEBUG
-      //printf("cat(\"### delete_step ###\\n\")\n");
-      //PrintPath(mypath);
-
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
       //printf("cat(\"### alter_step ###\\n\")\n");
+      //PrintPath(mypath);
+
+      // delete step, remove anything that doesn't need to be there
+      delete_step(&mypath,nbnd,bnd);
+      // DEBUG
+      //printf("cat(\"### delete_step ###\\n\")\n");
       //PrintPath(mypath);
 
       // increment convergence stopper 
@@ -250,25 +250,14 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          Push(&bnd2,curr_insert);
       }
 
-      // insert from the end back to intend[0] 
-      //             vvvvvvv don't include intind[0] twice
-//      for(i=(nbnd-1);i>=intind[0];i--){
-//         curr_insert[0]=bnd[i][0];
-//         curr_insert[1]=bnd[i][1];
-//         AppendNode(&bnd2,curr_insert);
-//      }
-
+      // insert from the start back to intend[0] 
       if(intind[0]!=0){
-
          for(i=0;i<(intind[0]+1);i++){
             curr_insert[0]=bnd[i][0];
             curr_insert[1]=bnd[i][1];
             Push(&bnd2,curr_insert);
          }
-
-
       }
-
 
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
@@ -280,8 +269,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
       line2[1][0]=bnd[(intind[1]+1)%nbnd][0];
       line2[1][1]=bnd[(intind[1]+1)%nbnd][1];
 
-// OLD
-//
       if(online(ip1,line1) | online(ip2,line2)){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
@@ -315,67 +302,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
       }
-// OLD
-///////////////////////////////////////////////////////
 
-
-
-
-      // bnd1
-//      if(online(ip1,line1) | online(ip2,line2)){
-//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-//         AppendNode(&bnd1,curr_insert);
-//   
-//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-//         AppendNode(&bnd1,curr_insert);
-//
-//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
-//         Push(&bnd1,curr_insert);
-//   
-//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-//         Push(&bnd1,curr_insert);
-//      }else{
-//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-//         Push(&bnd1,curr_insert);
-//   
-//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-//         Push(&bnd1,curr_insert);
-//   
-//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
-//         AppendNode(&bnd1,curr_insert);
-//   
-//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-//         AppendNode(&bnd1,curr_insert);
-//      }
-//
-//      // bnd2
-//      if(online(ip1,line1) | online(ip2,line2)){
-//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-//         Push(&bnd2,curr_insert); 
-//   
-//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-//         Push(&bnd2,curr_insert);
-//
-//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
-//         AppendNode(&bnd2,curr_insert); 
-//   
-//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-//         AppendNode(&bnd2,curr_insert); 
-//      }else{
-//         curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
-//         AppendNode(&bnd2,curr_insert);
-//   
-//         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-//         AppendNode(&bnd2,curr_insert);
-//   
-//         curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
-//         Push(&bnd2,curr_insert);
-//   
-//         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-//         Push(&bnd2,curr_insert);
-//      }
-
-////////////////////////////////////////////////////////
 // DEBUG
 //printf("cat(\" path1 ###\\n\")\n");
 //PrintPath(bnd1);
@@ -403,9 +330,13 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 //printf("# path2 ###\n");
 
       // delete before testing length?
-      if(delfirst==1){
-         delete_step(&bnd1, nbnd, bnd);
-         delete_step(&bnd2, nbnd, bnd);
+      if(delfirst==0){
+         if(Length(bnd1)>3){
+            delete_step(&bnd1, nbnd, bnd);
+         }
+         if(Length(bnd2)>3){
+            delete_step(&bnd2, nbnd, bnd);
+         }
       }
 
       // pick the shorter path to return
