@@ -638,6 +638,10 @@ void alter_step(node** path, int nbnd, double **bnd)
 
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen)){
+
+
+                  ////////// getting the path into the right format...
+
                   // only reverse the order if we need to...
                   // that is when the line joining current element of the full path
                   // and the first element of the new path is not inside the domain. 
@@ -679,8 +683,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                      DelTopBot(&newpath);
                   }
 
-
-
+                  /////////// done getting the path in the right format
 
                   // create new path, compare complete new path with old one, if the
                   // new one is better then keep it.
