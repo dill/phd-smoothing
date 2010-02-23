@@ -22,5 +22,12 @@ my.grid<-make_soap_grid(bnd,15)
 # this dies
 D<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
 
+# "true" D
+D.t<-read.csv("path-tests/aral-D.csv")
 
+D.t<-as.matrix(D.t)
+D.t<-D.t[,2:119]
 
+if(max(D-D.t)>0){
+   cat("Uh oh!",max(D-D.t)," not the same as \"truth\"\n")
+}
