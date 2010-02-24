@@ -1,4 +1,4 @@
-
+options(echo=FALSE)
 # libraries
 library(mgcv)
 library(soap)
@@ -19,7 +19,6 @@ bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 
 my.grid<-make_soap_grid(bnd,15)
 
-# this dies
 D<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
 
 # "true" D
@@ -31,3 +30,4 @@ D.t<-D.t[,2:119]
 if(max(D-D.t)>0){
    cat("Uh oh!",max(D-D.t)," not the same as \"truth\"\n")
 }
+options(echo=TRUE)

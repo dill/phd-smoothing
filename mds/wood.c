@@ -1,5 +1,5 @@
 // Simon's algorithm for finding the path
-// Copyright 2009 David Lawrence Miller
+// Copyright 2009-2010 David Lawrence Miller
 
 #include <stdio.h>
 #include <stdlib.h>
