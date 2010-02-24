@@ -20,6 +20,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // * these can be manipulated to control which we evaluate
    //  eg. in the insertion case
 
+   node* path=NULL;
    double **bnd, p1[2], p2[2];
    int i,j,k, *retint;
 
@@ -59,7 +60,10 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             if(pathlen[k] == (-1)){
                p1[0]=x[i]; p1[1]=y[i];
                p2[0]=x[j]; p2[1]=y[j];
-               pathlen[k]=make_path(p1,p2,*nbnd,bnd);
+
+               make_path(p1,p2,*nbnd,bnd,&path);
+               pathlen[k]=hull_length(&path);
+               FreeList(&path);
             }
             // increment pathlen counter
             k++;
@@ -73,7 +77,10 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             if(pathlen[k] == (-1)){
                p1[0]=x[i]; p1[1]=y[i];
                p2[0]=x[j]; p2[1]=y[j];
-               pathlen[k]=make_path(p1,p2,*nbnd,bnd);
+
+               make_path(p1,p2,*nbnd,bnd,&path);
+               pathlen[k]=hull_length(&path);
+               FreeList(&path);
             }
             // increment pathlen counter
             k++;
@@ -148,9 +155,9 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
    }
 }
 
-double make_path(double p1[], double p2[], int nbnd, double **bnd){
+void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
    int conv, conv_stop,err;
-   double hulllen;
+//   double hulllen;
    node* prevpath=NULL;
    node* mypath=NULL;
    
@@ -206,20 +213,16 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd){
    //printf("cat(\"### final ###\\n\")\n");
    //PrintPath(mypath);
 
-   if(conv==conv_stop){
+   if(!(has_converged(prevpath,mypath))){
       printf("WARNING: path find finished without convergence!\n");
       printf("conv = %d\n",conv);
       printf("convergence = %d\n",has_converged(prevpath,mypath) );
    }
 
-   // return the length of the path
-   hulllen=hull_length(&mypath);
+   CopyList(mypath,path);
 
    FreeList(&mypath);
    FreeList(&prevpath);
-
-   // return the length of the path
-   return(hulllen);
 }
 
 
