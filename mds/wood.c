@@ -43,6 +43,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // insertion counter
    k=0;
 
+   // first calculate all of the Euclidean paths
+   get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start);
+
    // switch between insertion and full MDS 
    // insertion format is c(old,new)
    //  * so *start gives the index of the limit of the old points for insertion
@@ -51,21 +54,12 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    if(*start != 0){
       // #### Main loop for INSERTION
       for(i=0; i<(*start); i++){
-         // set p1
-         p1[0]=x[i]; p1[1]=y[i];
-
          for(j=(*start); j<(*len); j++){
-            // set p2
-            p2[0]=x[j]; p2[1]=y[j];
-  
-            // check to see if we have to do the path finding or
-            // just the hypotenuse 
-            do_intersect(p1, p2, *nbnd, bnd, retint);
-            //                           vvv just hypot when we touch only 1 vertex 
-            if(iarrsum((*nbnd-1), retint)>1){
+            // if no euclidean path was found calculate the path
+            if(pathlen[k] == (-1)){
+               p1[0]=x[i]; p1[1]=y[i];
+               p2[0]=x[j]; p2[1]=y[j];
                pathlen[k]=make_path(p1,p2,*nbnd,bnd);
-            }else{
-               pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
             }
             // increment pathlen counter
             k++;
@@ -74,22 +68,12 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    }else{
       // #### Main for loop for FULL MDS
       for(i=0; i<(*len); i++){
-         // set p1
-         p1[0]=x[i]; p1[1]=y[i];
-
          for(j=(i+1); j<(*len); j++){
-            // set p2
-            p2[0]=x[j]; p2[1]=y[j];
- 
-            // check to see if we have to do the path finding or
-            // just the hypotenuse 
-            do_intersect(p1, p2, *nbnd, bnd, retint);
-   
-            //                           vvv just hypot when we touch only 1 vertex 
-            if(iarrsum((*nbnd-1), retint)>1){
+            // if no euclidean path was found calculate the path
+            if(pathlen[k] == (-1)){
+               p1[0]=x[i]; p1[1]=y[i];
+               p2[0]=x[j]; p2[1]=y[j];
                pathlen[k]=make_path(p1,p2,*nbnd,bnd);
-            }else{
-               pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
             }
             // increment pathlen counter
             k++;
@@ -102,9 +86,69 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    free(retint);
 }
 
+void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
+                  double *pathlen, int full){
+   /*
+      get the within-area Euclidean distance, if possible
+      args:
+         x,y      points to check
+         nbnd     length of boundary
+         bnd      boundary
+         pathlen  variable to store the lengths of the path in
+         full     do full or insertion MDS?
+   */
+   
+   int i,j,k, *retint;
+   double p1[2], p2[2];
 
-double make_path(double p1[], double p2[], int nbnd, double **bnd)
-{
+   // allocate memory for retint
+   retint=(int*)malloc(sizeof(int)*(nbnd-1));
+   for(i=0; i<(nbnd-1); i++){
+      retint[i]=retint[0]+i;
+   }
+
+   if(full != 0){
+      // #### Main loop for INSERTION
+      for(i=0; i<full; i++){
+         for(j=full; j<npathlen; j++){
+            p1[0]=x[i]; p1[1]=y[i]; // set p1
+            p2[0]=x[j]; p2[1]=y[j]; // set p2
+  
+            // check to see if we have to do the path finding or
+            // just the hypotenuse 
+            do_intersect(p1, p2, nbnd, bnd, retint);
+            //                           vvv just hypot when we touch only 1 vertex 
+            if(iarrsum((nbnd-1), retint)>1){
+               pathlen[k]=-1;
+            }else{
+               pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
+            }
+            k++; // increment pathlen counter
+         }    
+      }
+   }else{
+      for(i=0; i<npathlen; i++){
+         for(j=(i+1); j<npathlen; j++){
+            p1[0]=x[i]; p1[1]=y[i]; // set p1
+            p2[0]=x[j]; p2[1]=y[j]; // set p2
+ 
+            // check to see if we have to do the path finding or
+            // just the hypotenuse 
+            do_intersect(p1, p2, nbnd, bnd, retint);
+   
+            //                           vvv just hypot when we touch only 1 vertex 
+            if(iarrsum((nbnd-1), retint)>1){
+               pathlen[k]=-1;
+            }else{
+               pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
+            }
+            k++; // increment pathlen counter
+         }    
+      }
+   }
+}
+
+double make_path(double p1[], double p2[], int nbnd, double **bnd){
    int conv, conv_stop,err;
    double hulllen;
    node* prevpath=NULL;
