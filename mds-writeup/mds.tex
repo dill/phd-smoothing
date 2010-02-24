@@ -294,7 +294,7 @@ In \fig{wdia}, ($iii$), $\mathcal{P}_1$ is marked in green and is chosen to form
 
 For example in \fig{wdia}, ($iii$) $v_2$ is deleted from $\mathcal{P}$ because the path straight between $v_1$ and $v_3$ is shorter, and within $\Gamma$.
 
-\item (ALTER) Given a triple of vertices $(v_i, v_{i+1}, v_{i+2})$, if the path $(v_i, v^1_1, \mathcal{P}_{ID}, v^1_j, v_{i+2})$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ then replace $v_{i+1}$ with $v^1_1, \mathcal{P}_{ID}, v^1_j$ (\fig{wdia}, ($v$)). The candidate replacement path can be thought of as the result of running INIT with $p_1$ and $p_2$ replaced by $v_i$ and $v_{i+2}$, producing $\mathcal{P}_I$, and then using DELETE on $\mathcal{P}_I$ to remove superfluous vertices giving $\mathcal{P}_{ID}$. Here $v^1_1$ and $v^1_j$ are equivalent to $p_1^1$ and $p_2^1$ in INIT and $\mathcal{P}_I$ to $\mathcal{P}^*$.
+\item (ALTER) Given a triple of vertices $(v_i, v_{i+1}, v_{i+2})$, if the path $(v_i, v^1_1, \mathcal{P}_{ID}, v^1_j, v_{i+2})$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ then replace $v_{i+1}$ with $v^1_1, \mathcal{P}_{ID}, v^1_j$ (\fig{wdia}, ($v$)). The candidate replacement path is calculated by running INIT with $p_1$ and $p_2$ replaced by $v_i$ and $v_{i+2}$, producing $\mathcal{P}_I$, and then using DELETE on $\mathcal{P}_I$ to remove superfluous vertices giving $\mathcal{P}_{ID}$. Here $v^1_1$ and $v^1_j$ are equivalent to $p_1^1$ and $p_2^1$ in INIT and $\mathcal{P}_I$ to $\mathcal{P}^*$.
 
 For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the path $\mathcal{P}_{ID}=(v_1, v^1_2, v_3)$ (green dashed line in ($iv$)) so the former is replaced with the latter in $\mathcal{P}$. The path created by INIT is marked as $\mathcal{P}_{I}$ in  ($iv$) in red.
 
