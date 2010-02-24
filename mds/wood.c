@@ -22,7 +22,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    node* path=NULL;
    double **bnd, p1[2], p2[2];
-   int i,j,k, *retint;
+   int i,j,k; //, *retint;
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
@@ -36,10 +36,10 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    }
 
    // allocate memory for retint
-   retint=(int*)malloc(sizeof(int)*(*nbnd-1));
-   for(i=0; i<(*nbnd-1); i++){
-      retint[i]=retint[0]+i;
-   }
+//   retint=(int*)malloc(sizeof(int)*(*nbnd-1));
+//   for(i=0; i<(*nbnd-1); i++){
+//      retint[i]=retint[0]+i;
+//   }
 
    // insertion counter
    k=0;
@@ -90,7 +90,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    free(bnd[0]);
    free(bnd);
-   free(retint);
+//   free(retint);
 }
 
 void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
