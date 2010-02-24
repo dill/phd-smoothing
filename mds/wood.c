@@ -112,8 +112,8 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
    
    // DEBUG
    //printf("plot(bnd,type=\"l\",asp=1)\n");
-   printf("p1<-list(x=%.16f,y=%.16f)\n",p1[0],p1[1]);
-   printf("p2<-list(x=%.16f,y=%.16f)\n",p2[0],p2[1]);
+   //printf("p1<-list(x=%.16f,y=%.16f)\n",p1[0],p1[1]);
+   //printf("p2<-list(x=%.16f,y=%.16f)\n",p2[0],p2[1]);
    //printf("points(p1,pch=19)\n");
    //printf("points(p2,pch=19)\n");
 
@@ -122,8 +122,8 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
    err=make_bnd_path(p1,p2,nbnd,bnd,&mypath,0);
    // don't do anything if there is an error at the moment...
    // DEBUG
-   printf("cat(\"### make_bnd_path ###\\n\")\n");
-   PrintPath(mypath);
+   //printf("cat(\"### make_bnd_path ###\\n\")\n");
+   //PrintPath(mypath);
 
    // convergence stop
    conv=0;
@@ -144,14 +144,14 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
       // add new vertices
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("cat(\"### alter_step ###\\n\")\n");
-      PrintPath(mypath);
+      //printf("cat(\"### alter_step ###\\n\")\n");
+      //PrintPath(mypath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
-      printf("cat(\"### delete_step ###\\n\")\n");
-      PrintPath(mypath);
+      //printf("cat(\"### delete_step ###\\n\")\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -159,8 +159,8 @@ double make_path(double p1[], double p2[], int nbnd, double **bnd)
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   printf("cat(\"### final ###\\n\")\n");
-   PrintPath(mypath);
+   //printf("cat(\"### final ###\\n\")\n");
+   //PrintPath(mypath);
 
    if(conv==conv_stop){
       printf("WARNING: path find finished without convergence!\n");
@@ -325,12 +325,8 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 
       // delete before testing length?
       if(delfirst==0){
-//         if(Length(bnd1)>3){
             delete_step(&bnd1, nbnd, bnd);
-//         }
-//         if(Length(bnd2)>3){
             delete_step(&bnd2, nbnd, bnd);
-//         }
       }
 
       // pick the shorter path to return
@@ -530,19 +526,12 @@ void delete_step(node** path, int nbnd, double **bnd)
       } // end iteration over path
       conv++; // increment run counter
 
-   } while( !(has_converged(prevpath,*path)) & (conv<conv_stop));// &
-//             (Length(*path)>3) );
-//             ^^ might be useful if it's deleting things that are too small
-   // end of do loop
-
-   // DEBUG
-   //printf("converge: %d, conv=%d, conv_stop=%d\n",has_converged(prevpath,*path),conv,conv_stop);
+   } while( !(has_converged(prevpath,*path)) & (conv<conv_stop)); // end of do loop
 
    // free some memory
    free(bx); free(by);
    free(intbnd);
    FreeList(&prevpath);
-
 }           
 
 // alter the path
@@ -607,16 +596,6 @@ void alter_step(node** path, int nbnd, double **bnd)
          ep2[0]=current->data[0];
          ep2[1]=current->data[1];
 
-//printf("plot(bnd,type=\"l\")\n");
-//printf("lines(path,lwd=2,col=\"red\")\n");
-//printf("ep1<-list(x=%f,y=%f)\n",ep1[0],ep1[1]);
-//printf("ep2<-list(x=%f,y=%f)\n",ep2[0],ep2[1]);
-//printf("mid<- list(x=%f,y=%f)\n",mid[0],mid[1]);
-//printf("points(ep1)\n");
-//printf("points(ep2)\n");
-//printf("points(mid,pch=19)\n");
-//printf("scan()\n");
-
          // current at i+2
          
          // calculate old trip length...
@@ -639,9 +618,7 @@ void alter_step(node** path, int nbnd, double **bnd)
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen)){
 
-
                   ////////// getting the path into the right format...
-
                   // only reverse the order if we need to...
                   // that is when the line joining current element of the full path
                   // and the first element of the new path is not inside the domain. 
@@ -682,7 +659,6 @@ void alter_step(node** path, int nbnd, double **bnd)
                   if(Length(newpath)>=3){
                      DelTopBot(&newpath);
                   }
-
                   /////////// done getting the path in the right format
 
                   // create new path, compare complete new path with old one, if the
