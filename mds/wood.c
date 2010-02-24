@@ -156,8 +156,16 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
 }
 
 void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
+   // routine to create the within-area path between p1 and p2 //
+   /*
+      args:
+         p1, p2      the points to find the path between
+         nbnd        length of the boundary
+         bnd         the boundary
+         path        the shortest within-domain path
+   */
+
    int conv, conv_stop,err;
-//   double hulllen;
    node* prevpath=NULL;
    node* mypath=NULL;
    
