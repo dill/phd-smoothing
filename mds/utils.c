@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "utils.h"
 
-double eps=1e-6;
+extern double eps;
 
 // does the line between two points and the boundary intersect?
 void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
@@ -22,7 +22,6 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
    // we do this by seeing if the bounding boxes intersect
    // from Mastering Algorithms with Perl, p 451
 
-   extern double eps;
    int i;
    double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
 
@@ -125,7 +124,6 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
 {
    int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
-   extern double eps;
 
    tmpnbnd=2;
    tmpbnd=(double**)malloc(sizeof(double*)*tmpnbnd);
@@ -255,7 +253,6 @@ void intpoint(double p1[], double p2[],double edge[][2], double ip[])
 
    double a1,b1,c1,a2,b2,c2, pmin, emin;
    double arr[2];
-   extern double eps;
 
    // calculation of intersection is straight from 
    // Handbook of Mathematics Bronstein et al. pp. 195,196
@@ -366,7 +363,6 @@ void intpoint(double p1[], double p2[],double edge[][2], double ip[])
 int online(double p1[],double thisline[][2]){
  
    double m,c;
-   extern double eps;
    double xarr[2], yarr[2];
  
    xarr[0]=thisline[0][0];
@@ -820,4 +816,39 @@ int crapfind(int narr, double *arr, double val){
    }
    return index;
 }
+
+// routine to set the global eps value
+void set_epsilon(int n, double *x, double *y){
+   // x and y should be the boundary points
+   // since all points are inside there...
+
+   double machEps = 1e-15;
+   double maxx,minx,maxy,miny, dxy[2];
+
+   // first find the max and min of x and y
+   maxx=maxarr(n,x);
+   maxy=maxarr(n,y);
+   minx=minarr(n,x);
+   miny=minarr(n,y);
+
+   // determine the machine epsilon 
+   // from http://en.wikipedia.org/wiki/Machine_epsilon#Approximation_using_C
+//   do{
+//      machEps /= 2.0;
+//      // If next epsilon yields 1, then break, because current
+//      // epsilon is the machine epsilon.
+//   }while ((double)(1.0 + (machEps/2.0)) != 1.0);
+
+
+   dxy[0]=(maxx-minx)*machEps;
+   dxy[1]=(maxy-miny)*machEps;
+
+   // now calculate our epsilon
+   eps=maxarr(2,dxy);
+
+   printf("eps=%.30f\n",eps);
+
+}
+
+
 

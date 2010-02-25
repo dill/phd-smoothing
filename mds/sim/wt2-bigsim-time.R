@@ -42,7 +42,8 @@ grid.time<-system.time(my.grid<-wt2_create_grid())[3]
 grid.time<-grid.time+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd))[3]
 
 # perform mds on D
-grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,eig=TRUE,k=2))[3]
+grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,
+                                 eig=TRUE,k=2,x.ret=TRUE))[3]
 
 
 ### setup the soap knots

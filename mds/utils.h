@@ -38,6 +38,8 @@ void FreeList(node**);
 void PrintPath(node*);
 void DelTopBot(node**);
 void ReverseList(node**);
+void set_epsilon(int,  double*, double*);
+
 
 
 // for in_out in separate file

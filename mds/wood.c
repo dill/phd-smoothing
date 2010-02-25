@@ -7,6 +7,8 @@
 #include "utils.h"
 #include "wood.h"
 
+double eps=1e-6;
+
 void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd,double *pathlen){
    // args:
    //   len         the length of x and y *
@@ -22,7 +24,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    node* path=NULL;
    double **bnd, p1[2], p2[2];
-   int i,j,k; //, *retint;
+   int i,j,k;
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
@@ -30,16 +32,12 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // put bnd in the right format and allocate memory
    for(i=0; i<*nbnd; i++){
       bnd[i]=bnd[0]+i*2;
-
       bnd[i][0]=xbnd[i];
       bnd[i][1]=ybnd[i];
    }
 
-   // allocate memory for retint
-//   retint=(int*)malloc(sizeof(int)*(*nbnd-1));
-//   for(i=0; i<(*nbnd-1); i++){
-//      retint[i]=retint[0]+i;
-//   }
+   // first of all, set the epsilon to use...
+//   set_epsilon(*nbnd,&xbnd,&ybnd);
 
    // insertion counter
    k=0;
@@ -218,8 +216,8 @@ void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   //printf("cat(\"### final ###\\n\")\n");
-   //PrintPath(mypath);
+   printf("cat(\"### final ###\\n\")\n");
+   PrintPath(mypath);
 
    if(!(has_converged(prevpath,mypath))){
       printf("WARNING: path find finished without convergence!\n");
@@ -599,7 +597,6 @@ void alter_step(node** path, int nbnd, double **bnd)
    // Return:
    //           revised path with added/ammended vertices
 
-   extern double eps;
    double ep1[2], ep2[2], mid[2], triplen, tp1[2], tp2[2];
    int err, bndint[nbnd-1];
    node* prevpath=NULL;

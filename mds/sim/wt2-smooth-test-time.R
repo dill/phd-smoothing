@@ -69,14 +69,19 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    mdstp.pred<-system.time(fv.tp <- predict(b.mapped.tp,newdata=pred.data))[3]
    
    ### normal tprs
-   tprs.gam<-system.time(b.tprs<-gam(z~s(x,y,k=100),data=nsamp.data))[3]
-   tprs.pred<-system.time(fv.tprs <- predict(b.tprs,newdata=npred.data))[3]
+#   tprs.gam<-system.time(b.tprs<-gam(z~s(x,y,k=100),data=nsamp.data))[3]
+#   tprs.pred<-system.time(fv.tprs <- predict(b.tprs,newdata=npred.data))[3]
 
    ### soap
-   soap.gam<-system.time(b.soap<-gam(z~s(x,y,k=60,bs="so",xt=list(bnd=list(bnd))),
-                                          knots=soap.knots,data=nsamp.data))[3]
-   soap.pred<-system.time(fv.soap <- predict(b.soap,newdata=npred.data))[3]
+#   soap.gam<-system.time(b.soap<-gam(z~s(x,y,k=60,bs="so",xt=list(bnd=list(bnd))),
+#                                          knots=soap.knots,data=nsamp.data))[3]
+#   soap.pred<-system.time(fv.soap <- predict(b.soap,newdata=npred.data))[3]
  
+soap.gam<-0
+soap.pred<-0
+tprs.gam<-0
+tprs.pred<-0
+
    ### calculate MSEs
    times<-list(mds=c(mds.gam+ins.time.samp,mds.pred+ins.time.pred),
                mdstp=c(mdstp.gam+ins.time.samp,mdstp.pred+ins.time.pred),
