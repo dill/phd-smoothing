@@ -24,11 +24,25 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    node* path=NULL;
    double **bnd, p1[2], p2[2];
-   int i,j,k;
+   int i,j,k,l, savelen;
+
+   // storage?
+   node*** savedpaths;
+
+   // length of the saved path array of pointers
+   if(*start != 0){
+      savelen=(*start)*(*len-*start);
+   }else{
+      savelen=(*len)*(*len-1)/2;
+   }
+
+   savedpaths=(node***)malloc(sizeof(node**)*(savelen));
+   for(i=0; i<(savelen-1); i++){
+      savedpaths[i]=savedpaths[0]+i*sizeof(node**);
+   }
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
-
    // put bnd in the right format and allocate memory
    for(i=0; i<*nbnd; i++){
       bnd[i]=bnd[0]+i*2;
@@ -41,6 +55,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    // insertion counter
    k=0;
+   // path save counter
+   l=0;
 
    // first calculate all of the Euclidean paths
    get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start);
@@ -78,13 +94,29 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
                make_path(p1,p2,*nbnd,bnd,&path);
                pathlen[k]=hull_length(&path);
-               FreeList(&path);
+//               FreeList(&path);
+
+               savedpaths[l]=&path;
+printf("length of path %d = %d  \?= %d\?\n",l,Length(&path),Length(savedpaths[i]));
+               l++;
+               path=NULL;
             }
             // increment pathlen counter
             k++;
          }    
       }
    }
+
+   for(i=0;i<savelen;i++){
+      printf("length of path %d = %d\n",i,Length(savedpaths[i]));
+      PrintPath(savedpaths[i]);
+   }
+//
+//   for(i=0;i<savelen;i++){
+//      FreeList(savedpaths[i]);
+//   }
+
+   free(savedpaths);
 
    free(bnd[0]);
    free(bnd);
@@ -215,8 +247,8 @@ void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
    } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
 
    // DEBUG
-   printf("cat(\"### final ###\\n\")\n");
-   PrintPath(mypath);
+   //printf("cat(\"### final ###\\n\")\n");
+   //PrintPath(mypath);
 
    if(!(has_converged(prevpath,mypath))){
       printf("WARNING: path find finished without convergence!\n");
@@ -707,7 +739,7 @@ void alter_step(node** path, int nbnd, double **bnd)
 
                   // remove the first and last entries in newpath, since otherwise
                   // we duplicated ep1 and ep2
-                  if(Length(newpath)>=3){
+                  if(Length(&newpath)>=3){
                      DelTopBot(&newpath);
                   }
                   /////////// done getting the path in the right format
@@ -777,7 +809,7 @@ int has_converged(node* path1, node* path2)
    node* current2 = path2;
 
    // first check length then their contents
-   if(Length(path1)==Length(path2)){
+   if(Length(&path1)==Length(&path2)){
       // check if the new and old paths are the same
       while(current1!=NULL){
          if(( (current1->data[0]) != (current2->data[0]) ) & 

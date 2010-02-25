@@ -651,8 +651,8 @@ void CopyList(node* head, node** newList)
  *   Given a linked list head pointer, compute
  *     and return the number of nodes in the list.
  */
-int Length(node* head) {
-    node* current = head;
+int Length(node** head) {
+    node* current = *head;
     int count = 0;
     while (current != NULL) {
        count++;
@@ -664,8 +664,8 @@ int Length(node* head) {
 /*
 *  Debug printer for paths
 */
-void PrintPath(node* mypath) {
-   node* current=mypath;
+void PrintPath(node** mypath) {
+   node* current=*mypath;
 
    printf("plot(bnd,type=\"l\",asp=1)\n");
    printf("path<-list(x=c(),y=c())\n");

@@ -33,9 +33,9 @@ int first_ips(double[2], double[2], int nbnd, double **,
 void Push(node**, double[2]);
 void AppendNode(node**, double[2]);
 void CopyList(node*, node**);
-int Length(node*);
+int Length(node**);
 void FreeList(node**);
-void PrintPath(node*);
+void PrintPath(node**);
 void DelTopBot(node**);
 void ReverseList(node**);
 void set_epsilon(int,  double*, double*);
