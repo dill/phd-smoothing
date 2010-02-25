@@ -88,7 +88,6 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    free(bnd[0]);
    free(bnd);
-//   free(retint);
 }
 
 void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
