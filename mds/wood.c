@@ -24,23 +24,12 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    node* path=NULL;
    double **bnd, p1[2], p2[2];
-   int i,j,k,l, savelen;
+   int i,j,k,l,neuc;
 
-   // length of the saved path array of pointers
-   if(*start != 0){
-      savelen=(*start)*(*len-*start);
-   }else{
-      savelen=(*len)*(*len-1)/2;
-   }
 
    // storage?
    node** savedpaths;
 
-   savedpaths=(node**)malloc(sizeof(node*)*(savelen));
-   for(i=0; i<savelen; i++){
-      savedpaths[i]=savedpaths[0]+i*sizeof(node*);
-      savedpaths[i]=NULL;
-   }
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
@@ -59,8 +48,17 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // path save counter
    l=0;
 
+
    // first calculate all of the Euclidean paths
-   get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start);
+   neuc=get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start);
+
+printf("neuc=%d\n",neuc);
+
+   savedpaths=(node**)malloc(neuc*sizeof(node*));
+   for(i=0; i<neuc; i++){
+      savedpaths[i]=savedpaths[0]+i*sizeof(node*);
+      savedpaths[i]=NULL;
+   }
 
    // switch between insertion and full MDS 
    // insertion format is c(old,new)
@@ -96,7 +94,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
                make_path(p1,p2,*nbnd,bnd,&savedpaths[l]);
                pathlen[k]=hull_length(&savedpaths[l]);
 
-//   PrintPath(&(savedpaths[l]));
+   PrintPath(&(savedpaths[l]));
                l++;
             }
             // increment pathlen counter
@@ -105,12 +103,12 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
       }
    }
 
-   for(i=0;i<savelen;i++){
+//   for(i=0;i<neuc;i++){
 //      printf("length of path %d = %d\n",i,Length(savedpaths[i]));
-      PrintPath(&(savedpaths[i]));
-   }
+//      PrintPath(&(savedpaths[i]));
+//   }
 
-   for(i=0;i<savelen;i++){
+   for(i=0;i<neuc;i++){
       FreeList(&savedpaths[i]);
    }
 
@@ -120,7 +118,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    free(bnd);
 }
 
-void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
+int get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
                   double *pathlen, int full){
    /*
       get the within-area Euclidean distance, if possible
@@ -134,6 +132,8 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
    
    int i,j,k, *retint;
    double p1[2], p2[2];
+   // number of paths needed to be calculated
+   int neuc=0;
 
    // allocate memory for retint
    retint=(int*)malloc(sizeof(int)*(nbnd-1));
@@ -154,6 +154,7 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
             //                           vvv just hypot when we touch only 1 vertex 
             if(iarrsum((nbnd-1), retint)>1){
                pathlen[k]=-1;
+               neuc++;
             }else{
                pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
             }
@@ -173,6 +174,7 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
             //                           vvv just hypot when we touch only 1 vertex 
             if(iarrsum((nbnd-1), retint)>1){
                pathlen[k]=-1;
+               neuc++;
             }else{
                pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
             }
@@ -180,6 +182,8 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
          }    
       }
    }
+   return(neuc);
+
 }
 
 void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
