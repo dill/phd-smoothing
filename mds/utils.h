@@ -7,8 +7,7 @@
 
 
 // definition of linked list
-typedef struct node
-{
+typedef struct node{
    double data[2];  // space for x and y
    struct node* next; // pointer to next item
    struct node* prev; // pointer to previous item

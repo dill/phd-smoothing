@@ -26,9 +26,6 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    double **bnd, p1[2], p2[2];
    int i,j,k,l, savelen;
 
-   // storage?
-   node*** savedpaths;
-
    // length of the saved path array of pointers
    if(*start != 0){
       savelen=(*start)*(*len-*start);
@@ -36,10 +33,20 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
       savelen=(*len)*(*len-1)/2;
    }
 
-   savedpaths=(node***)malloc(sizeof(node**)*(savelen));
-   for(i=0; i<(savelen-1); i++){
-      savedpaths[i]=savedpaths[0]+i*sizeof(node**);
+   // storage?
+   node** savedpaths;
+
+   savedpaths=(node**)malloc(sizeof(node*)*(savelen));
+//   savedpaths[0]=(node**)malloc(sizeof(node*)*(savelen));
+   for(i=0; i<savelen; i++){
+      savedpaths[i]=savedpaths[0]+i*sizeof(node*);
+      savedpaths[i]=NULL;
    }
+
+
+
+
+
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
@@ -92,14 +99,11 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
                p1[0]=x[i]; p1[1]=y[i];
                p2[0]=x[j]; p2[1]=y[j];
 
-               make_path(p1,p2,*nbnd,bnd,&path);
-               pathlen[k]=hull_length(&path);
-//               FreeList(&path);
+               make_path(p1,p2,*nbnd,bnd,&savedpaths[l]);
+               pathlen[k]=hull_length(&savedpaths[l]);
 
-               savedpaths[l]=&path;
-printf("length of path %d = %d  \?= %d\?\n",l,Length(&path),Length(savedpaths[i]));
+//   PrintPath(&(savedpaths[l]));
                l++;
-               path=NULL;
             }
             // increment pathlen counter
             k++;
@@ -108,13 +112,13 @@ printf("length of path %d = %d  \?= %d\?\n",l,Length(&path),Length(savedpaths[i]
    }
 
    for(i=0;i<savelen;i++){
-      printf("length of path %d = %d\n",i,Length(savedpaths[i]));
-      PrintPath(savedpaths[i]);
+//      printf("length of path %d = %d\n",i,Length(savedpaths[i]));
+      PrintPath(&(savedpaths[i]));
    }
-//
-//   for(i=0;i<savelen;i++){
-//      FreeList(savedpaths[i]);
-//   }
+
+   for(i=0;i<savelen;i++){
+      FreeList(&savedpaths[i]);
+   }
 
    free(savedpaths);
 
@@ -198,6 +202,9 @@ void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
    node* prevpath=NULL;
    node* mypath=NULL;
    
+   *path=NULL;
+
+
    // DEBUG
    //printf("plot(bnd,type=\"l\",asp=1)\n");
    //printf("p1<-list(x=%.16f,y=%.16f)\n",p1[0],p1[1]);
