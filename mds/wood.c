@@ -37,16 +37,10 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    node** savedpaths;
 
    savedpaths=(node**)malloc(sizeof(node*)*(savelen));
-//   savedpaths[0]=(node**)malloc(sizeof(node*)*(savelen));
    for(i=0; i<savelen; i++){
       savedpaths[i]=savedpaths[0]+i*sizeof(node*);
       savedpaths[i]=NULL;
    }
-
-
-
-
-
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
