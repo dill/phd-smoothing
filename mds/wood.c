@@ -93,6 +93,7 @@ printf("i=%d, j=%d\n",i,j);
 
             // can we do an append?
             if(l>0){
+printf("append_check p1\n");
                // do the append check for p1   
                append_check(&savedpaths, l, p1,app);
 
@@ -102,6 +103,7 @@ printf("append p1\n");
                   err=append_path(&savedpaths[app[1]],&savedpaths[m],
                                   p1,app[0],*nbnd,bnd);
                }else{
+printf("append_check p2\n");
                   // if that didn't work then do the same for p2
                   append_check(&savedpaths, l, p2,app);
                
