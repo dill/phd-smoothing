@@ -22,10 +22,16 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // * these can be manipulated to control which we evaluate
    //  eg. in the insertion case
    double **bnd, p1[2], p2[2];
-   int i,j,k,l,neuc=0;
+   int i,j,k,l,m,err=0, ilim, jstart;
+   int app[2];
 
    // storage?
    node** savedpaths;
+   savedpaths=(node**)malloc(sizeof(node*)*(*len));
+   for(i=0; i<(*len); i++){
+      savedpaths[i]=savedpaths[0]+i*sizeof(node*);
+      savedpaths[i]=NULL;
+   }
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
@@ -37,72 +43,109 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    }
 
    // first of all, set the epsilon to use...
-//   set_epsilon(*nbnd,&xbnd,&ybnd);
+   //set_epsilon(*nbnd,&xbnd,&ybnd);
 
    // insertion counter
    k=0;
    // path save counter
    l=0;
 
-
    // first calculate all of the Euclidean paths
-   get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start, &neuc);
+   get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start);
 
-   savedpaths=(node**)malloc(sizeof(node*)*(neuc));
-   for(i=0; i<neuc; i++){
-      savedpaths[i]=savedpaths[0]+i*sizeof(node*);
-      savedpaths[i]=NULL;
-   }
 
    // switch between insertion and full MDS 
    // insertion format is c(old,new)
    //  * so *start gives the index of the limit of the old points for insertion
    //    if we're not doing insertion then this is just the length of the 
    //    point vector
+   
    if(*start != 0){
-      // #### Main loop for INSERTION
-      for(i=0; i<(*start); i++){
-         for(j=(*start); j<(*len); j++){
-            // if no euclidean path was found calculate the path
-            if(pathlen[k] == (-1)){
-               p1[0]=x[i]; p1[1]=y[i];
-               p2[0]=x[j]; p2[1]=y[j];
-
-               make_path(p1,p2,*nbnd,bnd,&savedpaths[l]);
-               pathlen[k]=hull_length(&savedpaths[l]);
-
-               l++;
-            }
-            // increment pathlen counter
-            k++;
-         }    
-      }
+      // insertion loop variables 
+      ilim=*start;
+      jstart=*start;
    }else{
-      // #### Main for loop for FULL MDS
-      for(i=0; i<(*len); i++){
-         for(j=(i+1); j<(*len); j++){
-            // if no euclidean path was found calculate the path
-            if(pathlen[k] == (-1)){
-               p1[0]=x[i]; p1[1]=y[i];
-               p2[0]=x[j]; p2[1]=y[j];
+      /// full MDS loop variables
+      ilim=*len;
+      jstart=0;
+   }
 
-               make_path(p1,p2,*nbnd,bnd,&savedpaths[l]);
-               pathlen[k]=hull_length(&savedpaths[l]);
+   // indexing here is rather sticky...
+   // i,j   index the points
+   // k     indexes the path lengths, only find pathlen[k] when we don't
+   //        have a Euclidean path
+   // l     counts the size of the saved path array
+   // m     indexes the saved paths
 
-               l++;
-            }
-            // increment pathlen counter
-            k++;
-         }    
+   m=0;
+
+   // #### Main for loops 
+   for(i=0; i<ilim; i++){
+      if(*start==0){
+         jstart=i+1;
       }
-   }
+      for(j=jstart; j<(*len); j++){
+printf("i=%d, j=%d\n",i,j);
+         // if no euclidean path was found calculate the path
+         if(pathlen[k] == (-1)){
+            p1[0]=x[i]; p1[1]=y[i];
+            p2[0]=x[j]; p2[1]=y[j];
 
-   for(i=0;i<neuc;i++){
-//      printf("length of path %d = %d\n",i,Length(savedpaths[i]));
-      PrintPath(&(savedpaths[i]));
-   }
+            // can we do an append?
+            if(l>0){
+               // do the append check for p1   
+               append_check(&savedpaths, l, p1,app);
 
-   for(i=0;i<neuc;i++){
+               // if an append will work...
+               if(app[0]!=0){
+printf("append p1\n");
+                  err=append_path(&savedpaths[app[1]],&savedpaths[m],
+                                  p1,app[0],*nbnd,bnd);
+               }else{
+                  // if that didn't work then do the same for p2
+                  append_check(&savedpaths, l, p2,app);
+               
+                  if(app[0]!=0){
+printf("append p2\n");
+                     err=append_path(&savedpaths[app[1]],&savedpaths[m],
+                                     p2,app[0],*nbnd,bnd);
+                  }else{
+printf("make path\n");
+                     // if there were no matching paths then just
+                     // run the normal initial path
+                     err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
+
+                  }
+               }
+            // if not then just make the path from scratch
+            }else{
+printf("make path\n");
+               err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
+            }
+         
+printf("iter\n");
+            // take the start path and optimize it...
+            iter_path(p1,p2,*nbnd,bnd,&savedpaths[m]);
+
+printf("pathlen\n");
+            // find the length of the path
+            pathlen[k]=hull_length(&savedpaths[m]);
+
+            m++;
+
+            if(l<*len){
+               l++;
+            }else{
+               m=0;
+            }
+         }
+         // increment pathlen counter
+         k++;
+      }    
+
+   }
+   
+   for(i=0;i<(*len);i++){
       FreeList(&savedpaths[i]);
    }
 
@@ -113,7 +156,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 }
 
 void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
-                  double *pathlen, int full, int *neuc){
+                  double *pathlen, int full){
    /*
       get the within-area Euclidean distance, if possible
       args:
@@ -124,10 +167,9 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
          full     do full or insertion MDS?
    */
    
-   int i,j,k, *retint;
+   int i,j,k, *retint,ilim,jstart;
    double p1[2], p2[2];
 
-   *neuc=0;
    k=0;
 
    // allocate memory for retint
@@ -136,50 +178,43 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
       retint[i]=retint[0]+i;
    }
 
+   // get loop variables
    if(full != 0){
-      // #### Main loop for INSERTION
-      for(i=0; i<full; i++){
-         for(j=full; j<npathlen; j++){
-            p1[0]=x[i]; p1[1]=y[i]; // set p1
-            p2[0]=x[j]; p2[1]=y[j]; // set p2
-  
-            // check to see if we have to do the path finding or
-            // just the hypotenuse 
-            do_intersect(p1, p2, nbnd, bnd, retint);
-            //                           vvv just hypot when we touch only 1 vertex 
-            if(iarrsum((nbnd-1), retint)>1){
-               (*neuc)++;
-               pathlen[k] = -1;
-            }else{
-               pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
-            }
-            k++; // increment pathlen counter
-         }    
-      }
+      // insertion loop variables 
+      ilim=full;
+      jstart=full;
    }else{
-      for(i=0; i<npathlen; i++){
-         for(j=(i+1); j<npathlen; j++){
-            p1[0]=x[i]; p1[1]=y[i]; // set p1
-            p2[0]=x[j]; p2[1]=y[j]; // set p2
+      /// full MDS loop variables
+      ilim=npathlen;
+      jstart=0;
+   }
+
+   for(i=0; i<ilim; i++){
+      if(full==0){
+         jstart=i+1;
+      }
+      for(j=jstart; j<npathlen; j++){
+         p1[0]=x[i]; p1[1]=y[i]; // set p1
+         p2[0]=x[j]; p2[1]=y[j]; // set p2
  
-            // check to see if we have to do the path finding or
-            // just the hypotenuse 
-            do_intersect(p1, p2, nbnd, bnd, retint);
+         // check to see if we have to do the path finding or
+         // just the hypotenuse 
+         do_intersect(p1, p2, nbnd, bnd, retint);
    
-            //                           vvv just hypot when we touch only 1 vertex 
-            if(iarrsum((nbnd-1), retint)>1){
-               (*neuc)++;
-               pathlen[k] = (-1);
-            }else{
-               pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
-            }
-            k++; // increment pathlen counter
-         }    
+         //                           vvv just hypot when we touch only 1 vertex 
+         if(iarrsum((nbnd-1), retint)>1){
+            pathlen[k] = (-1);
+         }else{
+            pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
+         }
+         k++; // increment pathlen counter
+//printf("i=%d, j=%d, bnd[0][0]=%f\n",bnd[0][0]);
       }
    }
+   free(retint);
 }
 
-void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
+void iter_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
    // routine to create the within-area path between p1 and p2 //
    /*
       args:
@@ -189,9 +224,11 @@ void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
          path        the shortest within-domain path
    */
 
-   int conv, conv_stop,err;
+   int conv, conv_stop;
    node* prevpath=NULL;
    node* mypath=NULL;
+
+   mypath=*path;
    
    *path=NULL;
 
@@ -205,11 +242,11 @@ void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   err=make_bnd_path(p1,p2,nbnd,bnd,&mypath,0);
+   //err=make_bnd_path(p1,p2,nbnd,bnd,&mypath,0);
    // don't do anything if there is an error at the moment...
    // DEBUG
    //printf("cat(\"### make_bnd_path ###\\n\")\n");
-   //PrintPath(mypath);
+   //PrintPath(&mypath);
 
    // convergence stop
    conv=0;
@@ -231,13 +268,13 @@ void make_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
       alter_step(&mypath,nbnd,bnd);
       // DEBUG
       //printf("cat(\"### alter_step ###\\n\")\n");
-      //PrintPath(mypath);
+      //PrintPath(&mypath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(&mypath,nbnd,bnd);
       // DEBUG
       //printf("cat(\"### delete_step ###\\n\")\n");
-      //PrintPath(mypath);
+      //PrintPath(&mypath);
 
       // increment convergence stopper 
       conv++;
@@ -272,8 +309,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
     *  delfirst         delete before finding the lengths? 0=yes,1=no
     */
 
-   // find the first intersection between p1, p2 and the boundary side that 
-   // each point intersects
    double ip1[2],ip2[2], curr_insert[2];
    int intind[2],i,start;
    int err=0;
@@ -281,6 +316,8 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
    node* bnd1 = NULL;
    node* bnd2 = NULL;
 
+   // find the first intersection between p1, p2 and the boundary side that 
+   // each point intersects
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
 	// if there are no errors
@@ -434,12 +471,70 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 
 }
 
+// append one path to the end of another
+int append_path(node** oldpath, node** newpath, double point[2], int end,
+                int nbnd, double **bnd){
+   /*
+    *
+    *
+   */
+
+
+   int err=0;
+   node* current= NULL;
+   node* apppath=NULL;
+   double endpoint[2];
+
+   current= *oldpath;
+   *oldpath=NULL;
+
+   // blank what is currently in newpath
+   FreeList(newpath);
+
+   // replace with what's in oldpath
+   CopyList(*oldpath,newpath);
+
+   // find the end of oldpath that we want
+   if(end!=0){
+      while(current->next!=NULL){
+         current=current->next;
+      }
+   }
+   endpoint[0]=current->data[0];
+   endpoint[1]=current->data[1];
+
+   // make a path from point to the end of oldpath
+   err=make_bnd_path(point, endpoint, nbnd, bnd, &apppath, 1);
+
+   if(err==1){
+      return 1;
+   }
+
+   // append the made path to newpath
+   if(end==0){
+      // adding to the start
+      apppath->next=current;
+      apppath->next->prev=apppath;   
+
+      *newpath=apppath;
+   }else{
+      // adding to the end
+      current->next=apppath;
+      current->next->prev=current;
+   }
+
+   // need to do this?
+   free(apppath);
+
+   // done
+   return 0;
+}
+
 
 // iterate over the points in the path:
 // delete as many points as possible, making sure that the
 // path is still outside
-void delete_step(node** path, int nbnd, double **bnd)
-{
+void delete_step(node** path, int nbnd, double **bnd){
    // Args:
    //  path     the current path
    //  nbnd     # elements of boundary

@@ -5,3 +5,7 @@ pdflatex mds.tex
 pdflatex mds.tex
 
 
+pdflatex speedups.tex
+bibtex speedups
+pdflatex speedups.tex
+pdflatex speedups.tex

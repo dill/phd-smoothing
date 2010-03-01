@@ -570,6 +570,72 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 }
 
 
+// match the end of a linked list with a point
+int match_ends(double *point, node** head){
+   /*
+    * Args:
+    *    point    the point to investigate
+    *    head     the path to look at
+    *
+    * Return:
+    *    integer 1= match top
+    *            2= match bottom
+    *            0= no match
+   */
+   node* current=NULL;
+
+   current=*head;
+
+   // check the start
+   if((point[0]==current->data[0]) & (point[1]==current->data[1])){
+      return 1;
+   } 
+
+   // fast-forward to the end
+   while (current->next != NULL){
+      current=current->next;
+   }
+
+   // check the end
+   if((point[0]==current->data[0]) & (point[1]==current->data[1])){
+      return 2;
+   } 
+
+   // if nothing happened
+   return 0;
+
+}
+
+// check to see if any of the ends can be used as a start path
+void append_check(node*** paths, int npaths, double point[], int app[2]){
+   /*
+    * Args:
+    *    paths    array of paths
+    *    npaths   length of paths
+    *    point    point to investigate
+    *    app[2]   entry 0: match_ends output
+    *             entry 1: path number
+   */
+   int i,me;
+   app[0]=0;
+   
+printf("npath=%d\n",npaths);
+   // loop over paths
+   for(i=0; i<npaths; i++){
+      // call match_ends
+      me=match_ends(point,paths[i]);
+
+      if(me>0){
+         // return the orientation and path number
+         app[0]=me;
+         app[1]=i;
+         break;  
+      }
+   }
+}
+
+
+
 /*
  * Linked list code here
  * mostly modified from http://cslibrary.stanford.edu/
@@ -600,6 +666,7 @@ void FreeList(node** headRef) {
                     // in the caller. 
 } 
 
+// Push something to the start of a list
 void Push(node** headRef, double data[]) {
    node* newNode = malloc(sizeof(node));
    newNode->data[0] = data[0];
@@ -618,6 +685,7 @@ void Push(node** headRef, double data[]) {
    *headRef = newNode;
 }
 
+// Append something to the end of a list
 // AppendNode with Push()
 void AppendNode(node** headRef, double data[]) { 
    node* current = *headRef; 
