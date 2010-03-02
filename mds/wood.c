@@ -98,26 +98,29 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
                // if an append will work...
                if(app[0]!=0){
-                  err=append_path(&savedpaths[app[1]],&savedpaths[m],p1,app[0],*nbnd,bnd);
+printf("cat(\"append p2\\n\")\n");
+                  err=append_path(&savedpaths[app[1]],&savedpaths[m],p2,app[0],*nbnd,bnd);
                }else{
                   // if that didn't work then do the same for p2
                   append_check(savedpaths, l, p2,app);
                
                   if(app[0]!=0){
-                     err=append_path(&savedpaths[app[1]],&savedpaths[m],p2,app[0],*nbnd,bnd);
+printf("cat(\"append p1\\n\")\n");
+                     err=append_path(&savedpaths[app[1]],&savedpaths[m],p1,app[0],*nbnd,bnd);
                   }else{
                      // if there were no matching paths then just
                      // run the normal initial path
                      if(savedpaths[m]!=NULL){
                         FreeList(&savedpaths[m]);
                      }
+printf("cat(\"make_bnd fail\\n\")\n");
                      err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
                   }
                }
             }
 
             // take the start path and optimize it...
-            iter_path(p1,p2,*nbnd,bnd,&savedpaths[m]);
+            iter_path(&savedpaths[m],*nbnd,bnd);
 
             // find the length of the path
             pathlen[k]=hull_length(&savedpaths[m]);
@@ -204,14 +207,12 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
    free(retint);
 }
 
-void iter_path(double p1[], double p2[], int nbnd, double **bnd, node** mypath){
-   // routine to create the within-area path between p1 and p2 //
+void iter_path(node** mypath,int nbnd, double **bnd){
    /*
       args:
-         p1, p2      the points to find the path between
+         path        the shortest within-domain path
          nbnd        length of the boundary
          bnd         the boundary
-         path        the shortest within-domain path
    */
 
    int conv, conv_stop;
@@ -277,9 +278,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
    double line1[2][2], line2[2][2];
    node* bnd1 = NULL;
    node* bnd2 = NULL;
-
-   // make sure that path is empty?
-   //FreeList(path);
 
    // find the first intersection between p1, p2 and the boundary side that 
    // each point intersects
@@ -409,18 +407,20 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 
       // delete before testing length?
       if(delfirst==0){
-            delete_step(&bnd1, nbnd, bnd);
-            delete_step(&bnd2, nbnd, bnd);
+            if(Length(&bnd1)>2){
+               delete_step(&bnd1, nbnd, bnd);
+            }
+            if(Length(&bnd2)>2){
+               delete_step(&bnd2, nbnd, bnd);
+            }
       }
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
-         //*path=bnd1;
          CopyList(bnd1,path);
          FreeList(&bnd1);
          FreeList(&bnd2);
       }else{
-         //*path=bnd2;
          CopyList(bnd2,path);
          FreeList(&bnd1);
          FreeList(&bnd2);
@@ -475,24 +475,21 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    endpoint[0]=current->data[0];
    endpoint[1]=current->data[1];
 
-   
    // catch the case when the path between endpoint and point is 
    // Euclidean within the domain
    sp_do_intersect(point,endpoint, nbnd,bnd,intbnd);
 
    if(iarrsum((nbnd-1),intbnd)<2){
-
       // if the point->endpoint path is Euclidean in the domain then
       // just add that point
-      if(end==2){
+      if(end==1){
          AppendNode(newpath,point);
       }else{
          Push(newpath,point);
       }
-
    }else{
       // make a path from point to the end of oldpath
-      err=make_bnd_path(point, endpoint, nbnd, bnd, &apppath, 0);
+      err=make_bnd_path(endpoint, point, nbnd, bnd, &apppath, 0);
 
       if(err==1){
          return 1;
@@ -502,25 +499,49 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
       if(end==2){
          // adding to the start
 
-         RMBot(&apppath); // remove the duplicated bottom element
-
          // fastforward to the end of apppath
          current=apppath;
          while(current->next!=NULL){
             current=current->next;
          }
+         
+         if(!( (endpoint[0] == (current->data[0]) ) & 
+             ( (endpoint[1] == (current->data[1]) ) ))) {
+            ReverseList(&apppath);
+}
+            RMBot(&apppath); // remove the duplicated bottom element
+//         }else{
+//            RMTop(&apppath); // remove the duplicated bottom element
+//         }
+
          // attach newpath to the end of apppath
          current->next=*newpath;
          current->next->prev=current;   
          // set the head of newpath to be the head of apppath
          *newpath=apppath;
+
       }else{
          // adding to the end
-         RMTop(&apppath); // remove the duplicated top element
+
+         current=*newpath;
+         while(current->next!=NULL){
+            current=current->next;
+         }
+
+         if(!( (endpoint[0] == (apppath->data[0]) ) & 
+             ( (endpoint[1] == (apppath->data[1]) ) ))) {
+            ReverseList(&apppath);
+}
+            RMTop(&apppath); // remove the duplicate element
+ //        }else{
+ //           RMBot(&apppath); // remove the duplicated bottom element
+ //        }
+
          current->next=apppath;
          current->next->prev=current;
       }
    }
+   delete_step(newpath,nbnd,bnd);
    free(intbnd);
    // done
    return 0;
@@ -621,7 +642,9 @@ void delete_step(node** path, int nbnd, double **bnd){
             // current is sitting at the 3rd entry
             // create a pointer to that
             end_ptr=current->next; // pointer to i+2
-
+if(current->next==NULL){
+   break;
+}
             // go back twice
             current=current->prev; // pointer now at i
             current=current->prev; // pointer at i-1

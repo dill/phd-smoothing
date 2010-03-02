@@ -772,21 +772,19 @@ void DelTopBot(node** head){
 
 // Remove the first element of a list
 void RMTop(node** head){
-   node* current = *head;      // used to iterate over the original list
-   node* top = NULL;
+   node* current = *head;
 
    // miss out the first node
    current=current->next;
    free(current->prev);
    current->prev=NULL;
-   top=current; 
 
-   *head=top;
+   *head=current;
 }
 
 // Delete the last entry of a list
 void RMBot(node** head){
-   node* current = *head;      // used to iterate over the original list
+   node* current = *head;
 
    // skip to the end 
    while (current->next->next != NULL) {
