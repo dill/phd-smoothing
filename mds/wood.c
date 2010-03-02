@@ -93,7 +93,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             if(l>0){
                printf("append_check p1\n");
                // do the append check for p1   
-               append_check(&savedpaths, l, p1,app);
+               append_check(savedpaths, l, p1,app);
 
                // if an append will work...
                if(app[0]!=0){
@@ -103,7 +103,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
                }else{
                   printf("append_check p2\n");
                   // if that didn't work then do the same for p2
-                  append_check(&savedpaths, l, p2,app);
+                  append_check(savedpaths, l, p2,app);
                
                   if(app[0]!=0){
                      printf("append p2\n");
@@ -134,7 +134,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             m++;
             if(l<*len){
                l++;
-            }else{
+            }
+            if(*len<=m){
                m=0;
             }
          }
@@ -229,14 +230,6 @@ void iter_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
    mypath=*path;
    
    *path=NULL;
-
-
-   // DEBUG
-   //printf("plot(bnd,type=\"l\",asp=1)\n");
-   //printf("p1<-list(x=%.16f,y=%.16f)\n",p1[0],p1[1]);
-   //printf("p2<-list(x=%.16f,y=%.16f)\n",p2[0],p2[1]);
-   //printf("points(p1,pch=19)\n");
-   //printf("points(p2,pch=19)\n");
 
    // create the initial path:
    // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
@@ -501,7 +494,7 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    endpoint[1]=current->data[1];
 
    // make a path from point to the end of oldpath
-   err=make_bnd_path(point, endpoint, nbnd, bnd, &apppath, 1);
+   err=make_bnd_path(point, endpoint, nbnd, bnd, &apppath, 0);
 
    if(err==1){
       return 1;

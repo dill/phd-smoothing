@@ -605,7 +605,7 @@ int match_ends(double *point, node** head){
 }
 
 // check to see if any of the ends can be used as a start path
-void append_check(node*** paths, int npaths, double point[], int app[2]){
+void append_check(node** paths, int npaths, double point[], int app[2]){
    /*
     * Args:
     *    paths    array of paths
@@ -620,8 +620,11 @@ void append_check(node*** paths, int npaths, double point[], int app[2]){
 printf("npath=%d\n",npaths);
    // loop over paths
    for(i=0; i<npaths; i++){
+
+printf("i=%d\n",i);
+
       // call match_ends
-      me=match_ends(point,paths[i]);
+      me=match_ends(point,&paths[i]);
 
       if(me>0){
          // return the orientation and path number
