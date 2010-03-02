@@ -81,38 +81,36 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    // #### Main for loops 
    for(i=0; i<ilim; i++){
-      if(*start==0){
-         jstart=i+1;
-      }
+      if(*start==0) jstart=i+1; // make sure that j is set right for full mds
       for(j=jstart; j<(*len); j++){
-printf("i=%d, j=%d\n",i,j);
-         // if no euclidean path was found calculate the path
+         printf("i=%d, j=%d\n",i,j);
+         // if no euclidean path was found, calculate the path
          if(pathlen[k] == (-1)){
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
 
             // can we do an append?
             if(l>0){
-printf("append_check p1\n");
+               printf("append_check p1\n");
                // do the append check for p1   
                append_check(&savedpaths, l, p1,app);
 
                // if an append will work...
                if(app[0]!=0){
-printf("append p1\n");
+                  printf("append p1\n");
                   err=append_path(&savedpaths[app[1]],&savedpaths[m],
                                   p1,app[0],*nbnd,bnd);
                }else{
-printf("append_check p2\n");
+                  printf("append_check p2\n");
                   // if that didn't work then do the same for p2
                   append_check(&savedpaths, l, p2,app);
                
                   if(app[0]!=0){
-printf("append p2\n");
+                     printf("append p2\n");
                      err=append_path(&savedpaths[app[1]],&savedpaths[m],
                                      p2,app[0],*nbnd,bnd);
                   }else{
-printf("make path\n");
+                     printf("make path\n");
                      // if there were no matching paths then just
                      // run the normal initial path
                      err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
@@ -121,20 +119,19 @@ printf("make path\n");
                }
             // if not then just make the path from scratch
             }else{
-printf("make path\n");
+               printf("make path\n");
                err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
             }
          
-printf("iter\n");
+            printf("iter\n");
             // take the start path and optimize it...
             iter_path(p1,p2,*nbnd,bnd,&savedpaths[m]);
 
-printf("pathlen\n");
+            printf("pathlen\n");
             // find the length of the path
             pathlen[k]=hull_length(&savedpaths[m]);
 
             m++;
-
             if(l<*len){
                l++;
             }else{
@@ -144,7 +141,6 @@ printf("pathlen\n");
          // increment pathlen counter
          k++;
       }    
-
    }
    
    for(i=0;i<(*len);i++){
@@ -481,22 +477,21 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
     *
    */
 
-
    int err=0;
    node* current= NULL;
    node* apppath=NULL;
    double endpoint[2];
 
-   current= *oldpath;
-   *oldpath=NULL;
-
    // blank what is currently in newpath
    FreeList(newpath);
+   *newpath=NULL;
 
    // replace with what's in oldpath
    CopyList(*oldpath,newpath);
 
-   // find the end of oldpath that we want
+   current= *newpath;
+
+   // find the end of new(old)path that we want
    if(end!=0){
       while(current->next!=NULL){
          current=current->next;
@@ -515,9 +510,15 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    // append the made path to newpath
    if(end==0){
       // adding to the start
-      apppath->next=current;
-      apppath->next->prev=apppath;   
-
+      // fastforward to the end of apppath
+      current=apppath;
+      while(current->next!=NULL){
+         current=current->next;
+      }
+      // attach newpath to the end of apppath
+      current->next=*newpath;
+      current->next->prev=current;   
+      // set the head of newpath to be the head of apppath
       *newpath=apppath;
    }else{
       // adding to the end
@@ -526,7 +527,7 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    }
 
    // need to do this?
-   free(apppath);
+   //free(apppath);
 
    // done
    return 0;

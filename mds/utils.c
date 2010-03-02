@@ -583,7 +583,6 @@ int match_ends(double *point, node** head){
     *            0= no match
    */
    node* current=NULL;
-
    current=*head;
 
    // check the start
@@ -603,7 +602,6 @@ int match_ends(double *point, node** head){
 
    // if nothing happened
    return 0;
-
 }
 
 // check to see if any of the ends can be used as a start path
@@ -704,6 +702,7 @@ void AppendNode(node** headRef, double data[]) {
 }
 
 // Variant of CopyList() that uses Push()
+// copy from head to newList
 void CopyList(node* head, node** newList)
 {
    node* current = head;      // used to iterate over the original list
