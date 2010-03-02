@@ -541,8 +541,6 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
          current->next->prev=current;
       }
    }
-   // need to do this?
-   //free(apppath);
 
    // done
    return 0;
