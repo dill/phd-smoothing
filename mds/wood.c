@@ -53,7 +53,6 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // first calculate all of the Euclidean paths
    get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start);
 
-
    // switch between insertion and full MDS 
    // insertion format is c(old,new)
    //  * so *start gives the index of the limit of the old points for insertion
@@ -81,61 +80,52 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    // #### Main for loops 
    for(i=0; i<ilim; i++){
-      if(*start==0) jstart=i+1; // make sure that j is set right for full mds
+      if(*start==0){ jstart=i+1;} // make sure that j is set right for full mds
       for(j=jstart; j<(*len); j++){
-//         printf("i=%d, j=%d\n",i,j);
          // if no euclidean path was found, calculate the path
          if(pathlen[k] == (-1)){
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
 
-            // can we do an append?
-            if(l>0){
- //              printf("append_check p1\n");
+            if(l==0){
+               // if not then just make the path from scratch
+               err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
+
+               // can we do an append?
+            }else{
                // do the append check for p1   
                append_check(savedpaths, l, p1,app);
 
                // if an append will work...
                if(app[0]!=0){
-  //                printf("append p1\n");
-                  err=append_path(&savedpaths[app[1]],&savedpaths[m],
-                                  p1,app[0],*nbnd,bnd);
+                  err=append_path(&savedpaths[app[1]],&savedpaths[m],p1,app[0],*nbnd,bnd);
                }else{
-   //               printf("append_check p2\n");
                   // if that didn't work then do the same for p2
                   append_check(savedpaths, l, p2,app);
                
                   if(app[0]!=0){
-    //                 printf("append p2\n");
-                     err=append_path(&savedpaths[app[1]],&savedpaths[m],
-                                     p2,app[0],*nbnd,bnd);
+                     err=append_path(&savedpaths[app[1]],&savedpaths[m],p2,app[0],*nbnd,bnd);
                   }else{
-     //                printf("make path\n");
                      // if there were no matching paths then just
                      // run the normal initial path
+                     if(savedpaths[m]!=NULL){
+                        FreeList(&savedpaths[m]);
+                     }
                      err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
-
                   }
                }
-            // if not then just make the path from scratch
-            }else{
-      //         printf("make path\n");
-               err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
             }
-         
-       //     printf("iter\n");
+
             // take the start path and optimize it...
             iter_path(p1,p2,*nbnd,bnd,&savedpaths[m]);
 
-        //    printf("pathlen\n");
             // find the length of the path
             pathlen[k]=hull_length(&savedpaths[m]);
-
-   // DEBUG
-   printf("cat(\"### final ###\\n\")\n");
-   PrintPath(&savedpaths[m]);
+// DEBUG
+printf("cat(\"### final ###\\n\")\n");
+PrintPath(&savedpaths[m]);
             m++;
-            if(l<*len){
+            if(l<(*len)){
                l++;
             }
             if(*len<=m){
@@ -147,12 +137,11 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
       }    
    }
    
-   for(i=0;i<(*len);i++){
+   for(i=0;i<l;i++){
       FreeList(&savedpaths[i]);
    }
 
    free(savedpaths);
-
    free(bnd[0]);
    free(bnd);
 }
@@ -215,7 +204,7 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
    free(retint);
 }
 
-void iter_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
+void iter_path(double p1[], double p2[], int nbnd, double **bnd, node** mypath){
    // routine to create the within-area path between p1 and p2 //
    /*
       args:
@@ -227,19 +216,6 @@ void iter_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
 
    int conv, conv_stop;
    node* prevpath=NULL;
-   node* mypath=NULL;
-
-   mypath=*path;
-   
-   *path=NULL;
-
-   // create the initial path:
-   // p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
-   //err=make_bnd_path(p1,p2,nbnd,bnd,&mypath,0);
-   // don't do anything if there is an error at the moment...
-   // DEBUG
-   //printf("cat(\"### make_bnd_path ###\\n\")\n");
-   //PrintPath(&mypath);
 
    // convergence stop
    conv=0;
@@ -247,7 +223,6 @@ void iter_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
 
    // keep going until we don't remove any more points.
    do{
-
       // free up prevpath before we copy onto it
       if(conv>0){
          FreeList(&prevpath);
@@ -255,16 +230,16 @@ void iter_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
 
       // save previous path
       //prev.path<-my.path
-      CopyList(mypath,&prevpath);
+      CopyList(*mypath,&prevpath);
 
       // add new vertices
-      alter_step(&mypath,nbnd,bnd);
+      alter_step(mypath,nbnd,bnd);
       // DEBUG
       //printf("cat(\"### alter_step ###\\n\")\n");
       //PrintPath(&mypath);
 
       // delete step, remove anything that doesn't need to be there
-      delete_step(&mypath,nbnd,bnd);
+      delete_step(mypath,nbnd,bnd);
       // DEBUG
       //printf("cat(\"### delete_step ###\\n\")\n");
       //PrintPath(&mypath);
@@ -272,26 +247,20 @@ void iter_path(double p1[], double p2[], int nbnd, double **bnd, node** path){
       // increment convergence stopper 
       conv++;
 
-   } while( !(has_converged(prevpath,mypath)) & (conv<conv_stop) );
+   } while( !(has_converged(prevpath,*mypath)) & (conv<conv_stop) );
 
-   // DEBUG
-   //printf("cat(\"### final ###\\n\")\n");
-   //PrintPath(mypath);
-
-   if(!(has_converged(prevpath,mypath))){
+   if(!(has_converged(prevpath,*mypath))){
       printf("WARNING: path find finished without convergence!\n");
       printf("conv = %d\n",conv);
-      printf("convergence = %d\n",has_converged(prevpath,mypath) );
+      printf("convergence = %d\n",has_converged(prevpath,*mypath) );
    }
 
-   CopyList(mypath,path);
-
-   FreeList(&mypath);
    FreeList(&prevpath);
 }
 
 
-// create a path between p1 and p2 using the boundary
+// create the initial path:
+// p1, p1 1st intersection, some of bnd, p2 1st intersection, p2
 int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path, int delfirst)
 {
    /* Args:
@@ -308,6 +277,9 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
    double line1[2][2], line2[2][2];
    node* bnd1 = NULL;
    node* bnd2 = NULL;
+
+   // make sure that path is empty?
+   //FreeList(path);
 
    // find the first intersection between p1, p2 and the boundary side that 
    // each point intersects
@@ -483,14 +455,18 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
 
    // blank what is currently in newpath
    FreeList(newpath);
-   *newpath=NULL;
 
    // replace with what's in oldpath
    CopyList(*oldpath,newpath);
 
-   current= *newpath;
+   current=*newpath;
 
    // find the end of new(old)path that we want
+
+   // end = 1 match top, 2 match bottom
+   // => end==1 => add path to end
+   // => end==2 => add path to start
+
    if(end==1){
       while(current->next!=NULL){
          current=current->next;
@@ -504,7 +480,7 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    // Euclidean within the domain
    sp_do_intersect(point,endpoint, nbnd,bnd,intbnd);
 
-   if(iarrsum((nbnd-1),intbnd)==0){
+   if(iarrsum((nbnd-1),intbnd)<2){
 
       // if the point->endpoint path is Euclidean in the domain then
       // just add that point
@@ -525,6 +501,9 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
       // append the made path to newpath
       if(end==2){
          // adding to the start
+
+         RMBot(&apppath); // remove the duplicated bottom element
+
          // fastforward to the end of apppath
          current=apppath;
          while(current->next!=NULL){
@@ -537,11 +516,12 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
          *newpath=apppath;
       }else{
          // adding to the end
+         RMTop(&apppath); // remove the duplicated top element
          current->next=apppath;
          current->next->prev=current;
       }
    }
-
+   free(intbnd);
    // done
    return 0;
 }

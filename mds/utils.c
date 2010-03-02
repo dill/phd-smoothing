@@ -586,7 +586,7 @@ int match_ends(double *point, node** head){
    current=*head;
 
    // check the start
-   if((point[0]==current->data[0]) && (point[1]==current->data[1])){
+   if((point[0]==current->data[0]) & (point[1]==current->data[1])){
       return 1;
    } 
 
@@ -596,7 +596,7 @@ int match_ends(double *point, node** head){
    }
 
    // check the end
-   if((point[0]==current->data[0]) && (point[1]==current->data[1])){
+   if((point[0]==current->data[0]) & (point[1]==current->data[1])){
       return 2;
    } 
 
@@ -749,8 +749,7 @@ void PrintPath(node** mypath) {
 }
 
 // Delete the first and last entries of a list
-void DelTopBot(node** head)
-{
+void DelTopBot(node** head){
    node* current = *head;      // used to iterate over the original list
    node* top = NULL;
 
@@ -769,8 +768,35 @@ void DelTopBot(node** head)
    current->next=NULL;
 
    *head=top;
-
 }
+
+// Remove the first element of a list
+void RMTop(node** head){
+   node* current = *head;      // used to iterate over the original list
+   node* top = NULL;
+
+   // miss out the first node
+   current=current->next;
+   free(current->prev);
+   current->prev=NULL;
+   top=current; 
+
+   *head=top;
+}
+
+// Delete the last entry of a list
+void RMBot(node** head){
+   node* current = *head;      // used to iterate over the original list
+
+   // skip to the end 
+   while (current->next->next != NULL) {
+      current = current->next;
+   }
+   
+   free(current->next);
+   current->next=NULL;
+}
+
 
 void ReverseList(node** head){
    node* current=*head;

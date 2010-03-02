@@ -36,6 +36,8 @@ int Length(node**);
 void FreeList(node**);
 void PrintPath(node**);
 void DelTopBot(node**);
+void RMTop(node**);
+void RMBot(node**);
 void ReverseList(node**);
 void set_epsilon(int,  double*, double*);
 int match_ends(double[2], node**);
