@@ -586,7 +586,7 @@ int match_ends(double *point, node** head){
    current=*head;
 
    // check the start
-   if((point[0]==current->data[0]) & (point[1]==current->data[1])){
+   if((point[0]==current->data[0]) && (point[1]==current->data[1])){
       return 1;
    } 
 
@@ -596,7 +596,7 @@ int match_ends(double *point, node** head){
    }
 
    // check the end
-   if((point[0]==current->data[0]) & (point[1]==current->data[1])){
+   if((point[0]==current->data[0]) && (point[1]==current->data[1])){
       return 2;
    } 
 
@@ -617,11 +617,8 @@ void append_check(node** paths, int npaths, double point[], int app[2]){
    int i,me;
    app[0]=0;
    
-printf("npath=%d\n",npaths);
    // loop over paths
    for(i=0; i<npaths; i++){
-
-printf("i=%d\n",i);
 
       // call match_ends
       me=match_ends(point,&paths[i]);

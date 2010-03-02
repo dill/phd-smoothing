@@ -83,7 +83,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    for(i=0; i<ilim; i++){
       if(*start==0) jstart=i+1; // make sure that j is set right for full mds
       for(j=jstart; j<(*len); j++){
-         printf("i=%d, j=%d\n",i,j);
+//         printf("i=%d, j=%d\n",i,j);
          // if no euclidean path was found, calculate the path
          if(pathlen[k] == (-1)){
             p1[0]=x[i]; p1[1]=y[i];
@@ -91,26 +91,26 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
             // can we do an append?
             if(l>0){
-               printf("append_check p1\n");
+ //              printf("append_check p1\n");
                // do the append check for p1   
                append_check(savedpaths, l, p1,app);
 
                // if an append will work...
                if(app[0]!=0){
-                  printf("append p1\n");
+  //                printf("append p1\n");
                   err=append_path(&savedpaths[app[1]],&savedpaths[m],
                                   p1,app[0],*nbnd,bnd);
                }else{
-                  printf("append_check p2\n");
+   //               printf("append_check p2\n");
                   // if that didn't work then do the same for p2
                   append_check(savedpaths, l, p2,app);
                
                   if(app[0]!=0){
-                     printf("append p2\n");
+    //                 printf("append p2\n");
                      err=append_path(&savedpaths[app[1]],&savedpaths[m],
                                      p2,app[0],*nbnd,bnd);
                   }else{
-                     printf("make path\n");
+     //                printf("make path\n");
                      // if there were no matching paths then just
                      // run the normal initial path
                      err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
@@ -119,18 +119,21 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
                }
             // if not then just make the path from scratch
             }else{
-               printf("make path\n");
+      //         printf("make path\n");
                err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
             }
          
-            printf("iter\n");
+       //     printf("iter\n");
             // take the start path and optimize it...
             iter_path(p1,p2,*nbnd,bnd,&savedpaths[m]);
 
-            printf("pathlen\n");
+        //    printf("pathlen\n");
             // find the length of the path
             pathlen[k]=hull_length(&savedpaths[m]);
 
+   // DEBUG
+   printf("cat(\"### final ###\\n\")\n");
+   PrintPath(&savedpaths[m]);
             m++;
             if(l<*len){
                l++;
@@ -207,7 +210,6 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
             pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
          }
          k++; // increment pathlen counter
-//printf("i=%d, j=%d, bnd[0][0]=%f\n",bnd[0][0]);
       }
    }
    free(retint);
@@ -469,11 +471,15 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
     *
     *
    */
-
-   int err=0;
+   int err=0, *intbnd,i;
    node* current= NULL;
    node* apppath=NULL;
    double endpoint[2];
+
+   intbnd=(int*)malloc(sizeof(int)*(nbnd-1));
+   for(i=0; i<(nbnd-1); i++){
+      intbnd[i]=intbnd[0]+i;
+   }
 
    // blank what is currently in newpath
    FreeList(newpath);
@@ -485,7 +491,7 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    current= *newpath;
 
    // find the end of new(old)path that we want
-   if(end!=0){
+   if(end==1){
       while(current->next!=NULL){
          current=current->next;
       }
@@ -493,32 +499,48 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    endpoint[0]=current->data[0];
    endpoint[1]=current->data[1];
 
-   // make a path from point to the end of oldpath
-   err=make_bnd_path(point, endpoint, nbnd, bnd, &apppath, 0);
+   
+   // catch the case when the path between endpoint and point is 
+   // Euclidean within the domain
+   sp_do_intersect(point,endpoint, nbnd,bnd,intbnd);
 
-   if(err==1){
-      return 1;
-   }
+   if(iarrsum((nbnd-1),intbnd)==0){
 
-   // append the made path to newpath
-   if(end==0){
-      // adding to the start
-      // fastforward to the end of apppath
-      current=apppath;
-      while(current->next!=NULL){
-         current=current->next;
+      // if the point->endpoint path is Euclidean in the domain then
+      // just add that point
+      if(end==2){
+         AppendNode(newpath,point);
+      }else{
+         Push(newpath,point);
       }
-      // attach newpath to the end of apppath
-      current->next=*newpath;
-      current->next->prev=current;   
-      // set the head of newpath to be the head of apppath
-      *newpath=apppath;
-   }else{
-      // adding to the end
-      current->next=apppath;
-      current->next->prev=current;
-   }
 
+   }else{
+      // make a path from point to the end of oldpath
+      err=make_bnd_path(point, endpoint, nbnd, bnd, &apppath, 0);
+
+      if(err==1){
+         return 1;
+      }
+
+      // append the made path to newpath
+      if(end==2){
+         // adding to the start
+         // fastforward to the end of apppath
+         current=apppath;
+         while(current->next!=NULL){
+            current=current->next;
+         }
+         // attach newpath to the end of apppath
+         current->next=*newpath;
+         current->next->prev=current;   
+         // set the head of newpath to be the head of apppath
+         *newpath=apppath;
+      }else{
+         // adding to the end
+         current->next=apppath;
+         current->next->prev=current;
+      }
+   }
    // need to do this?
    //free(apppath);
 
