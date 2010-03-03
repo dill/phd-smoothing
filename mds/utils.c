@@ -193,6 +193,7 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 
    // if there are no errors, go ahead
    if(err==0){
+
       // are the midpoints inside?
       // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
       // call the in_out routine from soap. Need to make sure that things are
@@ -269,10 +270,25 @@ void intpoint(double p1[], double p2[],double edge[][2], double ip[])
    b2=1/(edge[1][1]-edge[0][1]);
    c2= edge[0][0]/(edge[1][0]-edge[0][0]) - edge[0][1]/(edge[1][1]-edge[0][1]);
 
-   // handle the horizontal/vertical line cases
+//   if( ((p1[0]==edge[0][0]) & (p1[1]==edge[0][1]))){
+//      ip[0]=p1[0];
+//      ip[1]=p1[1];
+//   }else if( ((p2[0]==edge[0][0]) & (p2[1]==edge[0][1]))){
+//      ip[0]=p2[0];
+//      ip[1]=p2[1];
+//   }else if( ((p1[0]==edge[1][0]) & (p1[1]==edge[1][1]))){
+//      ip[0]=p1[0];
+//      ip[1]=p1[1];
+//   }else if( ((p2[0]==edge[1][0]) & (p2[1]==edge[1][1]))){
+//      ip[0]=p2[0];
+//      ip[1]=p2[1];
+//
+//   // handle the horizontal/vertical line cases
+//
+//   // when the both lines are colinear
+//   // both horizontal
+//   }else 
 
-   // when the both lines are colinear
-   // both horizontal
    if( ((fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))) &
        ((fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
               isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))) ){
@@ -476,6 +492,20 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
+
+///// HACKHACKHACK
+//if(lbbindex<2){
+//for(i=0;i<nbnd;i++){
+//   if((p1[0]==bnd[i][0]) && (p1[1]==bnd[i][1]) |
+//      (p2[0]==bnd[i][0]) && (p2[1]==bnd[i][1])){
+//      retint[i]=1;
+//      lbbindex++;
+//printf("cat(\"ping\\n\")\n");
+//      break;
+//   }
+//}
+//}
+///////////////////
 
    // setup bbindex, dists, sortdists
    bbindex=(int*)malloc(sizeof(int)*lbbindex);

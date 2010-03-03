@@ -86,7 +86,10 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
          if(pathlen[k] == (-1)){
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
-
+if((i==5) & (j==42)){
+printf("quack!\n");
+}
+printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
             if(l==0){
                // if not then just make the path from scratch
                err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
@@ -98,12 +101,6 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
                // if an append will work...
                if(app[0]!=0){
-printf("cat(\"append p2\\n\")\n");
-printf("match %d\n",app[1]);
-printf("i=%d,j=%d\n",i,j);
-if((i==38) &&(j==41)){
-   printf("yelp!\n");
-}
                   err=append_path(&savedpaths[app[1]],&savedpaths[m],p2,app[0],*nbnd,bnd);
                }else{
                   // if that didn't work then do the same for p2
@@ -111,7 +108,6 @@ if((i==38) &&(j==41)){
                
                   if(app[0]!=0){
 printf("cat(\"append p1\\n\")\n");
-printf("match %d\n",app[1]);
                      err=append_path(&savedpaths[app[1]],&savedpaths[m],p1,app[0],*nbnd,bnd);
                   }else{
                      // if there were no matching paths then just
@@ -811,8 +807,7 @@ void alter_step(node** path, int nbnd, double **bnd)
             if(err==0){
 
                // make the new path as simple as possible (no simpler :))
-               // NB. we would be fine just passing newpath to delete, but
-               // if we check the length first, we save a call (ish)
+               // NB. we would be fine just passing newpath to delete
                delete_step(&newpath,nbnd,bnd);
 
                // only insert the path if it's better!
@@ -895,7 +890,6 @@ void alter_step(node** path, int nbnd, double **bnd)
                   end_ptr->prev=current; // set previous of i+2 to be the end of newpath
                   current->next=end_ptr;
    
-                  //current=current->next; // current now at i+2
                }else{
                   // free the path we made
                   FreeList(&newpath);
