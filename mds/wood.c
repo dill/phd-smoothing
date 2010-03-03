@@ -99,6 +99,11 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
                // if an append will work...
                if(app[0]!=0){
 printf("cat(\"append p2\\n\")\n");
+printf("match %d\n",app[1]);
+printf("i=%d,j=%d\n",i,j);
+if((i==38) &&(j==41)){
+   printf("yelp!\n");
+}
                   err=append_path(&savedpaths[app[1]],&savedpaths[m],p2,app[0],*nbnd,bnd);
                }else{
                   // if that didn't work then do the same for p2
@@ -106,6 +111,7 @@ printf("cat(\"append p2\\n\")\n");
                
                   if(app[0]!=0){
 printf("cat(\"append p1\\n\")\n");
+printf("match %d\n",app[1]);
                      err=append_path(&savedpaths[app[1]],&savedpaths[m],p1,app[0],*nbnd,bnd);
                   }else{
                      // if there were no matching paths then just
@@ -508,13 +514,15 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
          if(!( (endpoint[0] == (current->data[0]) ) & 
              ( (endpoint[1] == (current->data[1]) ) ))) {
             ReverseList(&apppath);
-}
-            RMBot(&apppath); // remove the duplicated bottom element
-//         }else{
-//            RMTop(&apppath); // remove the duplicated bottom element
-//         }
+         }
+         RMBot(&apppath); // remove the duplicated bottom element
 
          // attach newpath to the end of apppath
+         current=apppath;
+         while(current->next!=NULL){
+            current=current->next;
+         }
+
          current->next=*newpath;
          current->next->prev=current;   
          // set the head of newpath to be the head of apppath
@@ -531,11 +539,8 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
          if(!( (endpoint[0] == (apppath->data[0]) ) & 
              ( (endpoint[1] == (apppath->data[1]) ) ))) {
             ReverseList(&apppath);
-}
-            RMTop(&apppath); // remove the duplicate element
- //        }else{
- //           RMBot(&apppath); // remove the duplicated bottom element
- //        }
+         }
+         RMTop(&apppath); // remove the duplicate element
 
          current->next=apppath;
          current->next->prev=current;
