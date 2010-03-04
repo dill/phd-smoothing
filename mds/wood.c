@@ -87,7 +87,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
 
-printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
+//printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
             if(l==0){
                // if not then just make the path from scratch
                err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
@@ -105,7 +105,6 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
                   append_check(savedpaths, l, p2,app);
                
                   if(app[0]!=0){
-printf("cat(\"append p1\\n\")\n");
                      err=append_path(&savedpaths[app[1]],&savedpaths[m],p1,app[0],*nbnd,bnd);
                   }else{
                      // if there were no matching paths then just
@@ -113,13 +112,12 @@ printf("cat(\"append p1\\n\")\n");
                      if(savedpaths[m]!=NULL){
                         FreeList(&savedpaths[m]);
                      }
-printf("cat(\"make_bnd fail\\n\")\n");
                      err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
                   }
                }
             }
-printf("cat(\"### before iter ###\\n\")\n");
-PrintPath(&savedpaths[m]);
+//printf("cat(\"### before iter ###\\n\")\n");
+//PrintPath(&savedpaths[m]);
 
             // take the start path and optimize it...
             iter_path(&savedpaths[m],*nbnd,bnd);
@@ -127,8 +125,8 @@ PrintPath(&savedpaths[m]);
             // find the length of the path
             pathlen[k]=hull_length(&savedpaths[m]);
 // DEBUG
-printf("cat(\"### final ###\\n\")\n");
-PrintPath(&savedpaths[m]);
+//printf("cat(\"### final ###\\n\")\n");
+//PrintPath(&savedpaths[m]);
             m++;
             if(l<(*len)){
                l++;
@@ -816,14 +814,10 @@ void alter_step(node** path, int nbnd, double **bnd)
 
             // provided there were no errors in the path making...
             if(err==0){
-printf("##make_bnd_path in alter\n");
-PrintPath(&newpath);
 
                // make the new path as simple as possible (no simpler :))
                // NB. we would be fine just passing newpath to delete
                delete_step(&newpath,nbnd,bnd);
-printf("##delete in alter\n");
-PrintPath(&newpath);
 
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen)){
@@ -869,8 +863,6 @@ PrintPath(&newpath);
                   if(Length(&newpath)>=3){
                      DelTopBot(&newpath);
                   }
-printf("##deltop reverse alter\n");
-PrintPath(&newpath);
                   /////////// done getting the path in the right format
 
                   // create new path, compare complete new path with old one, if the
