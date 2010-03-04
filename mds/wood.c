@@ -759,6 +759,11 @@ void alter_step(node** path, int nbnd, double **bnd)
    int conv=0;
    int conv_stop=10;
 
+   int oneshot;
+
+   oneshot=Length(path);
+
+
    // iterate over the points in the path:
    // alter the path, until on two(?) consecutive runs there are
    // no changes to the path
@@ -811,14 +816,14 @@ void alter_step(node** path, int nbnd, double **bnd)
 
             // provided there were no errors in the path making...
             if(err==0){
-//printf("##make_bnd_path in alter\n");
-//PrintPath(&newpath);
+printf("##make_bnd_path in alter\n");
+PrintPath(&newpath);
 
                // make the new path as simple as possible (no simpler :))
                // NB. we would be fine just passing newpath to delete
                delete_step(&newpath,nbnd,bnd);
-//printf("##delete in alter\n");
-//PrintPath(&newpath);
+printf("##delete in alter\n");
+PrintPath(&newpath);
 
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen)){
@@ -864,8 +869,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                   if(Length(&newpath)>=3){
                      DelTopBot(&newpath);
                   }
-//printf("##deltop reverse alter\n");
-//PrintPath(&newpath);
+printf("##deltop reverse alter\n");
+PrintPath(&newpath);
                   /////////// done getting the path in the right format
 
                   // create new path, compare complete new path with old one, if the
@@ -907,8 +912,6 @@ void alter_step(node** path, int nbnd, double **bnd)
                   FreeList(&newpath);
                   current=current->prev;
                }// end insert if 
-//printf("##final alter\n");
-//PrintPath(&newpath);
             }
             newpath=NULL; // make sure that newpath doesn't point anywhere
          }else{
@@ -916,6 +919,13 @@ void alter_step(node** path, int nbnd, double **bnd)
          } // end facing
       } // end of iteration over the path
       conv++;
+
+      // if the initial path was just of length three, don't iterate
+      // since we can't do any better...
+      if(oneshot==3){
+         break;
+      }
+
    } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );
    //end of main do
 
