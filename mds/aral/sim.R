@@ -41,6 +41,7 @@ s.grid<-pe(s.grid,-2)
 b.soap<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
             family=Gamma(link="log"),data=aral.dat)
 
+# now predict over the domain, this is now "truth"
 
 
 
