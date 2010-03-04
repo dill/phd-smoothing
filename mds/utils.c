@@ -188,12 +188,25 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    int i, err, intind[2], tmpinout;
    double ip1[2],ip2[2], xmp[2], ymp[2];
    double *bx, *by, xmin, ymin, mina[2], break_code;
+   int *retint;
 
+
+   retint=(int*)malloc(sizeof(int)*(nbnd-1));
+   for(i=0; i<(nbnd-1); i++){
+      retint[i]=retint[0]+i;
+   }
+
+   // do_intersect returns a string of T/F values
+  
+   // find intersections 
+   // this is what is used in the R code.
+   do_intersect(p1,p2,nbnd,bnd,retint);
+
+   if(iarrsum(nbnd-1,retint)%2==0){
+      return(1);
+   }
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
-   if(iarrsum(nbnd-1,intind)%2){
-      return(1);
-   }else
    // if there are no errors, go ahead
    if(err==0){
 
@@ -214,7 +227,6 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          by[i]=bnd[i][1];
       }
 
-
       // find the midpoints between p1, p2 their first intersections
       // store in x and y blocks
       xmp[0]=(ip1[0]+p1[0])/2;
@@ -234,9 +246,6 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
       in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
 
       // if they are both inside, return true (ie they face inside)
-//      if(in[0] && in[1]){
-//         ret=1;
-//      }
       if((in[0] && in[1]) |
          (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
          (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){

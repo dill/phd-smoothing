@@ -86,9 +86,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
          if(pathlen[k] == (-1)){
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
-if((i==5) & (j==42)){
-printf("quack!\n");
-}
+
 printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
             if(l==0){
                // if not then just make the path from scratch
@@ -120,6 +118,8 @@ printf("cat(\"make_bnd fail\\n\")\n");
                   }
                }
             }
+printf("cat(\"### before iter ###\\n\")\n");
+PrintPath(&savedpaths[m]);
 
             // take the start path and optimize it...
             iter_path(&savedpaths[m],*nbnd,bnd);
@@ -808,12 +808,17 @@ void alter_step(node** path, int nbnd, double **bnd)
             // create a new path
             err=make_bnd_path(ep1,ep2,nbnd,bnd,&newpath,1);
 
+
             // provided there were no errors in the path making...
             if(err==0){
+//printf("##make_bnd_path in alter\n");
+//PrintPath(&newpath);
 
                // make the new path as simple as possible (no simpler :))
                // NB. we would be fine just passing newpath to delete
                delete_step(&newpath,nbnd,bnd);
+//printf("##delete in alter\n");
+//PrintPath(&newpath);
 
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen)){
@@ -828,8 +833,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                   tp2[1]=newpath->data[1];
                   do_intersect(tp1, tp2, nbnd, bnd,bndint);
 
-                  if( (iarrsum((nbnd-1),bndint)>0) |
-                      ((fabs(tp2[0]-tp1[0]) <=eps) & (fabs(tp2[1]-tp1[1]) <=eps) )) {
+                 if( (iarrsum((nbnd-1),bndint)>0) |
+                     ((fabs(tp2[0]-tp1[0]) <=eps) & (fabs(tp2[1]-tp1[1]) <=eps) )) {
                      ReverseList(&newpath);
                   }else{
                      end1=current;
@@ -859,6 +864,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                   if(Length(&newpath)>=3){
                      DelTopBot(&newpath);
                   }
+//printf("##deltop reverse alter\n");
+//PrintPath(&newpath);
                   /////////// done getting the path in the right format
 
                   // create new path, compare complete new path with old one, if the
@@ -900,6 +907,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                   FreeList(&newpath);
                   current=current->prev;
                }// end insert if 
+//printf("##final alter\n");
+//PrintPath(&newpath);
             }
             newpath=NULL; // make sure that newpath doesn't point anywhere
          }else{
