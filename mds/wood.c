@@ -253,9 +253,9 @@ void iter_path(node** mypath,int nbnd, double **bnd){
    } while( !(has_converged(prevpath,*mypath)) & (conv<conv_stop) );
 
    if(!(has_converged(prevpath,*mypath))){
-      printf("WARNING: path find finished without convergence!\n");
-      printf("conv = %d\n",conv);
-      printf("convergence = %d\n",has_converged(prevpath,*mypath) );
+      printf("# WARNING: path find finished without convergence!\n");
+      printf("# conv = %d\n",conv);
+      printf("# convergence = %d\n",has_converged(prevpath,*mypath) );
    }
 
    FreeList(&prevpath);
@@ -430,11 +430,16 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 
       return 0;
 
-   }else{ // end of error if()
-      printf("ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
-      printf("DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
+   }else if((p1[0]==p2[0]) && (p1[1]==p2[1])){
+      *path=NULL;
+      return 0;
+
+   }else{ 
+      *path=NULL;
+      printf("# ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
+      printf("# DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
       return 1;
-   }
+   }// end of error if()
 
 }
 
@@ -906,7 +911,6 @@ void alter_step(node** path, int nbnd, double **bnd)
    //end of main do
 
    FreeList(&prevpath);
-
 }
 
 // check convergence
@@ -932,5 +936,3 @@ int has_converged(node* path1, node* path2)
 
    return 1;
 }
-
-

@@ -191,6 +191,9 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
+   if(iarrsum(nbnd-1,intind)%2){
+      return(1);
+   }else
    // if there are no errors, go ahead
    if(err==0){
 
@@ -211,6 +214,7 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          by[i]=bnd[i][1];
       }
 
+
       // find the midpoints between p1, p2 their first intersections
       // store in x and y blocks
       xmp[0]=(ip1[0]+p1[0])/2;
@@ -230,7 +234,12 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
       in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
 
       // if they are both inside, return true (ie they face inside)
-      if(in[0] && in[1]){
+//      if(in[0] && in[1]){
+//         ret=1;
+//      }
+      if((in[0] && in[1]) |
+         (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+         (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
          ret=1;
       }
 
@@ -483,7 +492,6 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
       retint[i]=retint[0]+i;
    }
 
-   // do the bounding box check first, for speed
    // do_intersect returns a string of T/F values
   
    // find intersections 
@@ -493,16 +501,14 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
 
-for(i=0;i<(nbnd-1);i++){
-   if(( (p1[0]==bnd[i][0]) & (p1[1]==bnd[i][1])) |
-      ( (p2[0]==bnd[i][0]) & (p2[1]==bnd[i][1]))){
-      retint[i]=1;
-      lbbindex++;
-printf("#lbbindex=%d\n",lbbindex);
+   // if we missed any of the intersections that were vertices of bnd
+   for(i=0;i<(nbnd-1);i++){
+      if(( (p1[0]==bnd[i][0]) & (p1[1]==bnd[i][1])) |
+         ( (p2[0]==bnd[i][0]) & (p2[1]==bnd[i][1]))){
+         retint[i]=1;
+         lbbindex++;
+      }
    }
-}
-
-
 
    // setup bbindex, dists, sortdists
    bbindex=(int*)malloc(sizeof(int)*lbbindex);
@@ -547,13 +553,6 @@ printf("#lbbindex=%d\n",lbbindex);
          intpoint(p1,p2,thisedge,ip);
          ips[i][0]=ip[0];
          ips[i][1]=ip[1];
-
-//printf("#thisedge[0]=%f,%f\n",thisedge[0][0],thisedge[0][1]);
-//printf("#thisedge[1]=%f,%f\n",thisedge[1][0],thisedge[1][1]);
-//printf("#p1=%f,%f\n",p1[0],p1[1]);
-//printf("#p2=%f,%f\n",p2[0],p2[1]);
-//printf("#ip=%f,%f\n",ip[0],ip[1]);
-
 
          // find the distance and save
          dists[i]=hypot(p1[0]-ip[0],p1[1]-ip[1]);
