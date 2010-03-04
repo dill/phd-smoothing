@@ -434,8 +434,8 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 
    }else{ 
       *path=NULL;
-      printf("# ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
-      printf("# DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
+//      printf("# ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
+//      printf("# DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
       return 1;
    }// end of error if()
 
