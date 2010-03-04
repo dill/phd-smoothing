@@ -36,6 +36,8 @@ bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 # create prediction grid for soap
 s.grid<-make_soap_grid(bnd,c(10,10))
 
+s.grid<-pe(s.grid,-2)
+
 b.soap<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
             family=Gamma(link="log"),data=aral.dat)
 
