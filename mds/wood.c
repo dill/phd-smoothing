@@ -88,6 +88,11 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p2[0]=x[j]; p2[1]=y[j];
 
 printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
+
+if((i==6) && (j==22)){
+printf("#quack\n");
+}
+
             if(l==0){
                // if not then just make the path from scratch
                err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
@@ -99,12 +104,14 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
                // if an append will work...
                if(app[0]!=0){
+                  if(m==app[1]){ m++;} // make sure m!=app[1]
                   err=append_path(&savedpaths[app[1]],&savedpaths[m],p2,app[0],*nbnd,bnd);
                }else{
                   // if that didn't work then do the same for p2
                   append_check(savedpaths, l, p2,app);
                
                   if(app[0]!=0){
+                     if(m==app[1]){ m++;} // make sure m!=app[1]
                      err=append_path(&savedpaths[app[1]],&savedpaths[m],p1,app[0],*nbnd,bnd);
                   }else{
                      // if there were no matching paths then just
