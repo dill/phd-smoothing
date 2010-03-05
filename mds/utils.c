@@ -663,7 +663,7 @@ void append_check(node** paths, int npaths, double point[], int app[2]){
    app[0]=0;
    
    // loop over paths
-   for(i=0; i<npaths; i++){
+   for(i=(npaths-1); i>=0; i--){
 
       // call match_ends
       me=match_ends(point,&paths[i]);
