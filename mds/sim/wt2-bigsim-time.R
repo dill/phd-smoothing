@@ -35,7 +35,7 @@ gendata<-list(x=gendata$x[onoff],
 
 # create the grid
 source("wt2-create-grid.R")
-grid.time<-system.time(my.grid<-wt2_create_grid())[3]
+grid.time<-system.time(my.grid<-wt2_create_grid(40))[3]
 
 ## do the MDS on the grid 
 # create D
