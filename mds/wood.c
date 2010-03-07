@@ -119,11 +119,19 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
                   }
                }
             }
-//printf("cat(\"### before iter ###\\n\")\n");
-//PrintPath(&savedpaths[m]);
 
             // take the start path and optimize it...
-            iter_path(&savedpaths[m],*nbnd,bnd);
+            err=iter_path(&savedpaths[m],*nbnd,bnd);
+
+            // if there was an error wipe out what was there
+            // and try again...
+            if(err==1){
+               if(savedpaths[m]!=NULL){
+                  FreeList(&savedpaths[m]);
+               }
+               err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
+               err=iter_path(&savedpaths[m],*nbnd,bnd);
+            }
 
             // find the length of the path
             pathlen[k]=hull_length(&savedpaths[m]);
@@ -210,7 +218,7 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
    free(retint);
 }
 
-void iter_path(node** mypath,int nbnd, double **bnd){
+int iter_path(node** mypath,int nbnd, double **bnd){
    /*
       args:
          path        the shortest within-domain path
@@ -257,9 +265,11 @@ void iter_path(node** mypath,int nbnd, double **bnd){
       printf("# WARNING: path find finished without convergence!\n");
       printf("# conv = %d\n",conv);
       printf("# convergence = %d\n",has_converged(prevpath,*mypath) );
+      return 1;
    }
 
    FreeList(&prevpath);
+   return 0;
 }
 
 
