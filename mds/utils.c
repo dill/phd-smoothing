@@ -969,11 +969,11 @@ void set_epsilon(int n, double *x, double *y){
 
    // determine the machine epsilon 
    // from http://en.wikipedia.org/wiki/Machine_epsilon#Approximation_using_C
-//   do{
-//      machEps /= 2.0;
-//      // If next epsilon yields 1, then break, because current
-//      // epsilon is the machine epsilon.
-//   }while ((double)(1.0 + (machEps/2.0)) != 1.0);
+   //do{
+   //   machEps /= 2.0;
+   //   // If next epsilon yields 1, then break, because current
+   //   // epsilon is the machine epsilon.
+   //}while ((double)(1.0 + (machEps/2.0)) != 1.0);
 
 
    dxy[0]=(maxx-minx)*machEps;

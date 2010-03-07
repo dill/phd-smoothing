@@ -43,7 +43,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    }
 
    // first of all, set the epsilon to use...
-   //set_epsilon(*nbnd,&xbnd,&ybnd);
+   set_epsilon(*nbnd,xbnd,ybnd);
 
    // insertion counter
    k=0;
@@ -87,11 +87,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
 
-printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
-
-if((i==6) && (j==22)){
-printf("#quack\n");
-}
+//printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
             if(l==0){
                // if not then just make the path from scratch
@@ -132,8 +128,8 @@ printf("#quack\n");
             // find the length of the path
             pathlen[k]=hull_length(&savedpaths[m]);
 // DEBUG
-printf("cat(\"### final ###\\n\")\n");
-PrintPath(&savedpaths[m]);
+//printf("cat(\"### final ###\\n\")\n");
+//PrintPath(&savedpaths[m]);
             m++;
             if(l<(*len)){
                l++;

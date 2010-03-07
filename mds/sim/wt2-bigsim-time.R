@@ -8,12 +8,12 @@ source("wt2-smooth-test-time.R")
 # initial setup
 
 ## create a boundary...
-bnd <- read.csv("wt2-verts.csv",header=FALSE)
+bnd <- read.csv("../wt2-verts.csv",header=FALSE)
 
 names(bnd)<-c("x","y")
 
 ## Simulate some fitting data, inside boundary...
-gendata<-read.csv("wt2truth.csv",header=TRUE)
+gendata<-read.csv("../wt2truth.csv",header=TRUE)
 
 gendata<-list(x=gendata$x[gendata$inside==1],
                y=gendata$y[gendata$inside==1],
@@ -34,7 +34,7 @@ gendata<-list(x=gendata$x[onoff],
                z=gendata$z[onoff])
 
 # create the grid
-source("wt2-create-grid.R")
+source("../wt2-create-grid.R")
 grid.time<-system.time(my.grid<-wt2_create_grid(40))[3]
 
 ## do the MDS on the grid 
@@ -54,7 +54,7 @@ insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE
 soap.knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
 
 ### prediction data
-gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
+gendata.ind <- read.csv("../wt2truth.csv",header=TRUE)
 ind<-c(1:length(gendata.ind$x))
 pred.mat<-rep(NA,length(gendata.ind$x))
 ind<-ind[gendata.ind$inside==1]
