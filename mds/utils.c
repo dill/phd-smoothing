@@ -202,9 +202,9 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    // this is what is used in the R code.
    do_intersect(p1,p2,nbnd,bnd,retint);
 
-   if(iarrsum(nbnd-1,retint)%2==0){
-      return(1);
-   }
+//   if(iarrsum(nbnd-1,retint)%2==0){
+//      return(1);
+//   }
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
    // if there are no errors, go ahead
@@ -249,9 +249,9 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
       // or if one is on boundary and the other is inside...
       if((in[0] && in[1]) |
          (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-         (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) | //){
-         ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
-         & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
+         (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
+//         ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
+//         & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
          ret=1;
       }
 
