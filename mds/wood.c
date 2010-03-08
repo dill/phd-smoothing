@@ -43,7 +43,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    }
 
    // first of all, set the epsilon to use...
-   set_epsilon(*nbnd,xbnd,ybnd);
+//   set_epsilon(*nbnd,xbnd,ybnd);
 
    // insertion counter
    k=0;
@@ -348,6 +348,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          }
       }
 
+
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
       line1[1][0]=bnd[(intind[0]+1)%nbnd][0];
@@ -394,7 +395,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 
 // DEBUG
 //printf("cat(\" path1 ###\\n\")\n");
-//PrintPath(bnd1);
+//PrintPath(&bnd1);
 //printf("# path1 ###\n");
 //printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
 //printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
@@ -406,7 +407,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 //printf("points(p2,pch=19)\n");
 //printf("scan()\n");
 //printf("cat(\" path2 ###\\n\")\n");
-//PrintPath(bnd2);
+//PrintPath(&bnd2);
 //printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
 //printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
 //printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
@@ -659,9 +660,12 @@ void delete_step(node** path, int nbnd, double **bnd){
             // current is sitting at the 3rd entry
             // create a pointer to that
             end_ptr=current->next; // pointer to i+2
-if(current->next==NULL){
-   break;
-}
+
+            // break out of the loop if that would crash
+            if(current->next==NULL){
+               break;
+            }
+
             // go back twice
             current=current->prev; // pointer now at i
             current=current->prev; // pointer at i-1
