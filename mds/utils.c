@@ -7,115 +7,165 @@
 
 extern double eps;
 
-// does the line between two points and the boundary intersect?
-void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
-{
-   /*
-    * p1,p2    points we wish to test
-    * nbnd     length of boundary
-    * bnd      boundary
-    * bndint   boundary intersections (length nbnd-1)
-    */
 
-   // uses: maxarr, minarr, intpoint
 
-   // we do this by seeing if the bounding boxes intersect
-   // from Mastering Algorithms with Perl, p 451
+// Returns 1 if the lines intersect, otherwise 0. In addition, if the lines 
+// intersect the intersection point may be stored in the floats i_x and i_y.
+int intpoint2(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2]){
+    double s1_x, s1_y, s2_x, s2_y;
+    s1_x = p2[0] - p1[0];     s1_y = p2[1] - p1[1];
+    s2_x = p4[0] - p3[0];     s2_y = p4[1] - p3[1];
+
+   if( ((p1[0]==p3[0]) && (p1[1]==p3[1]) &&(p2[0]==p4[0]) &&(p2[0]==p4[0])) |
+       ((p2[0]==p3[0]) && (p2[1]==p3[1]) &&(p1[0]==p4[0]) &&(p1[0]==p4[0])) ){
+      return 0;
+   }
+
+
+    double s, t;
+    s = (-s1_y * (p1[0] - p3[0]) + s1_x * (p1[1] - p3[1])) / (-s2_x * s1_y + s1_x * s2_y);
+    t = ( s2_x * (p1[1] - p3[1]) - s2_y * (p1[0] - p3[0])) / (-s2_x * s1_y + s1_x * s2_y);
+
+    if((s >= 0) && (s <= 1) && (t >= 0) && (t <= 1)){
+        // Collision detected
+        ip[0] = p1[0] + (t * s1_x);
+        ip[1] = p1[1] + (t * s1_y);
+        return 1;
+    }
+
+    return 0; // No collision
+}
+
+
+void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
 
    int i;
-   double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
+   double l1[2], l2[2], ip[2];
 
-   // bounding box around the points p1,p2
-   //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
-   //             y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
-   xarr[0] = p1[0]; xarr[1] = p2[0];
-   yarr[0] = p1[1]; yarr[1] = p2[1];
-   pbbox[0][0]=maxarr(2,xarr);
-   pbbox[0][1]=maxarr(2,yarr);
-   pbbox[1][0]=minarr(2,xarr);
-   pbbox[1][1]=minarr(2,yarr);
 
-   // iterate over sides (ie vertex pairs)
-   // NB the last vertex should be the first
    for(i=0;i<(nbnd-1);i++){
-      // set true to begin with
-      bndint[i]=1;
 
-      // create the edge
-      thisedge[0][0]=bnd[i][0];
-      thisedge[1][0]=bnd[i+1][0];
-      thisedge[0][1]=bnd[i][1];
-      thisedge[1][1]=bnd[i+1][1];
+      l1[0]=bnd[i][0];
+      l1[1]=bnd[i][1];
+      l2[0]=bnd[i+1][0];
+      l2[1]=bnd[i+1][1];
 
-      // bounding box for the edge
-      //e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
-      //             y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
-      xarr[0] = thisedge[0][0];
-      xarr[1] = thisedge[1][0];
-      yarr[0] = thisedge[0][1];
-      yarr[1] = thisedge[1][1];
-      ebbox[0][0]=maxarr(2,xarr);
-      ebbox[0][1]=maxarr(2,yarr);
-      ebbox[1][0]=minarr(2,xarr);
-      ebbox[1][1]=minarr(2,yarr);
+      bndint[i]=intpoint2(p1, p2, l1,l2, ip);
 
-      // establish whether the bounding boxes intersect
-      // if max edge x less than min point x
-      if((ebbox[0][0]+eps) <= pbbox[1][0]) bndint[i]=0;
-      // if max point x less than min edge x
-      if((pbbox[0][0]+eps) <= ebbox[1][0]) bndint[i]=0;
-      // if max edge y less than min point y
-      if((ebbox[0][1]+eps) <= pbbox[1][1]) bndint[i]=0;
-      // if max point y less than min edge y
-      if((pbbox[0][1]+eps) <= ebbox[1][1]) bndint[i]=0;
 
-      // if the bounding boxes do intersect, check that the
-      // intersection of the two lines lies within the bounding
-      // boxes.
-      if(bndint[i]){
-
-         // first find the intersection point
-         intpoint(p1,p2,thisedge,ip);
-
-         // check the intersection point is not just one of p1 or p2
-         if(( (fabs(ip[0]-p1[0]) <=eps) & (fabs(ip[1]-p1[1]) <=eps) ) |
-            ( (fabs(ip[0]-p2[0]) <=eps) & (fabs(ip[1]-p2[1]) <=eps) )){
-            bndint[i]=0;
-         }
-
-         // first need to handle the horizontal and vertical line cases
-         if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
-            if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
-         }
-         if(fabs(pbbox[0][0]-pbbox[1][0])>=eps){
-            if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
-         }
-         if(fabs(ebbox[0][1]-ebbox[1][1])>=eps){
-            if((ip[1]>=ebbox[0][1]) | (ip[1]<=ebbox[1][1])) bndint[i]=0;
-         }
-         if(fabs(pbbox[0][1]-pbbox[1][1])>=eps){
-            if((ip[1]>=pbbox[0][1]) | (ip[1]<=pbbox[1][1])) bndint[i]=0;
-         } // end of horiz/vert check
-   
-         // then handle whether the intersection point lies within the
-         // the bounding box
-         if(bndint[i]){
-            if(fabs(ebbox[0][0]-ebbox[1][0])<=eps){
-               if((ip[1]>=ebbox[0][1]) | (ip[1]<=ebbox[1][1])) bndint[i]=0;
-            }
-            if(fabs(pbbox[0][0]-pbbox[1][0])<=eps){
-               if((ip[1]>=pbbox[0][1]) | (ip[1]<=pbbox[1][1])) bndint[i]=0;
-            }
-            if(fabs(ebbox[0][1]-ebbox[1][1])<=eps){
-               if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
-            }
-            if(fabs(pbbox[0][1]-pbbox[1][1])<=eps){
-               if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
-            }
-         } // end of bounding box ip check
-      }
-   }// end iterate over boundary
+   }
 }
+
+
+// does the line between two points and the boundary intersect?
+//void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
+//{
+//   /*
+//    * p1,p2    points we wish to test
+//    * nbnd     length of boundary
+//    * bnd      boundary
+//    * bndint   boundary intersections (length nbnd-1)
+//    */
+//
+//   // uses: maxarr, minarr, intpoint
+//
+//   // we do this by seeing if the bounding boxes intersect
+//   // from Mastering Algorithms with Perl, p 451
+//
+//   int i;
+//   double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
+//
+//   // bounding box around the points p1,p2
+//   //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
+//   //             y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
+//   xarr[0] = p1[0]; xarr[1] = p2[0];
+//   yarr[0] = p1[1]; yarr[1] = p2[1];
+//   pbbox[0][0]=maxarr(2,xarr);
+//   pbbox[0][1]=maxarr(2,yarr);
+//   pbbox[1][0]=minarr(2,xarr);
+//   pbbox[1][1]=minarr(2,yarr);
+//
+//   // iterate over sides (ie vertex pairs)
+//   // NB the last vertex should be the first
+//   for(i=0;i<(nbnd-1);i++){
+//      // set true to begin with
+//      bndint[i]=1;
+//
+//      // create the edge
+//      thisedge[0][0]=bnd[i][0];
+//      thisedge[1][0]=bnd[i+1][0];
+//      thisedge[0][1]=bnd[i][1];
+//      thisedge[1][1]=bnd[i+1][1];
+//
+//      // bounding box for the edge
+//      //e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
+//      //             y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
+//      xarr[0] = thisedge[0][0];
+//      xarr[1] = thisedge[1][0];
+//      yarr[0] = thisedge[0][1];
+//      yarr[1] = thisedge[1][1];
+//      ebbox[0][0]=maxarr(2,xarr);
+//      ebbox[0][1]=maxarr(2,yarr);
+//      ebbox[1][0]=minarr(2,xarr);
+//      ebbox[1][1]=minarr(2,yarr);
+//
+//      // establish whether the bounding boxes intersect
+//      // if max edge x less than min point x
+//      if((ebbox[0][0]+eps) <= pbbox[1][0]) bndint[i]=0;
+//      // if max point x less than min edge x
+//      if((pbbox[0][0]+eps) <= ebbox[1][0]) bndint[i]=0;
+//      // if max edge y less than min point y
+//      if((ebbox[0][1]+eps) <= pbbox[1][1]) bndint[i]=0;
+//      // if max point y less than min edge y
+//      if((pbbox[0][1]+eps) <= ebbox[1][1]) bndint[i]=0;
+//
+//      // if the bounding boxes do intersect, check that the
+//      // intersection of the two lines lies within the bounding
+//      // boxes.
+//      if(bndint[i]){
+//
+//         // first find the intersection point
+//         intpoint(p1,p2,thisedge,ip);
+//
+//         // check the intersection point is not just one of p1 or p2
+//         if(( (fabs(ip[0]-p1[0]) <=eps) & (fabs(ip[1]-p1[1]) <=eps) ) |
+//            ( (fabs(ip[0]-p2[0]) <=eps) & (fabs(ip[1]-p2[1]) <=eps) )){
+//            bndint[i]=0;
+//         }
+//
+//         // first need to handle the horizontal and vertical line cases
+//         if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
+//            if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
+//         }
+//         if(fabs(pbbox[0][0]-pbbox[1][0])>=eps){
+//            if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
+//         }
+//         if(fabs(ebbox[0][1]-ebbox[1][1])>=eps){
+//            if((ip[1]>=ebbox[0][1]) | (ip[1]<=ebbox[1][1])) bndint[i]=0;
+//         }
+//         if(fabs(pbbox[0][1]-pbbox[1][1])>=eps){
+//            if((ip[1]>=pbbox[0][1]) | (ip[1]<=pbbox[1][1])) bndint[i]=0;
+//         } // end of horiz/vert check
+//   
+//         // then handle whether the intersection point lies within the
+//         // the bounding box
+//         if(bndint[i]){
+//            if(fabs(ebbox[0][0]-ebbox[1][0])<=eps){
+//               if((ip[1]>=ebbox[0][1]) | (ip[1]<=ebbox[1][1])) bndint[i]=0;
+//            }
+//            if(fabs(pbbox[0][0]-pbbox[1][0])<=eps){
+//               if((ip[1]>=pbbox[0][1]) | (ip[1]<=pbbox[1][1])) bndint[i]=0;
+//            }
+//            if(fabs(ebbox[0][1]-ebbox[1][1])<=eps){
+//               if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
+//            }
+//            if(fabs(pbbox[0][1]-pbbox[1][1])<=eps){
+//               if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
+//            }
+//         } // end of bounding box ip check
+//      }
+//   }// end iterate over boundary
+//}
 
 
 // special do_intersect, thinks that points that start/end at the same
