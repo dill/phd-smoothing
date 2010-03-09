@@ -98,7 +98,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
                // can we do an append?
             }else{
                // do the append check for p1   
-               append_check(savedpaths, l, p1,app);
+               append_check(savedpaths, l, p1,app,*nbnd,bnd);
 
                // if an append will work...
                if(app[0]!=0){
@@ -106,7 +106,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
                   err=append_path(&savedpaths[app[1]],&savedpaths[m],p2,app[0],*nbnd,bnd);
                }else{
                   // if that didn't work then do the same for p2
-                  append_check(savedpaths, l, p2,app);
+                  append_check(savedpaths, l, p2,app,*nbnd,bnd);
                
                   if(app[0]!=0){
                      if(m==app[1]){ m++;} // make sure m!=app[1]

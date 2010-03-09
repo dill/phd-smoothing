@@ -41,7 +41,7 @@ void RMBot(node**);
 void ReverseList(node**);
 void set_epsilon(int,  double*, double*);
 int match_ends(double[2], node**);
-void append_check(node**, int, double[2], int[2]);
+void append_check(node**, int, double[2], int[2],int, double**);
 
 
 

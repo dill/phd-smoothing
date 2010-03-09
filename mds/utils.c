@@ -727,7 +727,7 @@ int match_ends(double *point, node** head){
 }
 
 // check to see if any of the ends can be used as a start path
-void append_check(node** paths, int npaths, double point[], int app[2]){
+void append_check(node** paths, int npaths, double point[], int app[2], int nbnd, double **bnd){
    /*
     * Args:
     *    paths    array of paths
@@ -738,20 +738,67 @@ void append_check(node** paths, int npaths, double point[], int app[2]){
    */
    int i,me;
    app[0]=0;
-   
+   double end[2];   
+   node* current;
+   int* retint;
+   int minints=1e5;
+
+   retint=(int*)malloc(sizeof(int)*(nbnd-1));
+   for(i=0; i<(nbnd-1); i++){
+      retint[i]=retint[0]+i;
+   }
+
    // loop over paths
    for(i=(npaths-1); i>=0; i--){
 
       // call match_ends
       me=match_ends(point,&paths[i]);
 
+      // flag those paths with the right end points
       if(me>0){
-         // return the orientation and path number
-         app[0]=me;
-         app[1]=i;
-         break;  
+         // do any of the selected paths have a Euclidean path between
+         // their other end and point?   
+         if(me==1){
+            current=paths[i];
+   
+            end[0]=current->data[0];
+            end[1]=current->data[1];
+   
+            sp_do_intersect(point,end,nbnd,bnd,retint);
+            if(iarrsum(nbnd-1,retint)==0){
+               // return the orientation and path number
+               app[0]=me;
+               app[1]=i;
+               break;
+            }
+         }else if(me==2){ 
+            current=paths[i];
+            while (current->next != NULL){
+               current=current->next;
+            }
+   
+            end[0]=current->data[0];
+            end[1]=current->data[1];
+   
+            sp_do_intersect(point,end,nbnd,bnd,retint);
+            if(iarrsum(nbnd-1,retint)==0){
+               // return the orientation and path number
+               app[0]=me;
+               app[1]=i;
+               break;
+            }
+         }
+
+         // if there was no no Euclidean path, does it have less
+         // intersections than others?
+         if(iarrsum(nbnd-1,retint)<minints){
+            minints=iarrsum(nbnd-1,retint);
+            app[0]=me;
+            app[1]=i;
+         }
       }
    }
+
 }
 
 
