@@ -61,13 +61,13 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
 
       // establish whether the bounding boxes intersect
       // if max edge x less than min point x
-      if((ebbox[0][0]+eps) <= pbbox[1][0]) bndint[i]=0;
+      if((ebbox[0][0]+eps) < pbbox[1][0]) bndint[i]=0;
       // if max point x less than min edge x
-      if((pbbox[0][0]+eps) <= ebbox[1][0]) bndint[i]=0;
+      if((pbbox[0][0]+eps) < ebbox[1][0]) bndint[i]=0;
       // if max edge y less than min point y
-      if((ebbox[0][1]+eps) <= pbbox[1][1]) bndint[i]=0;
+      if((ebbox[0][1]+eps) < pbbox[1][1]) bndint[i]=0;
       // if max point y less than min edge y
-      if((pbbox[0][1]+eps) <= ebbox[1][1]) bndint[i]=0;
+      if((pbbox[0][1]+eps) < ebbox[1][1]) bndint[i]=0;
 
       // if the bounding boxes do intersect, check that the
       // intersection of the two lines lies within the bounding
@@ -143,14 +143,14 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
       bndint[j]=1;
 
       // case where the lines are exactly overlapping
-      if(( (fabs(p1[0]-bnd[j][0])   <= eps) & 
-           (fabs(p2[0]-bnd[j+1][0]) <= eps) &
-           (fabs(p1[1]-bnd[j][1])   <= eps) & 
-           (fabs(p2[1]-bnd[j+1][1]) <= eps) ) |
-         ( (fabs(p2[0]-bnd[j][0])   <= eps) & 
-           (fabs(p1[0]-bnd[j+1][0]) <= eps) &
-           (fabs(p2[1]-bnd[j][1])   <= eps) &
-           (fabs(p1[1]-bnd[j+1][1]) <= eps) )) bndint[j]=0;
+      if(( (fabs(p1[0]-bnd[j][0])   < eps) & 
+           (fabs(p2[0]-bnd[j+1][0]) < eps) &
+           (fabs(p1[1]-bnd[j][1])   < eps) & 
+           (fabs(p2[1]-bnd[j+1][1]) < eps) ) |
+         ( (fabs(p2[0]-bnd[j][0])   < eps) & 
+           (fabs(p1[0]-bnd[j+1][0]) < eps) &
+           (fabs(p2[1]-bnd[j][1])   < eps) &
+           (fabs(p1[1]-bnd[j+1][1]) < eps) )) bndint[j]=0;
      
       // if p1 or p2 lie on edge 
       edge[0][0]=bnd[j][0];
