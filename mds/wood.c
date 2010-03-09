@@ -43,7 +43,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    }
 
    // first of all, set the epsilon to use...
-//   set_epsilon(*nbnd,xbnd,ybnd);
+   //set_epsilon(*nbnd,xbnd,ybnd);
 
    // insertion counter
    k=0;
@@ -90,6 +90,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 //printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
             if(l==0){
+//if(1){
+//FreeList(&savedpaths[m]);
                // if not then just make the path from scratch
                err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
 
@@ -136,8 +138,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             // find the length of the path
             pathlen[k]=hull_length(&savedpaths[m]);
 // DEBUG
-//printf("cat(\"### final ###\\n\")\n");
-//PrintPath(&savedpaths[m]);
+printf("cat(\"### final ###\\n\")\n");
+PrintPath(&savedpaths[m]);
             m++;
             if(l<(*len)){
                l++;
@@ -204,7 +206,7 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
  
          // check to see if we have to do the path finding or
          // just the hypotenuse 
-         do_intersect(p1, p2, nbnd, bnd, retint);
+         sp_do_intersect(p1, p2, nbnd, bnd, retint);
    
          //                           vvv just hypot when we touch only 1 vertex 
          if(iarrsum((nbnd-1), retint)>1){

@@ -124,6 +124,9 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
 {
    int i,j, tmpnbnd, tmpbndint[1];
    double **tmpbnd;
+   double edge[2][2];
+   double pedge[2][2];
+   double ep1[2],ep2[2];
 
    tmpnbnd=2;
    tmpbnd=(double**)malloc(sizeof(double*)*tmpnbnd);
@@ -149,12 +152,26 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
            (fabs(p2[1]-bnd[j][1])   <= eps) &
            (fabs(p1[1]-bnd[j+1][1]) <= eps) )) bndint[j]=0;
      
-      // start/end points the same
-      if(( (fabs(p1[0]-bnd[j][0])  <= eps) && (fabs(p1[1]-bnd[j][1])  <= eps) )|
-         ( (fabs(p2[0]-bnd[j][0])  <= eps) && (fabs(p2[1]-bnd[j][1])  <= eps) )|
-         ( (fabs(p1[0]-bnd[j+1][0])<= eps) && (fabs(p1[1]-bnd[j+1][1])<= eps) )|
-         ( (fabs(p2[0]-bnd[j+1][0])<= eps) && (fabs(p2[1]-bnd[j+1][1])<= eps) ) )
-            bndint[j]=0;
+      // if p1 or p2 lie on edge 
+      edge[0][0]=bnd[j][0];
+      edge[0][1]=bnd[j][1];
+      edge[1][0]=bnd[j+1][0];
+      edge[1][1]=bnd[j+1][1];
+      if(online(p1,edge) | online(p2,edge)){
+         bndint[j]=0;
+      }
+      
+      pedge[0][0]=p1[0];
+      pedge[0][1]=p1[1];
+      pedge[1][0]=p2[0];
+      pedge[1][1]=p2[1];
+      ep1[0]=edge[0][0];
+      ep1[1]=edge[0][1];
+      ep2[0]=edge[1][0];
+      ep2[1]=edge[1][1];
+      if(online(ep1,pedge) | online(ep2,pedge)){
+         bndint[j]=0;
+      }
 
       // call original routine if this doesn't work
       if(bndint[j]){
@@ -190,6 +207,9 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    double *bx, *by, xmin, ymin, mina[2], break_code;
    int *retint;
 
+   /// DEL
+   double edge[2][2];
+   int bnd1, bnd2;
 
    retint=(int*)malloc(sizeof(int)*(nbnd-1));
    for(i=0; i<(nbnd-1); i++){
@@ -200,67 +220,117 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
   
    // find intersections 
    // this is what is used in the R code.
-   do_intersect(p1,p2,nbnd,bnd,retint);
+//   do_intersect(p1,p2,nbnd,bnd,retint);
+//
+//   if(iarrsum(nbnd-1,retint)%2==0){
+//      return(1);
+//   }
 
-   if(iarrsum(nbnd-1,retint)%2==0){
-      return(1);
-   }
-   err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+   bnd1=0;
+   bnd2=0;
 
-   // if there are no errors, go ahead
-   if(err==0){
-
-      // are the midpoints inside?
-      // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
-      // call the in_out routine from soap. Need to make sure that things are
-      // in the right format
-      //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
-
-      bx=(double*)malloc(sizeof(double)*nbnd);
-      by=(double*)malloc(sizeof(double)*nbnd);
-
-      for(i=0; i<nbnd; i++){
-         bx[i]=bx[0]+i;
-         by[i]=by[0]+i;
-
-         bx[i]=bnd[i][0]; 
-         by[i]=bnd[i][1];
+   // is either of p1 or p2 on the boundary?
+   for(i=0;i<(nbnd-1);i++){
+      edge[0][0]=bnd[i][0];
+      edge[0][1]=bnd[i][1];
+      edge[1][0]=bnd[i+1][0];
+      edge[1][1]=bnd[i+1][1];
+      if(online(p1,edge)){
+         bnd1=1;
+         break;
       }
-
-      // find the midpoints between p1, p2 their first intersections
-      // store in x and y blocks
-      xmp[0]=(ip1[0]+p1[0])/2;
-      xmp[1]=(ip2[0]+p2[0])/2;
-      ymp[0]=(ip1[1]+p1[1])/2;
-      ymp[1]=(ip2[1]+p2[1])/2;
-
-      // to handle holes, multiple boundaries
-      // ignore this at the moment
-      xmin=minarr(nbnd,bx);
-      ymin=minarr(nbnd,by);
-      mina[0] = xmin; mina[1]=ymin;
-      break_code=minarr(2,mina)-1;
-
-      tmpinout=2;
-
-      in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
-
-      // if they are both inside, return true (ie they face inside)
-      // or if one is on boundary and the other is inside...
-      if((in[0] && in[1]) |
-         (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-         (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
-         ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
-         & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
-         ret=1;
-      }
-
-      // free some memory
-      free(bx);free(by);
    }
+   for(i=0;i<(nbnd-1);i++){
+      edge[0][0]=bnd[i][0];
+      edge[0][1]=bnd[i][1];
+      edge[1][0]=bnd[i+1][0];
+      edge[1][1]=bnd[i+1][1];
+      if(online(p2,edge)){
+         bnd1=1;
+         break;
+      }
+   }
+
+
+   // if both are on the boundary
+   if(bnd1 & bnd2){
+      sp_do_intersect(p1,p2,nbnd,bnd,retint);
+      if(iarrsum(nbnd-1,retint)%2==0){
+         return 1;
+      }
+   // if one of them is on the boundary
+   }else if((bnd1==1) | (bnd2==1)){
+      do_intersect(p1,p2,nbnd,bnd,retint);
+      if(iarrsum(nbnd-1,retint)%2==0){
+         return 1;
+      }
+   // if they aren't on the boundary
+   }else{
+      do_intersect(p1,p2,nbnd,bnd,retint);
+      if(iarrsum(nbnd-1,retint)%2==0){
+         return 1;
+      }
+   }
+
+   return 0;
+
+
+//   err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+//
+//   // if there are no errors, go ahead
+//   if(err==0){
+//
+//      // are the midpoints inside?
+//      // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
+//      // call the in_out routine from soap. Need to make sure that things are
+//      // in the right format
+//      //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
+//
+//      bx=(double*)malloc(sizeof(double)*nbnd);
+//      by=(double*)malloc(sizeof(double)*nbnd);
+//
+//      for(i=0; i<nbnd; i++){
+//         bx[i]=bx[0]+i;
+//         by[i]=by[0]+i;
+//
+//         bx[i]=bnd[i][0]; 
+//         by[i]=bnd[i][1];
+//      }
+//
+//      // find the midpoints between p1, p2 their first intersections
+//      // store in x and y blocks
+//      xmp[0]=(ip1[0]+p1[0])/2;
+//      xmp[1]=(ip2[0]+p2[0])/2;
+//      ymp[0]=(ip1[1]+p1[1])/2;
+//      ymp[1]=(ip2[1]+p2[1])/2;
+//
+//      // to handle holes, multiple boundaries
+//      // ignore this at the moment
+//      xmin=minarr(nbnd,bx);
+//      ymin=minarr(nbnd,by);
+//      mina[0] = xmin; mina[1]=ymin;
+//      break_code=minarr(2,mina)-1;
+//
+//      tmpinout=2;
+//
+//      in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
+//
+//      // if they are both inside, return true (ie they face inside)
+//      // or if one is on boundary and the other is inside...
+//      if((in[0] && in[1]) |
+//         (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+//         (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
+//         ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
+//         & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
+//         ret=1;
+//      }
+//
+//      // free some memory
+//      free(bx);free(by);
+//   }
 
    // if err returned >0 then return 0
-   return(ret);
+//   return(ret);
 }
 
 // find the intersection point between two points and a line
@@ -410,6 +480,13 @@ int online(double p1[],double thisline[][2]){
    twosort(xarr);
    twosort(yarr); // make xarr, yarr small->large
  
+
+   // is p1 and endpoint of thisline?
+   if( ((fabs(p1[0]-xarr[0])<eps) & (fabs(p1[1]-yarr[0])<eps)) |
+       ((fabs(p1[0]-xarr[1])<eps) & (fabs(p1[1]-yarr[1])<eps))){
+      return 1;
+   }
+      
    // check p1 is inside the bounding box
    if((p1[0]>=xarr[1]) && (p1[0]<=xarr[0]) &&
       (p1[1]>=yarr[1]) && (p1[1]<=yarr[0])){
@@ -860,13 +937,11 @@ void ReverseList(node** head){
  * Real utility stuff below here!
  */
 
-void twosort(double *twovec)
-{
-   // see if two vectors are small->large
+void twosort(double *twovec){
+   // sort two vectors small->large
    double tmp;  
 
-   if(twovec[1]<twovec[0])
-   {
+   if(twovec[1]<twovec[0]){
       tmp=twovec[0];
       twovec[0]=twovec[1];
       twovec[1]=tmp;
@@ -874,13 +949,11 @@ void twosort(double *twovec)
 }
 
 // integer version of the above
-void itwosort(int *twovec)
-{
+void itwosort(int *twovec){
    // see if two vectors are small->large
    int tmp;  
 
-   if(twovec[1]<twovec[0])
-   {
+   if(twovec[1]<twovec[0]){
       tmp=twovec[0];
       twovec[0]=twovec[1];
       twovec[1]=tmp;
