@@ -87,7 +87,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
 
-//printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
+printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
             if(l==0){
 //if(1){
@@ -500,7 +500,7 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    // Euclidean within the domain
    sp_do_intersect(point,endpoint, nbnd,bnd,intbnd);
 
-   if(iarrsum((nbnd-1),intbnd)<2){
+   if(iarrsum((nbnd-1),intbnd)==0){
       // if the point->endpoint path is Euclidean in the domain then
       // just add that point
       if(end==1){
