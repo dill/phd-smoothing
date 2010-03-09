@@ -219,7 +219,6 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    // do_intersect returns a string of T/F values
   
    // find intersections 
-   // this is what is used in the R code.
 //   do_intersect(p1,p2,nbnd,bnd,retint);
 //
 //   if(iarrsum(nbnd-1,retint)%2==0){
@@ -252,6 +251,13 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    }
 
 
+   // if they aren't on the boundary
+   if(!bnd1 & !bnd2){
+      do_intersect(p1,p2,nbnd,bnd,retint);
+      if(iarrsum(nbnd-1,retint)%2==0){
+         return 1;
+      }
+   }else
    // if both are on the boundary
    if(bnd1 & bnd2){
       sp_do_intersect(p1,p2,nbnd,bnd,retint);
@@ -260,77 +266,125 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
       }
    // if one of them is on the boundary
    }else if(bnd1 | bnd2){
-      do_intersect(p1,p2,nbnd,bnd,retint);
-      if(iarrsum(nbnd-1,retint)%2==0){
-         return 1;
+//      do_intersect(p1,p2,nbnd,bnd,retint);
+//      if(iarrsum(nbnd-1,retint)%2==0){
+//         return 1;
+//      }
+      err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+
+      // if there are no errors, go ahead
+      if(err==0){
+         bx=(double*)malloc(sizeof(double)*nbnd);
+         by=(double*)malloc(sizeof(double)*nbnd);
+         for(i=0; i<nbnd; i++){
+            bx[i]=bx[0]+i;
+            by[i]=by[0]+i;
+            bx[i]=bnd[i][0]; 
+            by[i]=bnd[i][1];
+         }
+
+         // find the midpoints between p1, p2 their first intersections
+         // store in x and y blocks
+         xmp[0]=(ip1[0]+p1[0])/2;
+         xmp[1]=(ip2[0]+p2[0])/2;
+         ymp[0]=(ip1[1]+p1[1])/2;
+         ymp[1]=(ip2[1]+p2[1])/2;
+
+         // to handle holes, multiple boundaries
+         // ignore this at the moment
+         xmin=minarr(nbnd,bx);
+         ymin=minarr(nbnd,by);
+         mina[0] = xmin; mina[1]=ymin;
+         break_code=minarr(2,mina)-1;
+
+         tmpinout=2;
+
+         in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
+
+         // if they are both inside, return true (ie they face inside)
+         // or if one is on boundary and the other is inside...
+
+         if((bnd1 & in[1]) | (bnd2 & in[0])){
+            ret=1;
+         }
+            
+         if((in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) )){
+            ret=1;
+         }
+
+
+
+//         if((in[0] && in[1]) |
+//            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+//            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
+//            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
+//            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
+//            ret=1;
+//         }
+
+         // free some memory
+         free(bx);free(by);
       }
-   // if they aren't on the boundary
-   }else{
-      do_intersect(p1,p2,nbnd,bnd,retint);
-      if(iarrsum(nbnd-1,retint)%2==0){
-         return 1;
-      }
+
    }
+   return(ret);
+//      err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+//
+//      // if there are no errors, go ahead
+//      if(err==0){
+//
+//         // are the midpoints inside?
+//         // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
+//         // call the in_out routine from soap. Need to make sure that things are
+//         // in the right format
+//         //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
+//
+//         bx=(double*)malloc(sizeof(double)*nbnd);
+//         by=(double*)malloc(sizeof(double)*nbnd);
+//
+//         for(i=0; i<nbnd; i++){
+//            bx[i]=bx[0]+i;
+//            by[i]=by[0]+i;
+//
+//            bx[i]=bnd[i][0]; 
+//            by[i]=bnd[i][1];
+//         }
+//
+//         // find the midpoints between p1, p2 their first intersections
+//         // store in x and y blocks
+//         xmp[0]=(ip1[0]+p1[0])/2;
+//         xmp[1]=(ip2[0]+p2[0])/2;
+//         ymp[0]=(ip1[1]+p1[1])/2;
+//         ymp[1]=(ip2[1]+p2[1])/2;
+//
+//         // to handle holes, multiple boundaries
+//         // ignore this at the moment
+//         xmin=minarr(nbnd,bx);
+//         ymin=minarr(nbnd,by);
+//         mina[0] = xmin; mina[1]=ymin;
+//         break_code=minarr(2,mina)-1;
+//
+//         tmpinout=2;
+//
+//         in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
+//
+//         // if they are both inside, return true (ie they face inside)
+//         // or if one is on boundary and the other is inside...
+//         if((in[0] && in[1]) |
+//            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+//            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
+//            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
+//            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
+//            ret=1;
+//         }
+//
+//         // free some memory
+//         free(bx);free(by);
+//      }
+
 
    return 0;
-
-
-//   err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
-//
-//   // if there are no errors, go ahead
-//   if(err==0){
-//
-//      // are the midpoints inside?
-//      // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
-//      // call the in_out routine from soap. Need to make sure that things are
-//      // in the right format
-//      //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
-//
-//      bx=(double*)malloc(sizeof(double)*nbnd);
-//      by=(double*)malloc(sizeof(double)*nbnd);
-//
-//      for(i=0; i<nbnd; i++){
-//         bx[i]=bx[0]+i;
-//         by[i]=by[0]+i;
-//
-//         bx[i]=bnd[i][0]; 
-//         by[i]=bnd[i][1];
-//      }
-//
-//      // find the midpoints between p1, p2 their first intersections
-//      // store in x and y blocks
-//      xmp[0]=(ip1[0]+p1[0])/2;
-//      xmp[1]=(ip2[0]+p2[0])/2;
-//      ymp[0]=(ip1[1]+p1[1])/2;
-//      ymp[1]=(ip2[1]+p2[1])/2;
-//
-//      // to handle holes, multiple boundaries
-//      // ignore this at the moment
-//      xmin=minarr(nbnd,bx);
-//      ymin=minarr(nbnd,by);
-//      mina[0] = xmin; mina[1]=ymin;
-//      break_code=minarr(2,mina)-1;
-//
-//      tmpinout=2;
-//
-//      in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
-//
-//      // if they are both inside, return true (ie they face inside)
-//      // or if one is on boundary and the other is inside...
-//      if((in[0] && in[1]) |
-//         (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-//         (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
-//         ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
-//         & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
-//         ret=1;
-//      }
-//
-//      // free some memory
-//      free(bx);free(by);
-//   }
-
-   // if err returned >0 then return 0
-//   return(ret);
 }
 
 // find the intersection point between two points and a line
@@ -764,7 +818,7 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
             end[0]=current->data[0];
             end[1]=current->data[1];
    
-            sp_do_intersect(point,end,nbnd,bnd,retint);
+            do_intersect(point,end,nbnd,bnd,retint);
             if(iarrsum(nbnd-1,retint)==0){
                // return the orientation and path number
                app[0]=me;
@@ -780,7 +834,7 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
             end[0]=current->data[0];
             end[1]=current->data[1];
    
-            sp_do_intersect(point,end,nbnd,bnd,retint);
+            do_intersect(point,end,nbnd,bnd,retint);
             if(iarrsum(nbnd-1,retint)==0){
                // return the orientation and path number
                app[0]=me;
@@ -789,13 +843,13 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
             }
          }
 
-         // if there was no no Euclidean path, does it have less
+         // if there was no Euclidean path, does it have less
          // intersections than others?
-         if(iarrsum(nbnd-1,retint)<minints){
-            minints=iarrsum(nbnd-1,retint);
-            app[0]=me;
-            app[1]=i;
-         }
+//         if(iarrsum(nbnd-1,retint)<minints){
+//            minints=iarrsum(nbnd-1,retint);
+//            app[0]=me;
+//            app[1]=i;
+//         }
       }
    }
 
