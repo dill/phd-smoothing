@@ -42,7 +42,6 @@ void ReverseList(node**);
 void set_epsilon(int,  double*, double*);
 int match_ends(double[2], node**);
 void append_check(node**, int, double[2], int[2]);
-int intpoint2(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2]);
 
 
 
