@@ -122,6 +122,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
                }
             }
 
+//printf("cat(\"### before iter ###\\n\")\n");
+//PrintPath(&savedpaths[m]);
             // take the start path and optimize it...
             err=iter_path(&savedpaths[m],*nbnd,bnd);
 
@@ -498,7 +500,7 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
 
    // catch the case when the path between endpoint and point is 
    // Euclidean within the domain
-   sp_do_intersect(point,endpoint, nbnd,bnd,intbnd);
+   do_intersect(point,endpoint, nbnd,bnd,intbnd);
 
    if(iarrsum((nbnd-1),intbnd)==0){
       // if the point->endpoint path is Euclidean in the domain then
