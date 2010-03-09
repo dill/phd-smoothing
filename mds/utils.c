@@ -78,10 +78,10 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
          intpoint(p1,p2,thisedge,ip);
 
          // check the intersection point is not just one of p1 or p2
-         if(( (fabs(ip[0]-p1[0]) <=eps) & (fabs(ip[1]-p1[1]) <=eps) ) |
-            ( (fabs(ip[0]-p2[0]) <=eps) & (fabs(ip[1]-p2[1]) <=eps) )){
-            bndint[i]=0;
-         }
+//         if(( (fabs(ip[0]-p1[0]) <=eps) & (fabs(ip[1]-p1[1]) <=eps) ) |
+//            ( (fabs(ip[0]-p2[0]) <=eps) & (fabs(ip[1]-p2[1]) <=eps) )){
+//            bndint[i]=0;
+//         }
 
          // first need to handle the horizontal and vertical line cases
          if(fabs(ebbox[0][0]-ebbox[1][0])>=eps){
@@ -259,7 +259,7 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          return 1;
       }
    // if one of them is on the boundary
-   }else if((bnd1==1) | (bnd2==1)){
+   }else if(bnd1 | bnd2){
       do_intersect(p1,p2,nbnd,bnd,retint);
       if(iarrsum(nbnd-1,retint)%2==0){
          return 1;
