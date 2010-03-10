@@ -1,5 +1,4 @@
 options(echo=FALSE)
-source("pe.R")
 # load soap
 library(soap)
 ## create a boundary...
@@ -18,9 +17,6 @@ names(bnd)<-c("x","y")
 # make a grid to do the fitting over
 source("makesoapgrid.R")
 my.grid<-make_soap_grid(bnd,10)
-
-my.grid<-pe(my.grid,which(my.grid$x!=3.25))
-my.grid<-pe(my.grid,which(my.grid$y!=-3))
 
 x<-my.grid$x
 y<-my.grid$y
