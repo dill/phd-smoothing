@@ -7,116 +7,93 @@
 
 extern double eps;
 
-// does the line between two points and the boundary intersect?
-void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
-{
-   /*
-    * p1,p2    points we wish to test
-    * nbnd     length of boundary
-    * bnd      boundary
-    * bndint   boundary intersections (length nbnd-1)
-    */
+int do_int(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2]){
+   double s,t, s1_x, s1_y, s2_x, s2_y, denom;
 
-   // uses: maxarr, minarr, intpoint
 
-   // we do this by seeing if the bounding boxes intersect
-   // from Mastering Algorithms with Perl, p 451
+   s1_x = p2[0] - p1[0];
+   s1_y = p2[1] - p1[1];
+   s2_x = p4[0] - p3[0];
+   s2_y = p4[1] - p3[1];
 
+   if(( (fabs(p1[0]-p3[0]) < eps) & 
+        (fabs(p2[0]-p4[0]) < eps) &
+        (fabs(p1[1]-p3[1]) < eps) & 
+        (fabs(p2[1]-p4[1]) < eps) ) |
+      ( (fabs(p2[0]-p3[0]) < eps) & 
+        (fabs(p1[0]-p4[0]) < eps) &
+        (fabs(p2[1]-p3[1]) < eps) &
+        (fabs(p1[1]-p4[1]) < eps) )) return 1;
+
+   // p1->p2 vertical
+   if( fabs(s1_x)<eps) {
+      s1_x=p2[0];
+   }
+
+   // p1->p2 horizontal
+   if (fabs(s1_y)<eps) {
+      s1_y=p2[1];
+   }
+
+   // p1->p2 vertical
+   if( fabs(s2_x)<eps) {
+      s2_x=p3[0];
+   }
+
+   // p1->p2 horizontal
+   if (fabs(s2_y)<eps) {
+      s2_y=p3[1];
+   }
+
+
+   denom= (-s2_x*s1_y + s1_x*s2_y);
+
+   if(fabs(denom)<eps){
+      return 0;
+   }
+
+   s = (-s1_y * (p1[0] - p3[0]) + s1_x * (p1[1] - p3[1]))/denom;
+   t = ( s2_x * (p1[1] - p3[1]) - s2_y * (p1[0] - p3[1]))/denom;
+
+   if (s >= 0 && s <= 1 && t >= 0 && t <= 1){
+      // Collision detected
+      ip[0] = p1[0] + (t * s1_x);
+      ip[1] = p1[1] + (t * s1_y);
+      return 1;
+   }
+
+   return 0; // No collision
+}
+
+
+void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
    int i;
-   double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
-
-   // bounding box around the points p1,p2
-   //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
-   //             y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
-   xarr[0] = p1[0]; xarr[1] = p2[0];
-   yarr[0] = p1[1]; yarr[1] = p2[1];
-   pbbox[0][0]=maxarr(2,xarr);
-   pbbox[0][1]=maxarr(2,yarr);
-   pbbox[1][0]=minarr(2,xarr);
-   pbbox[1][1]=minarr(2,yarr);
+   double p3[2],p4[2],ip[2];
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
    for(i=0;i<(nbnd-1);i++){
+
+      p3[0]=bnd[i][0];
+      p4[0]=bnd[i+1][0];
+      p3[1]=bnd[i][1];
+      p4[1]=bnd[i+1][1];
+
+      // are the lines identical?
+      if(( (fabs(p1[0]-p3[0]) < eps) & 
+           (fabs(p2[0]-p4[0]) < eps) &
+           (fabs(p1[1]-p3[1]) < eps) & 
+           (fabs(p2[1]-p4[1]) < eps) ) |
+         ( (fabs(p2[0]-p3[0]) < eps) & 
+           (fabs(p1[0]-p4[0]) < eps) &
+           (fabs(p2[1]-p3[1]) < eps) &
+           (fabs(p1[1]-p4[1]) < eps) )) bndint[i]=1;
+
       // set true to begin with
-      bndint[i]=1;
+      bndint[i]=do_int(p1,p2,p3,p4,ip);
 
-      // create the edge
-      thisedge[0][0]=bnd[i][0];
-      thisedge[1][0]=bnd[i+1][0];
-      thisedge[0][1]=bnd[i][1];
-      thisedge[1][1]=bnd[i+1][1];
-
-      // bounding box for the edge
-      //e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
-      //             y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
-      xarr[0] = thisedge[0][0];
-      xarr[1] = thisedge[1][0];
-      yarr[0] = thisedge[0][1];
-      yarr[1] = thisedge[1][1];
-      ebbox[0][0]=maxarr(2,xarr);
-      ebbox[0][1]=maxarr(2,yarr);
-      ebbox[1][0]=minarr(2,xarr);
-      ebbox[1][1]=minarr(2,yarr);
-
-      // establish whether the bounding boxes intersect
-      // if max edge x less than min point x
-      if(ebbox[0][0] < pbbox[1][0]) bndint[i]=0;
-      // if max point x less than min edge x
-      if(pbbox[0][0] < ebbox[1][0]) bndint[i]=0;
-      // if max edge y less than min point y
-      if(ebbox[0][1] < pbbox[1][1]) bndint[i]=0;
-      // if max point y less than min edge y
-      if(pbbox[0][1] < ebbox[1][1]) bndint[i]=0;
-
-      // if the bounding boxes do intersect, check that the
-      // intersection of the two lines lies within the bounding
-      // boxes.
-      if(bndint[i]){
-
-         // first find the intersection point
-         intpoint(p1,p2,thisedge,ip);
-         // first need to handle the horizontal and vertical line cases
-         if(fabs(ebbox[0][0]-ebbox[1][0])<eps){
-            if((fabs(ip[0]-ebbox[0][0])<eps ) & ((ip[1]>ebbox[0][1]) | (ip[0]<ebbox[1][1]))) bndint[i]=0;
-         }
-         if(fabs(pbbox[0][0]-pbbox[1][0])<eps){
-            if((fabs(ip[0]-pbbox[0][0])<eps ) & ((ip[1]>pbbox[0][1]) | (ip[1]<pbbox[1][1]))) bndint[i]=0;
-         }
-         if(fabs(ebbox[0][1]-ebbox[1][1])<eps){
-            if((fabs(ip[1]-ebbox[0][1])<eps ) & ((ip[0]>ebbox[0][0]) | (ip[0]<ebbox[1][0]))) bndint[i]=0;
-         }
-         if(fabs(pbbox[0][1]-pbbox[1][1])<eps){
-            if((fabs(ip[1]-pbbox[0][1])<eps ) & ((ip[0]>pbbox[0][0]) | (ip[0]<pbbox[1][0]))) bndint[i]=0;
-         } // end of horiz/vert check
-
-//         // first need to handle the horizontal and vertical line cases
-//         if(fabs(ebbox[0][0]-ebbox[1][0])<eps){
-//            if((ip[0]>ebbox[0][0]) | (ip[0]<ebbox[1][0])) bndint[i]=0;
-//         }
-//         if(fabs(pbbox[0][0]-pbbox[1][0])<eps){
-//            if((ip[0]>pbbox[0][0]) | (ip[0]<pbbox[1][0])) bndint[i]=0;
-//         }
-//         if(fabs(ebbox[0][1]-ebbox[1][1])<eps){
-//            if((ip[1]>ebbox[0][1]) | (ip[1]<ebbox[1][1])) bndint[i]=0;
-//         }
-//         if(fabs(pbbox[0][1]-pbbox[1][1])<eps){
-//            if((ip[1]>pbbox[0][1]) | (ip[1]<pbbox[1][1])) bndint[i]=0;
-//         } // end of horiz/vert check
-   
-
-         // then handle whether the intersection point lies within the
-         // the bounding box
-         if(bndint[i]){
-            if((ip[1]>ebbox[0][1]) | (ip[1]<ebbox[1][1])) bndint[i]=0;
-            if((ip[1]>pbbox[0][1]) | (ip[1]<pbbox[1][1])) bndint[i]=0;
-            if((ip[0]>ebbox[0][0]) | (ip[0]<ebbox[1][0])) bndint[i]=0;
-            if((ip[0]>pbbox[0][0]) | (ip[0]<pbbox[1][0])) bndint[i]=0;
-         } // end of bounding box ip check
-      }
-   }// end iterate over boundary
+   }
 }
-
 
 void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
 {
@@ -127,24 +104,8 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
     * bndint   boundary intersections (length nbnd-1)
     */
 
-   // uses: maxarr, minarr, intpoint
-
-   // we do this by seeing if the bounding boxes intersect
-   // from Mastering Algorithms with Perl, p 451
-
    int i;
-   double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
-   double pedge[2][2], ep1[2], ep2[2];
-
-   // bounding box around the points p1,p2
-   //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
-   //             y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
-   xarr[0] = p1[0]; xarr[1] = p2[0];
-   yarr[0] = p1[1]; yarr[1] = p2[1];
-   pbbox[0][0]=maxarr(2,xarr);
-   pbbox[0][1]=maxarr(2,yarr);
-   pbbox[1][0]=minarr(2,xarr);
-   pbbox[1][1]=minarr(2,yarr);
+   double thisedge[2][2], ip[2], p3[2], p4[2], pedge[2][2];
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
@@ -152,116 +113,162 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
       // set true to begin with
       bndint[i]=1;
 
+      p3[0]=bnd[i][0];
+      p4[0]=bnd[i+1][0];
+      p3[1]=bnd[i][1];
+      p4[1]=bnd[i+1][1];
+
+      // are they just the same line?
+      if(( (fabs(p1[0]-p3[0]) < eps) & 
+           (fabs(p2[0]-p4[0]) < eps) &
+           (fabs(p1[1]-p3[1]) < eps) & 
+           (fabs(p2[1]-p4[1]) < eps) ) |
+         ( (fabs(p2[0]-p3[0]) < eps) & 
+           (fabs(p1[0]-p4[0]) < eps) &
+           (fabs(p2[1]-p3[1]) < eps) &
+           (fabs(p1[1]-p4[1]) < eps) )) bndint[i]=0;
+     
       // create the edge
       thisedge[0][0]=bnd[i][0];
       thisedge[1][0]=bnd[i+1][0];
       thisedge[0][1]=bnd[i][1];
       thisedge[1][1]=bnd[i+1][1];
-
-      // bounding box for the edge
-      //e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
-      //             y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
-      xarr[0] = thisedge[0][0];
-      xarr[1] = thisedge[1][0];
-      yarr[0] = thisedge[0][1];
-      yarr[1] = thisedge[1][1];
-      ebbox[0][0]=maxarr(2,xarr);
-      ebbox[0][1]=maxarr(2,yarr);
-      ebbox[1][0]=minarr(2,xarr);
-      ebbox[1][1]=minarr(2,yarr);
-
-      // establish whether the bounding boxes intersect
-      // if max edge x less than min point x
-      if(ebbox[0][0] <= pbbox[1][0]) bndint[i]=0;
-      // if max point x less than min edge x
-      if(pbbox[0][0] <= ebbox[1][0]) bndint[i]=0;
-      // if max edge y less than min point y
-      if(ebbox[0][1] <= pbbox[1][1]) bndint[i]=0;
-      // if max point y less than min edge y
-      if(pbbox[0][1] <= ebbox[1][1]) bndint[i]=0;
-
-      pedge[0][0]=p1[0];
-      pedge[0][1]=p1[1];
-      pedge[1][0]=p2[0];
-      pedge[1][1]=p2[1];
-      ep1[0]=thisedge[0][0];
-      ep1[1]=thisedge[0][1];
-      ep2[0]=thisedge[1][0];
-      ep2[1]=thisedge[1][1];
-      if(online(ep1,pedge) | online(ep2,pedge)){
-         bndint[i]=0;
-      }
-
-
+      // if p1 or p2 lie on edge 
       if(online(p1,thisedge) | online(p2,thisedge)){
          bndint[i]=0;
       }
+      
+      // points of the edge lie on p1->p2
+//      pedge[0][0]=p1[0];
+//      pedge[0][1]=p1[1];
+//      pedge[1][0]=p2[0];
+//      pedge[1][1]=p2[1];
+//      if(online(p3,pedge) | online(p4,pedge)){
+//         bndint[i]=0;
+//      }
 
-
-      if(( (fabs(p1[0]-thisedge[0][0]) < eps) & 
-           (fabs(p2[0]-thisedge[1][0]) < eps) &
-           (fabs(p1[1]-thisedge[0][1]) < eps) & 
-           (fabs(p2[1]-thisedge[1][1]) < eps) ) |
-         ( (fabs(p2[0]-thisedge[0][0]) < eps) & 
-           (fabs(p1[0]-thisedge[1][0]) < eps) &
-           (fabs(p2[1]-thisedge[0][1]) < eps) &
-           (fabs(p1[1]-thisedge[1][1]) < eps) )) bndint[i]=0;
-
-      // if the bounding boxes do intersect, check that the
-      // intersection of the two lines lies within the bounding
-      // boxes.
       if(bndint[i]){
+         bndint[i]=do_int(p1,p2,p3,p4,ip);
 
-         // first find the intersection point
-         intpoint(p1,p2,thisedge,ip);
-
-
+         // is the intersection point just one of the ends?
          if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
             ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
             bndint[i]=0;
          }
-
-
-         if(fabs(ebbox[0][0]-ebbox[1][0])<eps){
-            if((fabs(ip[0]-ebbox[0][0])<eps ) & ((ip[1]>=ebbox[0][1]) | (ip[0]<=ebbox[1][1]))) bndint[i]=0;
+         if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
+            ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
+            bndint[i]=0;
          }
-         if(fabs(pbbox[0][0]-pbbox[1][0])<eps){
-            if((fabs(ip[0]-pbbox[0][0])<eps ) & ((ip[1]>=pbbox[0][1]) | (ip[1]<=pbbox[1][1]))) bndint[i]=0;
-         }
-         if(fabs(ebbox[0][1]-ebbox[1][1])<eps){
-            if((fabs(ip[1]-ebbox[0][1])<eps ) & ((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0]))) bndint[i]=0;
-         }
-         if(fabs(pbbox[0][1]-pbbox[1][1])<eps){
-            if((fabs(ip[1]-pbbox[0][1])<eps ) & ((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0]))) bndint[i]=0;
-         } // end of horiz/vert check
-//         // first need to handle the horizontal and vertical line cases
-//         if(fabs(ebbox[0][0]-ebbox[1][0])<eps){
-//            if( (ip[1]>=ebbox[0][1]) | (ip[0]<=ebbox[1][1])) bndint[i]=0;
-//         }
-//         if(fabs(pbbox[0][0]-pbbox[1][0])<eps){
-//            if((ip[1]>=pbbox[0][1]) | (ip[1]<=pbbox[1][1])) bndint[i]=0;
-//         }
-//         if(fabs(ebbox[0][1]-ebbox[1][1])<eps){
-//            if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
-//         }
-//         if(fabs(pbbox[0][1]-pbbox[1][1])<eps){
-//            if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
-//         } // end of horiz/vert check
-   
 
-         // then handle whether the intersection point lies within the
-         // the bounding box
-         if(bndint[i]){
-            if((ip[1]>=ebbox[0][1]) | (ip[1]<=ebbox[1][1])) bndint[i]=0;
-            if((ip[1]>=pbbox[0][1]) | (ip[1]<=pbbox[1][1])) bndint[i]=0;
-            if((ip[0]>=ebbox[0][0]) | (ip[0]<=ebbox[1][0])) bndint[i]=0;
-            if((ip[0]>=pbbox[0][0]) | (ip[0]<=pbbox[1][0])) bndint[i]=0;
-         } // end of bounding box ip check
       }
-   }// end iterate over boundary
+
+   }
+
+
 }
 
-
+// does the line between two points and the boundary intersect?
+//void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
+//{
+//   /*
+//    * p1,p2    points we wish to test
+//    * nbnd     length of boundary
+//    * bnd      boundary
+//    * bndint   boundary intersections (length nbnd-1)
+//    */
+//
+//   // uses: maxarr, minarr, intpoint
+//
+//   // we do this by seeing if the bounding boxes intersect
+//   // from Mastering Algorithms with Perl, p 451
+//
+//   int i;
+//   double pbbox[2][2], ebbox[2][2], thisedge[2][2], ip[2], xarr[2], yarr[2];
+//
+//   // bounding box around the points p1,p2
+//   //p.bbox<-list(x=c(max(p1$x,p2$x),min(p1$x,p2$x)),
+//   //             y=c(max(p1$y,p2$y),min(p1$y,p2$y)))
+//   xarr[0] = p1[0]; xarr[1] = p2[0];
+//   yarr[0] = p1[1]; yarr[1] = p2[1];
+//   pbbox[0][0]=maxarr(2,xarr);
+//   pbbox[0][1]=maxarr(2,yarr);
+//   pbbox[1][0]=minarr(2,xarr);
+//   pbbox[1][1]=minarr(2,yarr);
+//
+//   // iterate over sides (ie vertex pairs)
+//   // NB the last vertex should be the first
+//   for(i=0;i<(nbnd-1);i++){
+//      // set true to begin with
+//      bndint[i]=1;
+//
+//      // create the edge
+//      thisedge[0][0]=bnd[i][0];
+//      thisedge[1][0]=bnd[i+1][0];
+//      thisedge[0][1]=bnd[i][1];
+//      thisedge[1][1]=bnd[i+1][1];
+//
+//      // bounding box for the edge
+//      //e.bbox<-list(x=c(max(bnd$x[c(i,i+1)]),min(bnd$x[c(i,i+1)])),
+//      //             y=c(max(bnd$y[c(i,i+1)]),min(bnd$y[c(i,i+1)])))
+//      xarr[0] = thisedge[0][0];
+//      xarr[1] = thisedge[1][0];
+//      yarr[0] = thisedge[0][1];
+//      yarr[1] = thisedge[1][1];
+//      ebbox[0][0]=maxarr(2,xarr);
+//      ebbox[0][1]=maxarr(2,yarr);
+//      ebbox[1][0]=minarr(2,xarr);
+//      ebbox[1][1]=minarr(2,yarr);
+//
+//      // establish whether the bounding boxes intersect
+//      // if max edge x less than min point x
+//      if(ebbox[0][0] < pbbox[1][0]) bndint[i]=0;
+//      // if max point x less than min edge x
+//      if(pbbox[0][0] < ebbox[1][0]) bndint[i]=0;
+//      // if max edge y less than min point y
+//      if(ebbox[0][1] < pbbox[1][1]) bndint[i]=0;
+//      // if max point y less than min edge y
+//      if(pbbox[0][1] < ebbox[1][1]) bndint[i]=0;
+//
+//      // if the bounding boxes do intersect, check that the
+//      // intersection of the two lines lies within the bounding
+//      // boxes.
+//      if(bndint[i]){
+//
+//         // first find the intersection point
+//         intpoint(p1,p2,thisedge,ip);
+//
+//         // check the intersection point is not just one of p1 or p2
+////         if(( (fabs(ip[0]-p1[0]) <=eps) & (fabs(ip[1]-p1[1]) <=eps) ) |
+////            ( (fabs(ip[0]-p2[0]) <=eps) & (fabs(ip[1]-p2[1]) <=eps) )){
+////            bndint[i]=0;
+////         }
+//
+//         // first need to handle the horizontal and vertical line cases
+////         if(fabs(ebbox[0][0]-ebbox[1][0])<eps){
+////            if((ip[0]>ebbox[0][0]) | (ip[0]<ebbox[1][0])) bndint[i]=0;
+////         }
+////         if(fabs(pbbox[0][0]-pbbox[1][0])<eps){
+////            if((ip[0]>pbbox[0][0]) | (ip[0]<pbbox[1][0])) bndint[i]=0;
+////         }
+////         if(fabs(ebbox[0][1]-ebbox[1][1])<eps){
+////            if((ip[1]>ebbox[0][1]) | (ip[1]<ebbox[1][1])) bndint[i]=0;
+////         }
+////         if(fabs(pbbox[0][1]-pbbox[1][1])<eps){
+////            if((ip[1]>pbbox[0][1]) | (ip[1]<pbbox[1][1])) bndint[i]=0;
+////         } // end of horiz/vert check
+//   
+//
+//         // then handle whether the intersection point lies within the
+//         // the bounding box
+//         //if(bndint[i]){
+//         //   if((ip[1]>ebbox[0][1]) | (ip[1]<ebbox[1][1])) bndint[i]=0;
+//         //   if((ip[1]>pbbox[0][1]) | (ip[1]<pbbox[1][1])) bndint[i]=0;
+//         //   if((ip[0]>ebbox[0][0]) | (ip[0]<ebbox[1][0])) bndint[i]=0;
+//         //   if((ip[0]>pbbox[0][0]) | (ip[0]<pbbox[1][0])) bndint[i]=0;
+//         //} // end of bounding box ip check
+//      }
+//   }// end iterate over boundary
+//}
 
 
 
@@ -606,9 +613,6 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
             ret=1;
          }
 
-         if(in[0] & in[1]){
-            ret=1;
-         }
 
 
 //         if((in[0] && in[1]) |
@@ -683,139 +687,154 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    return 0;
 }
 
-// find the intersection point between two points and a line
-void intpoint(double p1[], double p2[],double edge[][2], double ip[])
-{
-   /*args:
-      p1, p2      the two points making up the end points of the line
-      line         boundary of the shape to test intersection with
-     return:
-        intersection point
-   */
+void intpoint(double p1[], double p2[],double edge[][2], double ip[]){
 
-   double a1,b1,c1,a2,b2,c2, pmin, emin;
-   double arr[2];
+   double p3[2],p4[2];
+   int ret;
 
-   // calculation of intersection is straight from 
-   // Handbook of Mathematics Bronstein et al. pp. 195,196
-
-   /// calculate intersection point
-   //   first calculate the coefficients for the lines
-   //   the line between the points
-   a1=-1/(p2[0]-p1[0]);
-   b1=1/(p2[1]-p1[1]);
-   c1=p1[0]/(p2[0]-p1[0]) - p1[1]/(p2[1]-p1[1]);
-
-   // the edge
-   a2=-1/(edge[1][0]-edge[0][0]);
-   b2=1/(edge[1][1]-edge[0][1]);
-   c2= edge[0][0]/(edge[1][0]-edge[0][0]) - edge[0][1]/(edge[1][1]-edge[0][1]);
-
-   if( ((p1[0]==edge[0][0]) & (p1[1]==edge[0][1]))){
-      ip[0]=p1[0];
-      ip[1]=p1[1];
-   }else if( ((p2[0]==edge[0][0]) & (p2[1]==edge[0][1]))){
-      ip[0]=p2[0];
-      ip[1]=p2[1];
-   }else if( ((p1[0]==edge[1][0]) & (p1[1]==edge[1][1]))){
-      ip[0]=p1[0];
-      ip[1]=p1[1];
-   }else if( ((p2[0]==edge[1][0]) & (p2[1]==edge[1][1]))){
-      ip[0]=p2[0];
-      ip[1]=p2[1];
-
-   // handle the horizontal/vertical line cases
-
-   // when the both lines are colinear
-   // both horizontal
-   }else 
-
-   if( ((fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))) &
-       ((fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
-              isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))) ){
-
-      // find the min of each pair then the min of them 
-      arr[0]=p1[0];
-      arr[1]=p2[0];
-
-      pmin=minarr(2,arr);
-
-      arr[0]=edge[0][0];
-      arr[1]=edge[1][0];
-
-      emin=minarr(2,arr);
-
-      arr[0]=pmin;
-      arr[1]=emin;
-
-      ip[0]=minarr(2,arr);
-      ip[1]=p1[1]; // since we have a horizontal line
-
-   // both vertical
-   }else if( ((fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))) &
-          ( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
-               isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))) ){
-
-      // find the min of each pair then the min of them 
-      arr[0]=p1[1];
-      arr[1]=p2[1];
-
-      pmin=minarr(2,arr);
-
-      arr[0]=edge[0][1];
-      arr[1]=edge[1][1];
-
-      emin=minarr(2,arr);
-
-      arr[0]=pmin;
-      arr[1]=emin;
-
-      ip[1]=minarr(2,arr);
-      ip[0]=p1[0]; // since we have a horizontal line
+   edge[0][0]=p3[0];
+   edge[0][1]=p3[1];
+   edge[1][0]=p4[0];
+   edge[1][1]=p4[1];
 
 
-   }else{
-      // point line horizontal
-      if( (fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))){
-         a1=0;
-         b1=1;
-         c1=-p1[1];
-      }
-   
-      // point line vertical
-      if( (fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
-         a1=1;
-         b1=0;
-         c1=-p1[0];
-      }
-   
-      // edge horizontal
-      if( (fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
-               isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))){
-         a2=0;
-         b2=1;
-         c2=-edge[0][1];
-      }
-   
-      // edge vertical
-      if( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
-               isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))){
-         a2=1;
-         b2=0;
-         c2=-edge[0][0];
-      }
-   
-      /// do something to check for infinities...
-      //   if(all(c(a1,a2,b1,b2,c1,c2)!=Inf) & all(c(a1,a2,b1,b2,c1,c2)!=-Inf)){
-      // calculate the intersection
-   
-      // want to calculate...
-      //      intx<-det(matrix(c(b1,b2,c1,c2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
-      //      inty<-det(matrix(c(c1,c2,a1,a2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
-         ip[0]=(b1*c2-(b2*c1))/(a1*b2-(a2*b1));
-         ip[1]=(c1*a2-(a1*c2))/(a1*b2-(b1*a2));
-   }
+   ret=do_int(p1,p2,p3,p4,ip);
 }
+
+
+// find the intersection point between two points and a line
+//void intpoint(double p1[], double p2[],double edge[][2], double ip[])
+//{
+//   /*args:
+//      p1, p2      the two points making up the end points of the line
+//      line         boundary of the shape to test intersection with
+//     return:
+//        intersection point
+//   */
+//
+//   double a1,b1,c1,a2,b2,c2, pmin, emin;
+//   double arr[2];
+//
+//   // calculation of intersection is straight from 
+//   // Handbook of Mathematics Bronstein et al. pp. 195,196
+//
+//   /// calculate intersection point
+//   //   first calculate the coefficients for the lines
+//   //   the line between the points
+//   a1=-1/(p2[0]-p1[0]);
+//   b1=1/(p2[1]-p1[1]);
+//   c1=p1[0]/(p2[0]-p1[0]) - p1[1]/(p2[1]-p1[1]);
+//
+//   // the edge
+//   a2=-1/(edge[1][0]-edge[0][0]);
+//   b2=1/(edge[1][1]-edge[0][1]);
+//   c2= edge[0][0]/(edge[1][0]-edge[0][0]) - edge[0][1]/(edge[1][1]-edge[0][1]);
+//
+//   if( ((p1[0]==edge[0][0]) & (p1[1]==edge[0][1]))){
+//      ip[0]=p1[0];
+//      ip[1]=p1[1];
+//   }else if( ((p2[0]==edge[0][0]) & (p2[1]==edge[0][1]))){
+//      ip[0]=p2[0];
+//      ip[1]=p2[1];
+//   }else if( ((p1[0]==edge[1][0]) & (p1[1]==edge[1][1]))){
+//      ip[0]=p1[0];
+//      ip[1]=p1[1];
+//   }else if( ((p2[0]==edge[1][0]) & (p2[1]==edge[1][1]))){
+//      ip[0]=p2[0];
+//      ip[1]=p2[1];
+//
+//   // handle the horizontal/vertical line cases
+//
+//   // when the both lines are colinear
+//   // both horizontal
+//   }else 
+//
+//   if( ((fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))) &
+//       ((fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
+//              isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))) ){
+//
+//      // find the min of each pair then the min of them 
+//      arr[0]=p1[0];
+//      arr[1]=p2[0];
+//
+//      pmin=minarr(2,arr);
+//
+//      arr[0]=edge[0][0];
+//      arr[1]=edge[1][0];
+//
+//      emin=minarr(2,arr);
+//
+//      arr[0]=pmin;
+//      arr[1]=emin;
+//
+//      ip[0]=minarr(2,arr);
+//      ip[1]=p1[1]; // since we have a horizontal line
+//
+//   // both vertical
+//   }else if( ((fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))) &
+//          ( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
+//               isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))) ){
+//
+//      // find the min of each pair then the min of them 
+//      arr[0]=p1[1];
+//      arr[1]=p2[1];
+//
+//      pmin=minarr(2,arr);
+//
+//      arr[0]=edge[0][1];
+//      arr[1]=edge[1][1];
+//
+//      emin=minarr(2,arr);
+//
+//      arr[0]=pmin;
+//      arr[1]=emin;
+//
+//      ip[1]=minarr(2,arr);
+//      ip[0]=p1[0]; // since we have a horizontal line
+//
+//
+//   }else{
+//      // point line horizontal
+//      if( (fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))){
+//         a1=0;
+//         b1=1;
+//         c1=-p1[1];
+//      }
+//   
+//      // point line vertical
+//      if( (fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
+//         a1=1;
+//         b1=0;
+//         c1=-p1[0];
+//      }
+//   
+//      // edge horizontal
+//      if( (fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
+//               isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))){
+//         a2=0;
+//         b2=1;
+//         c2=-edge[0][1];
+//      }
+//   
+//      // edge vertical
+//      if( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
+//               isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))){
+//         a2=1;
+//         b2=0;
+//         c2=-edge[0][0];
+//      }
+//   
+//      /// do something to check for infinities...
+//      //   if(all(c(a1,a2,b1,b2,c1,c2)!=Inf) & all(c(a1,a2,b1,b2,c1,c2)!=-Inf)){
+//      // calculate the intersection
+//   
+//      // want to calculate...
+//      //      intx<-det(matrix(c(b1,b2,c1,c2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
+//      //      inty<-det(matrix(c(c1,c2,a1,a2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
+//         ip[0]=(b1*c2-(b2*c1))/(a1*b2-(a2*b1));
+//         ip[1]=(c1*a2-(a1*c2))/(a1*b2-(b1*a2));
+//   }
+//}
 
 int online(double p1[],double thisline[][2]){
  
