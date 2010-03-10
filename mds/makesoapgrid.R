@@ -12,10 +12,10 @@ make_soap_grid<-function(bnd,n.grid,mat=FALSE){
    }
 
    # min and max values of the boundary (but not on the boundary)
-   xmin<-min(bnd$x,na.rm=TRUE)+.Machine$double.eps*2
-   ymin<-min(bnd$y,na.rm=TRUE)+.Machine$double.eps*2
-   xmax<-max(bnd$x,na.rm=TRUE)-.Machine$double.eps*2
-   ymax<-max(bnd$y,na.rm=TRUE)-.Machine$double.eps*2
+   xmin<-min(bnd$x,na.rm=TRUE)
+   ymin<-min(bnd$y,na.rm=TRUE)
+   xmax<-max(bnd$x,na.rm=TRUE)
+   ymax<-max(bnd$y,na.rm=TRUE)
 
    # create the grid
    xm <- seq(xmin,xmax,length=m)
