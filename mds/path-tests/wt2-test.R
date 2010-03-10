@@ -33,6 +33,6 @@ D.t<-as.matrix(D.t)
 D.t<-D.t[,2:49]
 
 if(max(abs(D-D.t))>0){
-   cat("# Uh oh!",max(D-D.t)," not the same as \"truth\"\n")
+   cat("# Uh oh!",max(abs(D-D.t))," not the same as \"truth\"\n")
 }
 options(echo=TRUE)
