@@ -18,7 +18,7 @@ void twosort(double *);
 void itwosort(int *);
 int online(double[2],double[2][2]);
 int facing(double p1[2], double p2[2] , int nbnd, double **);
-void intpoint(double[2], double[2],double[2][2],double[2]);
+int intpoint(double[2], double[2],double[2][2],double[2]);
 void do_intersect(double[2], double[2], int nbnd, double **,int *);
 double minarr(int narr, double *);
 double maxarr(int narr, double *);

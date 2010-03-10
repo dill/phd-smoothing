@@ -10,11 +10,12 @@ extern double eps;
 int do_int(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2]){
    double s,t, s1_x, s1_y, s2_x, s2_y, denom;
 
-
    s1_x = p2[0] - p1[0];
    s1_y = p2[1] - p1[1];
    s2_x = p4[0] - p3[0];
    s2_y = p4[1] - p3[1];
+
+
 
    if(( (fabs(p1[0]-p3[0]) < eps) & 
         (fabs(p2[0]-p4[0]) < eps) &
@@ -25,7 +26,7 @@ int do_int(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2])
         (fabs(p2[1]-p3[1]) < eps) &
         (fabs(p1[1]-p4[1]) < eps) )) return 1;
 
-   // p1->p2 vertical
+ // p1->p2 vertical
    if( fabs(s1_x)<eps) {
       s1_x=p2[0];
    }
@@ -52,8 +53,8 @@ int do_int(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2])
       return 0;
    }
 
-   s = (-s1_y * (p1[0] - p3[0]) + s1_x * (p1[1] - p3[1]))/denom;
-   t = ( s2_x * (p1[1] - p3[1]) - s2_y * (p1[0] - p3[1]))/denom;
+   s = (-s1_y * (p1[0] - p3[0]) + s1_x * (p1[1] - p3[1])) /denom;
+   t = ( s2_x * (p1[1] - p3[1]) - s2_y * (p1[0] - p3[0])) /denom;
 
    if (s >= 0 && s <= 1 && t >= 0 && t <= 1){
       // Collision detected
@@ -61,18 +62,18 @@ int do_int(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2])
       ip[1] = p1[1] + (t * s1_y);
       return 1;
    }
-
    return 0; // No collision
 }
-
 
 void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
    int i;
    double p3[2],p4[2],ip[2];
+   double thisedge[2][2], pedge[2][2];
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
    for(i=0;i<(nbnd-1);i++){
+      bndint[i]=0;
 
       p3[0]=bnd[i][0];
       p4[0]=bnd[i+1][0];
@@ -89,8 +90,36 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
            (fabs(p2[1]-p3[1]) < eps) &
            (fabs(p1[1]-p4[1]) < eps) )) bndint[i]=1;
 
+
+      thisedge[0][0]=bnd[i][0];
+      thisedge[1][0]=bnd[i+1][0];
+      thisedge[0][1]=bnd[i][1];
+      thisedge[1][1]=bnd[i+1][1];
+      if(online(p1,thisedge) | online(p2,thisedge)){
+         bndint[i]=1;
+      }
+
+//      pedge[0][0]=p1[0];
+//      pedge[0][1]=p1[1];
+//      pedge[1][0]=p2[0];
+//      pedge[1][1]=p2[1];
+//      if(online(p3,pedge) | online(p4,pedge)){
+//         bndint[i]=1;
+//      }
+
+      if(bndint[i]==0){
       // set true to begin with
-      bndint[i]=do_int(p1,p2,p3,p4,ip);
+         bndint[i]=do_int(p1,p2,p3,p4,ip);
+         // is the intersection point just one of the ends?
+         if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
+            ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
+            bndint[i]=1;
+         }
+         if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
+            ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
+            bndint[i]=1;
+         }
+      }
 
    }
 }
@@ -139,13 +168,13 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
       }
       
       // points of the edge lie on p1->p2
-//      pedge[0][0]=p1[0];
-//      pedge[0][1]=p1[1];
-//      pedge[1][0]=p2[0];
-//      pedge[1][1]=p2[1];
-//      if(online(p3,pedge) | online(p4,pedge)){
-//         bndint[i]=0;
-//      }
+      pedge[0][0]=p1[0];
+      pedge[0][1]=p1[1];
+      pedge[1][0]=p2[0];
+      pedge[1][1]=p2[1];
+      if(online(p3,pedge) | online(p4,pedge)){
+         bndint[i]=0;
+      }
 
       if(bndint[i]){
          bndint[i]=do_int(p1,p2,p3,p4,ip);
@@ -519,11 +548,11 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    // do_intersect returns a string of T/F values
   
    // find intersections 
-//   do_intersect(p1,p2,nbnd,bnd,retint);
-//
-//   if(iarrsum(nbnd-1,retint)%2==0){
-//      return(1);
-//   }
+   //do_intersect(p1,p2,nbnd,bnd,retint);
+
+   //if(iarrsum(nbnd-1,retint)%2==0){
+   //   return(1);
+   //}
 
    bnd1=0;
    bnd2=0;
@@ -614,7 +643,6 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          }
 
 
-
 //         if((in[0] && in[1]) |
 //            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
 //            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
@@ -671,23 +699,23 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 //
 //         // if they are both inside, return true (ie they face inside)
 //         // or if one is on boundary and the other is inside...
-//         if((in[0] && in[1]) |
-//            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-//            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
-//            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
-//            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
+//         if((in[0] && in[1])){// |
+////            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+////            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
+////            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
+////            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
 //            ret=1;
 //         }
 //
 //         // free some memory
 //         free(bx);free(by);
 //      }
-
-
-   return 0;
+//
+//
+//   return 0;
 }
 
-void intpoint(double p1[], double p2[],double edge[][2], double ip[]){
+int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
 
    double p3[2],p4[2];
    int ret;
@@ -698,7 +726,9 @@ void intpoint(double p1[], double p2[],double edge[][2], double ip[]){
    edge[1][1]=p4[1];
 
 
-   ret=do_int(p1,p2,p3,p4,ip);
+   ret = do_int(p1,p2,p3,p4,ip);
+
+   return ret;
 }
 
 
@@ -1008,7 +1038,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
          thisedge[1][1]=bnd[j+1][1];
 
          // calculate and save the intersection
-         intpoint(p1,p2,thisedge,ip);
+         err=intpoint(p1,p2,thisedge,ip);
          ips[i][0]=ip[0];
          ips[i][1]=ip[1];
 
