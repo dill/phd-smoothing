@@ -89,9 +89,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
 printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
-            if(l==0){
-//if(1){
-//FreeList(&savedpaths[m]);
+//            if(l==0){
+if(1){
+FreeList(&savedpaths[m]);
                // if not then just make the path from scratch
                err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
 
