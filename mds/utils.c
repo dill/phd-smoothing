@@ -8,32 +8,12 @@
 extern double eps;
 
 int do_int(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2]){
-   double s,t, s1_x, s1_y, s2_x, s2_y, denom, edge[2][2];
+   double s,t, s1_x, s1_y, s2_x, s2_y, denom;
 
    s1_x = p2[0] - p1[0];
    s1_y = p2[1] - p1[1];
    s2_x = p4[0] - p3[0];
    s2_y = p4[1] - p3[1];
-
-   // p1->p2 vertical
-//   if( fabs(s1_x)<eps) {
-//      s1_x=p2[0];
-//   }
-//
-//   // p1->p2 horizontal
-//   if (fabs(s1_y)<eps) {
-//      s1_y=p2[1];
-//   }
-//
-//   // p1->p2 vertical
-//   if( fabs(s2_x)<eps) {
-//      s2_x=p3[0];
-//   }
-//
-//   // p1->p2 horizontal
-//   if (fabs(s2_y)<eps) {
-//      s2_y=p3[1];
-//   }
 
    denom= (-s2_x*s1_y + s1_x*s2_y);
 
@@ -87,14 +67,6 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
          bndint[i]=1;
       }
 
-//      pedge[0][0]=p1[0];
-//      pedge[0][1]=p1[1];
-//      pedge[1][0]=p2[0];
-//      pedge[1][1]=p2[1];
-//      if(online(p3,pedge) | online(p4,pedge)){
-//         bndint[i]=1;
-//      }
-
       if(bndint[i]==0){
          bndint[i]=do_int(p1,p2,p3,p4,ip);
 
@@ -104,15 +76,15 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
             }else{
                bndint[i]=1;
             }
-            pedge[0][0]=p1[0];
-            pedge[0][1]=p1[1];
-            pedge[1][0]=p2[0];
-            pedge[1][1]=p2[1];
-            if(online(ip,pedge)==0){
-               bndint[i]=0;
-            }else{
-               bndint[i]=1;
-            }
+//            pedge[0][0]=p1[0];
+//            pedge[0][1]=p1[1];
+//            pedge[1][0]=p2[0];
+//            pedge[1][1]=p2[1];
+//            if(online(ip,pedge)==0){
+//               bndint[i]=0;
+//            }else{
+//               bndint[i]=1;
+//            }
          }
       }
    } // end bnd loop
@@ -128,7 +100,8 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
     */
 
    int i;
-   double thisedge[2][2], ip[2], p3[2], p4[2], pedge[2][2];
+   double thisedge[2][2], p3[2], p4[2], pedge[2][2];
+   double ip[2];
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
@@ -161,32 +134,15 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
          bndint[i]=0;
       }
       
-      // points of the edge lie on p1->p2
-//      pedge[0][0]=p1[0];
-//      pedge[0][1]=p1[1];
-//      pedge[1][0]=p2[0];
-//      pedge[1][1]=p2[1];
-//      if(online(p3,pedge) | online(p4,pedge)){
-//         bndint[i]=0;
-//      }
+      bndint[i]=do_int(p1,p2,p3,p4,ip);
 
-         bndint[i]=do_int(p1,p2,p3,p4,ip);
-
+      if(bndint[i]){
          // what if the intersection point isn't on either line?
          if(online(ip,thisedge)==0){
             bndint[i]=0;
          }else{
             bndint[i]=1;
          }
-//         pedge[0][0]=p1[0];
-//         pedge[0][1]=p1[1];
-//         pedge[1][0]=p2[0];
-//         pedge[1][1]=p2[1];
-//         if(online(ip,pedge)==0){
-//            bndint[i]=0;
-//         }else{
-//            bndint[i]=1;
-//         }
 
          // is the intersection point just one of the ends?
          if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
@@ -197,6 +153,7 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
             ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
             bndint[i]=0;
          }
+      }
    }
 }
 
@@ -558,33 +515,33 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    //   return(1);
    //}
 
-   bnd1=0;
-   bnd2=0;
-
-   // is either of p1 or p2 on the boundary?
-   for(i=0;i<(nbnd-1);i++){
-      edge[0][0]=bnd[i][0];
-      edge[0][1]=bnd[i][1];
-      edge[1][0]=bnd[i+1][0];
-      edge[1][1]=bnd[i+1][1];
-      if(online(p1,edge)){
-         bnd1=1;
-         break;
-      }
-   }
-   for(i=0;i<(nbnd-1);i++){
-      edge[0][0]=bnd[i][0];
-      edge[0][1]=bnd[i][1];
-      edge[1][0]=bnd[i+1][0];
-      edge[1][1]=bnd[i+1][1];
-      if(online(p2,edge)){
-         bnd1=1;
-         break;
-      }
-   }
-
-
-   // if they aren't on the boundary
+//   bnd1=0;
+//   bnd2=0;
+//
+//   // is either of p1 or p2 on the boundary?
+//   for(i=0;i<(nbnd-1);i++){
+//      edge[0][0]=bnd[i][0];
+//      edge[0][1]=bnd[i][1];
+//      edge[1][0]=bnd[i+1][0];
+//      edge[1][1]=bnd[i+1][1];
+//      if(online(p1,edge)){
+//         bnd1=1;
+//         break;
+//      }
+//   }
+//   for(i=0;i<(nbnd-1);i++){
+//      edge[0][0]=bnd[i][0];
+//      edge[0][1]=bnd[i][1];
+//      edge[1][0]=bnd[i+1][0];
+//      edge[1][1]=bnd[i+1][1];
+//      if(online(p2,edge)){
+//         bnd1=1;
+//         break;
+//      }
+//   }
+//
+//
+//   // if they aren't on the boundary
 //   if(!bnd1 & !bnd2){
 //      do_intersect(p1,p2,nbnd,bnd,retint);
 //      if(iarrsum(nbnd-1,retint)%2==0){
@@ -921,8 +878,8 @@ int online(double p1[],double thisline[][2]){
    }
       
    // check p1 is inside the bounding box
-   if((p1[0]>=xarr[1]) && (p1[0]<=xarr[0]) &&
-      (p1[1]>=yarr[1]) && (p1[1]<=yarr[0])){
+   if( ((p1[0]>=xarr[1]) | (p1[0]<=xarr[0])) |
+       ((p1[1]>=yarr[1]) | (p1[1]<=yarr[0]))   ){
       return 0;
    }
  

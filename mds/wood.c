@@ -253,12 +253,16 @@ int iter_path(node** mypath,int nbnd, double **bnd){
       // DEBUG
       //printf("cat(\"### alter_step ###\\n\")\n");
       //PrintPath(&mypath);
+      printf("cat(\"### alter_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(mypath,nbnd,bnd);
       // DEBUG
       //printf("cat(\"### delete_step ###\\n\")\n");
       //PrintPath(&mypath);
+      printf("cat(\"### delete_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
