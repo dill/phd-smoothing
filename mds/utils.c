@@ -878,8 +878,8 @@ int online(double p1[],double thisline[][2]){
    }
       
    // check p1 is inside the bounding box
-   if( ((p1[0]>=xarr[1]) | (p1[0]<=xarr[0])) |
-       ((p1[1]>=yarr[1]) | (p1[1]<=yarr[0]))   ){
+   if( ((p1[0]>xarr[1]) | (p1[0]<xarr[0])) |
+       ((p1[1]>yarr[1]) | (p1[1]<yarr[0]))   ){
       return 0;
    }
  

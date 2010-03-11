@@ -409,6 +409,10 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 //printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
 //printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
 //printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+//printf("line1<- list(x=c(%f,%f),y=c(%f,%f))\n",line1[0][0],line1[1][0],line1[0][1],line1[1][1]);
+//printf("line2<- list(x=c(%f,%f),y=c(%f,%f))\n",line2[0][0],line2[1][0],line2[0][1],line2[1][1]);
+//printf("lines(line1,lwd=2,col=\"blue\")\n");
+//printf("lines(line2,lwd=2,col=\"blue\")\n");
 //printf("points(ip1)\n");
 //printf("points(ip2)\n");
 //printf("points(p1,pch=19)\n");
