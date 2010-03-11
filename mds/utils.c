@@ -70,22 +70,22 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
       if(bndint[i]==0){
          bndint[i]=do_int(p1,p2,p3,p4,ip);
 
-         if(bndint[i]){
-            if(online(ip,thisedge)==0){
-               bndint[i]=0;
-            }else{
-               bndint[i]=1;
-            }
-//            pedge[0][0]=p1[0];
-//            pedge[0][1]=p1[1];
-//            pedge[1][0]=p2[0];
-//            pedge[1][1]=p2[1];
-//            if(online(ip,pedge)==0){
+//         if(bndint[i]){
+//            if(online(ip,thisedge)==0){
 //               bndint[i]=0;
 //            }else{
 //               bndint[i]=1;
 //            }
-         }
+////            pedge[0][0]=p1[0];
+////            pedge[0][1]=p1[1];
+////            pedge[1][0]=p2[0];
+////            pedge[1][1]=p2[1];
+////            if(online(ip,pedge)==0){
+////               bndint[i]=0;
+////            }else{
+////               bndint[i]=1;
+////            }
+//         }
       }
    } // end bnd loop
 }
@@ -138,11 +138,11 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
 
       if(bndint[i]){
          // what if the intersection point isn't on either line?
-         if(online(ip,thisedge)==0){
-            bndint[i]=0;
-         }else{
-            bndint[i]=1;
-         }
+//         if(online(ip,thisedge)==0){
+//            bndint[i]=0;
+//         }else{
+//            bndint[i]=1;
+//         }
 
          // is the intersection point just one of the ends?
          if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
