@@ -15,34 +15,25 @@ int do_int(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2])
    s2_x = p4[0] - p3[0];
    s2_y = p4[1] - p3[1];
 
-   if(( (fabs(p1[0]-p3[0]) < eps) & 
-        (fabs(p2[0]-p4[0]) < eps) &
-        (fabs(p1[1]-p3[1]) < eps) & 
-        (fabs(p2[1]-p4[1]) < eps) ) |
-      ( (fabs(p2[0]-p3[0]) < eps) & 
-        (fabs(p1[0]-p4[0]) < eps) &
-        (fabs(p2[1]-p3[1]) < eps) &
-        (fabs(p1[1]-p4[1]) < eps) )) return 1;
-
    // p1->p2 vertical
-   if( fabs(s1_x)<eps) {
-      s1_x=p2[0];
-   }
-
-   // p1->p2 horizontal
-   if (fabs(s1_y)<eps) {
-      s1_y=p2[1];
-   }
-
-   // p1->p2 vertical
-   if( fabs(s2_x)<eps) {
-      s2_x=p3[0];
-   }
-
-   // p1->p2 horizontal
-   if (fabs(s2_y)<eps) {
-      s2_y=p3[1];
-   }
+//   if( fabs(s1_x)<eps) {
+//      s1_x=p2[0];
+//   }
+//
+//   // p1->p2 horizontal
+//   if (fabs(s1_y)<eps) {
+//      s1_y=p2[1];
+//   }
+//
+//   // p1->p2 vertical
+//   if( fabs(s2_x)<eps) {
+//      s2_x=p3[0];
+//   }
+//
+//   // p1->p2 horizontal
+//   if (fabs(s2_y)<eps) {
+//      s2_y=p3[1];
+//   }
 
    denom= (-s2_x*s1_y + s1_x*s2_y);
 
@@ -57,15 +48,6 @@ int do_int(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2])
       // Collision detected
       ip[0] = p1[0] + (t * s1_x);
       ip[1] = p1[1] + (t * s1_y);
-
-//      edge[0][0]=p3[0];
-//      edge[1][0]=p4[0];
-//      edge[0][1]=p3[1];
-//      edge[1][1]=p4[1];
-//      if(!online(ip,edge)){
-//         return 0;
-//      }
-      
       return 1;
    }
    return 0; // No collision
@@ -114,25 +96,26 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
 //      }
 
       if(bndint[i]==0){
-      // set true to begin with
          bndint[i]=do_int(p1,p2,p3,p4,ip);
 
-
-         // is the intersection point just one of the ends?
-         if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
-            ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
-            bndint[i]=1;
-         }
-         if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
-            ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
-            bndint[i]=1;
-         }
-         if(!online(ip,thisedge)){
-            bndint[i]=0;
+         if(bndint[i]){
+            if(online(ip,thisedge)==0){
+               bndint[i]=0;
+            }else{
+               bndint[i]=1;
+            }
+            pedge[0][0]=p1[0];
+            pedge[0][1]=p1[1];
+            pedge[1][0]=p2[0];
+            pedge[1][1]=p2[1];
+            if(online(ip,pedge)==0){
+               bndint[i]=0;
+            }else{
+               bndint[i]=1;
+            }
          }
       }
-
-   }
+   } // end bnd loop
 }
 
 void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint)
@@ -187,25 +170,34 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
 //         bndint[i]=0;
 //      }
 
-      if(bndint[i]){
          bndint[i]=do_int(p1,p2,p3,p4,ip);
 
-         if(bndint[i]){
-            // is the intersection point just one of the ends?
-            if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
-               ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
-               bndint[i]=0;
-            }
-            if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
-               ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
-               bndint[i]=0;
-            }
+         // what if the intersection point isn't on either line?
+         if(online(ip,thisedge)==0){
+            bndint[i]=0;
+         }else{
+            bndint[i]=1;
          }
-      }
+//         pedge[0][0]=p1[0];
+//         pedge[0][1]=p1[1];
+//         pedge[1][0]=p2[0];
+//         pedge[1][1]=p2[1];
+//         if(online(ip,pedge)==0){
+//            bndint[i]=0;
+//         }else{
+//            bndint[i]=1;
+//         }
 
+         // is the intersection point just one of the ends?
+         if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
+            ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
+            bndint[i]=0;
+         }
+         if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
+            ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
+            bndint[i]=0;
+         }
    }
-
-
 }
 
 // does the line between two points and the boundary intersect?
@@ -593,100 +585,33 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 
 
    // if they aren't on the boundary
-   if(!bnd1 & !bnd2){
-      do_intersect(p1,p2,nbnd,bnd,retint);
-      if(iarrsum(nbnd-1,retint)%2==0){
-         return 1;
-      }
-   }else
-   // if both are on the boundary
-   if(bnd1 & bnd2){
-      sp_do_intersect(p1,p2,nbnd,bnd,retint);
-      if(iarrsum(nbnd-1,retint)%2==0){
-         return 1;
-      }
-   // if one of them is on the boundary
-   }else if(bnd1 | bnd2){
+//   if(!bnd1 & !bnd2){
 //      do_intersect(p1,p2,nbnd,bnd,retint);
 //      if(iarrsum(nbnd-1,retint)%2==0){
 //         return 1;
 //      }
-      err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
-
-      // if there are no errors, go ahead
-      if(err==0){
-         bx=(double*)malloc(sizeof(double)*nbnd);
-         by=(double*)malloc(sizeof(double)*nbnd);
-         for(i=0; i<nbnd; i++){
-            bx[i]=bx[0]+i;
-            by[i]=by[0]+i;
-            bx[i]=bnd[i][0]; 
-            by[i]=bnd[i][1];
-         }
-
-         // find the midpoints between p1, p2 their first intersections
-         // store in x and y blocks
-         xmp[0]=(ip1[0]+p1[0])/2;
-         xmp[1]=(ip2[0]+p2[0])/2;
-         ymp[0]=(ip1[1]+p1[1])/2;
-         ymp[1]=(ip2[1]+p2[1])/2;
-
-         // to handle holes, multiple boundaries
-         // ignore this at the moment
-         xmin=minarr(nbnd,bx);
-         ymin=minarr(nbnd,by);
-         mina[0] = xmin; mina[1]=ymin;
-         break_code=minarr(2,mina)-1;
-
-         tmpinout=2;
-
-         in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
-
-         // if they are both inside, return true (ie they face inside)
-         // or if one is on boundary and the other is inside...
-
-//         if((bnd1 & in[1]) | (bnd2 & in[0])){
-//            ret=1;
-//         }
-//            
-//         if((in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-//            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) )){
-//            ret=1;
-//         }
-
-
-         if((in[0] && in[1]) |
-            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
-            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
-            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
-            ret=1;
-         }
-
-         // free some memory
-         free(bx);free(by);
-      }
-
-   }
-   return(ret);
+//   }else
+//   // if both are on the boundary
+//   if(bnd1 & bnd2){
+//      sp_do_intersect(p1,p2,nbnd,bnd,retint);
+//      if(iarrsum(nbnd-1,retint)%2==0){
+//         return 1;
+//      }
+//   // if one of them is on the boundary
+//   }else if(bnd1 | bnd2){
+//      do_intersect(p1,p2,nbnd,bnd,retint);
+//      if(iarrsum(nbnd-1,retint)%2==0){
+//         return 1;
+//      }
 //      err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 //
 //      // if there are no errors, go ahead
 //      if(err==0){
-//
-//         // are the midpoints inside?
-//         // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
-//         // call the in_out routine from soap. Need to make sure that things are
-//         // in the right format
-//         //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
-//
 //         bx=(double*)malloc(sizeof(double)*nbnd);
 //         by=(double*)malloc(sizeof(double)*nbnd);
-//
 //         for(i=0; i<nbnd; i++){
 //            bx[i]=bx[0]+i;
 //            by[i]=by[0]+i;
-//
 //            bx[i]=bnd[i][0]; 
 //            by[i]=bnd[i][1];
 //         }
@@ -711,11 +636,22 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 //
 //         // if they are both inside, return true (ie they face inside)
 //         // or if one is on boundary and the other is inside...
-//         if((in[0] && in[1])){// |
-////            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-////            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
-////            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
-////            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
+//
+////         if((bnd1 & in[1]) | (bnd2 & in[0])){
+////            ret=1;
+////         }
+////            
+////         if((in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+////            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) )){
+////            ret=1;
+////         }
+//
+//
+//         if((in[0] && in[1]) |
+//            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+//            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) |
+//            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
+//            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
 //            ret=1;
 //         }
 //
@@ -723,8 +659,64 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 //         free(bx);free(by);
 //      }
 //
-//
-//   return 0;
+//   }
+//   return(ret);
+      err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+
+      // if there are no errors, go ahead
+      if(err==0){
+
+         // are the midpoints inside?
+         // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
+         // call the in_out routine from soap. Need to make sure that things are
+         // in the right format
+         //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
+
+         bx=(double*)malloc(sizeof(double)*nbnd);
+         by=(double*)malloc(sizeof(double)*nbnd);
+
+         for(i=0; i<nbnd; i++){
+            bx[i]=bx[0]+i;
+            by[i]=by[0]+i;
+
+            bx[i]=bnd[i][0]; 
+            by[i]=bnd[i][1];
+         }
+
+         // find the midpoints between p1, p2 their first intersections
+         // store in x and y blocks
+         xmp[0]=(ip1[0]+p1[0])/2;
+         xmp[1]=(ip2[0]+p2[0])/2;
+         ymp[0]=(ip1[1]+p1[1])/2;
+         ymp[1]=(ip2[1]+p2[1])/2;
+
+         // to handle holes, multiple boundaries
+         // ignore this at the moment
+         xmin=minarr(nbnd,bx);
+         ymin=minarr(nbnd,by);
+         mina[0] = xmin; mina[1]=ymin;
+         break_code=minarr(2,mina)-1;
+
+         tmpinout=2;
+
+         in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
+
+         // if they are both inside, return true (ie they face inside)
+         // or if one is on boundary and the other is inside...
+         if((in[0] && in[1]) |
+            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) )){// |
+//            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
+//            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
+            ret=1;
+         }
+
+         // free some memory
+         free(bx);free(by);
+      }
+
+
+   return 0;
 }
 
 int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
@@ -732,15 +724,46 @@ int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
    double p3[2],p4[2];
    int ret;
 
+   double arr[2];
+
    p3[0]=edge[0][0];
    p3[1]=edge[0][1];
    p4[0]=edge[1][0];
    p4[1]=edge[1][1];
 
+   // if they overlap
+   if(( (fabs(p1[0]-p3[0]) < eps) & 
+        (fabs(p2[0]-p4[0]) < eps) &
+        (fabs(p1[1]-p3[1]) < eps) & 
+        (fabs(p2[1]-p4[1]) < eps) ) |
+      ( (fabs(p2[0]-p3[0]) < eps) & 
+        (fabs(p1[0]-p4[0]) < eps) &
+        (fabs(p2[1]-p3[1]) < eps) &
+        (fabs(p1[1]-p4[1]) < eps) )){
+      arr[0]=p1[0];
+      arr[1]=p2[0];
+      ip[0]=minarr(2,arr);
+      arr[0]=p1[1];
+      arr[1]=p2[1];
+      ip[1]=minarr(2,arr);
+      return 0;
+   }
 
-   ret = !do_int(p1,p2,p3,p4,ip);
+   // ends
+   if(online(p1,edge)){
+      ip[0]=p1[0];
+      ip[1]=p1[1];
+      return 0;
+   }
+   if(online(p2,edge)){
+      ip[0]=p2[0];
+      ip[1]=p2[1];
+      return 0;
+   }
 
-   return ret;
+   ret = do_int(p1,p2,p3,p4,ip);
+
+   return !ret;
 }
 
 
@@ -891,16 +914,15 @@ int online(double p1[],double thisline[][2]){
    twosort(xarr);
    twosort(yarr); // make xarr, yarr small->large
  
-
    // is p1 an endpoint of thisline?
-   if( ((fabs(p1[0]-xarr[0])<eps) & (fabs(p1[1]-yarr[0])<eps)) |
-       ((fabs(p1[0]-xarr[1])<eps) & (fabs(p1[1]-yarr[1])<eps))){
+   if( ((fabs(p1[0]-thisline[0][0])<eps) & (fabs(p1[1]-thisline[0][1])<eps)) |
+       ((fabs(p1[0]-thisline[1][0])<eps) & (fabs(p1[1]-thisline[1][1])<eps))){
       return 1;
    }
       
    // check p1 is inside the bounding box
-   if((p1[0]>xarr[1]) && (p1[0]<xarr[0]) &&
-      (p1[1]>yarr[1]) && (p1[1]<yarr[0])){
+   if((p1[0]>=xarr[1]) && (p1[0]<=xarr[0]) &&
+      (p1[1]>=yarr[1]) && (p1[1]<=yarr[0])){
       return 0;
    }
  
@@ -933,7 +955,7 @@ int online(double p1[],double thisline[][2]){
    c = thisline[1][1]-m*thisline[1][0];
  
    // is p1 a solution?
-   if(fabs(p1[1]-(m*p1[0]+c))<=eps){
+   if(fabs(p1[1]-(m*p1[0]+c))<eps){
       return 1;
    }else{
       return 0;
