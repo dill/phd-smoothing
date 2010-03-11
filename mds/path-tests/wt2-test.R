@@ -19,8 +19,8 @@ names(bnd)<-c("x","y")
 source("makesoapgrid.R")
 my.grid<-make_soap_grid(bnd,10)
 
-my.grid<-pe(my.grid,-which(my.grid$y==min(bnd$y)))
-my.grid<-pe(my.grid,-which(my.grid$x==max(bnd$x)))
+#my.grid<-pe(my.grid,-which(my.grid$y==min(bnd$y)))
+#my.grid<-pe(my.grid,-which(my.grid$x==max(bnd$x)))
 
 
 x<-my.grid$x
