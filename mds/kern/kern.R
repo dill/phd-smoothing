@@ -10,7 +10,7 @@ bnd <- read.csv("wt2-verts.csv",header=FALSE)
 names(bnd)<-c("x","y")
 
 # create a grid
-grid<-make_soap_grid(bnd,20)
+grid<-make_soap_grid(bnd,17)
 
 # MDS it
 D<-create_distance_matrix(grid$x,grid$y,bnd)

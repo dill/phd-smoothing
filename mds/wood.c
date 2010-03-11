@@ -440,6 +440,8 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
                delete_step(&bnd2, nbnd, bnd);
             }
       }
+//PrintPath(&bnd1);
+//PrintPath(&bnd2);
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
