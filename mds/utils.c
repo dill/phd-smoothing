@@ -616,7 +616,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    *                 crapfind, qsort
    */
 
-   int i, firstel, lastel, *retint, *bbindex;
+   int i, firstel, lastel, *retint,*retint2, *bbindex;
    int lbbindex=0;
    double thisedge[2][2], **ips, *dists, *sortdists;
    double ip[2];
@@ -627,8 +627,10 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 
    // setup retint
    retint=(int*)malloc(sizeof(int)*(nbnd-1));
+   retint2=(int*)malloc(sizeof(int)*(nbnd-1));
    for(i=0; i<(nbnd-1); i++){
       retint[i]=retint[0]+i;
+      retint2[i]=retint2[0]+i;
    }
 
    // do_intersect returns a string of T/F values
@@ -645,7 +647,8 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
          thisedge[0][1]=bnd[i][1];
          thisedge[1][0]=bnd[i+1][0];
          thisedge[1][1]=bnd[i+1][1];
-         do_intersect(ip,p2,nbnd,bnd,retint);
+         do_intersect(ip,p2,nbnd,bnd,retint2);
+         retint[i]=retint[i]&retint2[i];
       }
    
       if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
@@ -655,7 +658,8 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
          thisedge[0][1]=bnd[i][1];
          thisedge[1][0]=bnd[i+1][0];
          thisedge[1][1]=bnd[i+1][1];
-         do_intersect(ip,p1,nbnd,bnd,retint);
+         do_intersect(ip,p1,nbnd,bnd,retint2);
+         retint[i]=retint[i]&retint2[i];
       }
    }
 

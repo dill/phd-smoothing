@@ -20,7 +20,7 @@ plot(grid.mds$points)
 
 
 # okay, now fit the kde
-#kdefit<-kde2d(x=grid.mds$points[,1],y=grid.mds$points[,2],n=50)
+kdefit<-kde2d(x=grid.mds$points[,1],y=grid.mds$points[,2],n=50)
 
 
 
