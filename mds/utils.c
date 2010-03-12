@@ -197,6 +197,9 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    if(!bnd1 & !bnd2){
       do_intersect(p1,p2,nbnd,bnd,retint);
       if(iarrsum(nbnd-1,retint)%2==0){
+         if(iarrsum(nbnd-1,retint)==0){
+            return 0;
+         }
          return 1;
       }
    }else
@@ -259,6 +262,7 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          if((in[0] && in[1])){
             ret=1;
          }
+
 
 //         if((in[0] && in[1]) |
 //            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |

@@ -440,8 +440,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
                delete_step(&bnd2, nbnd, bnd);
             }
       }
-//PrintPath(&bnd1);
-//PrintPath(&bnd2);
 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
@@ -848,7 +846,7 @@ void alter_step(node** path, int nbnd, double **bnd)
 
                // make the new path as simple as possible (no simpler :))
                // NB. we would be fine just passing newpath to delete
-               delete_step(&newpath,nbnd,bnd);
+               //delete_step(&newpath,nbnd,bnd);
 
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen)){
@@ -863,8 +861,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                   tp2[1]=newpath->data[1];
                   do_intersect(tp1, tp2, nbnd, bnd,bndint);
 
-                 if( (iarrsum((nbnd-1),bndint)>0) |
-                     ((fabs(tp2[0]-tp1[0]) <=eps) & (fabs(tp2[1]-tp1[1]) <=eps) )) {
+                 if( //(iarrsum((nbnd-1),bndint)>0) |
+                     ((fabs(tp2[0]-tp1[0]) <eps) & (fabs(tp2[1]-tp1[1]) <eps) )) {
                      ReverseList(&newpath);
                   }else{
                      end1=current;
@@ -883,8 +881,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                      tp2[1]=end2->data[1];
                      do_intersect(tp1, tp2, nbnd, bnd,bndint);
                      
-                     if( (iarrsum((nbnd-1),bndint)>0) |
-                        ((fabs(tp2[0]-tp1[0]) <=eps) & (fabs(tp2[1]-tp1[1]) <=eps) )) {
+                     if( //(iarrsum((nbnd-1),bndint)>0) |
+                        !((fabs(tp2[0]-tp1[0]) <eps) & (fabs(tp2[1]-tp1[1]) <eps) )) {
                         ReverseList(&newpath);
                      }
                   }
