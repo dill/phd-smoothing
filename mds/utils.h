@@ -45,7 +45,6 @@ void append_check(node**, int, double[2], int[2],int, double**);
 int do_int(double[2], double[2], double[2], double[2], double[2]);
 
 
-
 // for in_out in separate file
 void in_out(double *, double *, double *,double *,double *,int *, int *, int * );
 

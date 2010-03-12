@@ -320,9 +320,9 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 
          // if they are both inside, return true (ie they face inside)
          // or if one is on boundary and the other is inside...
-         if((in[0] && in[1]) |
-            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) )){// |
+         if((in[0] && in[1])){// |
+//            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
+//            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) )){// |
 //            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
 //            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
             ret=1;
@@ -333,7 +333,7 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
       }
 
 
-   return 0;
+   return ret;
 }
 
 int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
@@ -638,7 +638,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    do_intersect(p1,p2,nbnd,bnd,retint);
    
    for(i=0;i<(nbnd-1);i++){
-      if( (sqrt(pow((p1[0]-bnd[i][0]),2))<eps) && (sqrt(pow((p1[1]-bnd[i][1]),2))<eps)){
+      if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
          ip[0]=(p1[0]+eps*p2[0])/(1+eps);
          ip[1]=(p1[1]+eps*p2[1])/(1+eps);
          thisedge[0][0]=bnd[i][0];
@@ -648,7 +648,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
          do_intersect(ip,p2,nbnd,bnd,retint);
       }
    
-      if( (sqrt(pow((p2[0]-bnd[i][0]),2))<eps) && (sqrt(pow((p2[1]-bnd[i][1]),2))<eps)){
+      if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
          ip[0]=(p1[0]+(1/eps)*p2[0])*(1+1/eps);
          ip[1]=(p1[1]+(1/eps)*p2[1])*(1+1/eps);
          thisedge[0][0]=bnd[i][0];
