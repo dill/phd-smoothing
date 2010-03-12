@@ -637,17 +637,30 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    // this is what is used in the R code.
    do_intersect(p1,p2,nbnd,bnd,retint);
    
+   for(i=0;i<(nbnd-1);i++){
+      if( (sqrt(pow((p1[0]-bnd[i][0]),2))<eps) && (sqrt(pow((p1[1]-bnd[i][1]),2))<eps)){
+         ip[0]=(p1[0]+eps*p2[0])/(1+eps);
+         ip[1]=(p1[1]+eps*p2[1])/(1+eps);
+         thisedge[0][0]=bnd[i][0];
+         thisedge[0][1]=bnd[i][1];
+         thisedge[1][0]=bnd[i+1][0];
+         thisedge[1][1]=bnd[i+1][1];
+         do_intersect(ip,p2,nbnd,bnd,retint);
+      }
+   
+      if( (sqrt(pow((p2[0]-bnd[i][0]),2))<eps) && (sqrt(pow((p2[1]-bnd[i][1]),2))<eps)){
+         ip[0]=(p1[0]+(1/eps)*p2[0])*(1+1/eps);
+         ip[1]=(p1[1]+(1/eps)*p2[1])*(1+1/eps);
+         thisedge[0][0]=bnd[i][0];
+         thisedge[0][1]=bnd[i][1];
+         thisedge[1][0]=bnd[i+1][0];
+         thisedge[1][1]=bnd[i+1][1];
+         do_intersect(ip,p1,nbnd,bnd,retint);
+      }
+   }
+
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
-
-   // if we missed any of the intersections that were vertices of bnd
-//   for(i=0;i<(nbnd-1);i++){
-//      if(( (p1[0]==bnd[i][0]) & (p1[1]==bnd[i][1])) |
-//         ( (p2[0]==bnd[i][0]) & (p2[1]==bnd[i][1]))){
-//         retint[i]=1;
-//         lbbindex++;
-//      }
-//   }
 
    // setup bbindex, dists, sortdists
    bbindex=(int*)malloc(sizeof(int)*lbbindex);
