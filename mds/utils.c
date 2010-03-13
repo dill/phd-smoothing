@@ -383,141 +383,6 @@ int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
    return !ret;
 }
 
-
-// find the intersection point between two points and a line
-//void intpoint(double p1[], double p2[],double edge[][2], double ip[])
-//{
-//   /*args:
-//      p1, p2      the two points making up the end points of the line
-//      line         boundary of the shape to test intersection with
-//     return:
-//        intersection point
-//   */
-//
-//   double a1,b1,c1,a2,b2,c2, pmin, emin;
-//   double arr[2];
-//
-//   // calculation of intersection is straight from 
-//   // Handbook of Mathematics Bronstein et al. pp. 195,196
-//
-//   /// calculate intersection point
-//   //   first calculate the coefficients for the lines
-//   //   the line between the points
-//   a1=-1/(p2[0]-p1[0]);
-//   b1=1/(p2[1]-p1[1]);
-//   c1=p1[0]/(p2[0]-p1[0]) - p1[1]/(p2[1]-p1[1]);
-//
-//   // the edge
-//   a2=-1/(edge[1][0]-edge[0][0]);
-//   b2=1/(edge[1][1]-edge[0][1]);
-//   c2= edge[0][0]/(edge[1][0]-edge[0][0]) - edge[0][1]/(edge[1][1]-edge[0][1]);
-//
-//   if( ((p1[0]==edge[0][0]) & (p1[1]==edge[0][1]))){
-//      ip[0]=p1[0];
-//      ip[1]=p1[1];
-//   }else if( ((p2[0]==edge[0][0]) & (p2[1]==edge[0][1]))){
-//      ip[0]=p2[0];
-//      ip[1]=p2[1];
-//   }else if( ((p1[0]==edge[1][0]) & (p1[1]==edge[1][1]))){
-//      ip[0]=p1[0];
-//      ip[1]=p1[1];
-//   }else if( ((p2[0]==edge[1][0]) & (p2[1]==edge[1][1]))){
-//      ip[0]=p2[0];
-//      ip[1]=p2[1];
-//
-//   // handle the horizontal/vertical line cases
-//
-//   // when the both lines are colinear
-//   // both horizontal
-//   }else 
-//
-//   if( ((fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))) &
-//       ((fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
-//              isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))) ){
-//
-//      // find the min of each pair then the min of them 
-//      arr[0]=p1[0];
-//      arr[1]=p2[0];
-//
-//      pmin=minarr(2,arr);
-//
-//      arr[0]=edge[0][0];
-//      arr[1]=edge[1][0];
-//
-//      emin=minarr(2,arr);
-//
-//      arr[0]=pmin;
-//      arr[1]=emin;
-//
-//      ip[0]=minarr(2,arr);
-//      ip[1]=p1[1]; // since we have a horizontal line
-//
-//   // both vertical
-//   }else if( ((fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))) &
-//          ( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
-//               isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))) ){
-//
-//      // find the min of each pair then the min of them 
-//      arr[0]=p1[1];
-//      arr[1]=p2[1];
-//
-//      pmin=minarr(2,arr);
-//
-//      arr[0]=edge[0][1];
-//      arr[1]=edge[1][1];
-//
-//      emin=minarr(2,arr);
-//
-//      arr[0]=pmin;
-//      arr[1]=emin;
-//
-//      ip[1]=minarr(2,arr);
-//      ip[0]=p1[0]; // since we have a horizontal line
-//
-//
-//   }else{
-//      // point line horizontal
-//      if( (fabs((p2[1]-p1[1])/(p2[0]-p1[0]))<=eps) | isnan((p2[1]-p1[1])/(p2[0]-p1[0]))){
-//         a1=0;
-//         b1=1;
-//         c1=-p1[1];
-//      }
-//   
-//      // point line vertical
-//      if( (fabs((p2[0]-p1[0])/(p2[1]-p1[1]))<=eps) | isnan((p2[0]-p1[0])/(p2[1]-p1[1]))){
-//         a1=1;
-//         b1=0;
-//         c1=-p1[0];
-//      }
-//   
-//      // edge horizontal
-//      if( (fabs((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))<=eps) | 
-//               isnan((edge[1][1]-edge[0][1])/(edge[1][0]-edge[0][0]))){
-//         a2=0;
-//         b2=1;
-//         c2=-edge[0][1];
-//      }
-//   
-//      // edge vertical
-//      if( (fabs((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))<=eps) | 
-//               isnan((edge[1][0]-edge[0][0])/(edge[1][1]-edge[0][1]))){
-//         a2=1;
-//         b2=0;
-//         c2=-edge[0][0];
-//      }
-//   
-//      /// do something to check for infinities...
-//      //   if(all(c(a1,a2,b1,b2,c1,c2)!=Inf) & all(c(a1,a2,b1,b2,c1,c2)!=-Inf)){
-//      // calculate the intersection
-//   
-//      // want to calculate...
-//      //      intx<-det(matrix(c(b1,b2,c1,c2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
-//      //      inty<-det(matrix(c(c1,c2,a1,a2),2,2))/det(matrix(c(a1,a2,b1,b2),2,2))
-//         ip[0]=(b1*c2-(b2*c1))/(a1*b2-(a2*b1));
-//         ip[1]=(c1*a2-(a1*c2))/(a1*b2-(b1*a2));
-//   }
-//}
-
 int online(double p1[],double thisline[][2]){
  
    double m,c;
@@ -640,26 +505,32 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    do_intersect(p1,p2,nbnd,bnd,retint);
    
    for(i=0;i<(nbnd-1);i++){
-      if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
-         ip[0]=(p1[0]+eps*p2[0])/(1+eps);
-         ip[1]=(p1[1]+eps*p2[1])/(1+eps);
-         thisedge[0][0]=bnd[i][0];
-         thisedge[0][1]=bnd[i][1];
-         thisedge[1][0]=bnd[i+1][0];
-         thisedge[1][1]=bnd[i+1][1];
-         do_intersect(ip,p2,nbnd,bnd,retint2);
-         retint[i]=retint[i]&retint2[i];
+      if(retint[i]){
+         if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
+            ip[0]=(p1[0]+eps*p2[0])/(1+eps);
+            ip[1]=(p1[1]+eps*p2[1])/(1+eps);
+            thisedge[0][0]=bnd[i][0];
+            thisedge[0][1]=bnd[i][1];
+            thisedge[1][0]=bnd[i+1][0];
+            thisedge[1][1]=bnd[i+1][1];
+            do_intersect(ip,p2,nbnd,bnd,retint2);
+            retint[i]=retint2[i];
+            retint[i-1]=retint2[i-1];
+         }
       }
    
-      if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
-         ip[0]=(p1[0]+(1/eps)*p2[0])*(1+1/eps);
-         ip[1]=(p1[1]+(1/eps)*p2[1])*(1+1/eps);
-         thisedge[0][0]=bnd[i][0];
-         thisedge[0][1]=bnd[i][1];
-         thisedge[1][0]=bnd[i+1][0];
-         thisedge[1][1]=bnd[i+1][1];
-         do_intersect(ip,p1,nbnd,bnd,retint2);
-         retint[i]=retint[i]&retint2[i];
+      if(retint[i]){
+         if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
+            ip[0]=(p1[0]+(1/eps)*p2[0])*(1+1/eps);
+            ip[1]=(p1[1]+(1/eps)*p2[1])*(1+1/eps);
+            thisedge[0][0]=bnd[i][0];
+            thisedge[0][1]=bnd[i][1];
+            thisedge[1][0]=bnd[i+1][0];
+            thisedge[1][1]=bnd[i+1][1];
+            do_intersect(ip,p1,nbnd,bnd,retint2);
+            retint[i]=retint2[i];
+            retint[i-1]=retint2[i-1];
+         }
       }
    }
 
