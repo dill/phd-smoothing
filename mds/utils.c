@@ -147,11 +147,11 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    int i, err, intind[2], tmpinout;
    double ip1[2],ip2[2], xmp[2], ymp[2];
    double *bx, *by, xmin, ymin, mina[2], break_code;
-   int *retint;
+   //int *retint;
 
    /// DEL
-   double edge[2][2];
-   int bnd1, bnd2;
+   //double edge[2][2];
+   //int bnd1, bnd2;
 
 //   retint=(int*)malloc(sizeof(int)*(nbnd-1));
 //   for(i=0; i<(nbnd-1); i++){
@@ -307,6 +307,10 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          ymp[0]=(ip1[1]+p1[1])/2;
          ymp[1]=(ip2[1]+p2[1])/2;
 
+xmp[0]=(ip1[0]+(1/eps)*p1[0])/(1+1/eps);
+xmp[1]=(ip2[0]+(1/eps)*p2[0])/(1+1/eps);
+ymp[0]=(ip1[1]+(1/eps)*p1[1])/(1+1/eps);
+ymp[1]=(ip2[1]+(1/eps)*p2[1])/(1+1/eps);
          // to handle holes, multiple boundaries
          // ignore this at the moment
          xmin=minarr(nbnd,bx);
@@ -520,8 +524,8 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    
       if(retint[i]){
          if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
-            ip[0]=(p1[0]+(1/eps)*p2[0])*(1+1/eps);
-            ip[1]=(p1[1]+(1/eps)*p2[1])*(1+1/eps);
+            ip[0]=(p1[0]+(1/eps)*p2[0])/(1+1/eps);
+            ip[1]=(p1[1]+(1/eps)*p2[1])/(1+1/eps);
             thisedge[0][0]=bnd[i][0];
             thisedge[0][1]=bnd[i][1];
             thisedge[1][0]=bnd[i+1][0];

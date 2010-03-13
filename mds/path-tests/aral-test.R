@@ -27,7 +27,7 @@ D.t<-read.csv("path-tests/aral-D.csv")
 D.t<-as.matrix(D.t)
 D.t<-D.t[,2:119]
 
-if(max(abs(D-D.t))>0){
+if(max(abs(D-D.t))>(.Machine$double.eps)){
    cat("# Uh oh!",max(abs(D-D.t))," not the same as \"truth\"\n")
 }
 options(echo=TRUE)

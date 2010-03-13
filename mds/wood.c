@@ -121,6 +121,13 @@ FreeList(&savedpaths[m]);
                   }
                }
             }
+            //if(err==1){
+            //   if(savedpaths[m]!=NULL){
+            //      FreeList(&savedpaths[m]);
+            //   }
+            //   err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
+            //   err=iter_path(&savedpaths[m],*nbnd,bnd);
+            //}
 
 //printf("cat(\"### before iter ###\\n\")\n");
 //PrintPath(&savedpaths[m]);
@@ -479,10 +486,16 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    node* apppath=NULL;
    double endpoint[2];
 
+   //if(Length(oldpath)<5){
+   //   return 1;
+   //}
+
    intbnd=(int*)malloc(sizeof(int)*(nbnd-1));
    for(i=0; i<(nbnd-1); i++){
       intbnd[i]=intbnd[0]+i;
    }
+
+
 
    // blank what is currently in newpath
    FreeList(newpath);
