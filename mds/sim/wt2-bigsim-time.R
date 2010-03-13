@@ -95,7 +95,7 @@ for(i in 1:sim.size){
 }
 #write.csv(res.mse,file=paste("wt2-",samp.size,"-",noise.level,".csv",sep=""))
 
-sink("wt2-times.txt")
+#sink("wt2-times.txt")
 cat(mean(gam.times$mds),"\n")
 cat(mean(gam.times$mdstp),"\n")
 cat(mean(gam.times$soap),"\n")
@@ -104,4 +104,4 @@ cat(mean(pred.times$mds),"\n")
 cat(mean(pred.times$mdstp),"\n")
 cat(mean(pred.times$soap),"\n")
 cat(mean(pred.times$tprs),"\n")
-sink()
+#sink()
