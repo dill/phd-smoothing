@@ -153,10 +153,10 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    double edge[2][2];
    int bnd1, bnd2;
 
-   retint=(int*)malloc(sizeof(int)*(nbnd-1));
-   for(i=0; i<(nbnd-1); i++){
-      retint[i]=retint[0]+i;
-   }
+//   retint=(int*)malloc(sizeof(int)*(nbnd-1));
+//   for(i=0; i<(nbnd-1); i++){
+//      retint[i]=retint[0]+i;
+//   }
 
    // do_intersect returns a string of T/F values
   
@@ -331,7 +331,6 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          // free some memory
          free(bx);free(by);
       }
-
 
    return ret;
 }
@@ -625,6 +624,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    free(dists);
    free(sortdists);
    free(retint);
+   free(retint2);
 
    return(err);
 }
