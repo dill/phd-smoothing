@@ -89,8 +89,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
 printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
-//            if(l==0){
-if(1){
+            if(l==0){
+//if(1){
 FreeList(&savedpaths[m]);
                // if not then just make the path from scratch
                err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
@@ -129,8 +129,8 @@ FreeList(&savedpaths[m]);
             //   err=iter_path(&savedpaths[m],*nbnd,bnd);
             //}
 
-//printf("cat(\"### before iter ###\\n\")\n");
-//PrintPath(&savedpaths[m]);
+printf("cat(\"### before iter ###\\n\")\n");
+PrintPath(&savedpaths[m]);
             // take the start path and optimize it...
             err=iter_path(&savedpaths[m],*nbnd,bnd);
 
@@ -182,7 +182,6 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
          pathlen  variable to store the lengths of the path in
          full     do full or insertion MDS?
    */
-   
    int i,j,k, *retint,ilim,jstart;
    double p1[2], p2[2];
 
@@ -258,18 +257,14 @@ int iter_path(node** mypath,int nbnd, double **bnd){
       // add new vertices
       alter_step(mypath,nbnd,bnd);
       // DEBUG
-      //printf("cat(\"### alter_step ###\\n\")\n");
-      //PrintPath(&mypath);
-      //printf("cat(\"### alter_step ###\\n\")\n");
-      //PrintPath(mypath);
+      printf("cat(\"### alter_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(mypath,nbnd,bnd);
       // DEBUG
-      //printf("cat(\"### delete_step ###\\n\")\n");
-      //PrintPath(&mypath);
-      //printf("cat(\"### delete_step ###\\n\")\n");
-      //PrintPath(mypath);
+      printf("cat(\"### delete_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -852,7 +847,6 @@ void alter_step(node** path, int nbnd, double **bnd)
          if(facing(ep1, ep2, nbnd, bnd)){
             // create a new path
             err=make_bnd_path(ep1,ep2,nbnd,bnd,&newpath,0);
-
 
             // provided there were no errors in the path making...
             if(err==0){

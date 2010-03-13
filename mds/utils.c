@@ -147,25 +147,16 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    int i, err, intind[2], tmpinout;
    double ip1[2],ip2[2], xmp[2], ymp[2];
    double *bx, *by, xmin, ymin, mina[2], break_code;
-   //int *retint;
 
    /// DEL
-   //double edge[2][2];
-   //int bnd1, bnd2;
+//   double edge[2][2];
+//   int bnd1, bnd2;
 
+//   int *retint;
 //   retint=(int*)malloc(sizeof(int)*(nbnd-1));
 //   for(i=0; i<(nbnd-1); i++){
 //      retint[i]=retint[0]+i;
 //   }
-
-   // do_intersect returns a string of T/F values
-  
-   // find intersections 
-   //do_intersect(p1,p2,nbnd,bnd,retint);
-
-   //if(iarrsum(nbnd-1,retint)%2==0){
-   //   return(1);
-   //}
 
 //   bnd1=0;
 //   bnd2=0;
@@ -187,9 +178,12 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 //      edge[1][0]=bnd[i+1][0];
 //      edge[1][1]=bnd[i+1][1];
 //      if(online(p2,edge)){
-//         bnd1=1;
+//         bnd2=1;
 //         break;
 //      }
+//   }
+//   if(bnd1 & bnd2){
+//      return 1;
 //   }
 //
 //
@@ -211,7 +205,8 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 ////         return 1;
 ////      }
 ////   // if one of them is on the boundary
-////   }else if(bnd1 | bnd2){
+////   }else 
+////if(bnd1 | bnd2){
 ////      do_intersect(p1,p2,nbnd,bnd,retint);
 ////      if(iarrsum(nbnd-1,retint)%2==0){
 ////         return 1;
@@ -307,10 +302,10 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          ymp[0]=(ip1[1]+p1[1])/2;
          ymp[1]=(ip2[1]+p2[1])/2;
 
-xmp[0]=(ip1[0]+(1/eps)*p1[0])/(1+1/eps);
-xmp[1]=(ip2[0]+(1/eps)*p2[0])/(1+1/eps);
-ymp[0]=(ip1[1]+(1/eps)*p1[1])/(1+1/eps);
-ymp[1]=(ip2[1]+(1/eps)*p2[1])/(1+1/eps);
+//xmp[0]=(ip1[0]+(1/eps)*p1[0])/(1+1/eps);
+//xmp[1]=(ip2[0]+(1/eps)*p2[0])/(1+1/eps);
+//ymp[0]=(ip1[1]+(1/eps)*p1[1])/(1+1/eps);
+//ymp[1]=(ip2[1]+(1/eps)*p2[1])/(1+1/eps);
          // to handle holes, multiple boundaries
          // ignore this at the moment
          xmin=minarr(nbnd,bx);
@@ -343,7 +338,6 @@ int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
 
    double p3[2],p4[2];
    int ret;
-
    double arr[2];
 
    p3[0]=edge[0][0];
@@ -423,7 +417,7 @@ int online(double p1[],double thisline[][2]){
          return 0;
       }
  
-   }else if(fabs(thisline[1][1]-thisline[0][1])<=eps){
+   }else if(fabs(thisline[1][1]-thisline[0][1])<eps){
       /* horizontal line */
  
       if((fabs(thisline[1][1]-p1[1])<eps) &&
