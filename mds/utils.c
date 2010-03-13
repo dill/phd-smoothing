@@ -518,8 +518,8 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    
       if(retint[i]){
          if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
-            ip[0]=(p1[0]+(1/eps)*p2[0])/(1+1/eps);
-            ip[1]=(p1[1]+(1/eps)*p2[1])/(1+1/eps);
+            ip[0]=(p1[0]+(eps)*p2[0])/(1+eps);
+            ip[1]=(p1[1]+(eps)*p2[1])/(1+eps);
             thisedge[0][0]=bnd[i][0];
             thisedge[0][1]=bnd[i][1];
             thisedge[1][0]=bnd[i+1][0];

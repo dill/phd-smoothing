@@ -121,16 +121,16 @@ FreeList(&savedpaths[m]);
                   }
                }
             }
-            //if(err==1){
-            //   if(savedpaths[m]!=NULL){
-            //      FreeList(&savedpaths[m]);
-            //   }
-            //   err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
-            //   err=iter_path(&savedpaths[m],*nbnd,bnd);
-            //}
+            if(err==1){
+               if(savedpaths[m]!=NULL){
+                  FreeList(&savedpaths[m]);
+               }
+               err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
+               err=iter_path(&savedpaths[m],*nbnd,bnd);
+            }
 
-printf("cat(\"### before iter ###\\n\")\n");
-PrintPath(&savedpaths[m]);
+//printf("cat(\"### before iter ###\\n\")\n");
+//PrintPath(&savedpaths[m]);
             // take the start path and optimize it...
             err=iter_path(&savedpaths[m],*nbnd,bnd);
 
@@ -257,14 +257,14 @@ int iter_path(node** mypath,int nbnd, double **bnd){
       // add new vertices
       alter_step(mypath,nbnd,bnd);
       // DEBUG
-      printf("cat(\"### alter_step ###\\n\")\n");
-      PrintPath(mypath);
+      //printf("cat(\"### alter_step ###\\n\")\n");
+      //PrintPath(mypath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(mypath,nbnd,bnd);
       // DEBUG
-      printf("cat(\"### delete_step ###\\n\")\n");
-      PrintPath(mypath);
+      //printf("cat(\"### delete_step ###\\n\")\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -481,9 +481,9 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    node* apppath=NULL;
    double endpoint[2];
 
-   //if(Length(oldpath)<5){
-   //   return 1;
-   //}
+   if(Length(oldpath)<5){
+      return 1;
+   }
 
    intbnd=(int*)malloc(sizeof(int)*(nbnd-1));
    for(i=0; i<(nbnd-1); i++){
