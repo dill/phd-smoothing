@@ -11,5 +11,15 @@ bnd<-spir.dat$bnd
 my.grid<-make_soap_grid(bnd,15)
 
 
-D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
+D<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
+
+D.t<-read.csv("path-tests/spir-D.csv")
+
+D.t<-as.matrix(D.t)
+D.t<-D.t[,2:49]
+
+if(max(abs(D-D.t))>(.Machine$double.eps)){
+   cat("# Uh oh!",max(abs(D-D.t))," not the same as \"truth\"\n")
+}
+options(echo=TRUE)
 
