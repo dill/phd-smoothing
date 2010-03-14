@@ -148,6 +148,18 @@ int main(void)
    }
    printf(") (horiz)\n");
 
+   // horizontal (1 bnd only)
+   p1[1]=0.5;p1[0]=0.5;
+   p2[1]=0.5;p2[0]=5;
+ 
+   do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(0,1,0,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (horiz, 1 bnd)\n");
+
    // inside 
    p1[0]=-0.5;p1[1]=0.5;
    p2[0]=0.5;p2[1]=-0.5;
