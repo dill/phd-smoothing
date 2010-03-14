@@ -87,7 +87,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
 
-printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
+//printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
 //            if(l==0){
 if(1){
@@ -147,8 +147,8 @@ FreeList(&savedpaths[m]);
             // find the length of the path
             pathlen[k]=hull_length(&savedpaths[m]);
 // DEBUG
-printf("cat(\"### final ###\\n\")\n");
-PrintPath(&savedpaths[m]);
+//printf("cat(\"### final ###\\n\")\n");
+//PrintPath(&savedpaths[m]);
             m++;
             if(l<(*len)){
                l++;
