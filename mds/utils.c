@@ -559,7 +559,7 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
       if(me>0){
          // do any of the selected paths have a Euclidean path between
          // their other end and point?   
-         if(me==1){
+         if(me==2){
             current=paths[i];
    
             end[0]=current->data[0];
@@ -572,7 +572,7 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
                app[1]=i;
                break;
             }
-         }else if(me==2){ 
+         }else if(me==1){ 
             current=paths[i];
             while (current->next != NULL){
                current=current->next;
