@@ -16,7 +16,7 @@ D<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
 D.t<-read.csv("path-tests/spir-D.csv")
 
 D.t<-as.matrix(D.t)
-D.t<-D.t[,2:49]
+D.t<-D.t[,2:69]
 
 if(max(abs(D-D.t))>(.Machine$double.eps)){
    cat("# Uh oh!",max(abs(D-D.t))," not the same as \"truth\"\n")
