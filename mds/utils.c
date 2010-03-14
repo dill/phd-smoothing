@@ -148,188 +148,54 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
    double ip1[2],ip2[2], xmp[2], ymp[2];
    double *bx, *by, xmin, ymin, mina[2], break_code;
 
-   /// DEL
-//   double edge[2][2];
-//   int bnd1, bnd2;
+   err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
 
-//   int *retint;
-//   retint=(int*)malloc(sizeof(int)*(nbnd-1));
-//   for(i=0; i<(nbnd-1); i++){
-//      retint[i]=retint[0]+i;
-//   }
+   // if there are no errors, go ahead
+   if(err==0){
 
-//   bnd1=0;
-//   bnd2=0;
-//
-//   // is either of p1 or p2 on the boundary?
-//   for(i=0;i<(nbnd-1);i++){
-//      edge[0][0]=bnd[i][0];
-//      edge[0][1]=bnd[i][1];
-//      edge[1][0]=bnd[i+1][0];
-//      edge[1][1]=bnd[i+1][1];
-//      if(online(p1,edge)){
-//         bnd1=1;
-//         break;
-//      }
-//   }
-//   for(i=0;i<(nbnd-1);i++){
-//      edge[0][0]=bnd[i][0];
-//      edge[0][1]=bnd[i][1];
-//      edge[1][0]=bnd[i+1][0];
-//      edge[1][1]=bnd[i+1][1];
-//      if(online(p2,edge)){
-//         bnd2=1;
-//         break;
-//      }
-//   }
-//   if(bnd1 & bnd2){
-//      return 1;
-//   }
-//
-//
-//   // if they aren't on the boundary
-//   if(!bnd1 & !bnd2){
-//      do_intersect(p1,p2,nbnd,bnd,retint);
-//      if(iarrsum(nbnd-1,retint)%2==0){
-//         if(iarrsum(nbnd-1,retint)==0){
-//            return 0;
-//         }
-//         return 1;
-//      }
-//   }else
-//{
-//   // if both are on the boundary
-////   if(bnd1 & bnd2){
-////      sp_do_intersect(p1,p2,nbnd,bnd,retint);
-////      if(iarrsum(nbnd-1,retint)%2==0){
-////         return 1;
-////      }
-////   // if one of them is on the boundary
-////   }else 
-////if(bnd1 | bnd2){
-////      do_intersect(p1,p2,nbnd,bnd,retint);
-////      if(iarrsum(nbnd-1,retint)%2==0){
-////         return 1;
-////      }
-//      err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
-//
-//      // if there are no errors, go ahead
-//      if(err==0){
-//         bx=(double*)malloc(sizeof(double)*nbnd);
-//         by=(double*)malloc(sizeof(double)*nbnd);
-//         for(i=0; i<nbnd; i++){
-//            bx[i]=bx[0]+i;
-//            by[i]=by[0]+i;
-//            bx[i]=bnd[i][0]; 
-//            by[i]=bnd[i][1];
-//         }
-//
-//         // find the midpoints between p1, p2 their first intersections
-//         // store in x and y blocks
-//         xmp[0]=(ip1[0]+p1[0])/2;
-//         xmp[1]=(ip2[0]+p2[0])/2;
-//         ymp[0]=(ip1[1]+p1[1])/2;
-//         ymp[1]=(ip2[1]+p2[1])/2;
-//
-//         // to handle holes, multiple boundaries
-//         // ignore this at the moment
-//         xmin=minarr(nbnd,bx);
-//         ymin=minarr(nbnd,by);
-//         mina[0] = xmin; mina[1]=ymin;
-//         break_code=minarr(2,mina)-1;
-//
-//         tmpinout=2;
-//
-//         in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
-//
-//         // if they are both inside, return true (ie they face inside)
-//         // or if one is on boundary and the other is inside...
-//
-////         if((bnd1 & in[1]) | (bnd2 & in[0])){
-////            ret=1;
-////         }
-////            
-////         if((in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-////            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) )){
-////            ret=1;
-////         }
-//
-//         if((in[0] && in[1])){
-//            ret=1;
-//         }
-//
-//
-////         if((in[0] && in[1]) |
-////            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-////            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) )){// |
-////            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
-////            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
-////            ret=1;
-////         }
-//
-//         // free some memory
-//         free(bx);free(by);
-//      }
-//
-//   }
-//   return(ret);
-      err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
+      // are the midpoints inside?
+      // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
+      // call the in_out routine from soap. Need to make sure that things are
+      // in the right format
+      //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
 
-      // if there are no errors, go ahead
-      if(err==0){
+      bx=(double*)malloc(sizeof(double)*nbnd);
+      by=(double*)malloc(sizeof(double)*nbnd);
 
-         // are the midpoints inside?
-         // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
-         // call the in_out routine from soap. Need to make sure that things are
-         // in the right format
-         //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
+      for(i=0; i<nbnd; i++){
+         bx[i]=bx[0]+i;
+         by[i]=by[0]+i;
 
-         bx=(double*)malloc(sizeof(double)*nbnd);
-         by=(double*)malloc(sizeof(double)*nbnd);
-
-         for(i=0; i<nbnd; i++){
-            bx[i]=bx[0]+i;
-            by[i]=by[0]+i;
-
-            bx[i]=bnd[i][0]; 
-            by[i]=bnd[i][1];
-         }
-
-         // find the midpoints between p1, p2 their first intersections
-         // store in x and y blocks
-         xmp[0]=(ip1[0]+p1[0])/2;
-         xmp[1]=(ip2[0]+p2[0])/2;
-         ymp[0]=(ip1[1]+p1[1])/2;
-         ymp[1]=(ip2[1]+p2[1])/2;
-
-//xmp[0]=(ip1[0]+(1/eps)*p1[0])/(1+1/eps);
-//xmp[1]=(ip2[0]+(1/eps)*p2[0])/(1+1/eps);
-//ymp[0]=(ip1[1]+(1/eps)*p1[1])/(1+1/eps);
-//ymp[1]=(ip2[1]+(1/eps)*p2[1])/(1+1/eps);
-         // to handle holes, multiple boundaries
-         // ignore this at the moment
-         xmin=minarr(nbnd,bx);
-         ymin=minarr(nbnd,by);
-         mina[0] = xmin; mina[1]=ymin;
-         break_code=minarr(2,mina)-1;
-
-         tmpinout=2;
-
-         in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
-
-         // if they are both inside, return true (ie they face inside)
-         // or if one is on boundary and the other is inside...
-         if((in[0] && in[1])){// |
-//            (in[0] && ((fabs(p2[0]-ip2[0])<eps) && (fabs(p2[1]-ip2[1])<eps)) ) |
-//            (in[1] && ((fabs(p1[0]-ip1[0])<eps) && (fabs(p1[1]-ip1[1])<eps)) )){// |
-//            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
-//            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
-            ret=1;
-         }
-
-         // free some memory
-         free(bx);free(by);
+         bx[i]=bnd[i][0]; 
+         by[i]=bnd[i][1];
       }
+
+      // find the midpoints between p1, p2 their first intersections
+      // store in x and y blocks
+      xmp[0]=(ip1[0]+p1[0])/2;
+      xmp[1]=(ip2[0]+p2[0])/2;
+      ymp[0]=(ip1[1]+p1[1])/2;
+      ymp[1]=(ip2[1]+p2[1])/2;
+
+      // to handle holes, multiple boundaries
+      // ignore this at the moment
+      xmin=minarr(nbnd,bx);
+      ymin=minarr(nbnd,by);
+      mina[0] = xmin; mina[1]=ymin;
+      break_code=minarr(2,mina)-1;
+
+      tmpinout=2;
+
+      in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
+
+      // if they are both inside, return true (ie they face inside)
+      // or if one is on boundary and the other is inside...
+      if((in[0] && in[1])){
+         ret=1;
+      }
+      // free some memory
+      free(bx);free(by);
+   }
 
    return ret;
 }
@@ -677,7 +543,6 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
    double end[2];   
    node* current;
    int* retint;
-   int minints=1e5;
 
    retint=(int*)malloc(sizeof(int)*(nbnd-1));
    for(i=0; i<(nbnd-1); i++){
@@ -725,13 +590,6 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
             }
          }
 
-         // if there was no Euclidean path, does it have less
-         // intersections than others?
-//         if(iarrsum(nbnd-1,retint)<minints){
-//            minints=iarrsum(nbnd-1,retint);
-//            app[0]=me;
-//            app[1]=i;
-//         }
       }
    }
 
