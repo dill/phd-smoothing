@@ -320,8 +320,8 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          // if they are both inside, return true (ie they face inside)
          // or if one is on boundary and the other is inside...
          if((in[0] && in[1])){// |
-//            (in[0] && ((p2[0]==ip2[0]) && (p2[1]==ip2[1])) ) |
-//            (in[1] && ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) )){// |
+//            (in[0] && ((fabs(p2[0]-ip2[0])<eps) && (fabs(p2[1]-ip2[1])<eps)) ) |
+//            (in[1] && ((fabs(p1[0]-ip1[0])<eps) && (fabs(p1[1]-ip1[1])<eps)) )){// |
 //            ( !(in[0] && in[1]) && ((p2[0]==ip2[0]) && (p2[1]==ip2[1]))
 //            & ((p1[0]==ip1[0]) && (p1[1]==ip1[1])) ) ){
             ret=1;
