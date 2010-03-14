@@ -104,8 +104,6 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
                if(app[0]!=0){
                   if(m==app[1]){ m++;} // make sure m!=app[1]
                   err=append_path(&savedpaths[app[1]],&savedpaths[m],p2,app[0],*nbnd,bnd);
-printf("cat(\"### 1 ###\\n\")\n");
-PrintPath(&savedpaths[app[1]]);
                }else{
                   // if that didn't work then do the same for p2
                   append_check(savedpaths, l, p2,app,*nbnd,bnd);
@@ -113,8 +111,6 @@ PrintPath(&savedpaths[app[1]]);
                   if(app[0]!=0){
                      if(m==app[1]){ m++;} // make sure m!=app[1]
                      err=append_path(&savedpaths[app[1]],&savedpaths[m],p1,app[0],*nbnd,bnd);
-//printf("cat(\"### 2 ###\\n\")\n");
-//PrintPath(&savedpaths[m]);
                   }else{
                      // if there were no matching paths then just
                      // run the normal initial path
@@ -133,8 +129,8 @@ PrintPath(&savedpaths[app[1]]);
                err=iter_path(&savedpaths[m],*nbnd,bnd);
             }
 
-printf("cat(\"### before iter ###\\n\")\n");
-PrintPath(&savedpaths[m]);
+//printf("cat(\"### before iter ###\\n\")\n");
+//PrintPath(&savedpaths[m]);
             // take the start path and optimize it...
             err=iter_path(&savedpaths[m],*nbnd,bnd);
 
