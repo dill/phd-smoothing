@@ -50,8 +50,8 @@ grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,
 knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
 knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
 insideknots<-inSide(bnd,knots.x,knots.y)
-insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE
 soap.knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
+soap.knots<-pe(soap.knots,-c(55,96,108)) # kill bad knots
 
 ### prediction data
 gendata.ind <- read.csv("../wt2truth.csv",header=TRUE)
