@@ -250,20 +250,22 @@ int online(double p1[],double thisline[][2]){
  
    double m,c;
    double xarr[2], yarr[2];
- 
-   xarr[0]=thisline[0][0];
-   xarr[1]=thisline[1][0];
-   yarr[0]=thisline[0][1];
-   yarr[1]=thisline[1][1];
- 
-   twosort(xarr);
-   twosort(yarr); // make xarr, yarr small->large
- 
+
+   // check this first before messing around with arrays 
    // is p1 an endpoint of thisline?
    if( ((fabs(p1[0]-thisline[0][0])<eps) & (fabs(p1[1]-thisline[0][1])<eps)) |
        ((fabs(p1[0]-thisline[1][0])<eps) & (fabs(p1[1]-thisline[1][1])<eps))){
       return 1;
    }
+
+
+   // now create the bounding box
+   xarr[0]=thisline[0][0];
+   xarr[1]=thisline[1][0];
+   yarr[0]=thisline[0][1];
+   yarr[1]=thisline[1][1];
+   twosort(xarr);
+   twosort(yarr); // make xarr, yarr small->large
       
    // check p1 is inside the bounding box
    if( ((p1[0]>xarr[1]) | (p1[0]<xarr[0])) |
