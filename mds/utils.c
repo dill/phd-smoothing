@@ -246,6 +246,33 @@ int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
    return !ret;
 }
 
+//int online(double p1[],double thisline[][2]){
+//
+//   double n[2],m;
+////   if( ((fabs(p1[0]-thisline[0][0])<eps) & (fabs(p1[1]-thisline[0][1])<eps)) |
+////       ((fabs(p1[0]-thisline[1][0])<eps) & (fabs(p1[1]-thisline[1][1])<eps))){
+////      return 1;
+////   }
+//
+//      
+//   m=((thisline[1][0]-thisline[0][0])*(p1[0]-thisline[0][0])+
+//      (thisline[1][1]-thisline[0][1])*(p1[1]-thisline[0][1]))/
+//     ((thisline[1][0]-thisline[0][0])*(thisline[1][0]-thisline[0][0])+
+//      (thisline[1][1]-thisline[0][1])*(thisline[1][1]-thisline[0][1]));
+//
+//   n[0]=(p1[0]-thisline[0][0])-m*(thisline[1][0]-thisline[0][0]);
+//   n[1]=(p1[1]-thisline[0][1])-m*(thisline[1][1]-thisline[0][1]);
+//
+//
+//   if((n[0]<eps) && (n[1]<eps)){
+//      return 1;
+//   }
+//
+//   return 0;
+//
+//}
+
+
 int online(double p1[],double thisline[][2]){
  
    double m,c;
