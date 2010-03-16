@@ -63,9 +63,9 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
       thisedge[1][0]=bnd[i+1][0];
       thisedge[0][1]=bnd[i][1];
       thisedge[1][1]=bnd[i+1][1];
-      if(online(p1,thisedge) | online(p2,thisedge)){
-         bndint[i]=1;
-      }
+//      if(online(p1,thisedge) | online(p2,thisedge)){
+//         bndint[i]=1;
+//      }
 
       if(bndint[i]==0){
          bndint[i]=do_int(p1,p2,p3,p4,ip);
@@ -112,9 +112,9 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
       thisedge[0][1]=bnd[i][1];
       thisedge[1][1]=bnd[i+1][1];
       // if p1 or p2 lie on edge 
-      if(online(p1,thisedge) | online(p2,thisedge)){
-         bndint[i]=0;
-      }
+//      if(online(p1,thisedge) | online(p2,thisedge)){
+//         bndint[i]=0;
+//      }
       
       bndint[i]=do_int(p1,p2,p3,p4,ip);
 
