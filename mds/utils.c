@@ -246,33 +246,6 @@ int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
    return !ret;
 }
 
-//int online(double p1[],double thisline[][2]){
-//
-//   double n[2],m;
-////   if( ((fabs(p1[0]-thisline[0][0])<eps) & (fabs(p1[1]-thisline[0][1])<eps)) |
-////       ((fabs(p1[0]-thisline[1][0])<eps) & (fabs(p1[1]-thisline[1][1])<eps))){
-////      return 1;
-////   }
-//
-//      
-//   m=((thisline[1][0]-thisline[0][0])*(p1[0]-thisline[0][0])+
-//      (thisline[1][1]-thisline[0][1])*(p1[1]-thisline[0][1]))/
-//     ((thisline[1][0]-thisline[0][0])*(thisline[1][0]-thisline[0][0])+
-//      (thisline[1][1]-thisline[0][1])*(thisline[1][1]-thisline[0][1]));
-//
-//   n[0]=(p1[0]-thisline[0][0])-m*(thisline[1][0]-thisline[0][0]);
-//   n[1]=(p1[1]-thisline[0][1])-m*(thisline[1][1]-thisline[0][1]);
-//
-//
-//   if((n[0]<eps) && (n[1]<eps)){
-//      return 1;
-//   }
-//
-//   return 0;
-//
-//}
-
-
 int online(double p1[],double thisline[][2]){
  
    double m,c;
@@ -284,7 +257,6 @@ int online(double p1[],double thisline[][2]){
        ((fabs(p1[0]-thisline[1][0])<eps) & (fabs(p1[1]-thisline[1][1])<eps))){
       return 1;
    }
-
 
    // now create the bounding box
    xarr[0]=thisline[0][0];
@@ -624,6 +596,37 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
 
 }
 
+// create a reference grid
+void create_refgrid(double *bx, double *by,int nbnd,node** paths){
+
+   // create a reference grid 
+   double *xx, *yy, dx, dy, miny, minx, mina[2], break_code; 
+   int i, *in;
+   int ngrid=10; 
+   minx=minarr(ngrid,bx);
+   miny=minarr(ngrid,by);
+   dx=fabs(maxarr(ngrid,bx)-minx)/ngrid; 
+   dy=fabs(maxarr(ngrid,by)-miny)/ngrid; 
+ 
+   xx=(double*)malloc(sizeof(double)*(ngrid)); 
+   yy=(double*)malloc(sizeof(double)*(ngrid)); 
+   in=(int*)malloc(sizeof(int)*(ngrid)); 
+   for(i=0; i<ngrid; i++){ 
+      xx[i]=xx[0]+i; 
+      yy[i]=yy[0]+i; 
+      in[i]=in[0]+i; 
+      xx[i]=minx+i*dx; 
+      yy[i]=miny+i*dy; 
+   } 
+ 
+   mina[0] = minx; mina[1]=miny;
+   break_code=minarr(2,mina)-1;
+
+   in_out(bx, by, &break_code, xx, yy, in, &nbnd, &ngrid); 
+
+   
+
+}
 
 
 /*
