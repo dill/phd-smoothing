@@ -32,6 +32,7 @@ woodpath<-function(xpoints,ypoints,bnd,start=NA){
                 nbnd=as.integer(nbnd),
                 xbnd=as.double(xbnd),ybnd=as.double(ybnd),
                 xref=as.double(ref.grid$x),yref=as.double(ref.grid$y),
+                nref=as.integer(length(ref.grid$x)),
                 pathlen=as.double(rep(0,pl)))
 
    # full MDS
