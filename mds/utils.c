@@ -497,7 +497,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 
 
 // match the end of a linked list with a point
-int match_ends(double *point, node** head){
+int match_ends(double *point, node** head, double **bnd, int nbnd){
    /*
     * Args:
     *    point    the point to investigate
@@ -510,11 +510,21 @@ int match_ends(double *point, node** head){
    */
    node* current=NULL;
    current=*head;
+   double ep[2];
+   int *retint, i;
+
+   retint=(int*)malloc(sizeof(int)*(nbnd-1));
+   for(i=0; i<(nbnd-1); i++){
+      retint[i]=retint[0]+i;
+   }
 
    // check the start
-   if((point[0]==current->data[0]) & (point[1]==current->data[1])){
+   ep[0]=current->data[0];
+   ep[1]=current->data[1];
+   do_intersect(point,ep,nbnd,bnd,retint);
+   if(iarrsum(nbnd-1,retint)<2){
       return 1;
-   } 
+   }
 
    // fast-forward to the end
    while (current->next != NULL){
@@ -522,9 +532,12 @@ int match_ends(double *point, node** head){
    }
 
    // check the end
-   if((point[0]==current->data[0]) & (point[1]==current->data[1])){
+   ep[0]=current->data[0];
+   ep[1]=current->data[1];
+   do_intersect(point,ep,nbnd,bnd,retint);
+   if(iarrsum(nbnd-1,retint)<2){
       return 2;
-   } 
+   }
 
    // if nothing happened
    return 0;
@@ -555,7 +568,7 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
    for(i=(npaths-1); i>=0; i--){
 
       // call match_ends
-      me=match_ends(point,&paths[i]);
+      me=match_ends(point,&paths[i],bnd, nbnd);
 
       // flag those paths with the right end points
       if(me>0){
@@ -602,9 +615,6 @@ void create_refpaths(double *xref, double *yref, int nref, int nbnd,node*** save
 
    double p1[2],p2[2],*pl; 
    int i,j,k,m,err,npl;
-
-//   node** paths=*savedpaths;
-
    *npaths=0;
  
    // we know what's inside, find only those paths that are
@@ -631,9 +641,7 @@ void create_refpaths(double *xref, double *yref, int nref, int nbnd,node*** save
       (*savedpaths)[i]=NULL;
    }
 
-
    k=0;m=0;
-
    // calculate some paths
    for(i=0;i<nref;i++){
       for(j=(i+1);j<nref;j++){
@@ -642,25 +650,12 @@ void create_refpaths(double *xref, double *yref, int nref, int nbnd,node*** save
             p2[0]=xref[j]; p2[1]=yref[j]; // set p2
             err=make_bnd_path(p1,p2,nbnd,bnd,&((*savedpaths)[m]),0);
             err=iter_path(&((*savedpaths)[m]),nbnd,bnd);
-//PrintPath(&paths[m]);
             m++;
          }
          k++;
       }
    }
-   
    free(pl);
-
-printf("m=%d\n",m);
-
-//   for(i=0;i<(*npaths);i++){
-//printf("i=%d\n",i);
-//      PrintPath(&paths[i]);
-//   }
-
-
-
-
 }
 
 

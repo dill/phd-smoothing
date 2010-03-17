@@ -25,13 +25,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    int i,j,k,l,m,err=0, ilim, jstart;
    int app[2];
 
-   // storage?
+   // storage
    node** savedpaths;
-//   savedpaths=(node**)malloc(sizeof(node*)*(*len));
-//   for(i=0; i<(*len); i++){
-//      savedpaths[i]=savedpaths[0]+i*sizeof(node*);
-//      savedpaths[i]=NULL;
-//   }
+   node* thispath;
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
@@ -49,127 +45,105 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
 
-   for(i=0;i<l;i++){
-      PrintPath(&savedpaths[i]);
-   }
-
-
    // first of all, set the epsilon to use...
    //set_epsilon(*nbnd,xbnd,ybnd);
 
 
    // first calculate all of the Euclidean paths
-//   get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start);
-//
-//   // switch between insertion and full MDS 
-//   // insertion format is c(old,new)
-//   //  * so *start gives the index of the limit of the old points for insertion
-//   //    if we're not doing insertion then this is just the length of the 
-//   //    point vector
-//   
-//   if(*start != 0){
-//      // insertion loop variables 
-//      ilim=*start;
-//      jstart=*start;
-//   }else{
-//      /// full MDS loop variables
-//      ilim=*len;
-//      jstart=0;
-//   }
-//
-//   // indexing here is rather sticky...
-//   // i,j   index the points
-//   // k     indexes the path lengths, only find pathlen[k] when we don't
-//   //        have a Euclidean path
-//   // l     counts the size of the saved path array
-//   // m     indexes the saved paths
-//
-//   m=0;
-//
-//   // #### Main for loops 
-//   for(i=0; i<ilim; i++){
-//      if(*start==0){ jstart=i+1;} // make sure that j is set right for full mds
-//      for(j=jstart; j<(*len); j++){
-//         // if no euclidean path was found, calculate the path
-//         if(pathlen[k] == (-1)){
-//            p1[0]=x[i]; p1[1]=y[i];
-//            p2[0]=x[j]; p2[1]=y[j];
-//
-////printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
-//
-//            if(l==0){
-////if(1){
-////FreeList(&savedpaths[m]);
-//               // if not then just make the path from scratch
-//               err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
-//
-//               // can we do an append?
-//            }else{
-//               // do the append check for p1   
-//               append_check(savedpaths, l, p1,app,*nbnd,bnd);
-//
-//               // if an append will work...
-//               if(app[0]!=0){
-//                  if(m==app[1]){ m++;} // make sure m!=app[1]
-//                  err=append_path(&savedpaths[app[1]],&savedpaths[m],p2,app[0],*nbnd,bnd);
-//               }else{
-//                  // if that didn't work then do the same for p2
-//                  append_check(savedpaths, l, p2,app,*nbnd,bnd);
-//               
-//                  if(app[0]!=0){
-//                     if(m==app[1]){ m++;} // make sure m!=app[1]
-//                     err=append_path(&savedpaths[app[1]],&savedpaths[m],p1,app[0],*nbnd,bnd);
-//                  }else{
-//                     // if there were no matching paths then just
-//                     // run the normal initial path
-//                     if(savedpaths[m]!=NULL){
-//                        FreeList(&savedpaths[m]);
-//                     }
-//                     err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
-//                  }
-//               }
-//            }
-//            if(err==1){
-//               if(savedpaths[m]!=NULL){
-//                  FreeList(&savedpaths[m]);
-//               }
-//               err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
-//               err=iter_path(&savedpaths[m],*nbnd,bnd);
-//            }
-//
-////printf("cat(\"### before iter ###\\n\")\n");
-////PrintPath(&savedpaths[m]);
-//            // take the start path and optimize it...
-//            err=iter_path(&savedpaths[m],*nbnd,bnd);
-//
-//            // if there was an error wipe out what was there
-//            // and try again...
-//            if(err==1){
-//               if(savedpaths[m]!=NULL){
-//                  FreeList(&savedpaths[m]);
-//               }
-//               err=make_bnd_path(p1,p2,*nbnd,bnd,&savedpaths[m],0);
-//               err=iter_path(&savedpaths[m],*nbnd,bnd);
-//            }
-//
-//            // find the length of the path
-//            pathlen[k]=hull_length(&savedpaths[m]);
-//// DEBUG
-////printf("cat(\"### final ###\\n\")\n");
-////PrintPath(&savedpaths[m]);
-//            m++;
-//            if(l<(*len)){
-//               l++;
-//            }
-//            if(*len<=m){
-//               m=0;
-//            }
-//         }
-//         // increment pathlen counter
-//         k++;
-//      }    
-//   }
+   get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start);
+
+   // switch between insertion and full MDS 
+   // insertion format is c(old,new)
+   //  * so *start gives the index of the limit of the old points for insertion
+   //    if we're not doing insertion then this is just the length of the 
+   //    point vector
    
+   if(*start != 0){
+      // insertion loop variables 
+      ilim=*start;
+      jstart=*start;
+   }else{
+      /// full MDS loop variables
+      ilim=*len;
+      jstart=0;
+   }
+
+   // indexing here is rather sticky...
+   // i,j   index the points
+   // k     indexes the path lengths, only find pathlen[k] when we don't
+   //        have a Euclidean path
+   // l     counts the size of the saved path array
+   // m     indexes the saved paths
+
+   m=0;
+
+   // #### Main for loops 
+   for(i=0; i<ilim; i++){
+      if(*start==0){ jstart=i+1;} // make sure that j is set right for full mds
+      for(j=jstart; j<(*len); j++){
+         // if no euclidean path was found, calculate the path
+         if(pathlen[k] == (-1)){
+            p1[0]=x[i]; p1[1]=y[i];
+            p2[0]=x[j]; p2[1]=y[j];
+
+//printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
+
+//if(1){
+//FreeList(&savedpaths[m]);
+
+            // can we do an append?
+            // do the append check for p1   
+            append_check(savedpaths, l, p1,app,*nbnd,bnd);
+
+            // if an append will work...
+            if(app[0]!=0){
+               if(m==app[1]){ m++;} // make sure m!=app[1]
+               err=append_path(&savedpaths[app[1]],&thispath,p2,p1,app[0],*nbnd,bnd);
+            }else{
+               // if that didn't work then do the same for p2
+               append_check(savedpaths, l, p2,app,*nbnd,bnd);
+            
+               if(app[0]!=0){
+                  if(m==app[1]){ m++;} // make sure m!=app[1]
+                  err=append_path(&savedpaths[app[1]],&thispath,p1,p2,app[0],*nbnd,bnd);
+               }else{
+                  // if there were no matching paths, run make_bnd_path
+                  err=make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
+               }
+            }
+            
+            if(err==1){
+               err=make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
+               err=iter_path(&thispath,*nbnd,bnd);
+            }
+
+//printf("cat(\"### before iter ###\\n\")\n");
+//PrintPath(&savedpaths[m]);
+            // take the start path and optimize it...
+            err=iter_path(&thispath,*nbnd,bnd);
+
+            // find the length of the path
+            pathlen[k]=hull_length(&thispath);
+// DEBUG
+printf("cat(\"### final ###\\n\")\n");
+PrintPath(&thispath);
+            m++;
+            if(l<(*len)){
+               l++;
+            }
+            if(*len<=m){
+               m=0;
+            }
+
+            FreeList(&thispath);
+
+         }
+         // increment pathlen counter
+         k++;
+      }    
+   }
+   
+   // free all the saved paths
    for(i=0;i<l;i++){
       FreeList(&savedpaths[i]);
    }
@@ -478,27 +452,26 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 }
 
 // append one path to the end of another
-int append_path(node** oldpath, node** newpath, double point[2], int end,
+int append_path(node** oldpath, node** newpath, double p1[2], double p2[2], int end,
                 int nbnd, double **bnd){
    /*
     *
     *
    */
-   int err=0, *intbnd,i;
+   int err=0,i;
+//   int *intbnd;
    node* current= NULL;
    node* apppath=NULL;
-   double endpoint[2];
+//   double endpoint[2];
 
    if(Length(oldpath)<5){
       return 1;
    }
 
-   intbnd=(int*)malloc(sizeof(int)*(nbnd-1));
-   for(i=0; i<(nbnd-1); i++){
-      intbnd[i]=intbnd[0]+i;
-   }
-
-
+//   intbnd=(int*)malloc(sizeof(int)*(nbnd-1));
+//   for(i=0; i<(nbnd-1); i++){
+//      intbnd[i]=intbnd[0]+i;
+//   }
 
    // blank what is currently in newpath
    FreeList(newpath);
@@ -514,81 +487,83 @@ int append_path(node** oldpath, node** newpath, double point[2], int end,
    // => end==1 => add path to end
    // => end==2 => add path to start
 
-   if(end==1){
-      while(current->next!=NULL){
-         current=current->next;
-      }
-   }
-   endpoint[0]=current->data[0];
-   endpoint[1]=current->data[1];
-
-   // catch the case when the path between endpoint and point is 
-   // Euclidean within the domain
-   do_intersect(point,endpoint, nbnd,bnd,intbnd);
-
-   if(iarrsum((nbnd-1),intbnd)==0){
+//   if(end==1){
+//      while(current->next!=NULL){
+//         current=current->next;
+//      }
+//   }
+//   endpoint[0]=current->data[0];
+//   endpoint[1]=current->data[1];
+//
+//   // catch the case when the path between endpoint and point is 
+//   // Euclidean within the domain
+//   do_intersect(point,endpoint, nbnd,bnd,intbnd);
+//
+//   if(iarrsum((nbnd-1),intbnd)==0){
       // if the point->endpoint path is Euclidean in the domain then
       // just add that point
       if(end==1){
-         AppendNode(newpath,point);
+         AppendNode(newpath,p1);
+         Push(newpath,p2);
       }else{
-         Push(newpath,point);
+         Push(newpath,p1);
+         AppendNode(newpath,p2);
       }
-   }else{
-      // make a path from point to the end of oldpath
-      err=make_bnd_path(endpoint, point, nbnd, bnd, &apppath, 0);
-
-      if(err==1){
-         return 1;
-      }
-
-      // append the made path to newpath
-      if(end==2){
-         // adding to the start
-
-         // fastforward to the end of apppath
-         current=apppath;
-         while(current->next!=NULL){
-            current=current->next;
-         }
-         
-         if(!( (endpoint[0] == (current->data[0]) ) & 
-             ( (endpoint[1] == (current->data[1]) ) ))) {
-            ReverseList(&apppath);
-         }
-         RMBot(&apppath); // remove the duplicated bottom element
-
-         // attach newpath to the end of apppath
-         current=apppath;
-         while(current->next!=NULL){
-            current=current->next;
-         }
-
-         current->next=*newpath;
-         current->next->prev=current;   
-         // set the head of newpath to be the head of apppath
-         *newpath=apppath;
-
-      }else{
-         // adding to the end
-
-         current=*newpath;
-         while(current->next!=NULL){
-            current=current->next;
-         }
-
-         if(!( (endpoint[0] == (apppath->data[0]) ) & 
-             ( (endpoint[1] == (apppath->data[1]) ) ))) {
-            ReverseList(&apppath);
-         }
-         RMTop(&apppath); // remove the duplicate element
-
-         current->next=apppath;
-         current->next->prev=current;
-      }
-   }
+//   }else{
+//      // make a path from point to the end of oldpath
+//      err=make_bnd_path(endpoint, point, nbnd, bnd, &apppath, 0);
+//
+//      if(err==1){
+//         return 1;
+//      }
+//
+//      // append the made path to newpath
+//      if(end==2){
+//         // adding to the start
+//
+//         // fastforward to the end of apppath
+//         current=apppath;
+//         while(current->next!=NULL){
+//            current=current->next;
+//         }
+//         
+//         if(!( (endpoint[0] == (current->data[0]) ) & 
+//             ( (endpoint[1] == (current->data[1]) ) ))) {
+//            ReverseList(&apppath);
+//         }
+//         RMBot(&apppath); // remove the duplicated bottom element
+//
+//         // attach newpath to the end of apppath
+//         current=apppath;
+//         while(current->next!=NULL){
+//            current=current->next;
+//         }
+//
+//         current->next=*newpath;
+//         current->next->prev=current;   
+//         // set the head of newpath to be the head of apppath
+//         *newpath=apppath;
+//
+//      }else{
+//         // adding to the end
+//
+//         current=*newpath;
+//         while(current->next!=NULL){
+//            current=current->next;
+//         }
+//
+//         if(!( (endpoint[0] == (apppath->data[0]) ) & 
+//             ( (endpoint[1] == (apppath->data[1]) ) ))) {
+//            ReverseList(&apppath);
+//         }
+//         RMTop(&apppath); // remove the duplicate element
+//
+//         current->next=apppath;
+//         current->next->prev=current;
+//      }
+//   }
    delete_step(newpath,nbnd,bnd);
-   free(intbnd);
+   //free(intbnd);
    // done
    return 0;
 }
