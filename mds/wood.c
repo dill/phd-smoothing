@@ -47,7 +47,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // path save counter
    l=0;
 
-   create_refpaths(xref,yref,*nref,*nbnd,savedpaths,&l,bnd);
+   create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
 
    for(i=0;i<l;i++){
       PrintPath(&savedpaths[i]);

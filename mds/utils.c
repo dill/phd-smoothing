@@ -598,12 +598,12 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
 }
 
 // create a reference grid
-void create_refpaths(double *xref, double *yref, int nref, int nbnd,node** savedpaths, int *npaths, double **bnd){
+void create_refpaths(double *xref, double *yref, int nref, int nbnd,node*** savedpaths, int *npaths, double **bnd){
 
    double p1[2],p2[2],*pl; 
    int i,j,k,m,err,npl;
 
-   node** paths=savedpaths;
+//   node** paths=*savedpaths;
 
    *npaths=0;
  
@@ -625,10 +625,10 @@ void create_refpaths(double *xref, double *yref, int nref, int nbnd,node** saved
    }
 
    // malloc the memory for the saved paths
-   paths=(node**)malloc(sizeof(node*)*(*npaths));
+   *savedpaths=(node**)malloc(sizeof(node*)*(*npaths));
    for(i=0; i<(*npaths); i++){
-      paths[i]=paths[0]+i*sizeof(node*);
-      paths[i]=NULL;
+      (*savedpaths)[i]=(*savedpaths[0])+i*sizeof(node*);
+      (*savedpaths)[i]=NULL;
    }
 
 
@@ -640,8 +640,8 @@ void create_refpaths(double *xref, double *yref, int nref, int nbnd,node** saved
          if(pl[k]==-1){
             p1[0]=xref[i]; p1[1]=yref[i]; // set p1
             p2[0]=xref[j]; p2[1]=yref[j]; // set p2
-            err=make_bnd_path(p1,p2,nbnd,bnd,&paths[m],0);
-            err=iter_path(&paths[m],nbnd,bnd);
+            err=make_bnd_path(p1,p2,nbnd,bnd,&((*savedpaths)[m]),0);
+            err=iter_path(&((*savedpaths)[m]),nbnd,bnd);
 //PrintPath(&paths[m]);
             m++;
          }

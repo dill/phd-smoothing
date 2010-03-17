@@ -43,7 +43,7 @@ void set_epsilon(int,  double*, double*);
 int match_ends(double[2], node**);
 void append_check(node**, int, double[2], int[2],int, double**);
 int do_int(double[2], double[2], double[2], double[2], double[2]);
-void create_refpaths(double*, double*, int, int, node**, int*, double**);
+void create_refpaths(double*, double*, int, int, node***, int*, double**);
 
 
 // for in_out in separate file
