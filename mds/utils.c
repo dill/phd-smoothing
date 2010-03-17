@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "utils.h"
+#include "wood.h"
 
 extern double eps;
 
@@ -597,33 +598,104 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
 }
 
 // create a reference grid
-void create_refgrid(double *bx, double *by,int nbnd,node** paths){
+void create_refgrid(double *bx, double *by,int nbnd,node*** paths, int npaths, double **bnd){
 
-   // create a reference grid 
-   double *xx, *yy, dx, dy, miny, minx, mina[2], break_code; 
-   int i, *in;
+   double *xx, *yy, dx, dy, miny, minx, mina[2], break_code,p1[2],p2[2]; 
+   int i, *in,gs,j,k, *retint,*calc,m,err;
    int ngrid=10; 
    minx=minarr(ngrid,bx);
    miny=minarr(ngrid,by);
    dx=fabs(maxarr(ngrid,bx)-minx)/ngrid; 
    dy=fabs(maxarr(ngrid,by)-miny)/ngrid; 
  
-   xx=(double*)malloc(sizeof(double)*(ngrid)); 
-   yy=(double*)malloc(sizeof(double)*(ngrid)); 
-   in=(int*)malloc(sizeof(int)*(ngrid)); 
-   for(i=0; i<ngrid; i++){ 
+   j=0;
+
+   // make a grid
+   xx=(double*)malloc(sizeof(double)*(ngrid*ngrid)); 
+   yy=(double*)malloc(sizeof(double)*(ngrid*ngrid)); 
+   in=(int*)malloc(sizeof(int)*(ngrid*ngrid)); 
+   for(i=0; i<(ngrid*ngrid); i++){ 
       xx[i]=xx[0]+i; 
       yy[i]=yy[0]+i; 
       in[i]=in[0]+i; 
       xx[i]=minx+i*dx; 
-      yy[i]=miny+i*dy; 
+      yy[i]=miny+j*dy; 
+      if(i%ngrid==0){j++;}
    } 
+   ngrid=ngrid*ngrid;
  
    mina[0] = minx; mina[1]=miny;
    break_code=minarr(2,mina)-1;
-
+   /// see what's inside
    in_out(bx, by, &break_code, xx, yy, in, &nbnd, &ngrid); 
 
+
+   // now we know what's inside, find only those paths that are
+   // non-Euclidean within the domain, check that first...
+
+   gs=iarrsum(ngrid,in);
+
+   retint=(int*)malloc(sizeof(int)*(nbnd-1));
+   for(i=0; i<(nbnd-1); i++){
+      retint[i]=retint[0]+i;
+   }
+
+   calc=(int*)malloc(sizeof(int)*(gs*gs));
+   for(i=0; i<(gs*gs); i++){
+      calc[i]=calc[0]+i;
+   }
+
+   k=0;
+
+   for(i=0; i<ngrid; i++){
+      for(j=0; j<ngrid; j++){
+         // only calculate if both of the points are within the domain
+         if(in[i] && in[j]){
+            p1[0]=xx[i]; p1[1]=yy[i]; // set p1
+            p2[0]=xx[j]; p2[1]=yy[j]; // set p2
+
+
+printf("p1<-list(x=%f,y=%f)\n",p1[0],p1[1]);
+printf("p2<-list(x=%f,y=%f)\n",p2[0],p2[1]);
+printf("points(p1);points(p2)\n");
+
+            sp_do_intersect(p1, p2, nbnd, bnd, retint);
+
+            if(iarrsum((nbnd-1), retint)>1){
+               calc[k]=0;
+            }else{
+               calc[k]=1;
+            }
+            k++;
+         }
+      }
+   }
+
+   free(retint);
+
+   // how many paths shall we calculate?   
+
+   npaths=iarrsum(gs*gs,calc);
+
+   *paths=(node**)malloc(sizeof(node*)*(npaths));
+   for(i=0; i<npaths; i++){
+      *paths[i]=*paths[0]+i*sizeof(node*);
+      *paths[i]=NULL;
+   }
+
+
+   k=0;m=0;
+
+   for(i=0;i<gs;i++){
+      for(j=0;j<gs;j++){
+         if(in[i] && in[j] && calc[k]){
+            err=make_bnd_path(p1,p2,nbnd,bnd,paths[m],0);
+            err=iter_path(paths[m],nbnd,bnd);
+            m++;
+         }
+         k++;
+      }
+   }
    
 
 }

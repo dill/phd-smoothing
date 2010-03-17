@@ -42,6 +42,16 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
       bnd[i][1]=ybnd[i];
    }
 
+
+//   l=0;
+//
+//   create_refgrid(xbnd,ybnd,*nbnd,&savedpaths,l,bnd);
+
+
+
+
+
+
    // first of all, set the epsilon to use...
    //set_epsilon(*nbnd,xbnd,ybnd);
 
