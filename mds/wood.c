@@ -9,7 +9,7 @@
 
 double eps=1e-6;
 
-void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd,double *pathlen){
+void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, double *pathlen){
    // args:
    //   len         the length of x and y *
    //   start       point to start at *

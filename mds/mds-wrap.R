@@ -20,14 +20,19 @@ woodpath<-function(xpoints,ypoints,bnd,start=NA){
       insert<-TRUE # used later
    }
 
+   # set up the reference grid in R, since it's much easier
+   ref.grid<-create_refgrid(bnd)
+
    # load the library
    dyn.load("wood.so")
 
    ## code for running everything at once...
    wood_ret<-.C("wood_path",len=as.integer(len),start=as.integer(start), 
                 x=as.double(xpoints),y=as.double(ypoints),
-                nbnd=as.integer(nbnd),xbnd=as.double(xbnd), 
-                ybnd=as.double(ybnd),pathlen=as.double(rep(0,pl)))
+                nbnd=as.integer(nbnd),
+                xbnd=as.double(xbnd),ybnd=as.double(ybnd),
+                xref=as.double(ref.grid$x),yref=as.double(ref.grid$y),
+                pathlen=as.double(rep(0,pl)))
 
    # full MDS
    if(!insert){

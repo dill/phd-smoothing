@@ -5,6 +5,7 @@ source("mds-wrap.R")
 source("insert.mds.R")
 source("pe.R")
 source("makesoapgrid.R")
+source("createrefgrid.R")
 library(soap)
 
 # create the distance matrix
