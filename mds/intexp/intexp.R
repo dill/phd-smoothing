@@ -82,7 +82,7 @@ squash<-function(x,lims,sq){
 
    x.ret<-c() # return vector
    
-   for(i in 1:(length(lims)-1)){
+   for(i in 1:(length(sq))){
       x.tmp<-x[(x>=lims[i]) & (x<=lims[i+1])]
       x.tmp<-x.tmp-(lims[i+1]+lims[i])/2
       x.tmp<-x.tmp*sq[i]
@@ -90,25 +90,16 @@ squash<-function(x,lims,sq){
    
       x.ret<-c(x.ret,x.tmp)
    }
-
    return(x.ret)
 }
 
-x.m<-squash(x,c(0,0.5,1),c(1,0.2))
-xp.m<-squash(xp,c(0,0.5,1),c(1,0.2))
+lims<-c(0,0.5,1)
+sq<-c(1,0.2)
+
+x.m<-squash(x,lims,sq)
+xp.m<-squash(xp,lims,sq)
 xk.m<-xk
 
-# bottom squash toward middle
-#x.m<-c(x.m,x.tmp[x.tmp>0.5 & x.tmp<=0.75]*-expf)
-#xp.m<-c(xp.m,xp.tmp[xp.tmp>0.5 & xp.tmp<=0.75]*-expf)
-#
-## top toward middle
-#x.m<-c(x.m,x.tmp[x.tmp>0.75 & x.tmp<=1]*expf)
-#xp.m<-c(xp.m,xp.tmp[xp.tmp>0.75 & xp.tmp<=1]*expf)
-
-
-
-#xk.m[xk.m>0.5]<-xk.m[xk.m>0.5]*expf
 
 mod.2<-prs.fit(y,x.m,xk.m,0.0001)# fitpen.reg.spline 
 Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fitted values at xp 
@@ -131,43 +122,25 @@ rug(x.m,lwd=2)
 Rd<-function(x,z){1/12*(6*(z^2-z-abs(z-x)+(z-x)^2)+2)}
 # product
 RdRd<-function(x,xk1,xk2){Rd(x,xk1)*Rd(x,xk2)}
-#integrate(Rdd,lower=0,upper=1,xk1=xk[1],xk2=xk[2])
-#rk(xk[1],xk[2])
 
 # function to integrate d^2/dx^2 R(x*_i,x*_j)
-intR<-function(xk1,xk2,xk,xk.m,max.x){
+intR<-function(xk1,xk2,xk,xk.m,lims,sq){
 
-   #intrange<-c(0,xk.m,max.x)
-
-   #intrange1<-c(0,0.3,0.7,max.x)
-   #intrange2<-c(0,0.3*expf,0.7-0.24,1)
-
-   # find the weights
-   #w<-rep(1,length(intrange1))
-
-   #w<-abs(diff(intrange1)/diff(intrange2))
-
-   expf<-0.2
-
-   # bespoke
-   intrange2<-c(0,0.5,1*expf)
-   w<-c(1,expf)
-
-   #cat("w=",w,"\n")
-
+   ilims<-squash(lims,lims,sq)
+ 
    # return vector
-   ret<-rep(0,length(intrange2))
+   ret<-rep(0,length(sq))
 
-   for(i in 1:(length(intrange2)-1)){
-      ret[i]<-integrate(RdRd,lower=intrange2[i],upper=intrange2[i+1],
+   for(i in 1:length(sq)){
+      ret[i]<-integrate(RdRd,lower=ilims[i],upper=ilims[i+1],
                         xk1=xk1,xk2=xk2)$value
-      ret[i]<-ret[i]*w[i]^-3
+      ret[i]<-ret[i]*sq[i]^3
    }
    sum(ret)
 }
 
 
-spl.S<-function(xk,xk.m,max.x){ 
+spl.S<-function(xk,xk.m,lims,sq){ 
    # set up the penalized regression spline penalty matrix, 
    # given knot sequence xk 
    q<-length(xk)+2
@@ -178,7 +151,7 @@ spl.S<-function(xk,xk.m,max.x){
    for(i in 1:(q-2)){
       for(j in 1:(q-2)){
          # compute integral of d^2/dx^2 R(x*_i,x*_j)
-         T[i,j]<-intR(xk.m[i],xk.m[j],xk,xk.m,max.x)
+         T[i,j]<-intR(xk.m[i],xk.m[j],xk,xk.m,lims,sq)
       }
    }
   
@@ -190,19 +163,18 @@ spl.S<-function(xk,xk.m,max.x){
 } 
 
 
-prs.fit<-function(y,x,xk,xk.m,lambda) {
+prs.fit<-function(y,x,xk,xk.m,lambda,lims,sq) {
    q<-length(xk.m)+2 #dimension of basis 
    n<-length(x) #number of data 
    # create augmented model matrix.... 
-   Xa<-rbind(spl.X(x,xk.m),mat.sqrt(spl.S(xk,xk.m,max(x)))*sqrt(lambda)) 
+   Xa<-rbind(spl.X(x,xk.m),mat.sqrt(spl.S(xk,xk.m,lims,sq))*sqrt(lambda)) 
    y[(n+1):(n+q)]<-0 #augment the data vector 
    lm(y~Xa-1)#fit and return penalized regression spline 
 } 
 
-mod.2<-prs.fit(y,x.m,xk,xk.m,0.0001)# fitpen.reg.spline 
+mod.2<-prs.fit(y,x.m,xk,xk.m,0.0001,lims,sq)# fitpen.reg.spline 
 Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fitted values at xp 
 
-#modS<-spl.S(xk.m,xk,max(x.m))
 
 #plot data & spl.fit 
 plot(x,y, main="fixed fit?")
@@ -211,29 +183,4 @@ abline(v=xk.m,col="green",lwd=2)
 rug(x,lwd=2)
 
 
-
-
-## code to test the S calculation
-#mod.2<-prs.fit(y,x,xk,xk,0.0001)# fitpen.reg.spline 
-#Xp.move<-spl.X(xp,xk)#matrix to map params to fittedv alues at xp 
-#
-##plot data & spl.fit 
-#plot(x,y, main="old fit, new S estimation")
-#lines(xp,Xp.move%*%coef(mod.2))
-#abline(v=xk,col="green",lwd=2)
-#rug(x,lwd=2)
-
-
-
-
-
-
-### dia
-#plot(x,y)
-#abline(v=0.3,col="green",lwd=3)
-#abline(v=0.7,col="green",lwd=3)
-#points(x[x>0.3 & x<0.7]*0.8,y=y[x>0.3 & x<0.7],pch=19,col="red")
-#abline(v=0.3*0.8,col="red",lwd=3)
-#abline(v=0.7*.8,col="red",lwd=3)
-#points(x[x>0.7]-.24,y=y[x>0.7],pch=19,col="red")
 
