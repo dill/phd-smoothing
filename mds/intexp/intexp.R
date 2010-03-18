@@ -76,38 +76,27 @@ rug(x,lwd=2)
 xk<-seq(1/8,7/8,len=8) #choose some knots 
 xp<-seq(0,1,len=100) # xvaluesforprediction 
 
-# expansion/conraction factor
-expf<-0.2
+# function to do the squashing
+squash<-function(x,lims,sq){
+   # squash the points in x between lims[1] and lims[2] by a factor of sq
 
-# simpler
-x.tmp<-x
-xp.tmp<-xp
-xk.tmp<-xk
+   x.ret<-c() # return vector
+   
+   for(i in 1:(length(lims)-1)){
+      x.tmp<-x[(x>=lims[i]) & (x<=lims[i+1])]
+      x.tmp<-x.tmp-(lims[i+1]+lims[i])/2
+      x.tmp<-x.tmp*sq[i]
+      x.tmp<-x.tmp+(lims[i+1]+lims[i])/2
+   
+      x.ret<-c(x.ret,x.tmp)
+   }
 
-x.m<-c()
-xp.m<-c()
-xk.m<-c()
-xk.m<-xk.tmp
+   return(x.ret)
+}
 
-x.m<-x.tmp[x.tmp<=0.5]
-xp.m<-xp.tmp[xp.tmp<=0.5]
-
-
-x.tmp<-x.tmp[x.tmp>0.5]
-x.tmp<-x.tmp-0.75
-x.tmp<-x.tmp*expf
-x.tmp<-x.tmp+0.75
-
-
-
-xp.tmp<-xp.tmp[xp.tmp>0.5]
-xp.tmp<-xp.tmp-0.75
-xp.tmp<-xp.tmp*expf
-xp.tmp<-xp.tmp+0.75
-
-x.m<-c(x.m,x.tmp)
-xp.m<-c(xp.m,xp.tmp)
-
+x.m<-squash(x,c(0,0.5,1),c(1,0.2))
+xp.m<-squash(xp,c(0,0.5,1),c(1,0.2))
+xk.m<-xk
 
 # bottom squash toward middle
 #x.m<-c(x.m,x.tmp[x.tmp>0.5 & x.tmp<=0.75]*-expf)
@@ -119,10 +108,7 @@ xp.m<-c(xp.m,xp.tmp)
 
 
 
-xp.m<-sort(xp.m)
-
 #xk.m[xk.m>0.5]<-xk.m[xk.m>0.5]*expf
-
 
 mod.2<-prs.fit(y,x.m,xk.m,0.0001)# fitpen.reg.spline 
 Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fitted values at xp 
@@ -132,8 +118,6 @@ plot(x,y, main="squash fit",xlim=c(0,1))
 lines(xp,Xp.move%*%coef(mod.2))
 abline(v=xk.m,col="green",lwd=2)
 rug(x,lwd=2)
-
-#S<-spl.S(xk.m)
 
 # plot the raw fit without transform back
 plot(x.m,y, main="raw squash fit",xlim=c(0,1))
@@ -159,14 +143,14 @@ intR<-function(xk1,xk2,xk,xk.m,max.x){
    #intrange2<-c(0,0.3*expf,0.7-0.24,1)
 
    # find the weights
-   #w<-abs(diff(intrange)/diff(c(0,1:7/8,1)))^4
    #w<-rep(1,length(intrange1))
 
-   #w<-abs(diff(intrange1)/diff(intrange2))^4
+   #w<-abs(diff(intrange1)/diff(intrange2))
+
+   expf<-0.2
 
    # bespoke
    intrange2<-c(0,0.5,1*expf)
-   #w<-c(1,expf,0.14)
    w<-c(1,expf)
 
    #cat("w=",w,"\n")
