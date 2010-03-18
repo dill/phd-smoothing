@@ -37,7 +37,6 @@ int do_int(double p1[2], double p2[2], double p3[2], double p4[2], double ip[2])
 void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
    int i;
    double p3[2],p4[2],ip[2];
-   double thisedge[2][2];
 
    // iterate over sides (ie vertex pairs)
    // NB the last vertex should be the first
@@ -60,14 +59,6 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
            (fabs(p1[1]-p4[1]) < eps) )) bndint[i]=1;
 
 
-      thisedge[0][0]=bnd[i][0];
-      thisedge[1][0]=bnd[i+1][0];
-      thisedge[0][1]=bnd[i][1];
-      thisedge[1][1]=bnd[i+1][1];
-//      if(online(p1,thisedge) | online(p2,thisedge)){
-//         bndint[i]=1;
-//      }
-
       if(bndint[i]==0){
          bndint[i]=do_int(p1,p2,p3,p4,ip);
       }
@@ -83,7 +74,7 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
     * bndint   boundary intersections (length nbnd-1)
     */
    int i;
-   double thisedge[2][2], p3[2], p4[2];
+   double p3[2], p4[2];
    double ip[2];
 
    // iterate over sides (ie vertex pairs)
@@ -107,16 +98,6 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
            (fabs(p2[1]-p3[1]) < eps) &
            (fabs(p1[1]-p4[1]) < eps) )) bndint[i]=0;
      
-      // create the edge
-      thisedge[0][0]=bnd[i][0];
-      thisedge[1][0]=bnd[i+1][0];
-      thisedge[0][1]=bnd[i][1];
-      thisedge[1][1]=bnd[i+1][1];
-      // if p1 or p2 lie on edge 
-//      if(online(p1,thisedge) | online(p2,thisedge)){
-//         bndint[i]=0;
-//      }
-      
       bndint[i]=do_int(p1,p2,p3,p4,ip);
 
       if(bndint[i]){
@@ -521,8 +502,13 @@ int match_ends(double *point, node** head, double **bnd, int nbnd){
    // check the start
    ep[0]=current->data[0];
    ep[1]=current->data[1];
+
+   if( (fabs(ep[0]-point[0])<eps) & (fabs(ep[1]-point[1])<eps)){
+      return 1;
+   }
+   
    do_intersect(point,ep,nbnd,bnd,retint);
-   if(iarrsum(nbnd-1,retint)<2){
+   if(iarrsum(nbnd-1,retint)==0){
       return 1;
    }
 
@@ -534,8 +520,13 @@ int match_ends(double *point, node** head, double **bnd, int nbnd){
    // check the end
    ep[0]=current->data[0];
    ep[1]=current->data[1];
+
+   if( (fabs(ep[0]-point[0])<eps) & (fabs(ep[1]-point[1])<eps)){
+      return 2;
+   }
+
    do_intersect(point,ep,nbnd,bnd,retint);
-   if(iarrsum(nbnd-1,retint)<2){
+   if(iarrsum(nbnd-1,retint)==0){
       return 2;
    }
 
@@ -544,7 +535,7 @@ int match_ends(double *point, node** head, double **bnd, int nbnd){
 }
 
 // check to see if any of the ends can be used as a start path
-void append_check(node** paths, int npaths, double point[], int app[2], int nbnd, double **bnd){
+void append_check(node** paths, int npaths, double p1[2], double p2[2], int app[2], int nbnd, double **bnd){
    /*
     * Args:
     *    paths    array of paths
@@ -554,9 +545,8 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
     *             entry 1: path number
    */
    int i,me;
-   app[0]=0;
-   double end[2];   
-   node* current;
+   double ep[2];   
+   node* current=NULL;
    int* retint;
 
    retint=(int*)malloc(sizeof(int)*(nbnd-1));
@@ -564,50 +554,50 @@ void append_check(node** paths, int npaths, double point[], int app[2], int nbnd
       retint[i]=retint[0]+i;
    }
 
+   app[0]=0;
+
    // loop over paths
-   for(i=(npaths-1); i>=0; i--){
+   for(i=0; i<npaths; i++){
 
       // call match_ends
-      me=match_ends(point,&paths[i],bnd, nbnd);
+      me=match_ends(p1,&paths[i],bnd, nbnd);
 
-      // flag those paths with the right end points
-      if(me>0){
-         // do any of the selected paths have a Euclidean path between
-         // their other end and point?   
-         if(me==2){
-            current=paths[i];
+      // do any of the selected paths have a Euclidean path between
+      // their other end and p2?   
+
+      // if p1 matched the end, then check that p2 matches the start
+      if(me==2){
+         current=paths[i];
    
-            end[0]=current->data[0];
-            end[1]=current->data[1];
+         ep[0]=current->data[0];
+         ep[1]=current->data[1];
    
-            do_intersect(point,end,nbnd,bnd,retint);
-            if(iarrsum(nbnd-1,retint)==0){
-               // return the orientation and path number
-               app[0]=me;
-               app[1]=i;
-               break;
-            }
-         }else if(me==1){ 
-            current=paths[i];
-            while (current->next != NULL){
-               current=current->next;
-            }
-   
-            end[0]=current->data[0];
-            end[1]=current->data[1];
-   
-            do_intersect(point,end,nbnd,bnd,retint);
-            if(iarrsum(nbnd-1,retint)==0){
-               // return the orientation and path number
-               app[0]=me;
-               app[1]=i;
-               break;
-            }
+         do_intersect(p2,ep,nbnd,bnd,retint);
+         if(iarrsum(nbnd-1,retint)==0){
+            // return the orientation and path number
+            app[0]=me;
+            app[1]=i;
+            break;
          }
-
+      // if p1 matched the start, then check that p2 matches the end
+      }else if(me==1){ 
+         current=paths[i];
+         while (current->next != NULL){
+            current=current->next;
+         }
+   
+         ep[0]=current->data[0];
+         ep[1]=current->data[1];
+   
+         do_intersect(p2,ep,nbnd,bnd,retint);
+         if(iarrsum(nbnd-1,retint)==0){
+            // return the orientation and path number
+            app[0]=me;
+            app[1]=i;
+            break;
+         }
       }
    }
-
 }
 
 // create a reference grid

@@ -22,7 +22,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // * these can be manipulated to control which we evaluate
    //  eg. in the insertion case
    double **bnd, p1[2], p2[2];
-   int i,j,k,l,m,err=0, ilim, jstart;
+   int i,j,k,l,err=0, ilim, jstart;
    int app[2];
 
    // storage
@@ -75,8 +75,6 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // l     counts the size of the saved path array
    // m     indexes the saved paths
 
-   m=0;
-
    // #### Main for loops 
    for(i=0; i<ilim; i++){
       if(*start==0){ jstart=i+1;} // make sure that j is set right for full mds
@@ -88,53 +86,36 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
 //printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
-//if(1){
-//FreeList(&savedpaths[m]);
-
             // can we do an append?
             // do the append check for p1   
-            append_check(savedpaths, l, p1,app,*nbnd,bnd);
+            append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
 
             // if an append will work...
             if(app[0]!=0){
-               if(m==app[1]){ m++;} // make sure m!=app[1]
                err=append_path(&savedpaths[app[1]],&thispath,p2,p1,app[0],*nbnd,bnd);
             }else{
-               // if that didn't work then do the same for p2
-               append_check(savedpaths, l, p2,app,*nbnd,bnd);
-            
-               if(app[0]!=0){
-                  if(m==app[1]){ m++;} // make sure m!=app[1]
-                  err=append_path(&savedpaths[app[1]],&thispath,p1,p2,app[0],*nbnd,bnd);
-               }else{
-                  // if there were no matching paths, run make_bnd_path
-                  err=make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
-               }
+               err=make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
             }
-            
+
             if(err==1){
+               FreeList(&thispath);
+               err=make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
+            }
+
+            // take the start path and optimize it...
+            err=iter_path(&thispath,*nbnd,bnd);
+
+            if(err==1){
+               FreeList(&thispath);
                err=make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
                err=iter_path(&thispath,*nbnd,bnd);
             }
-
-//printf("cat(\"### before iter ###\\n\")\n");
-//PrintPath(&savedpaths[m]);
-            // take the start path and optimize it...
-            err=iter_path(&thispath,*nbnd,bnd);
 
             // find the length of the path
             pathlen[k]=hull_length(&thispath);
 // DEBUG
 printf("cat(\"### final ###\\n\")\n");
 PrintPath(&thispath);
-            m++;
-            if(l<(*len)){
-               l++;
-            }
-            if(*len<=m){
-               m=0;
-            }
-
             FreeList(&thispath);
 
          }
@@ -295,9 +276,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
       itwosort(intind);
 
       // want elements intind[0]-1 to intind[1 ](inclusive)
-      //picker<-sort(c(ip1.index[1],(ip1.index[length(ip1.index)]+1)))
-      //picker<-c(picker[1]:picker[2])
-      //bnd.1.sort<-pe(bnd,picker)
 
       // since we ordered intind first, we don't need to worry too much
       // we put the bit that is contiguous in first eg:
@@ -311,13 +289,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          Push(&bnd1,curr_insert);
       }
 
-      // create the second boundary segment
-      // want intind[1]+1:intind[0]
-      // bnd.2.sort<-pe(pe(bnd,c(1:(length(bnd$x)-1))),
-      //       setdiff(c(1:(length(bnd$x)-1)),picker))
-      // bnd.2.sort<-pe(bnd.2.sort,c(rev(1:(picker[1]-1)),
-      //       length(bnd.2.sort$x):picker[1]))
-
+      // create the second boundary segment, the { }
       if(intind[1]!=nbnd){
          start=intind[1];
       }else{
@@ -339,7 +311,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
             Push(&bnd2,curr_insert);
          }
       }
-
 
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
@@ -440,7 +411,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 
    }else if((p1[0]==p2[0]) && (p1[1]==p2[1])){
       *path=NULL;
-      return 0;
+      return 1;
 
    }else{ 
       *path=NULL;
@@ -458,10 +429,10 @@ int append_path(node** oldpath, node** newpath, double p1[2], double p2[2], int 
     *
     *
    */
-   int err=0,i;
+//   int err=0,i;
 //   int *intbnd;
-   node* current= NULL;
-   node* apppath=NULL;
+//   node* current= NULL;
+//   node* apppath=NULL;
 //   double endpoint[2];
 
    if(Length(oldpath)<5){
@@ -479,14 +450,14 @@ int append_path(node** oldpath, node** newpath, double p1[2], double p2[2], int 
    // replace with what's in oldpath
    CopyList(*oldpath,newpath);
 
-   current=*newpath;
+//   current=*newpath;
 
-   // find the end of new(old)path that we want
-
-   // end = 1 match top, 2 match bottom
-   // => end==1 => add path to end
-   // => end==2 => add path to start
-
+//   // find the end of new(old)path that we want
+//
+//   // end = 1 match top, 2 match bottom
+//   // => end==1 => add path to end
+//   // => end==2 => add path to start
+//
 //   if(end==1){
 //      while(current->next!=NULL){
 //         current=current->next;
@@ -497,7 +468,7 @@ int append_path(node** oldpath, node** newpath, double p1[2], double p2[2], int 
 //
 //   // catch the case when the path between endpoint and point is 
 //   // Euclidean within the domain
-//   do_intersect(point,endpoint, nbnd,bnd,intbnd);
+//   do_intersect(p2,endpoint, nbnd,bnd,intbnd);
 //
 //   if(iarrsum((nbnd-1),intbnd)==0){
       // if the point->endpoint path is Euclidean in the domain then
@@ -509,6 +480,9 @@ int append_path(node** oldpath, node** newpath, double p1[2], double p2[2], int 
          Push(newpath,p1);
          AppendNode(newpath,p2);
       }
+//   }else{
+//      return 1;
+//   }
 //   }else{
 //      // make a path from point to the end of oldpath
 //      err=make_bnd_path(endpoint, point, nbnd, bnd, &apppath, 0);
@@ -658,7 +632,6 @@ void delete_step(node** path, int nbnd, double **bnd){
          // if we are going forward and back again, just remove the point
          // in this case we remove the ith and (i+1)th entries, point (i-1)th
          // next to the (i+2)th.
-         // path<-pe(path,-c(i,i+1))
          if((mytrip[0][0]==mytrip[2][0]) & (mytrip[0][1]==mytrip[2][1])){
             // current is sitting at the 3rd entry
             // create a pointer to that
@@ -701,15 +674,10 @@ void delete_step(node** path, int nbnd, double **bnd){
             xmp[0]=(mytrip[2][0]+mytrip[0][0])/2;
             ymp[0]=(mytrip[2][1]+mytrip[0][1])/2;
 
-            //if(all(!sp_do_intersect(pe(my.trip,1),pe(my.trip,3),bnd))&
-            //  inSide(bnd,(pe(my.trip,3)$x+pe(my.trip,1)$x)/2,
-            //             (pe(my.trip,3)$y+pe(my.trip,1)$y)/2)){
             in[0]=1;
             in_out(bx,by,&break_code,xmp,ymp,in, &nbnd,&inout_n);
-
             // if deleting point i makes the resulting line cross the
             // the boundary then keep it in the path, else get rid of it 
-            //path<-pe(path,-i)
             
             // first part asks if there are any intersections, if there are
             // none then that's okay. Second part asks if midpoints are inside.
@@ -778,9 +746,7 @@ void alter_step(node** path, int nbnd, double **bnd)
    int conv_stop=10;
 
    int oneshot;
-
    oneshot=Length(path);
-
 
    // iterate over the points in the path:
    // alter the path, until on two(?) consecutive runs there are
@@ -793,12 +759,9 @@ void alter_step(node** path, int nbnd, double **bnd)
          FreeList(&prevpath);
       }
       // use prevpath to keep a copy of the previous path for comparison            
-      //prev.path<-path
       CopyList(*path,&prevpath);
 
       // start point for triplet selection
-      //i<-2
-      //while((i+1)<=length(path$x)){
       while(current!=NULL){
          // equivalent of some ANDs in the above, but doesn't cause a memory
          // problem when the while() evaluates all of the conditions.
@@ -833,11 +796,6 @@ void alter_step(node** path, int nbnd, double **bnd)
 
             // provided there were no errors in the path making...
             if(err==0){
-
-               // make the new path as simple as possible (no simpler :))
-               // NB. we would be fine just passing newpath to delete
-               //delete_step(&newpath,nbnd,bnd);
-
                // only insert the path if it's better!
                if((hull_length(&newpath)<=triplen)){
 
@@ -884,12 +842,6 @@ void alter_step(node** path, int nbnd, double **bnd)
                   }
                   /////////// done getting the path in the right format
 
-                  // create new path, compare complete new path with old one, if the
-                  // new one is better then keep it.
-                  //new.path<-delete_step(list(
-                  //   x=c(path$x[1:(i-1)],new.path$x,path$x[(i+1):length(path$x)]),
-                  //   y=c(path$y[1:(i-1)],new.path$y,path$y[(i+1):length(path$y)])),bnd)
-                  
                   // modify path
                   // from i, stitch in newpath up to i+2
                   // current is at i+2 now
@@ -936,10 +888,8 @@ void alter_step(node** path, int nbnd, double **bnd)
       if(oneshot==3){
          break;
       }
-
    } while( !(has_converged(prevpath,*path)) & (conv<conv_stop) );
    //end of main do
-
    FreeList(&prevpath);
 }
 
