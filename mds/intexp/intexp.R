@@ -81,23 +81,33 @@ squash<-function(x,lims,sq){
    # squash the points in x between lims[1] and lims[2] by a factor of sq
 
    x.ret<-c() # return vector
+
+   x.tmp<-x[(x>=lims[1]) & (x<=lims[2])]
+   x.tmp<-x.tmp-(lims[1]+lims[2])/2
+   x.tmp<-x.tmp/sq[1]
+   x.tmp<-x.tmp+(lims[1]+lims[2])/2
    
-   for(i in 1:(length(sq))){
-      x.tmp<-x[(x>=lims[i]) & (x<=lims[i+1])]
-      x.tmp<-x.tmp-(lims[i+1]+lims[i])/2
-      x.tmp<-x.tmp*sq[i]
-      x.tmp<-x.tmp+(lims[i+1]+lims[i])/2
+   x.ret<-c(x.ret,x.tmp)
    
-      x.ret<-c(x.ret,x.tmp)
+   if(length(sq)>=2){
+      for(i in 2:(length(sq))){
+         x.tmp<-x[(x>lims[i]) & (x<=lims[i+1])]
+         x.tmp<-x.tmp-(lims[i+1]+lims[i])/2
+         x.tmp<-x.tmp/sq[i]
+         x.tmp<-x.tmp+(lims[i+1]+lims[i])/2
+   
+         x.ret<-c(x.ret,x.tmp)
+      }
    }
    return(x.ret)
 }
 
-lims<-c(0,0.5,1)
-sq<-c(1,0.2)
+lims<-c(0,0.5,0.7,1)
+sq<-c(1,1/0.2,1/0.9)
 
 x.m<-squash(x,lims,sq)
 xp.m<-squash(xp,lims,sq)
+#xk.m<-squash(xk,lims,sq)
 xk.m<-xk
 
 
@@ -127,15 +137,16 @@ RdRd<-function(x,xk1,xk2){Rd(x,xk1)*Rd(x,xk2)}
 intR<-function(xk1,xk2,xk,xk.m,lims,sq){
 
    ilims<-squash(lims,lims,sq)
- 
+#   ilims<-lims 
    # return vector
    ret<-rep(0,length(sq))
 
    for(i in 1:length(sq)){
       ret[i]<-integrate(RdRd,lower=ilims[i],upper=ilims[i+1],
                         xk1=xk1,xk2=xk2)$value
-      ret[i]<-ret[i]*sq[i]^3
+      ret[i]<-ret[i]*sq[i]^-3
    }
+
    sum(ret)
 }
 
