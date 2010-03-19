@@ -105,13 +105,19 @@ squash<-function(x,lims,sq){
 lims<-c(0,0.5,0.7,1)
 sq<-c(1,1/0.2,1/0.9)
 
+#lims<-c(0,0.5,1)
+#sq<-c(1,1/0.2)
+
+lambda<-0.000001
+
+
 x.m<-squash(x,lims,sq)
 xp.m<-squash(xp,lims,sq)
 #xk.m<-squash(xk,lims,sq)
 xk.m<-xk
 
 
-mod.2<-prs.fit(y,x.m,xk.m,0.0001)# fitpen.reg.spline 
+mod.2<-prs.fit(y,x.m,xk.m,lambda)# fitpen.reg.spline 
 Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fitted values at xp 
 
 #plot data & spl.fit 
@@ -144,7 +150,7 @@ intR<-function(xk1,xk2,xk,xk.m,lims,sq){
    for(i in 1:length(sq)){
       ret[i]<-integrate(RdRd,lower=ilims[i],upper=ilims[i+1],
                         xk1=xk1,xk2=xk2)$value
-      ret[i]<-ret[i]*sq[i]^-3
+      ret[i]<-ret[i]*sq[i]^3
    }
 
    sum(ret)
@@ -183,7 +189,7 @@ prs.fit<-function(y,x,xk,xk.m,lambda,lims,sq) {
    lm(y~Xa-1)#fit and return penalized regression spline 
 } 
 
-mod.2<-prs.fit(y,x.m,xk,xk.m,0.0001,lims,sq)# fitpen.reg.spline 
+mod.2<-prs.fit(y,x.m,xk,xk.m,lambda,lims,sq)# fitpen.reg.spline 
 Xp.move<-spl.X(xp.m,xk.m)#matrix to map params to fitted values at xp 
 
 
