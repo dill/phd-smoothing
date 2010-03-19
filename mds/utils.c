@@ -58,7 +58,6 @@ void do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndint){
            (fabs(p2[1]-p3[1]) < eps) &
            (fabs(p1[1]-p4[1]) < eps) )) bndint[i]=1;
 
-
       if(bndint[i]==0){
          bndint[i]=do_int(p1,p2,p3,p4,ip);
       }
@@ -134,11 +133,8 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 
    // if there are no errors, go ahead
    if(err==0){
-
       // are the midpoints inside?
-      // ret<-inSide(bnd,c(p1.mp$x,p2.mp$x),c(p1.mp$y,p2.mp$y))
-      // call the in_out routine from soap. Need to make sure that things are
-      // in the right format
+      // call the in_out routine from soap.
       //void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
 
       bx=(double*)malloc(sizeof(double)*nbnd);
@@ -147,7 +143,6 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
       for(i=0; i<nbnd; i++){
          bx[i]=bx[0]+i;
          by[i]=by[0]+i;
-
          bx[i]=bnd[i][0]; 
          by[i]=bnd[i][1];
       }
@@ -175,15 +170,14 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
       if((in[0] && in[1])){
          ret=1;
       }
+
       // free some memory
       free(bx);free(by);
    }
-
    return ret;
 }
 
 int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
-
    double p3[2],p4[2];
    int ret;
    double arr[2];
@@ -475,7 +469,6 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 
    return(err);
 }
-
 
 // match the end of a linked list with a point
 int match_ends(double *point, node** head, double **bnd, int nbnd){

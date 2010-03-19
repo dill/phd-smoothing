@@ -91,7 +91,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             // do the append check for p1   
             append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
 
-//app[0]=0;
+            // uncomment this to get the old method
+            //app[0]=0;
+
             err=0;
 
             // if an append will work...
@@ -100,6 +102,10 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             }else{
                err=+make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
             }
+
+// DEBUG
+//printf("cat(\"### first ###\\n\")\n");
+//PrintPath(&thispath);
 
             if(err==1){
                FreeList(&thispath);
