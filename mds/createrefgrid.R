@@ -20,5 +20,7 @@ create_refgrid<-function(bnd){
    grid$x<-(1/3)*rowSums(bnd.tri[,c(1,3,5)])
    grid$y<-(1/3)*rowSums(bnd.tri[,c(2,4,6)])
 
+
+
    return(grid)
 }
