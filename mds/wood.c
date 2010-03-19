@@ -38,8 +38,6 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
       bnd[i][1]=ybnd[i];
    }
 
-   // insertion counter
-   k=0;
    // path save counter
    l=0;
 
@@ -75,6 +73,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // l     counts the size of the saved path array
    // m     indexes the saved paths
 
+   k=0;
+
    // #### Main for loops 
    for(i=0; i<ilim; i++){
       if(*start==0){ jstart=i+1;} // make sure that j is set right for full mds
@@ -90,10 +90,13 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             // do the append check for p1   
             append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
 
+app[0]=0;
+
             // if an append will work...
             if(app[0]!=0){
                err=append_path(&savedpaths[app[1]],&thispath,p2,p1,app[0],*nbnd,bnd);
             }else{
+//printf("cat(\"p1=(%f,%f),p1=(%f,%f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
                err=make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
             }
 
@@ -357,34 +360,34 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
       }
 
 // DEBUG
-//printf("cat(\" path1 ###\\n\")\n");
-//PrintPath(&bnd1);
-//printf("# path1 ###\n");
-//printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-//printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-//printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
-//printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("line1<- list(x=c(%f,%f),y=c(%f,%f))\n",line1[0][0],line1[1][0],line1[0][1],line1[1][1]);
-//printf("line2<- list(x=c(%f,%f),y=c(%f,%f))\n",line2[0][0],line2[1][0],line2[0][1],line2[1][1]);
-//printf("lines(line1,lwd=2,col=\"blue\")\n");
-//printf("lines(line2,lwd=2,col=\"blue\")\n");
-//printf("points(ip1)\n");
-//printf("points(ip2)\n");
-//printf("points(p1,pch=19)\n");
-//printf("points(p2,pch=19)\n");
-//printf("scan()\n");
-//printf("cat(\" path2 ###\\n\")\n");
-//PrintPath(&bnd2);
-//printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-//printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-//printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
-//printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("points(ip1)\n");
-//printf("points(ip2)\n");
-//printf("points(p1,pch=19)\n");
-//printf("points(p2,pch=19)\n");
-//printf("scan()\n");
-//printf("# path2 ###\n");
+printf("cat(\" path1 ###\\n\")\n");
+PrintPath(&bnd1);
+printf("# path1 ###\n");
+printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
+printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+printf("line1<- list(x=c(%f,%f),y=c(%f,%f))\n",line1[0][0],line1[1][0],line1[0][1],line1[1][1]);
+printf("line2<- list(x=c(%f,%f),y=c(%f,%f))\n",line2[0][0],line2[1][0],line2[0][1],line2[1][1]);
+printf("lines(line1,lwd=2,col=\"blue\")\n");
+printf("lines(line2,lwd=2,col=\"blue\")\n");
+printf("points(ip1)\n");
+printf("points(ip2)\n");
+printf("points(p1,pch=19)\n");
+printf("points(p2,pch=19)\n");
+printf("scan()\n");
+printf("cat(\" path2 ###\\n\")\n");
+PrintPath(&bnd2);
+printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
+printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+printf("points(ip1)\n");
+printf("points(ip2)\n");
+printf("points(p1,pch=19)\n");
+printf("points(p2,pch=19)\n");
+printf("scan()\n");
+printf("# path2 ###\n");
 
       // delete before testing length?
       if(delfirst==0){
@@ -409,9 +412,9 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 
       return 0;
 
-   }else if((p1[0]==p2[0]) && (p1[1]==p2[1])){
-      *path=NULL;
-      return 1;
+//   }else if((p1[0]==p2[0]) && (p1[1]==p2[1])){
+//      *path=NULL;
+//      return 1;
 
    }else{ 
       *path=NULL;
