@@ -43,7 +43,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // path save counter
    l=0;
 
-//   create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
+   create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
 
    // first of all, set the epsilon to use...
    //set_epsilon(*nbnd,xbnd,ybnd);
@@ -83,19 +83,22 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
          if(pathlen[k] == (-1)){
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
-printf("cat(\"p1=list(x=%f,y=%f);p2=list(x=%f,y=%f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
+//printf("cat(\"p1=list(x=%f,y=%f);p2=list(x=%f,y=%f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
 
 //printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
             // can we do an append?
             // do the append check for p1   
-//            append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
+            append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
+
+//app[0]=0;
+            err=0;
 
             // if an append will work...
             if(app[0]!=0){
-               err=append_path(&savedpaths[app[1]],&thispath,p2,p1,app[0],*nbnd,bnd);
+               err=+append_path(&savedpaths[app[1]],&thispath,p2,p1,app[0],*nbnd,bnd);
             }else{
-               err=make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
+               err=+make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
             }
 
             if(err==1){
@@ -104,7 +107,7 @@ printf("cat(\"p1=list(x=%f,y=%f);p2=list(x=%f,y=%f)\\n\")\n",p1[0],p1[1],p2[0],p
             }
 
             // take the start path and optimize it...
-            err=iter_path(&thispath,*nbnd,bnd);
+            err=+iter_path(&thispath,*nbnd,bnd);
 
             if(err==1){
                FreeList(&thispath);
@@ -115,8 +118,8 @@ printf("cat(\"p1=list(x=%f,y=%f);p2=list(x=%f,y=%f)\\n\")\n",p1[0],p1[1],p2[0],p
             // find the length of the path
             pathlen[k]=hull_length(&thispath);
 // DEBUG
-printf("cat(\"### final ###\\n\")\n");
-PrintPath(&thispath);
+//printf("cat(\"### final ###\\n\")\n");
+//PrintPath(&thispath);
             FreeList(&thispath);
 
          }
