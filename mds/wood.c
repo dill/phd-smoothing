@@ -27,7 +27,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    // storage
    node** savedpaths;
-   node* thispath;
+   node* thispath=NULL;
 
    bnd=(double**)malloc(sizeof(double*)*(*nbnd));
    bnd[0]=(double*)malloc(sizeof(double)*(*nbnd)*2);
@@ -43,7 +43,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // path save counter
    l=0;
 
-   create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
+//   create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
 
    // first of all, set the epsilon to use...
    //set_epsilon(*nbnd,xbnd,ybnd);
@@ -83,12 +83,13 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
          if(pathlen[k] == (-1)){
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
+printf("cat(\"p1=list(x=%f,y=%f);p2=list(x=%f,y=%f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
 
 //printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
 
             // can we do an append?
             // do the append check for p1   
-            append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
+//            append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
 
             // if an append will work...
             if(app[0]!=0){
@@ -251,59 +252,60 @@ int iter_path(node** mypath,int nbnd, double **bnd){
 int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path, int delfirst)
 {
    /* Args:
-    *  p1, p2           points
-    *  nbnd             length of boundary
-    *  bnd              boundary
-    *  path             head node of the linked list          
-    *  delfirst         delete before finding the lengths? 0=yes,1=no
-    */
-
+   * p1, p2 points
+   * nbnd length of boundary
+   * bnd boundary
+   * path head node of the linked list
+   * delfirst delete before finding the lengths? 0=yes,1=no
+   */
+ 
    double ip1[2],ip2[2], curr_insert[2];
    int intind[2],i,start;
    int err=0;
    double line1[2][2], line2[2][2];
    node* bnd1 = NULL;
    node* bnd2 = NULL;
-
-   // find the first intersection between p1, p2 and the boundary side that 
+ 
+   // find the first intersection between p1, p2 and the boundary side that
    // each point intersects
    err=first_ips(p1, p2, nbnd, bnd, ip1, ip2, intind);
-
-	// if there are no errors
+ 
+   // if there are no errors
    if(err==0){
-
+ 
       // first sort the intersection indices
       itwosort(intind);
-
+ 
       // want elements intind[0]-1 to intind[1 ](inclusive)
-
+ 
       // since we ordered intind first, we don't need to worry too much
       // we put the bit that is contiguous in first eg:
-      // 0 1 2 3} [4 5 6] {7 8 9  <<<- do the [ ] bit first!
-
+      // 0 1 2 3} [4 5 6] {7 8 9 <<<- do the [ ] bit first!
+ 
       // push everything in
-      //                     vvvvvvvvvv <- since we want it to be inclusive
+      // vvvvvvvvvv <- since we want it to be inclusive
       for(i=(intind[0]+1);i<(intind[1]+1);i++){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
          Push(&bnd1,curr_insert);
       }
-
-      // create the second boundary segment, the { }
+ 
+      // create the second boundary segment
+      // want intind[1]+1:intind[0]
       if(intind[1]!=nbnd){
          start=intind[1];
       }else{
          start=1; // handle the case where start is actually the end
       }
-
-      // insert until we hit the end 
+ 
+      // insert until we hit the end
       for(i=(start+1);i<nbnd;i++){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
          Push(&bnd2,curr_insert);
       }
-
-      // insert from the start back to intend[0] 
+ 
+      // insert from the start back to intend[0]
       if(intind[0]!=0){
          for(i=0;i<(intind[0]+1);i++){
             curr_insert[0]=bnd[i][0];
@@ -311,33 +313,33 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
             Push(&bnd2,curr_insert);
          }
       }
-
+ 
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
       line1[1][0]=bnd[(intind[0]+1)%nbnd][0];
       line1[1][1]=bnd[(intind[0]+1)%nbnd][1];
-
+ 
       line2[0][0]=bnd[intind[1]][0];
       line2[0][1]=bnd[intind[1]][1];
       line2[1][0]=bnd[(intind[1]+1)%nbnd][0];
       line2[1][1]=bnd[(intind[1]+1)%nbnd][1];
-
+ 
       if(online(ip1,line1) | online(ip2,line2)){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert); 
+         Push(&bnd2,curr_insert);
    
          curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
-
+ 
          curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
          Push(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert); 
+         AppendNode(&bnd2,curr_insert);
    
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
          Push(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert); 
+         AppendNode(&bnd2,curr_insert);
       }else{
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          Push(&bnd1,curr_insert);
@@ -355,7 +357,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
       }
-
+ 
 // DEBUG
 //printf("cat(\" path1 ###\\n\")\n");
 //PrintPath(&bnd1);
@@ -385,7 +387,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
 //printf("points(p2,pch=19)\n");
 //printf("scan()\n");
 //printf("# path2 ###\n");
-
       // delete before testing length?
       if(delfirst==0){
             if(Length(&bnd1)>2){
@@ -395,7 +396,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
                delete_step(&bnd2, nbnd, bnd);
             }
       }
-
+ 
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
          CopyList(bnd1,path);
@@ -406,20 +407,20 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          FreeList(&bnd1);
          FreeList(&bnd2);
       }
-
+ 
       return 0;
 
    }else if((p1[0]==p2[0]) && (p1[1]==p2[1])){
       *path=NULL;
       return 1;
 
-   }else{ 
+   }else{
       *path=NULL;
-//      printf("# ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
-//      printf("# DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
+// printf("# ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
+// printf("# DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
       return 1;
    }// end of error if()
-
+ 
 }
 
 // append one path to the end of another
