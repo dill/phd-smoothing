@@ -92,7 +92,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
 
             // uncomment this to get the old method
-            //app[0]=0;
+            app[0]=0;
 
             err=0;
 
