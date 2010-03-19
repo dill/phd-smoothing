@@ -3,7 +3,6 @@
 
 source("mds.R")
 source("wt2-smooth-test.R")
-#source("wt2-soapfind.R")
 
 ###############################
 # initial setup
@@ -35,8 +34,7 @@ gendata<-list(x=gendata$x[onoff],
                z=gendata$z[onoff])
 
 # create the grid
-source("wt2-create-grid.R")
-my.grid<-wt2_create_grid()
+my.grid<-make_soap_grid(bnd,n=10)
 
 ## do the MDS on the grid 
 # create D
