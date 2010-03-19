@@ -17,7 +17,7 @@ bnd.km<-latlong2km(bnd[,2],bnd[,3],59.5,45)
 
 bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 
-my.grid<-make_soap_grid(bnd,13)
+my.grid<-make_soap_grid(bnd,15)
 
 D<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
 
