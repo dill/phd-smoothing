@@ -16,6 +16,18 @@ ddeta1<-function(x,xk){
    6*gamma(-1.5)/(16*sqrt(pi))*(1-xk)^2*(x-xk)
 }
 
+int_ddeta1<-function(xk){
+
+   res<-rep(0,length(xk))
+
+   for(i in 1:length(xk)){
+      res[i]<-integrate(ddeta1^2,xk=xk[i],lower=-1e16,upper=1e16)
+   }
+
+   return(res)
+}
+
+
 # eta in 2D
 deta2x1<-function(x,xk){
    ss<-sum((x-xk)^2)
@@ -45,6 +57,7 @@ ddeta2x1<-function(x1,x2,xk){
    ss<-sum((x-xk)^2)
    (1/(8*pi))*(1 + log(sqrt(ss)) + 2*((x2-xk[2])^2)/(ss))
 }
+
 
 
 
