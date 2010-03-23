@@ -11,36 +11,53 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # use finite difference to find the second derivatives
    eps<- (1e-15)^(1/4)
  
-   # set some limits
-   a<- 0
-   b<- 1
- 
-   N<-1000000
- 
-   # make the candidate x values
-   xs<-a+(1:N -0.5)*(b-a)/N
- 
-   # second difference
-   fd<-(Predict.matrix(object,data.frame(x=xs+2*eps))-
-       2*Predict.matrix(object,data.frame(x=xs+eps))+
-       Predict.matrix(object,data.frame(x=xs)))/eps^2
 
-   oldS<-object$S[[1]] 
-   
-   object$S[[1]]<-t(fd)%*%fd
-   object$S[[1]]<-((b-a)/N)*object$S[[1]]
+   if(!is.null(object$xt$lims)){
 
-   # enforce symmetry (from smooth.construct.tp...)
-   object$S[[1]] <- (object$S[[1]] + t(object$S[[1]]))/2
+      lims<-object$xt$lims
+      sq<-object$xt$sq
+      oldS<-object$S[[1]] 
 
-   # zero the last two rows and cols
-   k<-dim(object$S[[1]])[1]
+      k<-dim(object$S[[1]])[1]
+      S<-matrix(0,k,k)
 
-   object$S[[1]][(k-1):k,]<-rep(0,k*2)
-   object$S[[1]][,(k-1):k]<-rep(0,k*2)
+      for(i in 1:(length(lims)-1)){
 
-   cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
- 
+         # set some limits
+         a<- lims[i]
+         b<- lims[i+1]
+       
+         N<-100000
+       
+         # make the candidate x values
+         xs<-a+(1:N -0.5)*(b-a)/N
+       
+         # second difference
+         fd<-(Predict.matrix(object,data.frame(x=xs+2*eps))-
+             2*Predict.matrix(object,data.frame(x=xs+eps))+
+             Predict.matrix(object,data.frame(x=xs)))/eps^2
+
+         fd<-fd*sqrt(sq[i]^3)
+
+         # do the integration
+         D<-t(fd)%*%fd
+         D<-((b-a)/N)*D
+      
+         # enforce symmetry (from smooth.construct.tp...)
+         D <- (D + t(D))/2
+      
+         S<-S+D
+      }
+
+      object$S[[1]]<-S
+
+      # zero the last two rows and cols
+      object$S[[1]][(k-1):k,]<-rep(0,k*2)
+      object$S[[1]][,(k-1):k]<-rep(0,k*2)
+
+      cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
+   }
+
    object
 }
 
