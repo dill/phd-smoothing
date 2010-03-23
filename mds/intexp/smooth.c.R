@@ -41,8 +41,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       fd[(k-1):k,]<-rep(0,k*2)
       fd[,(k-1):k]<-rep(0,k*2)
 
-#         fd<-fd*sqrt(sq[i]^3)
-         fd<-fd*sqrt(sq[i])
+         fd<-fd*sqrt(sq[i]^3)
+#         fd<-fd*sqrt(sq[i])
 
          # do the integration
          D<-t(fd)%*%fd
