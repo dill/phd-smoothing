@@ -7,7 +7,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # make the tprs object as usual
    object<-smooth.construct.tp.smooth.spec(object,data,knots)
 
-   # recreate the S object
+   # recreate the S matrix
    # use finite difference to find the second derivatives
    eps<- (1e-15)^(1/4)
  
@@ -27,7 +27,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
          a<- lims[i]
          b<- lims[i+1]
        
-         N<-100000
+         N<-1000000
        
          # make the candidate x values
          xs<-a+(1:N -0.5)*(b-a)/N
@@ -37,7 +37,12 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
              2*Predict.matrix(object,data.frame(x=xs+eps))+
              Predict.matrix(object,data.frame(x=xs)))/eps^2
 
-         fd<-fd*sqrt(sq[i]^3)
+      # zero the last two rows and cols
+      fd[(k-1):k,]<-rep(0,k*2)
+      fd[,(k-1):k]<-rep(0,k*2)
+
+#         fd<-fd*sqrt(sq[i]^3)
+         fd<-fd*sqrt(sq[i])
 
          # do the integration
          D<-t(fd)%*%fd
