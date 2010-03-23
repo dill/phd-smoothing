@@ -63,6 +63,9 @@ plot(x.m,y,main="raw squash data")
 ##### fixing...
 source("smooth.c.R")
 
+
+lims<-squash(lims,lims,sq)
+
 b<-gam(y~s(x,k=10,xt=list(lims=lims,sq=sq),bs="mdstp"),data=dat)
 
 plot(b,main="fixed fit")
