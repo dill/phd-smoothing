@@ -108,6 +108,29 @@ smooth.construct.tp.smooth.spec<-function(object,data,knots)
   object$null.space.dim<-M
 
   class(object)<-"tprs.smooth"
+
+  # recreate the S object
+
+  # use finite difference to find the second derivatives
+
+  # set some limits
+  lims<-seq(a,b,length.out=100)
+
+  # make the midpoints here
+
+  midp<-data.frame()
+  midp2<-data.frame() # as above plus epsilon
+
+  d1<-Predict.matrix(object,midp)
+  d2<-Predict.matrix(object,midp2)
+
+  fd<-(d1-d2)/eps
+
+  # then sum fd
+
+
+
+
   object
 }
 
