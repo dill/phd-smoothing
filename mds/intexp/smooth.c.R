@@ -27,7 +27,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
          a<- lims[i]
          b<- lims[i+1]
        
-         N<-1000000
+         N<-1000
        
          # make the candidate x values
          xs<-a+(1:N -0.5)*(b-a)/N

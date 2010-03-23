@@ -45,31 +45,25 @@ squash<-function(x,lims,sq){
 }
 
 lims<-c(0,0.5,0.7,1)
-sq<-c(1,1/0.01,1/2)
+sq<-c(1,1/0.1,1/2)
 
-#lims<-c(0,0.5,1)
-#sq<-c(1,1/2)
+lims<-c(0,0.5,1)
+sq<-c(1,1/0.5)
 
-
-
+# do the squashing
 x.m<-squash(x,lims,sq)
-
 dat<-data.frame(x=x.m,y=y)
 
 
 b<-gam(y~s(x,k=10),data=dat)
 
 plot(b,main="squash fit")
-
-plot(x.m,y,main="squash fit")
+plot(x.m,y,main="raw squash data")
 
 ##### fixing...
-
 source("smooth.c.R")
 
 b<-gam(y~s(x,k=10,xt=list(lims=lims,sq=sq),bs="mdstp"),data=dat)
 
-
 plot(b,main="fixed fit")
-
 

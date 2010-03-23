@@ -15,7 +15,7 @@ plot(b)
 source("smooth.c.R")
 
 
-b<-gam(y~s(x,k=10,bs="mdstp"))
+b<-gam(y~s(x,k=10,bs="mdstp",xt=list(sq=1,lims=c(0,1))))
 plot(b)
 
 
