@@ -8,6 +8,15 @@ y<-x^2
 
 b<-gam(y~s(x,k=10))
 
+par(mfrow=c(1,2))
+
+plot(b)
+
+source("smooth.c.R")
+
+
+b<-gam(y~s(x,k=10,bs="mdstp"))
+plot(b)
 
 
 
