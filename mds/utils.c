@@ -149,10 +149,15 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
 
       // find the midpoints between p1, p2 their first intersections
       // store in x and y blocks
-      xmp[0]=(ip1[0]+p1[0])/2;
-      xmp[1]=(ip2[0]+p2[0])/2;
-      ymp[0]=(ip1[1]+p1[1])/2;
-      ymp[1]=(ip2[1]+p2[1])/2;
+//      xmp[0]=(ip1[0]+p1[0])/2;
+//      xmp[1]=(ip2[0]+p2[0])/2;
+//      ymp[0]=(ip1[1]+p1[1])/2;
+//      ymp[1]=(ip2[1]+p2[1])/2;
+
+      xmp[0]=(ip1[0]+eps*p1[0])/(1+eps);
+      xmp[1]=(ip2[0]+eps*p2[0])/(1+eps);
+      ymp[0]=(ip1[1]+eps*p1[1])/(1+eps);
+      ymp[1]=(ip2[1]+eps*p2[1])/(1+eps);
 
       // to handle holes, multiple boundaries
       // ignore this at the moment
@@ -368,12 +373,12 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
             retint[i-1]=retint2[i-1];
          }
       }
-      if(!retint[i]){
-         if( ( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps) )| 
-             ( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)) ){
-            retint[i]=1;
-         }
-      }
+//      if(!retint[i]){
+//         if( ( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps) )| 
+//             ( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)) ){
+//            retint[i]=1;
+//         }
+//      }
    }
 
    // length of the bounding box index

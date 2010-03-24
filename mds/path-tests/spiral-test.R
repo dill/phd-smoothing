@@ -11,7 +11,7 @@ bnd<-spir.dat$bnd
 my.grid<-make_soap_grid(bnd,15)
 
 
-D<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0)
+D<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1)
 
 D.t<-read.csv("path-tests/spir-D.csv")
 

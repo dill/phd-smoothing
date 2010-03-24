@@ -49,7 +49,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    }
 
    // first of all, set the epsilon to use...
-   //set_epsilon(*nbnd,xbnd,ybnd);
+   set_epsilon(*nbnd,xbnd,ybnd);
 
 
    // first calculate all of the Euclidean paths
@@ -86,9 +86,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
          if(pathlen[k] == (-1)){
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
-printf("cat(\"p1=list(x=%.16f,y=%.16f);p2=list(x=%.16f,y=%.16f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
+//printf("cat(\"p1=list(x=%.16f,y=%.16f);p2=list(x=%.16f,y=%.16f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
 
-printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
+//printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
 
 
             if(*faster){
@@ -109,8 +109,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
             }
 
 // DEBUG
-printf("cat(\"### first ###\\n\")\n");
-PrintPath(&thispath);
+//printf("cat(\"### first ###\\n\")\n");
+//PrintPath(&thispath);
 
             if(err==1){
                FreeList(&thispath);
@@ -256,6 +256,7 @@ int iter_path(node** mypath,int nbnd, double **bnd){
       printf("# WARNING: path find finished without convergence!\n");
       printf("# conv = %d\n",conv);
       printf("# convergence = %d\n",has_converged(prevpath,*mypath) );
+      FreeList(&prevpath);
       return 1;
    }
 
@@ -278,7 +279,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
  
    double ip1[2],ip2[2], curr_insert[2];
    int intind[2],i,start;
-   int err=0;//, sortind=0;
+   int err=0, sortind=0,indi;
    double line1[2][2], line2[2][2];
    node* bnd1 = NULL;
    node* bnd2 = NULL;
@@ -291,7 +292,12 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
    if(err==0){
  
       // first sort the intersection indices
+      indi=intind[0];
       itwosort(intind);
+      // set a var here to know if we switched, needed later
+      if(indi!=intind[0]){
+         sortind=1;
+      }
 
       // want elements intind[0]-1 to intind[1 ](inclusive)
  
@@ -341,7 +347,8 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
       line2[1][0]=bnd[(intind[1]+1)%nbnd][0];
       line2[1][1]=bnd[(intind[1]+1)%nbnd][1];
  
-      if(online(ip1,line1) | online(ip2,line2)){
+//      if(online(ip1,line1) | online(ip2,line2)){
+      if(!sortind){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);

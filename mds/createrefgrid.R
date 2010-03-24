@@ -7,8 +7,8 @@ create_refgrid<-function(bnd){
    grid<-make_soap_grid(bnd,res)
    
 
-   while(length(grid$x)<50){
-      res<-res*2
+   while(length(grid$x)<20){
+      res<-res+1
       grid<-make_soap_grid(bnd,res)
    }
 
