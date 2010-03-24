@@ -242,7 +242,29 @@ int main(void)
    }
    printf(") (one edge, other)\n");
 
+   // over edge
+   p2[1]=-1.5;p2[0]=1;
+   p1[1]=1.5;p1[0]=1;
+ 
+   do_intersect(p1,p2,nbnd, bnd, bndint);
 
+   printf("(0,0,1,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (over edge)\n");
+
+   // under edge
+   p2[1]=-0.5;p2[0]=1;
+   p1[1]=0.5;p1[0]=1;
+ 
+   do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(0,0,1,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (under edge)\n");
 
 ///////////////////////////////////////////////////////////
    printf("*** sp_do_intersect\n");
@@ -352,6 +374,29 @@ int main(void)
    printf(") (one edge, other)\n");
 
 
+   // over edge
+   p2[1]=-1.5;p2[0]=1;
+   p1[1]=1.5;p1[0]=1;
+ 
+   sp_do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(0,0,1,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (over edge)\n");
+
+   // under edge
+   p2[1]=-0.5;p2[0]=1;
+   p1[1]=0.5;p1[0]=1;
+ 
+   sp_do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(0,0,1,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (under edge)\n");
 
 
 

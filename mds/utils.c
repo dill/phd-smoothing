@@ -356,11 +356,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
             do_intersect(ip,p2,nbnd,bnd,retint2);
             retint[i]=retint2[i];
             retint[i-1]=retint2[i-1];
-         }
-      }
-   
-      if(retint[i]){
-         if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
+         }else if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
             ip[0]=(p1[0]+(eps)*p2[0])/(1+eps);
             ip[1]=(p1[1]+(eps)*p2[1])/(1+eps);
             thisedge[0][0]=bnd[i][0];
@@ -370,6 +366,12 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
             do_intersect(ip,p1,nbnd,bnd,retint2);
             retint[i]=retint2[i];
             retint[i-1]=retint2[i-1];
+         }
+      }
+      if(!retint[i]){
+         if( ( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps) )| 
+             ( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)) ){
+            retint[i]=1;
          }
       }
    }
@@ -471,7 +473,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 }
 
 // match the end of a linked list with a point
-int match_ends(double *point, node** head, double **bnd, int nbnd){
+int match_ends(double *point, node** head, double **bnd, int nbnd, double *dist){
    /*
     * Args:
     *    point    the point to investigate
@@ -497,11 +499,15 @@ int match_ends(double *point, node** head, double **bnd, int nbnd){
    ep[1]=current->data[1];
 
    if( (fabs(ep[0]-point[0])<eps) & (fabs(ep[1]-point[1])<eps)){
+//      *dist=0;
+      free(retint);
       return 1;
    }
    
    do_intersect(point,ep,nbnd,bnd,retint);
    if(iarrsum(nbnd-1,retint)==0){
+//      *dist=hypot(ep[0]-point[0],ep[1]-point[1]);
+      free(retint);
       return 1;
    }
 
@@ -515,14 +521,19 @@ int match_ends(double *point, node** head, double **bnd, int nbnd){
    ep[1]=current->data[1];
 
    if( (fabs(ep[0]-point[0])<eps) & (fabs(ep[1]-point[1])<eps)){
+//      *dist=0;
+      free(retint);
       return 2;
    }
 
    do_intersect(point,ep,nbnd,bnd,retint);
    if(iarrsum(nbnd-1,retint)==0){
+//      *dist=hypot(ep[0]-point[0],ep[1]-point[1]);
+      free(retint);
       return 2;
    }
 
+   free(retint);
    // if nothing happened
    return 0;
 }
@@ -538,7 +549,7 @@ void append_check(node** paths, int npaths, double p1[2], double p2[2], int app[
     *             entry 1: path number
    */
    int i,me;
-   double ep[2];   
+   double ep[2],dist1,dist2,olddist=1e12;   
    node* current=NULL;
    int* retint;
 
@@ -552,45 +563,44 @@ void append_check(node** paths, int npaths, double p1[2], double p2[2], int app[
    // loop over paths
    for(i=0; i<npaths; i++){
 
-      // call match_ends
-      me=match_ends(p1,&paths[i],bnd, nbnd);
+      // call match_ends --  is the path between p1 and an end of i
+      //                     paths[i] Euclidean in domain?
+      me=match_ends(p1,&paths[i],bnd, nbnd,&dist1);
 
       // do any of the selected paths have a Euclidean path between
       // their other end and p2?   
 
-      // if p1 matched the end, then check that p2 matches the start
-      if(me==2){
+      if(me!=0){
+
+         // if p1 matched an end, then check that p2 matches the other end
          current=paths[i];
-   
+
+         // get the right end of paths[i]
+         if(me==1){
+            while (current->next != NULL){
+               current=current->next;
+            }
+         }
+
          ep[0]=current->data[0];
          ep[1]=current->data[1];
-   
+
+         // check to see that p2->other end is Euclidean in domain
          do_intersect(p2,ep,nbnd,bnd,retint);
          if(iarrsum(nbnd-1,retint)==0){
-            // return the orientation and path number
-            app[0]=me;
-            app[1]=i;
-            break;
-         }
-      // if p1 matched the start, then check that p2 matches the end
-      }else if(me==1){ 
-         current=paths[i];
-         while (current->next != NULL){
-            current=current->next;
-         }
-   
-         ep[0]=current->data[0];
-         ep[1]=current->data[1];
-   
-         do_intersect(p2,ep,nbnd,bnd,retint);
-         if(iarrsum(nbnd-1,retint)==0){
-            // return the orientation and path number
-            app[0]=me;
-            app[1]=i;
-            break;
+//            dist2=hypot(ep[0]-p2[0],ep[1]-p2[1]);
+            
+//            if((dist1+dist2)<olddist){
+               // return the orientation and path number
+               app[0]=me;
+               app[1]=i;
+//               olddist=dist1+dist2;
+//            }
+               break;
          }
       }
    }
+   free(retint);
 }
 
 // create a reference grid

@@ -9,13 +9,14 @@
 
 double eps=1e-6;
 
-void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *nref, double *pathlen){
+void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *nref, double *pathlen, int *faster){
    // args:
    //   len         the length of x and y *
    //   start       point to start at *
    //   x,y         lists of x and y points
    //   nbnd        length of bnd
    //   bnd         the boundary that got in the way
+   //   faster      0 = no speedup, 1= use cached paths
    //  return:
    //   length of the path
 
@@ -43,7 +44,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // path save counter
    l=0;
 
-   create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
+   if(*faster){
+      create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
+   }
 
    // first of all, set the epsilon to use...
    //set_epsilon(*nbnd,xbnd,ybnd);
@@ -83,16 +86,18 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
          if(pathlen[k] == (-1)){
             p1[0]=x[i]; p1[1]=y[i];
             p2[0]=x[j]; p2[1]=y[j];
-//printf("cat(\"p1=list(x=%f,y=%f);p2=list(x=%f,y=%f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
+printf("cat(\"p1=list(x=%.16f,y=%.16f);p2=list(x=%.16f,y=%.16f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
 
-//printf("cat(\"i=%d,j=%d\\n\")\n",i,j);
+printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
 
-            // can we do an append?
-            // do the append check for p1   
-            append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
 
-            // uncomment this to get the old method
-            //app[0]=0;
+            if(*faster){
+               // can we do an append?
+               // do the append check for p1   
+               append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
+            }else{
+               app[0]=0;
+            }
 
             err=0;
 
@@ -104,8 +109,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             }
 
 // DEBUG
-//printf("cat(\"### first ###\\n\")\n");
-//PrintPath(&thispath);
+printf("cat(\"### first ###\\n\")\n");
+PrintPath(&thispath);
 
             if(err==1){
                FreeList(&thispath);
@@ -270,7 +275,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
  
    double ip1[2],ip2[2], curr_insert[2];
    int intind[2],i,start;
-   int err=0;
+   int err=0;//, sortind=0;
    double line1[2][2], line2[2][2];
    node* bnd1 = NULL;
    node* bnd2 = NULL;
@@ -284,7 +289,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
  
       // first sort the intersection indices
       itwosort(intind);
- 
+
       // want elements intind[0]-1 to intind[1 ](inclusive)
  
       // since we ordered intind first, we don't need to worry too much

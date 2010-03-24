@@ -17,22 +17,10 @@ bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 
 my.grid<-make_soap_grid(bnd,15)
 
+ind<-c(9,116)
+ind<-c(10,24)
 
-x<-c(-40.624116,49.107410)
-y<-c(115.955353,134.811571)
+x<-my.grid$x[ind]
+y<-my.grid$y[ind]
 
-
-x<-c(79.017919049535479,-100.44513318120238 )
-y<-c(-53.750608069735968, -16.038172315109264)
-
-x<-c(4.241647,-100.445133)
-y<-c(134.81157,-72.60683)
-
-
-x<-c(4.241647,-55.579370)
-y<-c(134.811571,-34.894390)
-
-x<-my.grid$x[c(34,114)]
-y<-my.grid$y[c(34,114)]
-
-Dbug<-create_distance_matrix(x,y,bnd)
+Dbug<-create_distance_matrix(x,y,bnd,faster=1)
