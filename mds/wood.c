@@ -138,13 +138,16 @@ PrintPath(&thispath);
          k++;
       }    
    }
-   
-   // free all the saved paths
-   for(i=0;i<l;i++){
-      FreeList(&savedpaths[i]);
+
+   // if we saved paths, free them!   
+   if(*faster){
+      // free all the saved paths
+      for(i=0;i<l;i++){
+         FreeList(&savedpaths[i]);
+      }
+      free(savedpaths);
    }
 
-   free(savedpaths);
    free(bnd[0]);
    free(bnd);
 }

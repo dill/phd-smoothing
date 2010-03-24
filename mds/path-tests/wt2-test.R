@@ -28,7 +28,7 @@ y<-my.grid$y
 
 
 
-D<-create_distance_matrix(x,y,bnd,faster=0)
+D<-create_distance_matrix(x,y,bnd,faster=1)
 
 # "true" D
 D.t<-read.csv("path-tests/wt2-D.csv")
