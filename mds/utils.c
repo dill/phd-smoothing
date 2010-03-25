@@ -373,12 +373,12 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
             retint[i-1]=retint2[i-1];
          }
       }
-//      if(!retint[i]){
-//         if( ( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps) )| 
-//             ( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)) ){
-//            retint[i]=1;
-//         }
-//      }
+      if(!retint[i]){
+         if( ( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps) )| 
+             ( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)) ){
+            retint[i]=1;
+         }
+      }
    }
 
    // length of the bounding box index

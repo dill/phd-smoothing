@@ -18,7 +18,7 @@ bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 my.grid<-make_soap_grid(bnd,15)
 
 ind<-c(9,116)
-ind<-c(10,24)
+#ind<-c(10,24)
 
 x<-my.grid$x[ind]
 y<-my.grid$y[ind]

@@ -88,7 +88,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p2[0]=x[j]; p2[1]=y[j];
 //printf("cat(\"p1=list(x=%.16f,y=%.16f);p2=list(x=%.16f,y=%.16f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
 
-//printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
+printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
 
 
             if(*faster){
@@ -109,8 +109,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             }
 
 // DEBUG
-//printf("cat(\"### first ###\\n\")\n");
-//PrintPath(&thispath);
+printf("cat(\"### first ###\\n\")\n");
+PrintPath(&thispath);
 
             if(err==1){
                FreeList(&thispath);
@@ -238,14 +238,14 @@ int iter_path(node** mypath,int nbnd, double **bnd){
       // add new vertices
       alter_step(mypath,nbnd,bnd);
       // DEBUG
-      //printf("cat(\"### alter_step ###\\n\")\n");
-      //PrintPath(mypath);
+      printf("cat(\"### alter_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(mypath,nbnd,bnd);
       // DEBUG
-      //printf("cat(\"### delete_step ###\\n\")\n");
-      //PrintPath(mypath);
+      printf("cat(\"### delete_step ###\\n\")\n");
+      PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;

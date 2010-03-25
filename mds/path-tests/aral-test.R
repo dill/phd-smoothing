@@ -19,7 +19,7 @@ bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 
 my.grid<-make_soap_grid(bnd,15)
 
-D<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1)
+D<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0)
 
 # "true" D
 D.t<-read.csv("path-tests/aral-D.csv")
