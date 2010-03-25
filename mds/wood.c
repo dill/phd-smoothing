@@ -658,12 +658,6 @@ void delete_step(node** path, int nbnd, double **bnd){
          // pointer is now at i+2
 
          // if we are going forward and back again, just remove the point
-
-         // in this case we remove the ith and (i+1)th entries, point (i-1)th
-         // next to the (i+2)th.
-
-
-
          if((mytrip[0][0]==mytrip[2][0]) & (mytrip[0][1]==mytrip[2][1])){
             // current is sitting at the 3rd entry
             // create a pointer to that
