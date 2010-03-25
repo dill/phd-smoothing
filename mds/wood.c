@@ -337,9 +337,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          }
       }
 
-               delete_step(&bnd1, nbnd, bnd);
-               delete_step(&bnd2, nbnd, bnd);
- 
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
       line1[1][0]=bnd[(intind[0]+1)%nbnd][0];
@@ -356,64 +353,73 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
    
+
+if(!((fabs(ip1[0]-p1[0]) <eps) & (fabs(ip1[1]-p1[1]) <eps))){
          curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
+}
  
          curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
          Push(&bnd1,curr_insert);
          AppendNode(&bnd2,curr_insert);
    
+if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps)) ){
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
          Push(&bnd1,curr_insert);
          AppendNode(&bnd2,curr_insert);
+}
       }else{
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          Push(&bnd1,curr_insert);
          AppendNode(&bnd2,curr_insert);
    
+if(!((fabs(ip1[0]-p1[0]) <eps) & (fabs(ip1[1]-p1[1]) <eps) )){
          curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
          Push(&bnd1,curr_insert);
          AppendNode(&bnd2,curr_insert);
-   
+ }
+  
          curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
    
+if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
          curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
+}
       }
  
 // DEBUG
-printf("cat(\" path1 ###\\n\")\n");
-PrintPath(&bnd1);
-printf("# path1 ###\n");
-printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
-printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
-printf("line1<- list(x=c(%f,%f),y=c(%f,%f))\n",line1[0][0],line1[1][0],line1[0][1],line1[1][1]);
-printf("line2<- list(x=c(%f,%f),y=c(%f,%f))\n",line2[0][0],line2[1][0],line2[0][1],line2[1][1]);
-printf("lines(line1,lwd=2,col=\"blue\")\n");
-printf("lines(line2,lwd=2,col=\"blue\")\n");
-printf("points(ip1)\n");
-printf("points(ip2)\n");
-printf("points(p1,pch=19)\n");
-printf("points(p2,pch=19)\n");
-printf("scan()\n");
-printf("cat(\" path2 ###\\n\")\n");
-PrintPath(&bnd2);
-printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
-printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
-printf("points(ip1)\n");
-printf("points(ip2)\n");
-printf("points(p1,pch=19)\n");
-printf("points(p2,pch=19)\n");
-printf("scan()\n");
-printf("# path2 ###\n");
+//printf("cat(\" path1 ###\\n\")\n");
+//PrintPath(&bnd1);
+//printf("# path1 ###\n");
+//printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
+//printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+//printf("line1<- list(x=c(%f,%f),y=c(%f,%f))\n",line1[0][0],line1[1][0],line1[0][1],line1[1][1]);
+//printf("line2<- list(x=c(%f,%f),y=c(%f,%f))\n",line2[0][0],line2[1][0],line2[0][1],line2[1][1]);
+//printf("lines(line1,lwd=2,col=\"blue\")\n");
+//printf("lines(line2,lwd=2,col=\"blue\")\n");
+//printf("points(ip1)\n");
+//printf("points(ip2)\n");
+//printf("points(p1,pch=19)\n");
+//printf("points(p2,pch=19)\n");
+//printf("scan()\n");
+//printf("cat(\" path2 ###\\n\")\n");
+//PrintPath(&bnd2);
+//printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+//printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+//printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
+//printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+//printf("points(ip1)\n");
+//printf("points(ip2)\n");
+//printf("points(p1,pch=19)\n");
+//printf("points(p2,pch=19)\n");
+//printf("scan()\n");
+//printf("# path2 ###\n");
       // delete before testing length?
       if(delfirst==0){
             if(Length(&bnd1)>2){
@@ -658,7 +664,8 @@ void delete_step(node** path, int nbnd, double **bnd){
          // pointer is now at i+2
 
          // if we are going forward and back again, just remove the points
-         if((mytrip[0][0]==mytrip[2][0]) & (mytrip[0][1]==mytrip[2][1])){
+         if( (fabs(mytrip[0][0]-mytrip[2][0])<eps) & 
+            (fabs(mytrip[0][1]-mytrip[2][1])<eps)){
             // current is sitting at the 3rd entry
             // create a pointer to that
             end_ptr=current->next; // pointer to i+3
