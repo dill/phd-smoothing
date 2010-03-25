@@ -336,6 +336,9 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
             Push(&bnd2,curr_insert);
          }
       }
+
+               delete_step(&bnd1, nbnd, bnd);
+               delete_step(&bnd2, nbnd, bnd);
  
       line1[0][0]=bnd[intind[0]][0];
       line1[0][1]=bnd[intind[0]][1];
@@ -383,34 +386,34 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
       }
  
 // DEBUG
-//printf("cat(\" path1 ###\\n\")\n");
-//PrintPath(&bnd1);
-//printf("# path1 ###\n");
-//printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-//printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-//printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
-//printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("line1<- list(x=c(%f,%f),y=c(%f,%f))\n",line1[0][0],line1[1][0],line1[0][1],line1[1][1]);
-//printf("line2<- list(x=c(%f,%f),y=c(%f,%f))\n",line2[0][0],line2[1][0],line2[0][1],line2[1][1]);
-//printf("lines(line1,lwd=2,col=\"blue\")\n");
-//printf("lines(line2,lwd=2,col=\"blue\")\n");
-//printf("points(ip1)\n");
-//printf("points(ip2)\n");
-//printf("points(p1,pch=19)\n");
-//printf("points(p2,pch=19)\n");
-//printf("scan()\n");
-//printf("cat(\" path2 ###\\n\")\n");
-//PrintPath(&bnd2);
-//printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
-//printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
-//printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
-//printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("points(ip1)\n");
-//printf("points(ip2)\n");
-//printf("points(p1,pch=19)\n");
-//printf("points(p2,pch=19)\n");
-//printf("scan()\n");
-//printf("# path2 ###\n");
+printf("cat(\" path1 ###\\n\")\n");
+PrintPath(&bnd1);
+printf("# path1 ###\n");
+printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
+printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+printf("line1<- list(x=c(%f,%f),y=c(%f,%f))\n",line1[0][0],line1[1][0],line1[0][1],line1[1][1]);
+printf("line2<- list(x=c(%f,%f),y=c(%f,%f))\n",line2[0][0],line2[1][0],line2[0][1],line2[1][1]);
+printf("lines(line1,lwd=2,col=\"blue\")\n");
+printf("lines(line2,lwd=2,col=\"blue\")\n");
+printf("points(ip1)\n");
+printf("points(ip2)\n");
+printf("points(p1,pch=19)\n");
+printf("points(p2,pch=19)\n");
+printf("scan()\n");
+printf("cat(\" path2 ###\\n\")\n");
+PrintPath(&bnd2);
+printf("ip1<-list(x=%f,y=%f)\n",ip1[0],ip1[1]);
+printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
+printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
+printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
+printf("points(ip1)\n");
+printf("points(ip2)\n");
+printf("points(p1,pch=19)\n");
+printf("points(p2,pch=19)\n");
+printf("scan()\n");
+printf("# path2 ###\n");
       // delete before testing length?
       if(delfirst==0){
             if(Length(&bnd1)>2){
