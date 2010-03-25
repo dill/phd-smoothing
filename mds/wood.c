@@ -658,12 +658,16 @@ void delete_step(node** path, int nbnd, double **bnd){
          // pointer is now at i+2
 
          // if we are going forward and back again, just remove the point
+
          // in this case we remove the ith and (i+1)th entries, point (i-1)th
          // next to the (i+2)th.
+
+
+
          if((mytrip[0][0]==mytrip[2][0]) & (mytrip[0][1]==mytrip[2][1])){
             // current is sitting at the 3rd entry
             // create a pointer to that
-            end_ptr=current->next; // pointer to i+2
+            end_ptr=current->next; // pointer to i+3
 
             // break out of the loop if that would crash
             if(current->next==NULL){
@@ -671,23 +675,23 @@ void delete_step(node** path, int nbnd, double **bnd){
             }
 
             // go back twice
-            current=current->prev; // pointer now at i
-            current=current->prev; // pointer at i-1
+            current=current->prev; // pointer now at i+1
+            current=current->prev; // pointer at i
 
             // change where next points to
-            current->next=end_ptr; // point i-1 next to i+2
+            current->next=end_ptr; // point i next to i+3
 
-            start_ptr=current; // pointer to i-1
+            start_ptr=current; // pointer to i
 
             // go forward again (remember next has changed)
-            current=current->next; // back to i+2
+            current=current->next; // back to i+3
 
-            // free memory of i and i+1
+            // free memory of i+2 and i+1
             free(current->prev->prev);
             free(current->prev);
 
             // change previous
-            current->prev=start_ptr; //set i+2 prev to i-1
+            current->prev=start_ptr; //set i+3 prev to i
          }else{
             //// This is all setup for the next if() vvvvv
 
