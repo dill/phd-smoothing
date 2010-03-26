@@ -109,8 +109,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
             }
 
 // DEBUG
-printf("cat(\"### first ###\\n\")\n");
-PrintPath(&thispath);
+//printf("cat(\"### first ###\\n\")\n");
+//PrintPath(&thispath);
 
             if(err==1){
                FreeList(&thispath);
@@ -238,14 +238,14 @@ int iter_path(node** mypath,int nbnd, double **bnd){
       // add new vertices
       alter_step(mypath,nbnd,bnd);
       // DEBUG
-      printf("cat(\"### alter_step ###\\n\")\n");
-      PrintPath(mypath);
+//      printf("cat(\"### alter_step ###\\n\")\n");
+//      PrintPath(mypath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(mypath,nbnd,bnd);
       // DEBUG
-      printf("cat(\"### delete_step ###\\n\")\n");
-      PrintPath(mypath);
+//      printf("cat(\"### delete_step ###\\n\")\n");
+//      PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -280,7 +280,6 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
    double ip1[2],ip2[2], curr_insert[2];
    int intind[2],i,start;
    int err=0, sortind=0,indi;
-   double line1[2][2], line2[2][2];
    node* bnd1 = NULL;
    node* bnd2 = NULL;
  
@@ -299,15 +298,13 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          sortind=1;
       }
 
-      // want elements intind[0]-1 to intind[1 ](inclusive)
- 
       // since we ordered intind first, we don't need to worry too much
       // we put the bit that is contiguous in first eg:
       // 0 1 2 3} [4 5 6] {7 8 9 <<<- do the [ ] bit first!
  
       // push everything in
       // vvvvvvvvvv <- since we want it to be inclusive
-      for(i=(intind[0]+1);i<(intind[1]+1);i++){
+      for(i=(intind[0]+1);i<=(intind[1]);i++){
          curr_insert[0]=bnd[i][0];
          curr_insert[1]=bnd[i][1];
          Push(&bnd1,curr_insert);
@@ -337,17 +334,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          }
       }
 
-      line1[0][0]=bnd[intind[0]][0];
-      line1[0][1]=bnd[intind[0]][1];
-      line1[1][0]=bnd[(intind[0]+1)%nbnd][0];
-      line1[1][1]=bnd[(intind[0]+1)%nbnd][1];
- 
-      line2[0][0]=bnd[intind[1]][0];
-      line2[0][1]=bnd[intind[1]][1];
-      line2[1][0]=bnd[(intind[1]+1)%nbnd][0];
-      line2[1][1]=bnd[(intind[1]+1)%nbnd][1];
- 
-//      if(online(ip1,line1) | online(ip2,line2)){
+
       if(!sortind){
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          AppendNode(&bnd1,curr_insert);
@@ -399,10 +386,6 @@ if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
 //printf("ip2<-list(x=%f,y=%f)\n",ip2[0],ip2[1]);
 //printf("p1<- list(x=%f,y=%f)\n",p1[0],p1[1]);
 //printf("p2<- list(x=%f,y=%f)\n",p2[0],p2[1]);
-//printf("line1<- list(x=c(%f,%f),y=c(%f,%f))\n",line1[0][0],line1[1][0],line1[0][1],line1[1][1]);
-//printf("line2<- list(x=c(%f,%f),y=c(%f,%f))\n",line2[0][0],line2[1][0],line2[0][1],line2[1][1]);
-//printf("lines(line1,lwd=2,col=\"blue\")\n");
-//printf("lines(line2,lwd=2,col=\"blue\")\n");
 //printf("points(ip1)\n");
 //printf("points(ip2)\n");
 //printf("points(p1,pch=19)\n");
@@ -463,20 +446,10 @@ int append_path(node** oldpath, node** newpath, double p1[2], double p2[2], int 
     *
     *
    */
-//   int err=0,i;
-//   int *intbnd;
-//   node* current= NULL;
-//   node* apppath=NULL;
-//   double endpoint[2];
 
    if(Length(oldpath)<5){
       return 1;
    }
-
-//   intbnd=(int*)malloc(sizeof(int)*(nbnd-1));
-//   for(i=0; i<(nbnd-1); i++){
-//      intbnd[i]=intbnd[0]+i;
-//   }
 
    // blank what is currently in newpath
    FreeList(newpath);
@@ -484,94 +457,18 @@ int append_path(node** oldpath, node** newpath, double p1[2], double p2[2], int 
    // replace with what's in oldpath
    CopyList(*oldpath,newpath);
 
-//   current=*newpath;
+   // if the point->endpoint path is Euclidean in the domain then
+   // just add that point
+   if(end==1){
+      AppendNode(newpath,p1);
+      Push(newpath,p2);
+   }else{
+      Push(newpath,p1);
+      AppendNode(newpath,p2);
+   }
 
-//   // find the end of new(old)path that we want
-//
-//   // end = 1 match top, 2 match bottom
-//   // => end==1 => add path to end
-//   // => end==2 => add path to start
-//
-//   if(end==1){
-//      while(current->next!=NULL){
-//         current=current->next;
-//      }
-//   }
-//   endpoint[0]=current->data[0];
-//   endpoint[1]=current->data[1];
-//
-//   // catch the case when the path between endpoint and point is 
-//   // Euclidean within the domain
-//   do_intersect(p2,endpoint, nbnd,bnd,intbnd);
-//
-//   if(iarrsum((nbnd-1),intbnd)==0){
-      // if the point->endpoint path is Euclidean in the domain then
-      // just add that point
-      if(end==1){
-         AppendNode(newpath,p1);
-         Push(newpath,p2);
-      }else{
-         Push(newpath,p1);
-         AppendNode(newpath,p2);
-      }
-//   }else{
-//      return 1;
-//   }
-//   }else{
-//      // make a path from point to the end of oldpath
-//      err=make_bnd_path(endpoint, point, nbnd, bnd, &apppath, 0);
-//
-//      if(err==1){
-//         return 1;
-//      }
-//
-//      // append the made path to newpath
-//      if(end==2){
-//         // adding to the start
-//
-//         // fastforward to the end of apppath
-//         current=apppath;
-//         while(current->next!=NULL){
-//            current=current->next;
-//         }
-//         
-//         if(!( (endpoint[0] == (current->data[0]) ) & 
-//             ( (endpoint[1] == (current->data[1]) ) ))) {
-//            ReverseList(&apppath);
-//         }
-//         RMBot(&apppath); // remove the duplicated bottom element
-//
-//         // attach newpath to the end of apppath
-//         current=apppath;
-//         while(current->next!=NULL){
-//            current=current->next;
-//         }
-//
-//         current->next=*newpath;
-//         current->next->prev=current;   
-//         // set the head of newpath to be the head of apppath
-//         *newpath=apppath;
-//
-//      }else{
-//         // adding to the end
-//
-//         current=*newpath;
-//         while(current->next!=NULL){
-//            current=current->next;
-//         }
-//
-//         if(!( (endpoint[0] == (apppath->data[0]) ) & 
-//             ( (endpoint[1] == (apppath->data[1]) ) ))) {
-//            ReverseList(&apppath);
-//         }
-//         RMTop(&apppath); // remove the duplicate element
-//
-//         current->next=apppath;
-//         current->next->prev=current;
-//      }
-//   }
    delete_step(newpath,nbnd,bnd);
-   //free(intbnd);
+
    // done
    return 0;
 }
@@ -874,6 +771,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                      DelTopBot(&newpath);
                   }
                   /////////// done getting the path in the right format
+//printf("cat(\"### path to insert\\n\")\n");
+//PrintPath(&newpath);
 
                   // modify path
                   // from i, stitch in newpath up to i+2
