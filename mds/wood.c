@@ -39,6 +39,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
       bnd[i][1]=ybnd[i];
    }
 
+   // first of all, set the epsilon to use...
+   set_epsilon(*nbnd,xbnd,ybnd);
+
    // insertion counter
    k=0;
    // path save counter
@@ -47,10 +50,6 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    if(*faster){
       create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
    }
-
-   // first of all, set the epsilon to use...
-   set_epsilon(*nbnd,xbnd,ybnd);
-
 
    // first calculate all of the Euclidean paths
    get_euc_path(x, y, *nbnd, bnd, *len, pathlen, *start);
@@ -109,8 +108,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
             }
 
 // DEBUG
-//printf("cat(\"### first ###\\n\")\n");
-//PrintPath(&thispath);
+printf("cat(\"### first ###\\n\")\n");
+PrintPath(&thispath);
 
             if(err==1){
                FreeList(&thispath);
@@ -238,14 +237,14 @@ int iter_path(node** mypath,int nbnd, double **bnd){
       // add new vertices
       alter_step(mypath,nbnd,bnd);
       // DEBUG
-//      printf("cat(\"### alter_step ###\\n\")\n");
-//      PrintPath(mypath);
+      //printf("cat(\"### alter_step ###\\n\")\n");
+      //PrintPath(mypath);
 
       // delete step, remove anything that doesn't need to be there
       delete_step(mypath,nbnd,bnd);
       // DEBUG
-//      printf("cat(\"### delete_step ###\\n\")\n");
-//      PrintPath(mypath);
+      //printf("cat(\"### delete_step ###\\n\")\n");
+      //PrintPath(mypath);
 
       // increment convergence stopper 
       conv++;
@@ -412,6 +411,11 @@ if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
                delete_step(&bnd2, nbnd, bnd);
             }
       }
+
+//printf("cat(\"# final makes ###\\n\")\n");
+//PrintPath(&bnd1);
+//PrintPath(&bnd2);
+//printf("cat(\"# final makes ###\\n\")\n");
  
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
