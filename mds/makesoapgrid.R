@@ -1,5 +1,5 @@
 # function to create a grid for soap
-make_soap_grid<-function(bnd,n.grid,mat=FALSE){
+make_soap_grid<-function(bnd,n.grid,mat=FALSE,log=FALSE,delta=FALSE){
 
    require(soap)
 
@@ -39,6 +39,17 @@ make_soap_grid<-function(bnd,n.grid,mat=FALSE){
      mat<-matrix(NA,m,n)
      mat[onoff]<-0
      ret$mat<-mat
+   }
+   
+   # return the logical for the grid
+   if(log){
+      ret$log<-onoff
+   }
+
+   # return the deltas
+   if(delta){
+      ret$deltax<-abs(xm[1]-xm[2])
+      ret$deltay<-abs(yn[1]-yn[2])
    }
 
    return(ret)

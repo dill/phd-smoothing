@@ -9,7 +9,7 @@
 
 double eps=1e-6;
 
-void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *nref, double *pathlen, int *faster){
+void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *nref, double *refdelx, double *refdely, int *refio, int *nrefx, double *pathlen, int *faster){
    // args:
    //   len         the length of x and y *
    //   start       point to start at *
@@ -376,6 +376,10 @@ if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
          Push(&bnd2,curr_insert);
 }
       }
+printf("cat(\"# pre-final makes ###\\n\")\n");
+PrintPath(&bnd1);
+PrintPath(&bnd2);
+printf("cat(\"# pre-final makes ###\\n\")\n");
  
 // DEBUG
 //printf("cat(\" path1 ###\\n\")\n");
@@ -412,10 +416,11 @@ if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
             }
       }
 
-//printf("cat(\"# final makes ###\\n\")\n");
-//PrintPath(&bnd1);
-//PrintPath(&bnd2);
-//printf("cat(\"# final makes ###\\n\")\n");
+printf("cat(\"# final makes ###\\n\")\n");
+PrintPath(&bnd1);
+               delete_step(&bnd1, nbnd, bnd);
+PrintPath(&bnd2);
+printf("cat(\"# final makes ###\\n\")\n");
  
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
@@ -430,10 +435,10 @@ if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
  
       return 0;
 
-   }else if((p1[0]==p2[0]) && (p1[1]==p2[1])){
-      *path=NULL;
-      return 1;
-
+//   }else if((p1[0]==p2[0]) && (p1[1]==p2[1])){
+//      *path=NULL;
+//      return 1;
+//
    }else{
       *path=NULL;
 // printf("# ERROR: make_bnd_path FAILED. Error returned from first_ips\n");

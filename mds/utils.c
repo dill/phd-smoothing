@@ -222,6 +222,26 @@ int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
       return 0;
    }
 
+   //// HACK
+   double pedge[2][2];
+   pedge[0][0]=p1[0];
+   pedge[0][1]=p1[1];
+   pedge[1][0]=p2[0];
+   pedge[1][1]=p2[1];
+
+   if(online(p3,pedge)){
+      ip[0]=p3[0];
+      ip[1]=p3[1];
+      return 0;
+   }
+   if(online(p4,pedge)){
+      ip[0]=p4[0];
+      ip[1]=p4[1];
+      return 0;
+   }
+
+   //// HACK
+
    ret = do_int(p1,p2,p3,p4,ip);
 
    return !ret;
