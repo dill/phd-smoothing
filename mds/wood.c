@@ -108,8 +108,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
             }
 
 // DEBUG
-printf("cat(\"### first ###\\n\")\n");
-PrintPath(&thispath);
+//printf("cat(\"### first ###\\n\")\n");
+//PrintPath(&thispath);
 
             if(err==1){
                FreeList(&thispath);
@@ -376,10 +376,10 @@ if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
          Push(&bnd2,curr_insert);
 }
       }
-printf("cat(\"# pre-final makes ###\\n\")\n");
-PrintPath(&bnd1);
-PrintPath(&bnd2);
-printf("cat(\"# pre-final makes ###\\n\")\n");
+//printf("cat(\"# pre-final makes ###\\n\")\n");
+//PrintPath(&bnd1);
+//PrintPath(&bnd2);
+//printf("cat(\"# pre-final makes ###\\n\")\n");
  
 // DEBUG
 //printf("cat(\" path1 ###\\n\")\n");
@@ -416,11 +416,11 @@ printf("cat(\"# pre-final makes ###\\n\")\n");
             }
       }
 
-printf("cat(\"# final makes ###\\n\")\n");
-PrintPath(&bnd1);
-               delete_step(&bnd1, nbnd, bnd);
-PrintPath(&bnd2);
-printf("cat(\"# final makes ###\\n\")\n");
+//printf("cat(\"# final makes ###\\n\")\n");
+//PrintPath(&bnd1);
+//               delete_step(&bnd1, nbnd, bnd);
+//PrintPath(&bnd2);
+//printf("cat(\"# final makes ###\\n\")\n");
  
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){
@@ -499,7 +499,7 @@ void delete_step(node** path, int nbnd, double **bnd){
 	int inout_n=1;
    // convergence stop
    int conv=0;
-   int conv_stop=50;
+   int conv_stop=500;
    
    // some linked lists
    node* current=NULL;   // iterator
@@ -536,8 +536,8 @@ void delete_step(node** path, int nbnd, double **bnd){
       if(conv>0){
          FreeList(&prevpath);
       }
+
       // use prevpath to keep a copy of the previous path for comparison
-      //prev.path<-path
       CopyList(*path,&prevpath);
 
       // start point for triplet selection

@@ -104,6 +104,11 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
          if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
             ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
             bndint[i]=0;
+//if(i!=0){
+//bndint[i-1]=0;
+//}else{
+//bndint[nbnd-1]=0;
+//}
          }
          if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
             ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){

@@ -278,6 +278,33 @@ int main(void)
    }
    printf(") (under edge)\n");
 
+   // diag
+   p2[1]=-1;p2[0]=1;
+   p1[1]=1;p1[0]=-1;
+ 
+   do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(1,0,1,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (diag)\n");
+
+   // over diag
+   p2[1]=-2;p2[0]=2;
+   p1[1]=2;p1[0]=-2;
+ 
+   do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(1,0,1,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (over diag)\n");
+
+
+
+
 ///////////////////////////////////////////////////////////
    printf("*** sp_do_intersect\n");
    // first off, something totally in the box
@@ -409,6 +436,32 @@ int main(void)
       printf("%d,",bndint[i]);
    }
    printf(") (under edge)\n");
+
+
+   // diag
+   p2[1]=-1;p2[0]=1;
+   p1[1]=1;p1[0]=-1;
+ 
+   sp_do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(0,0,0,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (diag)\n");
+
+   // over diag
+   p2[1]=-2;p2[0]=2;
+   p1[1]=2;p1[0]=-2;
+ 
+   sp_do_intersect(p1,p2,nbnd, bnd, bndint);
+
+   printf("(1,0,1,0)=(");
+   for(i=0;i<(nbnd-1);i++){
+      printf("%d,",bndint[i]);
+   }
+   printf(") (over diag)\n");
+
 
 
 
