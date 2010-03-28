@@ -416,10 +416,10 @@ if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
             }
       }
 
-printf("cat(\"# final makes ###\\n\")\n");
-PrintPath(&bnd1);
-PrintPath(&bnd2);
-printf("cat(\"# final makes ###\\n\")\n");
+//printf("cat(\"# final makes ###\\n\")\n");
+//PrintPath(&bnd1);
+//PrintPath(&bnd2);
+//printf("cat(\"# final makes ###\\n\")\n");
  
       // pick the shorter path to return
       if(hull_length(&bnd1)<hull_length(&bnd2)){

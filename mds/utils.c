@@ -385,14 +385,22 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
             ip[1]=(p1[1]+eps*p2[1])/(1+eps);
             do_intersect(ip,p2,nbnd,bnd,retint2);
             retint[i]=retint2[i];
-            retint[i-1]=retint2[i-1];
+            if(i==0){
+               retint[nbnd-1]=retint2[nbnd-1];
+            }else{
+               retint[i-1]=retint2[i-1];
+            }
          }
          if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
             ip[0]=(p1[0]+(eps)*p2[0])/(1+eps);
             ip[1]=(p1[1]+(eps)*p2[1])/(1+eps);
             do_intersect(ip,p1,nbnd,bnd,retint2);
             retint[i]=retint2[i];
-            retint[i-1]=retint2[i-1];
+            if(i==0){
+               retint[nbnd-1]=retint2[nbnd-1];
+            }else{
+               retint[i-1]=retint2[i-1];
+            }
          }
       }
    }
@@ -413,7 +421,6 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    // if lbbindex < 2 increment err
    if(lbbindex>1){
       // find intersections & sort by distance
-      // bbindex=c(1:(length(bnd$x)-1))[doint]
 
       // populate bbindex   
       for(i=0;i<(nbnd-1);i++){
