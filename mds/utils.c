@@ -107,10 +107,10 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
             ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
             bndint[i]=0;
          }
-         //if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
-         //   ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
-         //   bndint[i]=0;
-         //}
+         if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
+            ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
+            bndint[i]=0;
+         }
       }
    }
 }
@@ -976,9 +976,9 @@ void set_epsilon(int n, double *x, double *y){
    dxy[1]=(maxy-miny)*machEps;
 
    // now calculate our epsilon
-   eps=maxarr(2,dxy);
+   eps=maxarr(2,dxy)*10;
 
-   printf("eps=%.30f\n",eps);
+//   printf("eps=%.30f\n",eps);
 
 }
 
