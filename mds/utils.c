@@ -97,23 +97,20 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
            (fabs(p2[1]-p3[1]) < eps) &
            (fabs(p1[1]-p4[1]) < eps) )) bndint[i]=0;
      
-      bndint[i]=do_int(p1,p2,p3,p4,ip);
+      if(bndint[i]==1){
+         bndint[i]=do_int(p1,p2,p3,p4,ip);
+      }
 
-      if(bndint[i]){
+      if(bndint[i]==1){
          // is the intersection point just one of the ends?
          if(( (fabs(ip[0]-p1[0]) <eps) & (fabs(ip[1]-p1[1]) <eps) ) |
             ( (fabs(ip[0]-p2[0]) <eps) & (fabs(ip[1]-p2[1]) <eps) )){
             bndint[i]=0;
-//if(i!=0){
-//bndint[i-1]=0;
-//}else{
-//bndint[nbnd-1]=0;
-//}
          }
-         if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
-            ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
-            bndint[i]=0;
-         }
+         //if(( (fabs(ip[0]-p3[0]) <eps) & (fabs(ip[1]-p3[1]) <eps) ) |
+         //   ( (fabs(ip[0]-p4[0]) <eps) & (fabs(ip[1]-p4[1]) <eps) )){
+         //   bndint[i]=0;
+         //}
       }
    }
 }
@@ -178,6 +175,13 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
       // if they are both inside, return true (ie they face inside)
       // or if one is on boundary and the other is inside...
       if((in[0] && in[1])){
+         ret=1;
+      }
+
+      if( (fabs(ip1[0]-p1[0])<eps) & (fabs(ip1[1]-p1[1])<eps) & (in[0] | in[1])){
+         ret=1;
+      }
+      if( (fabs(ip2[0]-p2[0])<eps) & (fabs(ip2[1]-p2[1])<eps) & (in[0] | in[1]) ){
          ret=1;
       }
 
@@ -374,37 +378,29 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    // this is what is used in the R code.
    do_intersect(p1,p2,nbnd,bnd,retint);
    
-   for(i=0;i<(nbnd-1);i++){
-      if(retint[i]){
-         if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
-            ip[0]=(p1[0]+eps*p2[0])/(1+eps);
-            ip[1]=(p1[1]+eps*p2[1])/(1+eps);
-            thisedge[0][0]=bnd[i][0];
-            thisedge[0][1]=bnd[i][1];
-            thisedge[1][0]=bnd[i+1][0];
-            thisedge[1][1]=bnd[i+1][1];
-            do_intersect(ip,p2,nbnd,bnd,retint2);
-            retint[i]=retint2[i];
-            retint[i-1]=retint2[i-1];
-         }else if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
-            ip[0]=(p1[0]+(eps)*p2[0])/(1+eps);
-            ip[1]=(p1[1]+(eps)*p2[1])/(1+eps);
-            thisedge[0][0]=bnd[i][0];
-            thisedge[0][1]=bnd[i][1];
-            thisedge[1][0]=bnd[i+1][0];
-            thisedge[1][1]=bnd[i+1][1];
-            do_intersect(ip,p1,nbnd,bnd,retint2);
-            retint[i]=retint2[i];
-            retint[i-1]=retint2[i-1];
-         }
-      }
+//   for(i=0;i<(nbnd-1);i++){
+//      if(retint[i]){
+//         if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
+//            ip[0]=(p1[0]+eps*p2[0])/(1+eps);
+//            ip[1]=(p1[1]+eps*p2[1])/(1+eps);
+//            do_intersect(ip,p2,nbnd,bnd,retint2);
+//            retint[i]=retint2[i];
+//            retint[i-1]=retint2[i-1];
+//         }else if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
+//            ip[0]=(p1[0]+(eps)*p2[0])/(1+eps);
+//            ip[1]=(p1[1]+(eps)*p2[1])/(1+eps);
+//            do_intersect(ip,p1,nbnd,bnd,retint2);
+//            retint[i]=retint2[i];
+//            retint[i-1]=retint2[i-1];
+//         }
+//      }
 //      if(!retint[i]){
 //         if( ( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps) )| 
 //             ( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)) ){
 //            retint[i]=1;
 //         }
 //      }
-   }
+//   }
 
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);

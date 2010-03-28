@@ -128,8 +128,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
             // find the length of the path
             pathlen[k]=hull_length(&thispath);
 // DEBUG
-printf("cat(\"### final ###\\n\")\n");
-PrintPath(&thispath);
+//printf("cat(\"### final ###\\n\")\n");
+//PrintPath(&thispath);
             FreeList(&thispath);
 
          }
@@ -418,7 +418,6 @@ if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
 
 //printf("cat(\"# final makes ###\\n\")\n");
 //PrintPath(&bnd1);
-//               delete_step(&bnd1, nbnd, bnd);
 //PrintPath(&bnd2);
 //printf("cat(\"# final makes ###\\n\")\n");
  
@@ -617,7 +616,7 @@ void delete_step(node** path, int nbnd, double **bnd){
             in_out(bx,by,&break_code,xmp,ymp,in, &nbnd,&inout_n);
             // if deleting point i makes the resulting line cross the
             // the boundary then keep it in the path, else get rid of it 
-            
+
             // first part asks if there are any intersections, if there are
             // none then that's okay. Second part asks if midpoints are inside.
             if((iarrsum((nbnd-1),intbnd)==0) & in[0]){
@@ -682,7 +681,7 @@ void alter_step(node** path, int nbnd, double **bnd)
 
    // convergence stop
    int conv=0;
-   int conv_stop=10;
+   int conv_stop=20;
 
    int oneshot;
    oneshot=Length(path);
