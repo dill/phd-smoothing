@@ -498,7 +498,7 @@ void delete_step(node** path, int nbnd, double **bnd){
 	int inout_n=1;
    // convergence stop
    int conv=0;
-   int conv_stop=500;
+   int conv_stop=50;
    
    // some linked lists
    node* current=NULL;   // iterator
@@ -671,7 +671,7 @@ void alter_step(node** path, int nbnd, double **bnd)
    //           revised path with added/ammended vertices
 
    double ep1[2], ep2[2], mid[2], triplen, tp1[2], tp2[2];
-   int err, bndint[nbnd-1];
+   int err;
    node* prevpath=NULL;
    node* newpath=NULL;
    node* end_ptr=NULL;
@@ -681,7 +681,7 @@ void alter_step(node** path, int nbnd, double **bnd)
 
    // convergence stop
    int conv=0;
-   int conv_stop=20;
+   int conv_stop=50;
 
    int oneshot;
    oneshot=Length(path);
@@ -745,10 +745,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                   tp1[1]=current->data[1];
                   tp2[0]=newpath->data[0];
                   tp2[1]=newpath->data[1];
-                  do_intersect(tp1, tp2, nbnd, bnd,bndint);
 
-                 if( //(iarrsum((nbnd-1),bndint)>0) |
-                     ((fabs(tp2[0]-tp1[0]) <eps) & (fabs(tp2[1]-tp1[1]) <eps) )) {
+                  if((fabs(tp2[0]-tp1[0]) <eps) & (fabs(tp2[1]-tp1[1]) <eps)){
                      ReverseList(&newpath);
                   }else{
                      end1=current;
@@ -765,10 +763,8 @@ void alter_step(node** path, int nbnd, double **bnd)
                      tp1[1]=end1->data[1];
                      tp2[0]=end2->data[0];
                      tp2[1]=end2->data[1];
-                     do_intersect(tp1, tp2, nbnd, bnd,bndint);
                      
-                     if( //(iarrsum((nbnd-1),bndint)>0) |
-                        !((fabs(tp2[0]-tp1[0]) <eps) & (fabs(tp2[1]-tp1[1]) <eps) )) {
+                     if(!((fabs(tp2[0]-tp1[0]) <eps) & (fabs(tp2[1]-tp1[1]) <eps))){
                         ReverseList(&newpath);
                      }
                   }
