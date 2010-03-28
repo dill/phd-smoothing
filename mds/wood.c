@@ -128,8 +128,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
             // find the length of the path
             pathlen[k]=hull_length(&thispath);
 // DEBUG
-//printf("cat(\"### final ###\\n\")\n");
-//PrintPath(&thispath);
+printf("cat(\"### final ###\\n\")\n");
+PrintPath(&thispath);
             FreeList(&thispath);
 
          }

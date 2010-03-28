@@ -178,12 +178,12 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          ret=1;
       }
 
-      if( (fabs(ip1[0]-p1[0])<eps) & (fabs(ip1[1]-p1[1])<eps) & (in[0] | in[1])){
-         ret=1;
-      }
-      if( (fabs(ip2[0]-p2[0])<eps) & (fabs(ip2[1]-p2[1])<eps) & (in[0] | in[1]) ){
-         ret=1;
-      }
+//      if( (fabs(ip1[0]-p1[0])<eps) & (fabs(ip1[1]-p1[1])<eps) & in[1]){
+//         ret=1;
+//      }
+//      if( (fabs(ip2[0]-p2[0])<eps) & (fabs(ip2[1]-p2[1])<eps) & in[0] ){
+//         ret=1;
+//      }
 
       // free some memory
       free(bx);free(by);
@@ -378,29 +378,30 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    // this is what is used in the R code.
    do_intersect(p1,p2,nbnd,bnd,retint);
    
-//   for(i=0;i<(nbnd-1);i++){
-//      if(retint[i]){
-//         if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
-//            ip[0]=(p1[0]+eps*p2[0])/(1+eps);
-//            ip[1]=(p1[1]+eps*p2[1])/(1+eps);
-//            do_intersect(ip,p2,nbnd,bnd,retint2);
-//            retint[i]=retint2[i];
-//            retint[i-1]=retint2[i-1];
-//         }else if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
-//            ip[0]=(p1[0]+(eps)*p2[0])/(1+eps);
-//            ip[1]=(p1[1]+(eps)*p2[1])/(1+eps);
-//            do_intersect(ip,p1,nbnd,bnd,retint2);
-//            retint[i]=retint2[i];
-//            retint[i-1]=retint2[i-1];
-//         }
-//      }
+   for(i=0;i<(nbnd-1);i++){
+      if(retint[i]){
+         if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
+            ip[0]=(p1[0]+eps*p2[0])/(1+eps);
+            ip[1]=(p1[1]+eps*p2[1])/(1+eps);
+            do_intersect(ip,p2,nbnd,bnd,retint2);
+            retint[i]=retint2[i];
+            retint[i-1]=retint2[i-1];
+         }
+         if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
+            ip[0]=(p1[0]+(eps)*p2[0])/(1+eps);
+            ip[1]=(p1[1]+(eps)*p2[1])/(1+eps);
+            do_intersect(ip,p1,nbnd,bnd,retint2);
+            retint[i]=retint2[i];
+            retint[i-1]=retint2[i-1];
+         }
+      }
 //      if(!retint[i]){
 //         if( ( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps) )| 
 //             ( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)) ){
 //            retint[i]=1;
 //         }
 //      }
-//   }
+   }
 
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);

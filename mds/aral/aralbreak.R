@@ -27,4 +27,4 @@ ind<-c(10,116)
 x<-my.grid$x[ind]
 y<-my.grid$y[ind]
 
-Dbug<-create_distance_matrix(x,y,bnd,faster=0)
+Dbug<-create_distance_matrix(x,y,bnd,faster=1)
