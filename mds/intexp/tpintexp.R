@@ -52,10 +52,10 @@ sq<-c(1,1/0.5)
 
 # do the squashing
 x.m<-squash(x,lims,sq)
-dat<-data.frame(x=x.m,y=y)
+dat.m<-data.frame(x=x.m,y=y)
 
 
-b<-gam(y~s(x,k=10),data=dat)
+b<-gam(y~s(x,k=10),data=dat.m)
 
 plot(b,main="squash fit")
 plot(x.m,y,main="raw squash data")
@@ -63,10 +63,16 @@ plot(x.m,y,main="raw squash data")
 ##### fixing...
 source("smooth.c.R")
 
+library(sm)
 
-lims<-squash(lims,lims,sq)
+dens<-sm.density(x.m,display="none")
 
-b<-gam(y~s(x,k=10,xt=list(lims=lims,sq=sq),bs="mdstp"),data=dat)
+sq<-dens$estimate[dens$eval.points>=0 & dens$eval.points<=1]
+lims<-seq(0,1,by=diff(dens$eval.points)[1])
 
-plot(b,main="fixed fit")
+#lims<-squash(lims,lims,sq)
+
+b.fix<-gam(y~s(x,k=10,xt=list(lims=lims,sq=sq),bs="mdstp"),data=dat.m)
+
+plot(b.fix,main="fixed fit")
 

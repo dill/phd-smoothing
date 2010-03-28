@@ -37,22 +37,24 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
              2*Predict.matrix(object,data.frame(x=xs+eps))+
              Predict.matrix(object,data.frame(x=xs)))/eps^2
 
-      # zero the last two rows and cols
-      fd[(k-1):k,]<-rep(0,k*2)
-      fd[,(k-1):k]<-rep(0,k*2)
+         # zero the last two rows and cols
+         fd[(k-1):k,]<-rep(0,k*2)
+         fd[,(k-1):k]<-rep(0,k*2)
 
+#         fd<-fd*1000
          fd<-fd*sqrt(sq[i]^3)
-#         fd<-fd*sqrt(sq[i])
+#         fd<-fd*sq[i]
 
          # do the integration
          D<-t(fd)%*%fd
          D<-((b-a)/N)*D
       
-         # enforce symmetry (from smooth.construct.tp...)
-         D <- (D + t(D))/2
       
          S<-S+D
       }
+
+      # enforce symmetry (from smooth.construct.tp...)
+      S <- (S + t(S))/2
 
       object$S[[1]]<-S
 
