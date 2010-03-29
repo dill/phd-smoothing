@@ -518,72 +518,6 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    return(err);
 }
 
-// match the end of a linked list with a point
-int match_ends(double *point, node** head, double **bnd, int nbnd, double *dist){
-   /*
-    * Args:
-    *    point    the point to investigate
-    *    head     the path to look at
-    *
-    * Return:
-    *    integer 1= match top
-    *            2= match bottom
-    *            0= no match
-   */
-   node* current=NULL;
-   current=*head;
-   double ep[2];
-   int *retint, i;
-
-   retint=(int*)malloc(sizeof(int)*(nbnd-1));
-   for(i=0; i<(nbnd-1); i++){
-      retint[i]=retint[0]+i;
-   }
-
-   // check the start
-   ep[0]=current->data[0];
-   ep[1]=current->data[1];
-
-   if( (fabs(ep[0]-point[0])<eps) & (fabs(ep[1]-point[1])<eps)){
-//      *dist=0;
-      free(retint);
-      return 1;
-   }
-   
-   do_intersect(point,ep,nbnd,bnd,retint);
-   if(iarrsum(nbnd-1,retint)==0){
-//      *dist=hypot(ep[0]-point[0],ep[1]-point[1]);
-      free(retint);
-      return 1;
-   }
-
-   // fast-forward to the end
-   while (current->next != NULL){
-      current=current->next;
-   }
-
-   // check the end
-   ep[0]=current->data[0];
-   ep[1]=current->data[1];
-
-   if( (fabs(ep[0]-point[0])<eps) & (fabs(ep[1]-point[1])<eps)){
-//      *dist=0;
-      free(retint);
-      return 2;
-   }
-
-   do_intersect(point,ep,nbnd,bnd,retint);
-   if(iarrsum(nbnd-1,retint)==0){
-//      *dist=hypot(ep[0]-point[0],ep[1]-point[1]);
-      free(retint);
-      return 2;
-   }
-
-   free(retint);
-   // if nothing happened
-   return 0;
-}
-
 
 int find_end(double *p1, double xdel, double ydel, double xstart, double ystart, int nref, int *refio){
 
@@ -707,7 +641,11 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
                p1[0]=xref[i]; p1[1]=yref[i]; // set p1
                p2[0]=xref[j]; p2[1]=yref[j]; // set p2
                // find the index to put the path in
-               m=1/2*(p-1)*p +q;
+               if(p<q){
+                  m=1/2*(p-1)*p +q;
+               }else{
+                  m=1/2*(p-1)*p +q;
+               }
                err=make_bnd_path(p1,p2,nbnd,bnd,&((*savedpaths)[m]),0);
                err=iter_path(&((*savedpaths)[m]),nbnd,bnd);
             }

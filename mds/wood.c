@@ -142,7 +142,7 @@ PrintPath(&thispath);
    // if we saved paths, free them!   
    if(*faster){
       // free all the saved paths
-      for(i=0;i<l;i++){
+      for(i=0;i<((*nref)*(*nref));i++){
          FreeList(&savedpaths[i]);
       }
       free(savedpaths);
