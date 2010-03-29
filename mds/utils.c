@@ -644,7 +644,7 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
                if(p<q){
                   m=1/2*(p-1)*p +q;
                }else{
-                  m=1/2*(p-1)*p +q;
+                  m=1/2*(q-1)*q +p;
                }
                err=make_bnd_path(p1,p2,nbnd,bnd,&((*savedpaths)[m]),0);
                err=iter_path(&((*savedpaths)[m]),nbnd,bnd);
