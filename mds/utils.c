@@ -650,7 +650,7 @@ void append_check(node** paths, int npaths, double p1[2], double p2[2], int app[
 }
 
 // create a reference grid
-void create_refpaths(double *xref, double *yref, int nref, int nbnd,node*** savedpaths, int *npaths, double **bnd){
+void create_refpaths(double *xref, double *yref, int nref, double xdel, double ydel, double xstart,double ystart, int nbnd, node*** savedpaths, int *npaths, double **bnd){
 
    double p1[2],p2[2],*pl; 
    int i,j,k,m,err,npl;
@@ -674,26 +674,34 @@ void create_refpaths(double *xref, double *yref, int nref, int nbnd,node*** save
    }
 
    // malloc the memory for the saved paths
-   *savedpaths=(node**)malloc(sizeof(node*)*(*npaths));
-   for(i=0; i<(*npaths); i++){
+   *savedpaths=(node**)malloc(sizeof(node*)*(nref*nref));
+   for(i=0; i<(nref*nref); i++){
       (*savedpaths)[i]=(*savedpaths[0])+i*sizeof(node*);
       (*savedpaths)[i]=NULL;
    }
 
-   k=0;m=0;
+
+   k=0;
    // calculate some paths
+
+   // first loop over all the grid points
    for(i=0;i<nref;i++){
       for(j=(i+1);j<nref;j++){
+         // is the path non-Euclidean ?
          if(pl[k]==-1){
             p1[0]=xref[i]; p1[1]=yref[i]; // set p1
             p2[0]=xref[j]; p2[1]=yref[j]; // set p2
+            // find the index to put the path in
+            m=(int)(1/2*((floor((xref[i]-xstart)/xdel)-1)*nref-1)*
+                         (floor((xref[i]-xstart)/xdel)-1)*nref+
+                         (floor((yref[i]-ystart)/ydel)-1)*nref);
             err=make_bnd_path(p1,p2,nbnd,bnd,&((*savedpaths)[m]),0);
             err=iter_path(&((*savedpaths)[m]),nbnd,bnd);
-            m++;
          }
          k++;
       }
    }
+
    free(pl);
 }
 

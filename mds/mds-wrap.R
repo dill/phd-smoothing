@@ -33,9 +33,12 @@ woodpath<-function(xpoints,ypoints,bnd,start=NA,faster=0){
                 xbnd=as.double(xbnd),ybnd=as.double(ybnd),
                 xref=as.double(ref.grid$x),yref=as.double(ref.grid$y),
                 nref=as.integer(length(ref.grid$x)),
-                refdelx=as.double(ref.grid$refdelx),refdely=as.double(ref.grid$refdely),
+                refdelx=as.double(ref.grid$refdelx),
+                refdely=as.double(ref.grid$refdely),
                 refio=as.integer(ref.grid$log),
                 ngrid=as.integer(ref.grid$nrefx),
+                xstart=as.double(ref.grid$x[1]),
+                ystart=as.double(ref.grid$y[1]),
                 pathlen=as.double(rep(0,pl)),
                 faster=as.integer(faster))
 

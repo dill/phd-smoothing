@@ -9,7 +9,7 @@
 
 double eps=1e-6;
 
-void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *nref, double *refdelx, double *refdely, int *refio, int *nrefx, double *pathlen, int *faster){
+void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *nref, double *refdelx, double *refdely, int *refio, int *nrefx, double *xstart, double *ystart, double *pathlen, int *faster){
    // args:
    //   len         the length of x and y *
    //   start       point to start at *
@@ -48,7 +48,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    l=0;
 
    if(*faster){
-      create_refpaths(xref,yref,*nref,*nbnd,&savedpaths,&l,bnd);
+      create_refpaths(xref,yref,*nref,*refdelx, *refdely, *xstart, *ystart,*nbnd,&savedpaths,&l,bnd);
    }
 
    // first calculate all of the Euclidean paths
