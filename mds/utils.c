@@ -149,13 +149,8 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
          by[i]=bnd[i][1];
       }
 
-      // find the midpoints between p1, p2 their first intersections
+      // find the "midpoints" between p1, p2 their first intersections
       // store in x and y blocks
-//      xmp[0]=(ip1[0]+p1[0])/2;
-//      xmp[1]=(ip2[0]+p2[0])/2;
-//      ymp[0]=(ip1[1]+p1[1])/2;
-//      ymp[1]=(ip2[1]+p2[1])/2;
-
       xmp[0]=(ip1[0]+eps*p1[0])/(1+eps);
       xmp[1]=(ip2[0]+eps*p2[0])/(1+eps);
       ymp[0]=(ip1[1]+eps*p1[1])/(1+eps);
@@ -177,13 +172,6 @@ int facing(double p1[], double p2[] , int nbnd, double **bnd){
       if((in[0] && in[1])){
          ret=1;
       }
-
-//      if( (fabs(ip1[0]-p1[0])<eps) & (fabs(ip1[1]-p1[1])<eps) & in[1]){
-//         ret=1;
-//      }
-//      if( (fabs(ip2[0]-p2[0])<eps) & (fabs(ip2[1]-p2[1])<eps) & in[0] ){
-//         ret=1;
-//      }
 
       // free some memory
       free(bx);free(by);
@@ -400,6 +388,11 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 
    tmpinout=1;
 
+   // this loop handles when the intersection point is a vertex, in this
+   // case we need to make sure that the intersection is the first 
+   // between p1 and p2. So if p1 starts on a vertex but then the line p1p2
+   // cuts the line again to go outside then ignore it. If p1 is a vertex
+   // and immediately after we are outside, keep it.
    for(i=0;i<(nbnd-1);i++){
       if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
          xmp[0]=(p1[0]+eps*p2[0])/(1+eps);
@@ -413,7 +406,6 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
          }else{
             retint[i-1]=!in[0];
          }
-      
       }
 
       if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
