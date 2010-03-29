@@ -378,37 +378,57 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    // this is what is used in the R code.
    do_intersect(p1,p2,nbnd,bnd,retint);
    
+
+   double *bx, *by, break_code,xmin,ymin,mina[2],xmp[1],ymp[1];
+   int in[1], tmpinout;
+   bx=(double*)malloc(sizeof(double)*nbnd);
+   by=(double*)malloc(sizeof(double)*nbnd);
+
+   for(i=0; i<nbnd; i++){
+      bx[i]=bx[0]+i;
+      by[i]=by[0]+i;
+      bx[i]=bnd[i][0]; 
+      by[i]=bnd[i][1];
+   }
+
+   // to handle holes, multiple boundaries
+   // ignore this at the moment
+   xmin=minarr(nbnd,bx);
+   ymin=minarr(nbnd,by);
+   mina[0] = xmin; mina[1]=ymin;
+   break_code=minarr(2,mina)-1;
+
+   tmpinout=1;
+
    for(i=0;i<(nbnd-1);i++){
-//      if(retint[i]){
-         if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
-            ip[0]=(p1[0]+eps*p2[0])/(1+eps);
-            ip[1]=(p1[1]+eps*p2[1])/(1+eps);
-            do_intersect(ip,p2,nbnd,bnd,retint2);
-            retint[i]=0;
-            if(i==0){
-               retint[nbnd-1]=0;
-            }else{
-               retint[i-1]=0;
-            }
-//            retint[i]=retint2[i];
-//            if(i==0){
-//               retint[nbnd-1]=retint2[nbnd-1];
-//            }else{
-//               retint[i-1]=retint2[i-1];
-//            }
+      if( (fabs(p1[0]-bnd[i][0])<eps) && (fabs(p1[1]-bnd[i][1])<eps)){
+         xmp[0]=(p1[0]+eps*p2[0])/(1+eps);
+         ymp[0]=(p1[1]+eps*p2[1])/(1+eps);
+
+         in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
+
+         retint[i]=!in[0];
+         if(i==0){
+            retint[nbnd-1]=!in[0];
+         }else{
+            retint[i-1]=!in[0];
          }
-         if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
-            ip[0]=(eps*p1[0]+p2[0])/(1+eps);
-            ip[1]=(eps*p1[1]+p2[1])/(1+eps);
-            do_intersect(ip,p1,nbnd,bnd,retint2);
-            retint[i]=0;
-            if(i==0){
-               retint[nbnd-1]=0;
-            }else{
-               retint[i-1]=0;
-            }
+      
+      }
+
+      if( (fabs(p2[0]-bnd[i][0])<eps) && (fabs(p2[1]-bnd[i][1])<eps)){
+         xmp[0]=(eps*p1[0]+p2[0])/(1+eps);
+         ymp[0]=(eps*p1[1]+p2[1])/(1+eps);
+
+         in_out(bx, by, &break_code, xmp, ymp, in, &nbnd, &tmpinout);
+
+         retint[i]=!in[0];
+         if(i==0){
+            retint[nbnd-1]=!in[0];
+         }else{
+            retint[i-1]=!in[0];
          }
-//      }
+      }
    }
 
    // length of the bounding box index
