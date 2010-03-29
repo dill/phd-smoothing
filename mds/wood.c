@@ -48,7 +48,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    l=0;
 
    if(*faster){
-      create_refpaths(xref,yref,*nref,*refdelx, *refdely, *xstart, *ystart,*nbnd,&savedpaths,&l,bnd);
+      create_refpaths(xref,yref,*nref,*refdelx, *refdely, *xstart, *ystart,refio,*nbnd,&savedpaths,&l,bnd);
    }
 
    // first calculate all of the Euclidean paths
@@ -93,7 +93,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
             if(*faster){
                // can we do an append?
                // do the append check for p1   
-               append_check(savedpaths, l, p1, p2, app,*nbnd,bnd);
+               append_check(p1, p2, *xstart, *ystart, *refdelx, *refdely, *nref, refio, *nbnd, bnd, app);
+
             }else{
                app[0]=0;
             }
@@ -433,11 +434,6 @@ if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
       }
  
       return 0;
-
-//   }else if((p1[0]==p2[0]) && (p1[1]==p2[1])){
-//      *path=NULL;
-//      return 1;
-//
    }else{
       *path=NULL;
 // printf("# ERROR: make_bnd_path FAILED. Error returned from first_ips\n");

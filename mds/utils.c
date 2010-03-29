@@ -584,76 +584,85 @@ int match_ends(double *point, node** head, double **bnd, int nbnd, double *dist)
    return 0;
 }
 
+
+int find_end(double *p1, double xdel, double ydel, double xstart, double ystart, int nref, int *refio){
+
+   int i,j;
+   double dist=1e10,xg,yg;
+
+   // find the index for nearest bottom left corner 
+   // of the grid to p1
+   i=(int)floor((p1[0]-xstart)/xdel);
+   j=(int)floor((p1[1]-ystart)/ydel);
+
+   // and the location of that point
+   xg=xdel*i;
+   yg=ydel*j;
+
+   // distance from p1 to that corner
+
+   // are any of the other corners closer?
+   if((refio[i*nref+j]==1) & (hypot(p1[0]-xg,p1[1]-yg)<dist)){
+      dist=hypot(p1[0]-xg,p1[1]-yg);
+   }
+   if((refio[i*nref+j]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg)<dist)){
+      i++;
+      dist=hypot(p1[0]-xg-xdel,p1[1]-yg);
+   }
+   if((refio[i*nref+j]==1) & (hypot(p1[0]-xg,p1[1]-yg-ydel)<dist)){
+      j++;
+      dist=hypot(p1[0]-xg,p1[1]-yg-ydel);
+   }
+   if((refio[i*nref+j]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg-ydel)<dist)){
+      i++;j++;
+      dist=hypot(p1[0]-xg-xdel,p1[1]-yg-ydel);
+   }
+
+   if(fabs(dist-1e10)>eps){
+      return(i*nref+j);
+   }else{
+      return(-1);
+   }
+
+}
+
+
+
 // check to see if any of the ends can be used as a start path
-void append_check(node** paths, int npaths, double p1[2], double p2[2], int app[2], int nbnd, double **bnd){
+void append_check(double p1[2], double p2[2], double xstart, double ystart, double xdel, double ydel, int nref, int* refio, int nbnd, double **bnd, int app[2]){
    /*
     * Args:
     *    paths    array of paths
-    *    npaths   length of paths
+    *    nref     grid size
     *    point    point to investigate
     *    app[2]   entry 0: match_ends output
     *             entry 1: path number
+    *
    */
-   int i,me;
-   double ep[2],dist1,dist2,olddist=1e12;   
-   node* current=NULL;
-   int* retint;
+   int end1,end2;
 
-   retint=(int*)malloc(sizeof(int)*(nbnd-1));
-   for(i=0; i<(nbnd-1); i++){
-      retint[i]=retint[0]+i;
+   // find the indices of the grid points nearest to p1 and p2
+   end1=find_end(p1, xdel, ydel, xstart, ystart, nref, refio);
+   end2=find_end(p2, xdel, ydel, xstart, ystart, nref, refio);
+   
+   // check for errors then return the index
+   if( (end1==-1) | (end2==-1)){
+      app[0]=0;
+   }else if(end1<end2){
+      app[0]=1;
+      app[1]=1/2*(end1-1)+end2;
+   }else{
+      app[0]=2;
+      app[1]=1/2*(end2-1)+end1;
    }
 
-   app[0]=0;
-
-   // loop over paths
-   for(i=0; i<npaths; i++){
-
-      // call match_ends --  is the path between p1 and an end of i
-      //                     paths[i] Euclidean in domain?
-      me=match_ends(p1,&paths[i],bnd, nbnd,&dist1);
-
-      // do any of the selected paths have a Euclidean path between
-      // their other end and p2?   
-
-      if(me!=0){
-
-         // if p1 matched an end, then check that p2 matches the other end
-         current=paths[i];
-
-         // get the right end of paths[i]
-         if(me==1){
-            while (current->next != NULL){
-               current=current->next;
-            }
-         }
-
-         ep[0]=current->data[0];
-         ep[1]=current->data[1];
-
-         // check to see that p2->other end is Euclidean in domain
-         do_intersect(p2,ep,nbnd,bnd,retint);
-         if(iarrsum(nbnd-1,retint)==0){
-//            dist2=hypot(ep[0]-p2[0],ep[1]-p2[1]);
-            
-//            if((dist1+dist2)<olddist){
-               // return the orientation and path number
-               app[0]=me;
-               app[1]=i;
-//               olddist=dist1+dist2;
-//            }
-               break;
-         }
-      }
-   }
-   free(retint);
 }
 
 // create a reference grid
-void create_refpaths(double *xref, double *yref, int nref, double xdel, double ydel, double xstart,double ystart, int nbnd, node*** savedpaths, int *npaths, double **bnd){
+void create_refpaths(double *xref, double *yref, int nref, double xdel, double ydel, double xstart,double ystart, int *refio, int nbnd, node*** savedpaths, int *npaths, double **bnd){
 
    double p1[2],p2[2],*pl; 
-   int i,j,k,m,err,npl;
+   int i,j,k,m,err,npl,p,q;
    *npaths=0;
  
    // we know what's inside, find only those paths that are
@@ -667,11 +676,11 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
    get_euc_path(xref,yref,nbnd,bnd,nref,pl,0);
 
    // how many paths shall we calculate?   
-   for(i=0;i<npl;i++){
-      if(pl[i]==-1){
-         (*npaths)++;
-      }
-   }
+   //for(i=0;i<npl;i++){
+   //   if(pl[i]==-1){
+   //      (*npaths)++;
+   //   }
+   //}
 
    // malloc the memory for the saved paths
    *savedpaths=(node**)malloc(sizeof(node*)*(nref*nref));
@@ -687,18 +696,23 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
    // first loop over all the grid points
    for(i=0;i<nref;i++){
       for(j=(i+1);j<nref;j++){
-         // is the path non-Euclidean ?
-         if(pl[k]==-1){
-            p1[0]=xref[i]; p1[1]=yref[i]; // set p1
-            p2[0]=xref[j]; p2[1]=yref[j]; // set p2
-            // find the index to put the path in
-            m=(int)(1/2*((floor((xref[i]-xstart)/xdel)-1)*nref-1)*
-                         (floor((xref[i]-xstart)/xdel)-1)*nref+
-                         (floor((yref[i]-ystart)/ydel)-1)*nref);
-            err=make_bnd_path(p1,p2,nbnd,bnd,&((*savedpaths)[m]),0);
-            err=iter_path(&((*savedpaths)[m]),nbnd,bnd);
+         // are the points inside ?
+         p=(int)(floor((xref[i]-xstart)/xdel)*nref+
+                         floor((yref[i]-ystart)/ydel));
+         q=(int)(floor((xref[j]-xstart)/xdel)*nref+
+                         floor((yref[j]-ystart)/ydel));
+         if(refio[p]&refio[q]){
+            // is the path non-Euclidean ?
+            if(pl[k]==-1){
+               p1[0]=xref[i]; p1[1]=yref[i]; // set p1
+               p2[0]=xref[j]; p2[1]=yref[j]; // set p2
+               // find the index to put the path in
+               m=1/2*(p-1)*p +q;
+               err=make_bnd_path(p1,p2,nbnd,bnd,&((*savedpaths)[m]),0);
+               err=iter_path(&((*savedpaths)[m]),nbnd,bnd);
+            }
+            k++;
          }
-         k++;
       }
    }
 

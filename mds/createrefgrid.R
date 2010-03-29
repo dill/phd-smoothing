@@ -31,8 +31,5 @@ create_refgrid<-function(bnd){
    grid$nrefx<-res
    grid$nrefy<-res
 
-   grid$refdelx<-diff(x)[1]
-   grid$refdely<-diff(y)[1]
-
    return(grid)
 }
