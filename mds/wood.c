@@ -341,41 +341,41 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
          Push(&bnd2,curr_insert);
    
 
-if(!((fabs(ip1[0]-p1[0]) <eps) & (fabs(ip1[1]-p1[1]) <eps))){
-         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-         AppendNode(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert);
-}
+         if(!((fabs(ip1[0]-p1[0]) <eps) & (fabs(ip1[1]-p1[1]) <eps))){
+            curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+            AppendNode(&bnd1,curr_insert);
+            Push(&bnd2,curr_insert);
+         }
  
          curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
          Push(&bnd1,curr_insert);
          AppendNode(&bnd2,curr_insert);
    
-if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps)) ){
-         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-         Push(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert);
-}
+         if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps)) ){
+            curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+            Push(&bnd1,curr_insert);
+            AppendNode(&bnd2,curr_insert);
+         }
       }else{
          curr_insert[0]=ip1[0]; curr_insert[1]=ip1[1];
          Push(&bnd1,curr_insert);
          AppendNode(&bnd2,curr_insert);
    
-if(!((fabs(ip1[0]-p1[0]) <eps) & (fabs(ip1[1]-p1[1]) <eps) )){
-         curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
-         Push(&bnd1,curr_insert);
-         AppendNode(&bnd2,curr_insert);
- }
+         if(!((fabs(ip1[0]-p1[0]) <eps) & (fabs(ip1[1]-p1[1]) <eps) )){
+            curr_insert[0]=p1[0]; curr_insert[1]=p1[1];
+            Push(&bnd1,curr_insert);
+            AppendNode(&bnd2,curr_insert);
+         }
   
          curr_insert[0]=ip2[0]; curr_insert[1]=ip2[1];
          AppendNode(&bnd1,curr_insert);
          Push(&bnd2,curr_insert);
    
-if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
-         curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
-         AppendNode(&bnd1,curr_insert);
-         Push(&bnd2,curr_insert);
-}
+         if(!((fabs(ip2[0]-p2[0]) <eps) & (fabs(ip2[1]-p2[1]) <eps) )){
+            curr_insert[0]=p2[0]; curr_insert[1]=p2[1];
+            AppendNode(&bnd1,curr_insert);
+            Push(&bnd2,curr_insert);
+         }
       }
 //printf("cat(\"# pre-final makes ###\\n\")\n");
 //PrintPath(&bnd1);
