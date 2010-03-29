@@ -237,8 +237,6 @@ int intpoint(double p1[], double p2[],double edge[][2], double ip[]){
       return 0;
    }
 
-   //// HACK
-
    ret = do_int(p1,p2,p3,p4,ip);
 
    return !ret;
@@ -343,7 +341,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    *                 crapfind, qsort
    */
 
-   int i, firstel, lastel, *retint,*retint2, *bbindex;
+   int i, firstel, lastel, *retint, *bbindex;
    int lbbindex=0;
    double thisedge[2][2], **ips, *dists, *sortdists;
    double ip[2];
@@ -354,10 +352,8 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 
    // setup retint
    retint=(int*)malloc(sizeof(int)*(nbnd-1));
-   retint2=(int*)malloc(sizeof(int)*(nbnd-1));
    for(i=0; i<(nbnd-1); i++){
       retint[i]=retint[0]+i;
-      retint2[i]=retint2[0]+i;
    }
 
    // do_intersect returns a string of T/F values
@@ -366,7 +362,6 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    // this is what is used in the R code.
    do_intersect(p1,p2,nbnd,bnd,retint);
    
-
    double *bx, *by, break_code,xmin,ymin,mina[2],xmp[1],ymp[1];
    int in[1], tmpinout;
    bx=(double*)malloc(sizeof(double)*nbnd);
@@ -513,11 +508,11 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    free(dists);
    free(sortdists);
    free(retint);
-   free(retint2);
+   free(bx);
+   free(by);
 
    return(err);
 }
-
 
 int find_end(double *p1, double xdel, double ydel, double xstart, double ystart, int nref, int *refio){
 
@@ -560,8 +555,6 @@ int find_end(double *p1, double xdel, double ydel, double xstart, double ystart,
 
 }
 
-
-
 // check to see if any of the ends can be used as a start path
 void append_check(double p1[2], double p2[2], double xstart, double ystart, double xdel, double ydel, int nref, int* refio, int nbnd, double **bnd, int app[2]){
    /*
@@ -593,11 +586,10 @@ void append_check(double p1[2], double p2[2], double xstart, double ystart, doub
 }
 
 // create a reference grid
-void create_refpaths(double *xref, double *yref, int nref, double xdel, double ydel, double xstart,double ystart, int *refio, int nbnd, node*** savedpaths, int *npaths, double **bnd){
+void create_refpaths(double *xref, double *yref, int nref, double xdel, double ydel, double xstart,double ystart, int *refio, int nbnd, node*** savedpaths, double **bnd){
 
    double p1[2],p2[2],*pl; 
    int i,j,k,m,err,npl,p,q;
-   *npaths=0;
  
    // we know what's inside, find only those paths that are
    // non-Euclidean within the domain, check that first...
@@ -609,13 +601,6 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
 
    get_euc_path(xref,yref,nbnd,bnd,nref,pl,0);
 
-   // how many paths shall we calculate?   
-   //for(i=0;i<npl;i++){
-   //   if(pl[i]==-1){
-   //      (*npaths)++;
-   //   }
-   //}
-
    // malloc the memory for the saved paths
    *savedpaths=(node**)malloc(sizeof(node*)*(nref*nref));
    for(i=0; i<(nref*nref); i++){
@@ -623,10 +608,8 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
       (*savedpaths)[i]=NULL;
    }
 
-
    k=0;
    // calculate some paths
-
    // first loop over all the grid points
    for(i=0;i<nref;i++){
       for(j=(i+1);j<nref;j++){
@@ -793,32 +776,6 @@ void DelTopBot(node** head){
 
    *head=top;
 }
-
-// Remove the first element of a list
-void RMTop(node** head){
-   node* current = *head;
-
-   // miss out the first node
-   current=current->next;
-   free(current->prev);
-   current->prev=NULL;
-
-   *head=current;
-}
-
-// Delete the last entry of a list
-void RMBot(node** head){
-   node* current = *head;
-
-   // skip to the end 
-   while (current->next->next != NULL) {
-      current = current->next;
-   }
-   
-   free(current->next);
-   current->next=NULL;
-}
-
 
 void ReverseList(node** head){
    node* current=*head;

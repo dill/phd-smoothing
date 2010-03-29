@@ -23,7 +23,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    // * these can be manipulated to control which we evaluate
    //  eg. in the insertion case
    double **bnd, p1[2], p2[2];
-   int i,j,k,l,err=0, ilim, jstart;
+   int i,j,k,err=0, ilim, jstart;
    int app[2];
 
    // storage
@@ -44,11 +44,9 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
    // insertion counter
    k=0;
-   // path save counter
-   l=0;
 
    if(*faster){
-      create_refpaths(xref,yref,*nref,*refdelx, *refdely, *xstart, *ystart,refio,*nbnd,&savedpaths,&l,bnd);
+      create_refpaths(xref,yref,*nref,*refdelx, *refdely, *xstart, *ystart,refio,*nbnd,&savedpaths,bnd);
    }
 
    // first calculate all of the Euclidean paths
