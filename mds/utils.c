@@ -521,8 +521,8 @@ int find_end(double *p1, double xdel, double ydel, double xstart, double ystart,
 
    // find the index for nearest bottom left corner 
    // of the grid to p1
-   i=(int)floor((p1[0]-xstart)/xdel);
-   j=(int)floor((p1[1]-ystart)/ydel);
+   i=abs(floor((p1[0]-xstart)/xdel));
+   j=abs(floor((p1[1]-ystart)/ydel));
 
    // and the location of that point
    xg=xdel*i;
@@ -534,19 +534,20 @@ int find_end(double *p1, double xdel, double ydel, double xstart, double ystart,
    if((refio[i*ngrid+j]==1) & (hypot(p1[0]-xg,p1[1]-yg)<dist)){
       dist=hypot(p1[0]-xg,p1[1]-yg);
    }
-   if((refio[i*ngrid+j]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg)<dist)){
+   if((refio[(i+1)*ngrid+j]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg)<dist)){
       i++;
       dist=hypot(p1[0]-xg-xdel,p1[1]-yg);
    }
-   if((refio[i*ngrid+j]==1) & (hypot(p1[0]-xg,p1[1]-yg-ydel)<dist)){
+   if((refio[i*ngrid+j+1]==1) & (hypot(p1[0]-xg,p1[1]-yg-ydel)<dist)){
       j++;
       dist=hypot(p1[0]-xg,p1[1]-yg-ydel);
    }
-   if((refio[i*ngrid+j]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg-ydel)<dist)){
+   if((refio[(i+1)*ngrid+j+1]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg-ydel)<dist)){
       i++;j++;
       dist=hypot(p1[0]-xg-xdel,p1[1]-yg-ydel);
    }
 
+   // if at least one of the above has been activated
    if(fabs(dist-1e10)>eps){
       return(i*ngrid+j);
    }else{
@@ -556,7 +557,7 @@ int find_end(double *p1, double xdel, double ydel, double xstart, double ystart,
 }
 
 // check to see if any of the ends can be used as a start path
-void append_check(double p1[2], double p2[2], double xstart, double ystart, double xdel, double ydel, int ngrid, int* refio, int nbnd, double **bnd, int app[2]){
+void append_check(double p1[2], double p2[2], double xstart, double ystart, double xdel, double ydel, int ngrid, int *refio, int nbnd, double **bnd, int app[2]){
    /*
     * Args:
     *    paths    array of paths
@@ -617,10 +618,10 @@ printf("nref=%d\n",nref);
    for(i=0;i<nref;i++){
       for(j=(i+1);j<nref;j++){
          // are the points inside ?
-         p=(int)(floor((xref[i]-xstart)/xdel)*ngrid+
-                         floor((yref[i]-ystart)/ydel));
-         q=(int)(floor((xref[j]-xstart)/xdel)*ngrid+
-                         floor((yref[j]-ystart)/ydel));
+         p=abs(floor((xref[i]-xstart)/xdel)*ngrid)+
+              abs(floor((yref[i]-ystart)/ydel));
+         q=abs(floor((xref[j]-xstart)/xdel)*ngrid)+
+              abs(floor((yref[j]-ystart)/ydel));
 printf("p=%d,q=%d\n",p,q);
          if(refio[p]&refio[q]){
             // is the path non-Euclidean ?
