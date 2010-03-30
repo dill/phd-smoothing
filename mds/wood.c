@@ -46,7 +46,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    k=0;
 
    if(*faster){
-      create_refpaths(xref,yref,*nref,*refdelx, *refdely, *xstart, *ystart,refio,*ngrid,*nbnd,&savedpaths,bnd);
+      create_refpaths(xref,yref,*nref,*refdelx, *refdely, *xstart, 
+                      *ystart,refio,*ngrid,*nbnd,&savedpaths,bnd);
    }
 
    // first calculate all of the Euclidean paths
@@ -140,8 +141,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
    // if we saved paths, free them!   
    if(*faster){
       // free all the saved paths
-      for(i=0;i<((*nref)*(*nref));i++){
-         if(&savedpaths[i]!=NULL){
+      for(i=0;i<((*ngrid)*(*ngrid));i++){
+         if(savedpaths[i]!=NULL){
             FreeList(&savedpaths[i]);
          }
       }
