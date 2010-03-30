@@ -10,7 +10,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # recreate the S matrix
    # use finite difference to find the second derivatives
    eps<- (1e-15)^(1/4)
- 
 
    if(!is.null(object$xt$lims)){
 
@@ -22,7 +21,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       S<-matrix(0,k,k)
 
       for(i in 1:(length(lims)-1)){
-
          # set some limits
          a<- lims[i]
          b<- lims[i+1]
@@ -42,8 +40,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
          fd[,(k-1):k]<-rep(0,k*2)
 
 #         fd<-fd*1000
-         fd<-fd*sqrt(sq[i]^3)
-#         fd<-fd*sq[i]
+#         fd<-fd*sqrt(sq[i]^3)
+         fd<-fd*sqrt(sq[i])
 
          # do the integration
          D<-t(fd)%*%fd
@@ -62,7 +60,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       object$S[[1]][(k-1):k,]<-rep(0,k*2)
       object$S[[1]][,(k-1):k]<-rep(0,k*2)
 
-      cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
+      #cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
    }
 
    object

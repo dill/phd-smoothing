@@ -4,13 +4,16 @@ library(mgcv)
 x<-seq(0,1,len=30)
 y<-x^2
 
+dat<-data.frame(x=x,y=y)
 
-xp<-seq(0,1,len=120) # xvaluesforprediction 
+# x values for prediction 
+newdat<-data.frame(x=seq(0,1,len=120)) 
 
-b<-gam(y~s(x,k=10))
+
+b<-gam(y~s(x,k=10),data=dat)
 
 par(mfrow=c(2,2))
-plot(b,main="no squash")
+plot(x=newdat$x,y=predict(b,newdat),main="no squash",type="l",asp=1,xlim=c(0,1))
 
 
 # now crazy things happen
@@ -34,10 +37,8 @@ squash<-function(x,lims,sq){
    if(length(sq)>=2){
       for(i in 2:(length(sq))){
          x.tmp<-x[(x>lims[i]) & (x<=lims[i+1])]
-         x.tmp<-x.tmp-(lims[i+1]+lims[i])/2
-         x.tmp<-x.tmp/sq[i]
-         x.tmp<-x.tmp+(lims[i+1]+lims[i])/2
-   
+         x.tmp<-(x.tmp-lims[i])/sq[i] +lims[i]
+
          x.ret<-c(x.ret,x.tmp)
       }
    }
@@ -48,7 +49,7 @@ lims<-c(0,0.5,0.7,1)
 sq<-c(1,1/0.1,1/2)
 
 lims<-c(0,0.5,1)
-sq<-c(1,1/0.5)
+sq<-c(1,1/2)
 
 # do the squashing
 x.m<-squash(x,lims,sq)
@@ -57,22 +58,30 @@ dat.m<-data.frame(x=x.m,y=y)
 
 b<-gam(y~s(x,k=10),data=dat.m)
 
-plot(b,main="squash fit")
-plot(x.m,y,main="raw squash data")
+plot(x=newdat$x,y=predict(b,newdat),main="squash fit",type="l",asp=1,xlim=c(0,1))
+plot(x.m,y,main="raw squash data",pch=19,cex=0.3,asp=1,xlim=c(0,1))
 
 ##### fixing...
 source("smooth.c.R")
 
 #library(sm)
-#
 #dens<-sm.density(x.m,display="none")
-#
-#sq<-dens$estimate[dens$eval.points>=0 & dens$eval.points<=1]
+#sq<-dens$estimate[dens$eval.points>0 & dens$eval.points<1]
 #lims<-seq(0,1,by=diff(dens$eval.points)[1])
+
+library(ks)
+dens.est<-kde(x.m,h=hpi(x.m),eval.points=seq(0,1,len=10))
+sq<-dens.est$estimate
+lims<-dens.est$eval.points
 
 #lims<-squash(lims,lims,sq)
 
+#dat.m$x<-squash(dat.m$x,lims,1/sq)
+
 b.fix<-gam(y~s(x,k=10,xt=list(lims=lims,sq=sq),bs="mdstp"),data=dat.m)
 
-plot(b.fix,main="fixed fit")
+#newdat$x<-squash(newdat$x,lims,sq)
+
+plot(x=newdat$x,y=predict(b.fix,newdat),main="fixed fit",type="l",asp=1,xlim=c(0,1))
+
 
