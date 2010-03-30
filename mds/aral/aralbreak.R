@@ -19,9 +19,9 @@ my.grid<-make_soap_grid(bnd,15)
 
 ind<-c(9,116)
 
-ind<-c(104,116)
-
 ind<-c(46,50)
+ind<-c(74,104)
+
 
 x<-my.grid$x[ind]
 y<-my.grid$y[ind]

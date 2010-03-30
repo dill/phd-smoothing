@@ -613,7 +613,7 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
    }
 
 
-printf("savesize=%d\n",savesize);
+//printf("savesize=%d\n",savesize);
 
    k=0;
    // calculate some paths

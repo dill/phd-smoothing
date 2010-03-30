@@ -142,7 +142,7 @@ PrintPath(&thispath);
    // if we saved paths, free them!   
    if(*faster){
       // free all the saved paths
-      for(i=0;i<((*ngrid)*(*ngrid));i++){
+      for(i=0;i<((*ngrid)*(*ngrid)*((*ngrid)*(*ngrid)/2-1));i++){
          if(savedpaths[i]!=NULL){
             FreeList(&savedpaths[i]);
          }
