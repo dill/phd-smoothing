@@ -576,7 +576,7 @@ void append_check(double p1[2], double p2[2], double xstart, double ystart, doub
    // check for errors then return the index
    if( (end1==-1) | (end2==-1)){
       app[0]=0;
-   }else if(end1<end2){
+   }else if(end2<end1){
       app[0]=1;
       app[1]=1/2*(end1-1)+end2;
    }else{
@@ -590,7 +590,7 @@ void append_check(double p1[2], double p2[2], double xstart, double ystart, doub
 void create_refpaths(double *xref, double *yref, int nref, double xdel, double ydel, double xstart,double ystart, int *refio, int ngrid, int nbnd, node*** savedpaths, double **bnd){
 
    double p1[2],p2[2],*pl; 
-   int i,j,k,m,err,npl,p,q;
+   int i,j,k,m,err,npl,p,q,savesize;
  
    // we know what's inside, find only those paths that are
    // non-Euclidean within the domain, check that first...
@@ -603,8 +603,10 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
    get_euc_path(xref,yref,nbnd,bnd,nref,pl,0);
 
    // malloc the memory for the saved paths
-   *savedpaths=(node**)malloc(sizeof(node*)*(ngrid*ngrid));
-   for(i=0; i<(ngrid*ngrid); i++){
+   //savesize=ngrid*ngrid;
+   savesize=nref*nref*(nref*nref/2-1);
+   *savedpaths=(node**)malloc(sizeof(node*)*savesize);
+   for(i=0; i<savesize; i++){
       (*savedpaths)[i]=(*savedpaths[0])+i*sizeof(node*);
       (*savedpaths)[i]=NULL;
    }
@@ -618,10 +620,10 @@ printf("nref=%d\n",nref);
    for(i=0;i<nref;i++){
       for(j=(i+1);j<nref;j++){
          // are the points inside ?
-         p=abs(floor((xref[i]-xstart)/xdel)*ngrid)+
-              abs(floor((yref[i]-ystart)/ydel));
-         q=abs(floor((xref[j]-xstart)/xdel)*ngrid)+
-              abs(floor((yref[j]-ystart)/ydel));
+         p=abs(floor((xref[i]-xstart)/xdel))+//*ngrid)+
+              abs(floor((yref[i]-ystart)/ydel))*ngrid;
+         q=abs(floor((xref[j]-xstart)/xdel))+//*ngrid)+
+              abs(floor((yref[j]-ystart)/ydel))*ngrid;
 printf("p=%d,q=%d\n",p,q);
          if(refio[p]&refio[q]){
             // is the path non-Euclidean ?

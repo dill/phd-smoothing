@@ -21,6 +21,7 @@ ind<-c(9,116)
 
 ind<-c(104,116)
 
+ind<-c(46,50)
 
 x<-my.grid$x[ind]
 y<-my.grid$y[ind]
