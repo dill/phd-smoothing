@@ -514,7 +514,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    return(err);
 }
 
-int find_end(double *p1, double xdel, double ydel, double xstart, double ystart, int nref, int *refio){
+int find_end(double *p1, double xdel, double ydel, double xstart, double ystart, int ngrid, int *refio){
 
    int i,j;
    double dist=1e10,xg,yg;
@@ -531,24 +531,24 @@ int find_end(double *p1, double xdel, double ydel, double xstart, double ystart,
    // distance from p1 to that corner
 
    // are any of the other corners closer?
-   if((refio[i*nref+j]==1) & (hypot(p1[0]-xg,p1[1]-yg)<dist)){
+   if((refio[i*ngrid+j]==1) & (hypot(p1[0]-xg,p1[1]-yg)<dist)){
       dist=hypot(p1[0]-xg,p1[1]-yg);
    }
-   if((refio[i*nref+j]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg)<dist)){
+   if((refio[i*ngrid+j]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg)<dist)){
       i++;
       dist=hypot(p1[0]-xg-xdel,p1[1]-yg);
    }
-   if((refio[i*nref+j]==1) & (hypot(p1[0]-xg,p1[1]-yg-ydel)<dist)){
+   if((refio[i*ngrid+j]==1) & (hypot(p1[0]-xg,p1[1]-yg-ydel)<dist)){
       j++;
       dist=hypot(p1[0]-xg,p1[1]-yg-ydel);
    }
-   if((refio[i*nref+j]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg-ydel)<dist)){
+   if((refio[i*ngrid+j]==1) & (hypot(p1[0]-xg-xdel,p1[1]-yg-ydel)<dist)){
       i++;j++;
       dist=hypot(p1[0]-xg-xdel,p1[1]-yg-ydel);
    }
 
    if(fabs(dist-1e10)>eps){
-      return(i*nref+j);
+      return(i*ngrid+j);
    }else{
       return(-1);
    }
@@ -556,7 +556,7 @@ int find_end(double *p1, double xdel, double ydel, double xstart, double ystart,
 }
 
 // check to see if any of the ends can be used as a start path
-void append_check(double p1[2], double p2[2], double xstart, double ystart, double xdel, double ydel, int nref, int* refio, int nbnd, double **bnd, int app[2]){
+void append_check(double p1[2], double p2[2], double xstart, double ystart, double xdel, double ydel, int ngrid, int* refio, int nbnd, double **bnd, int app[2]){
    /*
     * Args:
     *    paths    array of paths
@@ -569,8 +569,8 @@ void append_check(double p1[2], double p2[2], double xstart, double ystart, doub
    int end1,end2;
 
    // find the indices of the grid points nearest to p1 and p2
-   end1=find_end(p1, xdel, ydel, xstart, ystart, nref, refio);
-   end2=find_end(p2, xdel, ydel, xstart, ystart, nref, refio);
+   end1=find_end(p1, xdel, ydel, xstart, ystart, ngrid, refio);
+   end2=find_end(p2, xdel, ydel, xstart, ystart, ngrid, refio);
    
    // check for errors then return the index
    if( (end1==-1) | (end2==-1)){
@@ -586,7 +586,7 @@ void append_check(double p1[2], double p2[2], double xstart, double ystart, doub
 }
 
 // create a reference grid
-void create_refpaths(double *xref, double *yref, int nref, double xdel, double ydel, double xstart,double ystart, int *refio, int nbnd, node*** savedpaths, double **bnd){
+void create_refpaths(double *xref, double *yref, int nref, double xdel, double ydel, double xstart,double ystart, int *refio, int ngrid, int nbnd, node*** savedpaths, double **bnd){
 
    double p1[2],p2[2],*pl; 
    int i,j,k,m,err,npl,p,q;
@@ -602,11 +602,14 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
    get_euc_path(xref,yref,nbnd,bnd,nref,pl,0);
 
    // malloc the memory for the saved paths
-   *savedpaths=(node**)malloc(sizeof(node*)*(nref*nref));
-   for(i=0; i<(nref*nref); i++){
+   *savedpaths=(node**)malloc(sizeof(node*)*(ngrid*ngrid));
+   for(i=0; i<(ngrid*ngrid); i++){
       (*savedpaths)[i]=(*savedpaths[0])+i*sizeof(node*);
       (*savedpaths)[i]=NULL;
    }
+
+
+printf("nref=%d\n",nref);
 
    k=0;
    // calculate some paths
@@ -614,10 +617,11 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
    for(i=0;i<nref;i++){
       for(j=(i+1);j<nref;j++){
          // are the points inside ?
-         p=(int)(floor((xref[i]-xstart)/xdel)*nref+
+         p=(int)(floor((xref[i]-xstart)/xdel)*ngrid+
                          floor((yref[i]-ystart)/ydel));
-         q=(int)(floor((xref[j]-xstart)/xdel)*nref+
+         q=(int)(floor((xref[j]-xstart)/xdel)*ngrid+
                          floor((yref[j]-ystart)/ydel));
+printf("p=%d,q=%d\n",p,q);
          if(refio[p]&refio[q]){
             // is the path non-Euclidean ?
             if(pl[k]==-1){

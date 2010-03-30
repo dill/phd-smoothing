@@ -9,7 +9,7 @@
 
 double eps=1e-6;
 
-void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *nref, double *refdelx, double *refdely, int *refio, int *nrefx, double *xstart, double *ystart, double *pathlen, int *faster){
+void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *ngrid, double *refdelx, double *refdely, int *refio, int *nref, double *xstart, double *ystart, double *pathlen, int *faster){
    // args:
    //   len         the length of x and y *
    //   start       point to start at *
@@ -46,7 +46,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
    k=0;
 
    if(*faster){
-      create_refpaths(xref,yref,*nref,*refdelx, *refdely, *xstart, *ystart,refio,*nbnd,&savedpaths,bnd);
+      create_refpaths(xref,yref,*nref,*refdelx, *refdely, *xstart, *ystart,refio,*ngrid,*nbnd,&savedpaths,bnd);
    }
 
    // first calculate all of the Euclidean paths
@@ -85,13 +85,13 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p2[0]=x[j]; p2[1]=y[j];
 //printf("cat(\"p1=list(x=%.16f,y=%.16f);p2=list(x=%.16f,y=%.16f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
 
-printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
+//printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
 
 
             if(*faster){
                // can we do an append?
                // do the append check for p1   
-               append_check(p1, p2, *xstart, *ystart, *refdelx, *refdely, *nref, refio, *nbnd, bnd, app);
+               append_check(p1, p2, *xstart, *ystart, *refdelx, *refdely, *ngrid, refio, *nbnd, bnd, app);
 
             }else{
                app[0]=0;
@@ -127,8 +127,8 @@ printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
             // find the length of the path
             pathlen[k]=hull_length(&thispath);
 // DEBUG
-printf("cat(\"### final ###\\n\")\n");
-PrintPath(&thispath);
+//printf("cat(\"### final ###\\n\")\n");
+//PrintPath(&thispath);
             FreeList(&thispath);
 
          }
@@ -141,7 +141,9 @@ PrintPath(&thispath);
    if(*faster){
       // free all the saved paths
       for(i=0;i<((*nref)*(*nref));i++){
-         FreeList(&savedpaths[i]);
+         if(&savedpaths[i]!=NULL){
+            FreeList(&savedpaths[i]);
+         }
       }
       free(savedpaths);
    }
