@@ -109,8 +109,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             }
 
 // DEBUG
-//printf("cat(\"### first ###\\n\")\n");
-//PrintPath(&thispath);
+printf("cat(\"### first ###\\n\")\n");
+PrintPath(&thispath);
 
             if(err==1){
                FreeList(&thispath);
@@ -129,8 +129,8 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             // find the length of the path
             pathlen[k]=hull_length(&thispath);
 // DEBUG
-//printf("cat(\"### final ###\\n\")\n");
-//PrintPath(&thispath);
+printf("cat(\"### final ###\\n\")\n");
+PrintPath(&thispath);
             FreeList(&thispath);
 
          }

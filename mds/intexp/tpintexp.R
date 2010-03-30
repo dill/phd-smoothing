@@ -63,12 +63,12 @@ plot(x.m,y,main="raw squash data")
 ##### fixing...
 source("smooth.c.R")
 
-library(sm)
-
-dens<-sm.density(x.m,display="none")
-
-sq<-dens$estimate[dens$eval.points>=0 & dens$eval.points<=1]
-lims<-seq(0,1,by=diff(dens$eval.points)[1])
+#library(sm)
+#
+#dens<-sm.density(x.m,display="none")
+#
+#sq<-dens$estimate[dens$eval.points>=0 & dens$eval.points<=1]
+#lims<-seq(0,1,by=diff(dens$eval.points)[1])
 
 #lims<-squash(lims,lims,sq)
 
