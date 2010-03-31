@@ -39,7 +39,7 @@ grid.time<-system.time(my.grid<-wt2_create_grid(40))[3]
 
 ## do the MDS on the grid 
 # create D
-grid.time<-grid.time+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd))[3]
+grid.time<-grid.time+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1))[3]
 
 # perform mds on D
 grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,

@@ -584,7 +584,6 @@ void append_check(double p1[2], double p2[2], double xstart, double ystart, doub
       app[0]=1;
       app[1]=1/2*(end2-1)+end1;
    }
-
 }
 
 // create a reference grid
@@ -612,25 +611,16 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
       (*savedpaths)[i]=NULL;
    }
 
-
-//printf("savesize=%d\n",savesize);
-
    k=0;
    // calculate some paths
    // first loop over all the grid points
    for(i=0;i<nref;i++){
       for(j=(i+1);j<nref;j++){
          // are the points inside ?
-         p=abs(floor((xref[i]-xstart)/xdel)*ngrid)+
-              abs(floor((yref[i]-ystart)/ydel));
-         q=abs(floor((xref[j]-xstart)/xdel)*ngrid)+
-              abs(floor((yref[j]-ystart)/ydel));
-//         p=abs(floor((xref[i]-xstart)/xdel))+
-//              abs(floor((yref[i]-ystart)/ydel))*ngrid;
-//         q=abs(floor((xref[j]-xstart)/xdel))+
-//              abs(floor((yref[j]-ystart)/ydel))*ngrid;
-         if(refio[p]&refio[q]){
-            // is the path non-Euclidean ?
+         p=abs((int)floor((xref[i]-xstart)/xdel))+
+              abs((int)floor((yref[i]-ystart)/ydel))*ngrid;
+         q=abs((int)floor((xref[j]-xstart)/xdel))+
+              abs((int)floor((yref[j]-ystart)/ydel))*ngrid;
             if(pl[k]==-1){
                p1[0]=xref[i]; p1[1]=yref[i]; // set p1
                p2[0]=xref[j]; p2[1]=yref[j]; // set p2
@@ -642,12 +632,10 @@ void create_refpaths(double *xref, double *yref, int nref, double xdel, double y
                }
                err=make_bnd_path(p1,p2,nbnd,bnd,&((*savedpaths)[m]),0);
                err=iter_path(&((*savedpaths)[m]),nbnd,bnd);
-            }
             k++;
          }
       }
    }
-
    free(pl);
 }
 

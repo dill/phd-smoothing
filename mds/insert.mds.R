@@ -1,10 +1,11 @@
-"insert.mds"<-function(new.points,old.points,cmd.object,bnd){
+"insert.mds"<-function(new.points,old.points,cmd.object,bnd,faster=0){
    # insert a new point into the MDS, see Gower (Biometrika, 1968.)
    # args
    #  new.points     points to insert into the MDS
    #  old.points     old points
    #  cmd.object     object returned from cmdscale, with eig=TRUE
    #  bnd            boundary
+   #  faster         use grid speedups?
    # ret
    # coordinates of new points in the mds?
    
@@ -25,7 +26,7 @@
    # and n original points to measure to and m new points.
  
    new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
-                      bnd,start=length(old.points$x))
+                      bnd,start=length(old.points$x),faster=faster)
 
    # the ith element of d is -(d_{i,n+1}^2 - diag(S))
 
@@ -37,29 +38,6 @@
  
    # finally construct the product
    ret<-1/2*(lambda.inverse %*% t(X) %*% d)
-
-#### This code does online insertion
-# for this to work, need to modify wood.c too
-##   ### finally d
-##   # find the distances from old->new and new->new
-##   # dim(new.dist)= length(old+new) x length(new)
-##   new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
-##                      bnd,start=length(old.points$x))
-##
-##
-##   for(i in (length(old.points$x)+1):length(c(old.points$x,new.points$x)) ){
-##      # the ith element of d is d_i^2-d_{i,n+1}^2
-##      d <- rowSums(X*X) - new.dist[1:(i-1),i-length(old.points$x)]^2 
-##
-##      # finally construct the product
-##      new.point<-1/2*((lambda.inverse %*% t(X)) %*% d)
-##
-##      # append new point to X
-##      X<-rbind(X,t(new.point))
-##   }
-##
-##   # just get the new bits
-##   ret<-X[length(old.points$x):length(c(old.points$x,new.points$x)),]
 
    return(t(ret))
 }
