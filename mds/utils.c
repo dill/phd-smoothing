@@ -516,13 +516,13 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 
 int find_end(double *p1, double xdel, double ydel, double xstart, double ystart, int ngrid, int *refio){
 
-   int i,j, iret, jret;
+   int i,j, iret=-1, jret=-1;
    double dist=1e10,xg,yg;
 
    // find the index for nearest bottom left corner 
    // of the grid to p1
-   i=abs(floor((p1[0]-xstart)/xdel));
-   j=abs(floor((p1[1]-ystart)/ydel));
+   i=abs((int)floor((p1[0]-xstart)/xdel));
+   j=abs((int)floor((p1[1]-ystart)/ydel));
 
    // and the location of that point
    xg=xdel*i;
@@ -549,7 +549,7 @@ int find_end(double *p1, double xdel, double ydel, double xstart, double ystart,
    }
 
    // if at least one of the above has been activated
-   if(fabs(dist-1e10)>eps){
+   if((iret!=-1) && (jret!=-1)){
       return(jret*ngrid+iret);
    }else{
       return(-1);
