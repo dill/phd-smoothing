@@ -102,7 +102,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
 
             // if an append will work...
             if(app[0]!=0){
-//printf("app[1]=%d\n",app[1]);
+printf("app[1]=%d\n",app[1]);
                err=+append_path(&savedpaths[app[1]],&thispath,p2,p1,app[0],*nbnd,bnd);
             }else{
                err=+make_bnd_path(p1,p2,*nbnd,bnd,&thispath,0);
