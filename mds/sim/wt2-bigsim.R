@@ -38,7 +38,7 @@ my.grid<-make_soap_grid(bnd,n=10)
 
 ## do the MDS on the grid 
 # create D
-D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
+D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1)
 
 # perform mds on D
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)

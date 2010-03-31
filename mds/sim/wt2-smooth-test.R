@@ -18,10 +18,10 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
                   z=gendata$z[-samp.ind])
 
    # sample points insertion
-   samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd)
+   samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=1)
 
    # prediction points insertion
-   pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd)
+   pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd,faster=1)
 
    # add noise
    noise<-noise.level*rnorm(length(samp.ind))

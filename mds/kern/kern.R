@@ -14,13 +14,13 @@ names(bnd)<-c("x","y")
 grid<-create_refgrid(bnd)
 
 # MDS it
-D<-create_distance_matrix(grid$x,grid$y,bnd)
+D<-create_distance_matrix(grid$x,grid$y,bnd,faster=1)
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
 
 plot(grid.mds$points,col="red",pch=19)
 
 new.grid<-make_soap_grid(bnd,23)
-new.mds<-insert.mds(new.grid,grid,grid.mds,bnd)
+new.mds<-insert.mds(new.grid,grid,grid.mds,bnd,faster=1)
 
 points(new.mds,pch=19)
 
