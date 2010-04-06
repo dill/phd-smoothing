@@ -65,23 +65,8 @@ plot(x.m,y,main="raw squash data",pch=19,cex=0.3,asp=1,xlim=c(0,1))
 ##### fixing...
 source("smooth.c.R")
 
-#library(sm)
-#dens<-sm.density(x.m,display="none")
-#sq<-dens$estimate[dens$eval.points>0 & dens$eval.points<1]
-#lims<-seq(0,1,by=diff(dens$eval.points)[1])
-
-#dens.est<-kde(x.m,h=hpi(x.m),eval.points=seq(0,1,len=10))
-#sq<-dens.est$estimate
-#lims<-dens.est$eval.points
-
-#lims<-squash(lims,lims,sq)
-
-#dat.m$x<-squash(dat.m$x,lims,1/sq)
-
-#b.fix<-gam(y~s(x,k=10,xt=list(lims=lims,sq=sq),bs="mdstp"),data=dat.m)
 b.fix<-gam(y~s(x,k=10,bs="mdstp"),data=dat.m)
 
-#newdat$x<-squash(newdat$x,lims,sq)
 
 plot(x=newdat$x,y=predict(b.fix,newdat),main="fixed fit",type="l",asp=1,xlim=c(0,1))
 points(x.m,y)

@@ -45,9 +45,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
          fd[,(k-1):k]<-rep(0,k*2)
 
          # do something here to adjust lambda
-         #fd<-fd*100000
+         fd<-fd*100000
          #fd<-fd*sqrt((1/sq)^3)
-         fd<-fd*sqrt((1/sq)^3)
+         #fd<-fd*sqrt((1/sq))
 
          # do the integration
          D<-t(fd)%*%fd
@@ -63,8 +63,10 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       object$S[[1]]<-S
 
       # zero the last two rows and cols
-      object$S[[1]][(k-1):k,]<-rep(0,k*2)
-      object$S[[1]][,(k-1):k]<-rep(0,k*2)
+      #object$S[[1]][(k-1):k,]<-rep(0,k*2)
+      #object$S[[1]][,(k-1):k]<-rep(0,k*2)
+      object$S[[1]][k,]<-rep(0,k)
+      object$S[[1]][,k]<-rep(0,k)
 
       cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
 #   }
