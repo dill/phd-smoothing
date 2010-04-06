@@ -8,6 +8,7 @@ library(MASS)
 library(mgcv)
 library(soap)
 
+source("squash.R")
 
 set.seed(1)
 
@@ -39,5 +40,13 @@ vis.gam(b,plot.type="contour",main="tprs fit",asp=1)
 ###################################
 # now something interesting
 
+# explode top right corner
+xsq<-squash(xx,c(-1,0,1),c(1,2))
+ysq<-squash(yy,c(-1,0,1),c(1,2))
+
+dat.sq<-data.frame(x=xsq,y=ysq,z=as.vector(bivn.kde$z))
 
 
+b<-gam(z~s(x,y,k=10),data=dat.sq)
+
+vis.gam(b,plot.type="contour",main="squash tprs fit",asp=1)
