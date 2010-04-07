@@ -40,9 +40,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
              2*Predict.matrix(object,data.frame(x=xs+eps))+
              Predict.matrix(object,data.frame(x=xs)))/eps^2
 
-         # zero the last two rows and cols
-         fd[(k-1):k,]<-rep(0,k*2)
-         fd[,(k-1):k]<-rep(0,k*2)
+         # zero the last row
+         fd[k,]<-rep(0,k)
+         fd[,k]<-rep(0,k)
 
          # do something here to adjust lambda
          fd<-fd*100000

@@ -35,10 +35,10 @@ x.m<-squash(x,lims,sq)
 dat.m<-data.frame(x=x.m,y=y)
 
 
-b<-gam(y~s(x,k=10),data=dat.m)
+b.s<-gam(y~s(x,k=10),data=dat.m)
 
-plot(x=newdat$x,y=predict(b,newdat),main="squash fit",type="l",asp=1,xlim=c(0,1))
-plot(x.m,y,main="raw squash data",pch=19,cex=0.3,asp=1,xlim=c(0,1))
+plot(x=newdat$x,y=predict(b.s,newdat),main="squash fit with data",type="l",asp=1,xlim=c(0,1))
+points(x.m,y,main="raw squash data",pch=19,cex=0.3,asp=1,xlim=c(0,1))
 
 ##### fixing...
 source("smooth.c.R")
@@ -46,6 +46,10 @@ source("smooth.c.R")
 b.fix<-gam(y~s(x,k=10,bs="mdstp"),data=dat.m)
 
 
-plot(x=newdat$x,y=predict(b.fix,newdat),main="fixed fit",type="l",asp=1,xlim=c(0,1))
+plot(x=newdat$x,y=predict(b.fix,newdat),main="fixed fit (black), truth (red), data, broken fit (green)",type="l",asp=1,xlim=c(0,1))
+lines(x=newdat$x,y=predict(b,newdat),lwd=2,col="red")
+lines(x=newdat$x,y=predict(b.s,newdat),col="green",lwd=2)
+lines(x=newdat$x,y=predict(b.fix,newdat),lwd=1,col="black")
+
 points(x.m,y)
 
