@@ -69,7 +69,7 @@ predd<-gendata.ind$z[ind]
 
 sim.size<-200
 samp.size<-250
-noise.level<-0.5
+noise.level<-0.05
 
 res.mse<-list(mds=rep(0,sim.size), mdstp=rep(0,sim.size), 
               soap=rep(0,sim.size),tprs=rep(0,sim.size))
