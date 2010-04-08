@@ -37,12 +37,11 @@ gendata<-list(x=gendata$x[onoff],
                z=gendata$z[onoff])
 
 # create the grid
-source("../wt2-create-grid.R")
-grid.time<-system.time(my.grid<-wt2_create_grid(40))[3]
+grid.time<-system.time(my.grid<-create_refgrid(bnd,20))[3]
 
 ## do the MDS on the grid 
 # create D
-grid.time<-grid.time+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=faster))[3]
+grid.time<-grid.time+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0))[3]
 
 # perform mds on D
 grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,
