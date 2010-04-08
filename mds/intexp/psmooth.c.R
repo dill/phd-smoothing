@@ -40,7 +40,7 @@ smooth.construct.mdsps.smooth.spec<-function(object,data,knots){
       }
    }
 
-   S<-S*sqrt((1/sq)^3)
+   S<-S*sqrt((sq)^3)
 
    S <- t(S)%*%S  # get penalty
    
