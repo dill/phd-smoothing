@@ -39,7 +39,7 @@ points(x.m,y,main="raw squash data",pch=19,cex=0.3)
 ##### fixing...
 source("smooth.c.R")
 
-b.fix<-gam(y~s(x,k=15,bs="mdstp"),data=dat.m)
+b.fix<-gam(y~s(x,k=10,bs="mdstp"),data=dat.m)
 
 
 plot(x=newdat$x,y=predict(b.fix,newdat),main="fixed fit (black), truth (red), \ndata, broken fit (green)",type="l",asp=1,xlim=c(0,1))

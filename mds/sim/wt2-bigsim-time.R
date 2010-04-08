@@ -4,6 +4,9 @@
 source("mds.R")
 source("wt2-smooth-test-time.R")
 
+
+faster<-1
+
 ###############################
 # initial setup
 
@@ -39,7 +42,7 @@ grid.time<-system.time(my.grid<-wt2_create_grid(40))[3]
 
 ## do the MDS on the grid 
 # create D
-grid.time<-grid.time+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1))[3]
+grid.time<-grid.time+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=faster))[3]
 
 # perform mds on D
 grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,
@@ -80,7 +83,7 @@ pred.times<-list(mds=rep(0,sim.size), mdstp=rep(0,sim.size),
 
 for(i in 1:sim.size){
    res<-wt2_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
-                          gendata,bnd,grid.mds,my.grid,soap.knots,predd)
+                          gendata,bnd,grid.mds,my.grid,soap.knots,predd,faster)
    gam.times$mds[i]<- res$mds[1]+grid.time
    gam.times$mdstp[i]<- res$mdstp[1]+grid.time
    gam.times$soap[i]<-res$soap[1]
