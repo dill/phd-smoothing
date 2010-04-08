@@ -45,21 +45,20 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
                   z=gendata$z[-samp.ind])
 
    # create the grid
-   source("wt2-create-grid.R")
-   my.grid<-wt2_create_grid()
+   my.grid<-create_refgrid(bnd,120)
 
    ## do the MDS on the grid 
    # create D
-   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
+   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0)
  
    # perform mds on D
    grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
  
    # sample points insertion
-   samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd)
+   samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=1)
 
    # prediction points insertion
-   pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd)
+   pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd,faster=1)
 
    grid.mds<-grid.mds$points
 

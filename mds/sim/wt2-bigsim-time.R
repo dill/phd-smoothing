@@ -37,7 +37,7 @@ gendata<-list(x=gendata$x[onoff],
                z=gendata$z[onoff])
 
 # create the grid
-grid.time<-system.time(my.grid<-create_refgrid(bnd,20))[3]
+grid.time<-system.time(my.grid<-create_refgrid(bnd,120))[3]
 
 ## do the MDS on the grid 
 # create D
