@@ -135,15 +135,9 @@ Prediction & & & 53.5105 & 53.4204 & 29.3946 & 0.1249\\
 \caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted. For the MDS+TPRS models \textit{pp} indicates the cases where the partial paths were pre-calculated, those not marked use algorithm 1.}
 \end{table}
 
-
-18.2722 
-18.7653 
-26.0317 
-0.401 
-53.7169 
-53.6357 
-28.2784 
-0.1207 
+% old
+%Fit & 84.85242 & 85.35168 & 36.24865 & 0.51721\\
+%Prediction & 155.4004 & 155.2419 & 44.22065 & 0.20994 \\
 
 
 
@@ -163,7 +157,7 @@ Initial grid calculations could be done on a much less dense grid, making things
 
 
 \begin{equation}
-\lambda \int\int \mathsf{K}(x,y) \Big(\frac{\partial^2 f(x,y)}{\partial x^2} + \frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2 \text{d}x\text{d}y
+\lambda \int\int \mathsf{K}(x,y) \Big( \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial y \partial x}\Big) + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2 \text{d}x\text{d}y
 \end{equation}
 
 

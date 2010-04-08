@@ -5,7 +5,7 @@ source("mds.R")
 source("wt2-smooth-test-time.R")
 
 
-faster<-1
+faster<-0
 
 ###############################
 # initial setup
@@ -71,7 +71,7 @@ predd<-gendata.ind$z[ind]
 
 #################################
 
-sim.size<-10
+sim.size<-1
 samp.size<-250
 noise.level<-0.5
 
