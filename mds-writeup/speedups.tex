@@ -124,15 +124,21 @@ Prediction & 4.80357 & 8.87535 & 0.10845\\
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{c || c c c c}
- & MDS & MDS (tensor) & Soap film & Thin plate\\ 
+\begin{tabular}{c || c c c c c c}
+%  no speedup           speedup
+ & MDS & MDS (tensor) & MDS (\textit{pp})& MDS (tensor) (\textit{pp})& Soap film & Thin plate\\ 
 \hline
-Fit & 84.85242 & 85.35168 & 36.24865 & 0.51721\\
-Prediction & 155.4004 & 155.2419 & 44.22065 & 0.20994 \\
+Fit & & & 18.6526 & 19.1409 & 24.6783 & 0.4022\\ 
+Prediction & & & 53.5105 & 53.4204 & 29.3946 & 0.1249\\
 \end{tabular}
 \label{wt2time}
-\caption{Average time (in seconds) to fit a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function.}
+\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted. For the MDS+TPRS models \textit{pp} indicates the cases where the partial paths were pre-calculated, those not marked use algorithm 1.}
 \end{table}
+
+
+
+
+
 
 
 
@@ -166,6 +172,9 @@ Initial grid calculations could be done on a much less dense grid, making things
 
 
 \section{3D?}
+
+\section{Aral sea}
+
 
 \bibliographystyle{plainnat}
 \bibliography{mds-refs}

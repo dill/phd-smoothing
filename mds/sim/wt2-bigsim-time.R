@@ -5,7 +5,7 @@ source("mds.R")
 source("wt2-smooth-test-time.R")
 
 
-faster<-1
+faster<-0
 
 ###############################
 # initial setup

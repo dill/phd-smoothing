@@ -51,8 +51,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # do something here to adjust lambda
    #fd<-fd*100000
-   #fd<-fd+100*matrix(rnorm(N*k),N,k)
-   fd<-fd*sqrt((1/sq)^2)
+   fd<-fd*sqrt((1/sq)^3)
    #fd<-fd*sqrt((1/sq))
 
    # do the integration
