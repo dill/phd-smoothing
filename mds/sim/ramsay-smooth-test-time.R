@@ -3,7 +3,7 @@
 source("mds.R")
 
 ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
-                             bnd=bnd,my.grid=my.grid,grid.mds=grid.mds,
+                             bnd,my.grid,grid.mds,
                              xx,yy,onoff,faster=0){
 
    # make the sample

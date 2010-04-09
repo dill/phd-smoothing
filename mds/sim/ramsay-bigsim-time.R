@@ -24,7 +24,7 @@ xx<-xx[onoff];yy<-yy[onoff]
 # make a grid
 my.grid<-make_soap_grid(bnd,12)
 grid.time<-system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=faster))[3]
-grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,eig=TRUE,k=2))[3]
+grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE))[3]
 
 
 
@@ -33,14 +33,14 @@ grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,eig=TRUE,k=2))[3]
 
 sim.size<-100
 samp.size<-250
-noise.level<-0.1
+noise.level<-1
 
 res.gam<-list(mds=rep(0,sim.size), soap=rep(0,sim.size),tprs=rep(0,sim.size))
 res.pred<-list(mds=rep(0,sim.size), soap=rep(0,sim.size),tprs=rep(0,sim.size))
 
 for(i in 1:sim.size){
    res<-ramsay_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
-                             bnd,my.grid,grid.mds,xx,yy, onoff)
+                             bnd,my.grid,grid.mds,xx,yy, onoff,faster=faster)
    res.gam$mds[i]<- res$mds[1]+grid.time
    res.gam$soap[i]<-res$soap[1]
    res.gam$tprs[i]<-res$tprs[1]
