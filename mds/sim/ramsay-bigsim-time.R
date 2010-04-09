@@ -5,6 +5,8 @@
 source("mds.R")
 source("ramsay-smooth-test-time.R")
 
+faster<-1
+
 ###############################
 # initial setup
 ## create a boundary...
@@ -19,14 +21,9 @@ onoff<-inSide(bnd,xx,yy)
 onoff[c(143,279)]<-FALSE ### UGLY HACK
 xx<-xx[onoff];yy<-yy[onoff]
 
-# map the grid xg,yg
-gm<-20;gn<-10
-xmg <- seq(-1,3.5,length=gm);yng<-seq(-1,1,length=gn)
-xg <- rep(xmg,gn);yg<-rep(yng,rep(gm,gn))
-onoffg<-inSide(bnd,xg,yg)
-xg<-xg[onoffg];yg<-yg[onoffg]
-my.grid<-list(x=xg,y=yg)
-grid.time<-system.time(D.grid<-create_distance_matrix(xg,yg,bnd))[3]
+# make a grid
+my.grid<-make_soap_grid(bnd,12)
+grid.time<-system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=faster))[3]
 grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,eig=TRUE,k=2))[3]
 
 

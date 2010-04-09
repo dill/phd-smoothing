@@ -4,7 +4,7 @@ source("mds.R")
 
 ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
                              bnd=bnd,my.grid=my.grid,grid.mds=grid.mds,
-                             xx,yy,onoff){
+                             xx,yy,onoff,faster=0){
 
    # make the sample
    samp.ind<-sample(1:length(xx),samp.size)
@@ -16,7 +16,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
                          z=fs.test(xx[samp.ind],yy[samp.ind])+noise)
 
    # insert the sample
-   samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd)
+   samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd,faster=faster)
    samp.data.mds<-data.frame(x=samp.mds[,1],y=samp.mds[,2],z=samp.data$z)
 
    ### create prediction data
@@ -25,7 +25,7 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
                          z=fs.test(xx[-samp.ind],yy[-samp.ind]))
 
    # new MDS coords for the prediction points
-   pred.mds<-insert.mds(pred.data,my.grid,grid.mds,bnd)
+   pred.mds<-insert.mds(pred.data,my.grid,grid.mds,bnd,faster=faster)
 
    # put this in the correct format 
    pred.size<-dim(pred.data)[1]+dim(samp.data)[1]

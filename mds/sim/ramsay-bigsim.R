@@ -6,6 +6,9 @@
 source("mds.R")
 source("ramsay-smooth-test.R")
 
+faster=1
+
+
 ###############################
 # initial setup
 ## create a boundary...
@@ -20,14 +23,9 @@ onoff<-inSide(bnd,xx,yy)
 onoff[c(143,279)]<-FALSE ### UGLY HACK
 xx<-xx[onoff];yy<-yy[onoff]
 
-# map the grid xg,yg
-gm<-20;gn<-10
-xmg <- seq(-1,3.5,length=gm);yng<-seq(-1,1,length=gn)
-xg <- rep(xmg,gn);yg<-rep(yng,rep(gm,gn))
-onoffg<-inSide(bnd,xg,yg)
-xg<-xg[onoffg];yg<-yg[onoffg]
-my.grid<-list(x=xg,y=yg)
-D.grid<-create_distance_matrix(xg,yg,bnd)
+# make the grid
+my.grid<-make_soap_grid(bnd,12)
+D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=faster)
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
 
@@ -39,12 +37,13 @@ sim.size<-200
 samp.size<-250
 noise.level<-10
 
+
 res.mse<-list(mds=rep(0,sim.size), soap=rep(0,sim.size),tprs=rep(0,sim.size))
 res.edf<-list(mds=rep(0,sim.size), soap=rep(0,sim.size),tprs=rep(0,sim.size))
 
 for(i in 1:sim.size){
    res<-ramsay_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
-                             bnd,my.grid,grid.mds,xx,yy, onoff)
+                             bnd,my.grid,grid.mds,xx,yy, onoff,faster=faster)
    res.mse$mds[i]<- res$mds
    res.mse$soap[i]<-res$soap
    res.mse$tprs[i]<-res$tprs

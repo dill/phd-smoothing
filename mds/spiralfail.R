@@ -4,7 +4,7 @@ source("spiral/make_spiral.R")
 
 
 
-spir.dat<-make_spiral(25,n.grid=50)
+spir.dat<-make_spiral(30,n.grid=50)
 bnd<-spir.dat$bnd
 
 my.grid<-make_soap_grid(bnd,15)

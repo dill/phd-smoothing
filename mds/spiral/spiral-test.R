@@ -3,7 +3,7 @@
 source("mds.R")
 source("spiral/make_spiral.R")
 
-spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
+spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
 
    # create boundary
    spir.dat<-make_spiral()
@@ -13,9 +13,9 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
 
 
    # map the grid
-   spir.grid<-make_spiral(n.grid=50)
+   spir.grid<-make_spiral(25,n.grid=15)
    my.grid<-list(x=spir.grid$dat$x,y=spir.grid$dat$y)
-   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd)
+   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1)
    grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
    # make the sample
@@ -28,7 +28,7 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
                          z=fs.test(xx[samp.ind],yy[samp.ind])+noise)
 
    # insert the sample
-   samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd)
+   samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd,faster=faster)
    samp.data.mds<-data.frame(x=samp.mds[,1],y=samp.mds[,2],z=samp.data$z)
 
    ### create prediction data
@@ -37,7 +37,7 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
                          z=fs.test(xx[-samp.ind],yy[-samp.ind]))
 
    # new MDS coords for the prediction points
-   pred.mds<-insert.mds(pred.data,my.grid,grid.mds,bnd)
+   pred.mds<-insert.mds(pred.data,my.grid,grid.mds,bnd,faster=faster)
 
    # put this in the correct format 
    pred.size<-dim(pred.data)[1]+dim(samp.data)[1]
