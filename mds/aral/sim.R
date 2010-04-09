@@ -58,7 +58,7 @@ new.truth<-predict(b.soap,newdata=pred.points)
 
 # pre-calculate the MDS base configuration
 mds.grid<-make_soap_grid(bnd,15)
-D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd)
+D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd,faster=1)
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
 
 n.sim<-1
@@ -69,13 +69,18 @@ mses<-matrix(0,n.sim,3)
 
 for(i in 1:n.sim){
 
-   ## take the sample and add some noise
+   ## take the sample
    samp.ind<-sample(1:length(new.truth),n.samp)
-   noise<-rnorm(n.samp)*noise.level
+
+   # add some noise
+   disp <- 0.2, 0.4, 0.6# , stnr corr between y and \hat{y}
+   g    <- exp(eta)
+   y    <- rgamma( rep(1,n) , shape=1/disp,  scale=1/ (1/ (disp*g) ) )
+
+
    samp<-data.frame(x=pred.points$x[samp.ind],
                     y=pred.points$y[samp.ind],
                     chl=new.truth[samp.ind]+noise)
-
   
    ### fit some models
    # tprs
