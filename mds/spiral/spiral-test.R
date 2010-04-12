@@ -6,8 +6,10 @@ source("spiral/sp_test.R")
 
 spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
 
+   grid.m<-50
+
    # create boundary
-   spir.dat<-make_spiral(25,50)
+   spir.dat<-make_spiral(25,grid.m)
    bnd<-spir.dat$bnd
    xx<-spir.dat$dat$x
    yy<-spir.dat$dat$y
@@ -52,11 +54,10 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
    pred.data<-list(x=xx,y=yy,z=sp_test(xx,yy))
 
    # boundary, only for drawing the line around the outside
-   fsb <- fs.boundary()
+   bnd<-spir.dat$bnd
    
    # truth
-   z.truth<-matrix(NA,m,n)
-   z.truth[onoff]<-sp_test(xx,yy)
+   z.truth<-spir.dat$mat
    
    ### mapping
    b.mapped<-gam(z~s(x,y,k=100),data=samp.data.mds)
@@ -68,10 +69,12 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
    
    ### soap
    # create some internal knots...
-   knots <- data.frame(x=rep(seq(-.5,3,by=.5),4),
-                       y=rep(c(-.6,-.3,.3,.6),rep(8,4)))
-   knots.ind<-inSide(bnd,x=knots$x,y=knots$y)
-   knots<-list(x=knots$x[knots.ind],y=knots$y[knots.ind])
+   knots<-make_soap_grid(bnd,20)
+   knots.out<-c(15, 30, 31, 33, 35, 38, 41, 61, 62, 67,109,117,121,122)
+   knots<-pe(knots,-knots.out)
+
+
+
    b.soap<-gam(z~s(x,y,k=39,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
    fv.soap<-predict(b.soap,newdata=pred.data,block.size=-1)
    
@@ -82,30 +85,30 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
       par(mar=c(3,3,3,3))
 
       # truth
-      image(xm,yn,z.truth,col=heat.colors(100),xlab="x",ylab="y",main="truth",las=1,asp=1)
-      contour(xm,yn,z.truth,levels=seq(-5,5,by=.25),add=TRUE)
-      lines(fsb,lwd=2)
+      image(z.truth,col=heat.colors(100),xlab="x",ylab="y",main="truth",las=1,asp=1)
+      contour(z.truth,levels=seq(-5,5,by=.25),add=TRUE)
+      lines(bnd,lwd=2)
 
       # mapped
-      pred.mat<-matrix(NA,m,n)
+      pred.mat<-matrix(NA,grid.m,grid.m)
       pred.mat[onoff]<-fv.mapped
-      image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="MDS",las=1,asp=1)
-      contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
-      lines(fsb,lwd=2)
+      image(pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="MDS",las=1,asp=1)
+      contour(pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
+      lines(bnd,lwd=2)
 
       # tprs
-      pred.mat<-matrix(NA,m,n)
+      pred.mat<-matrix(NA,grid.m,grid.m)
       pred.mat[onoff]<-fv.tprs
-      image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tprs",las=1,asp=1)
-      contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
-      lines(fsb,lwd=2)
+      image(pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tprs",las=1,asp=1)
+      contour(pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
+      lines(bnd,lwd=2)
 
       # soap
-      pred.mat<-matrix(NA,m,n)
+      pred.mat<-matrix(NA,grid.m,grid.m)
       pred.mat[onoff]<-fv.soap
-      image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="soap",las=1,asp=1)
-      contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
-      lines(fsb,lwd=2)
+      image(pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="soap",las=1,asp=1)
+      contour(pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
+      lines(bnd,lwd=2)
 
    }
 

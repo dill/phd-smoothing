@@ -12,7 +12,7 @@ make_spiral<-function(spiral.res=100,n.grid=100){
    f2<-function(x){0.5*sqrt(x)*sin(x)}
 
    # make the boundary
-   offset<-5
+   offset<-0
    bnd1<-list(x=offset+f1(phi)*1.1,y=offset+f2(phi)*1.1)
    bnd2<-list(x=offset+f1(phi)*0.9,y=offset+f2(phi)*0.9)
 
@@ -24,14 +24,20 @@ make_spiral<-function(spiral.res=100,n.grid=100){
    sp.grid<-make_soap_grid(bnd,n.grid,mat=TRUE)
    x<-sp.grid$x
    y<-sp.grid$y
-   
+
    # convert x and y back to find phis 
+   phi[x>0 & y>=0]<-atan(y[x>0 & y>=0]/x[x>0 & y>=0])
+   phi[x>0 & y<0]<-atan(y[x>0 & y<0]/x[x>0 & y<0])+2*pi
+   phi[x<0]<-atan(y[x<0]/x[x<0])+pi
+   phi[x==0 & y>0]<-pi/2
+   phi[x==0 & y<0]<- 3*pi/2
+
+   r<-sqrt(x^2+y^2)
+
    z<-rep(0,length(x))
 
-   z[x>0]<-atan(y[x>0]/x[x>0])+pi
-   z[x<0]<-atan(y[x<0]/x[x<0])
-   z[x==0 & y>0]<-pi/2
-   z[x==0 & y<0]<-pi/2
+   z<-r*phi
+
 
    # create the data frame
    dat<-data.frame(x=x,y=y,z=z)
