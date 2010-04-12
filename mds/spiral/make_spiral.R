@@ -39,22 +39,22 @@ make_spiral<-function(spiral.res=100,n.grid=100){
    z<-r*phi+3*pi
 
    # now make sure that the whole thing is continuous, hack a bit
-   dphi<-seq(0.5,2*pi,length.out=spiral.res)
-   bnd1<-list(x=offset+f1(dphi)*1.1,y=offset+f2(dphi)*1.1)
-   bnd2<-list(x=offset+f1(dphi)*0.9,y=offset+f2(dphi)*0.9)
-   bnd<-list(x=c(bnd1$x,rev(bnd2$x),bnd1$x[1]),
-             y=c(bnd1$y,rev(bnd2$y),bnd1$y[1]))
-   inout<-inSide(bnd,x,y)
-   z[inout]<-z[inout]-2*pi
-   dphi<-seq(2*pi,4*pi,length.out=spiral.res)
-   bnd1<-list(x=offset+f1(dphi)*1.1,y=offset+f2(dphi)*1.1)
-   bnd2<-list(x=offset+f1(dphi)*0.9,y=offset+f2(dphi)*0.9)
-   bnd<-list(x=c(bnd1$x,rev(bnd2$x),bnd1$x[1]),
-             y=c(bnd1$y,rev(bnd2$y),bnd1$y[1]))
-   inout<-inSide(bnd,x,y)
-   z[inout]<-z[inout]-pi
+#   dphi<-seq(0.5,2*pi,length.out=spiral.res)
+#   bnd1<-list(x=offset+f1(dphi)*1.1,y=offset+f2(dphi)*1.1)
+#   bnd2<-list(x=offset+f1(dphi)*0.9,y=offset+f2(dphi)*0.9)
+#   bnd<-list(x=c(bnd1$x,rev(bnd2$x),bnd1$x[1]),
+#             y=c(bnd1$y,rev(bnd2$y),bnd1$y[1]))
+#   inout<-inSide(bnd,x,y)
+#   z[inout]<-z[inout]-2*pi
+#   dphi<-seq(2*pi,4*pi,length.out=spiral.res)
+#   bnd1<-list(x=offset+f1(dphi)*1.1,y=offset+f2(dphi)*1.1)
+#   bnd2<-list(x=offset+f1(dphi)*0.9,y=offset+f2(dphi)*0.9)
+#   bnd<-list(x=c(bnd1$x,rev(bnd2$x),bnd1$x[1]),
+#             y=c(bnd1$y,rev(bnd2$y),bnd1$y[1]))
+#   inout<-inSide(bnd,x,y)
+#   z[inout]<-z[inout]-pi
 
-
+#   ind<-
 
 
    #z[r>1]<-z[r>1]+pi
