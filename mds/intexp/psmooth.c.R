@@ -21,7 +21,8 @@ smooth.construct.mdsps.smooth.spec<-function(object,data,knots){
 
    # auto ks based adjustment
    kp<-object$knots[((m[1]+2)/2+1):(length(object$knots)-(m[1]+2)/2)]
-   dens.est<-kde(data$x,h=hpi(data$x),eval.points=kp)
+   this.dat<-eval(parse(text=paste("data$",object$term,sep="")))
+   dens.est<-kde(this.dat,h=hpi(this.dat),eval.points=kp)
    sq<-dens.est$estimate
 
    # manual
@@ -40,7 +41,7 @@ smooth.construct.mdsps.smooth.spec<-function(object,data,knots){
       }
    }
 
-   S<-S*sqrt((sq)^3)
+   S<-S*sqrt(1/(sq^3))
 
    S <- t(S)%*%S  # get penalty
    

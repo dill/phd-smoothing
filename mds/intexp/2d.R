@@ -8,7 +8,10 @@ library(MASS)
 library(mgcv)
 library(soap)
 
+library(ks)
+
 source("squash.R")
+source("psmooth.c.R")
 
 set.seed(1)
 
@@ -50,3 +53,18 @@ dat.sq<-data.frame(x=xsq,y=ysq,z=as.vector(bivn.kde$z))
 b<-gam(z~s(x,y,k=10),data=dat.sq)
 
 vis.gam(b,plot.type="contour",main="squash tprs fit",asp=1)
+
+
+#####################################
+# do some kind of fitting
+
+
+b.ps<-gam(z~te(x,y,k=10,bs="mdsps"),data=dat.sq)
+
+vis.gam(b.ps,plot.type="contour",main="hmmmm",asp=1)
+
+
+
+
+
+
