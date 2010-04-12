@@ -116,8 +116,8 @@ Comparison to results in previous report.
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{c || c c c}
- & MDS & Soap film & Thin plate\\ 
+\begin{tabular}{c || c c c c}
+ & MDS & MDS (\textit{pp})& Soap film & Thin plate\\ 
 \hline
 Fit & 3.39225 & 10.87688 & 0.61492\\
 Prediction & 4.80357 & 8.87535 & 0.10845\\
@@ -125,6 +125,15 @@ Prediction & 4.80357 & 8.87535 & 0.10845\\
 \label{ramsaytime}
 \caption{Average time (in seconds) to fit a realisation of the modified Ramsay horseshoe for the three models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function.}
 \end{table}
+
+3.6601 
+11.77851 
+0.56449 
+5.34523 
+9.55572 
+0.1076 
+
+
 
 
 \begin{table}[ht]
@@ -176,7 +185,22 @@ Initial grid calculations could be done on a much less dense grid, making things
 0.5  & 0.1015 (0.00082) & 0.0872 (0.00122) & 0.0761 (0.00091) &0.1102 (0.00091) &57.3566 (0.52471) & 45.6116 (0.39864) & 45.1661 (0.69063) & 58.4121 (0.69063)\\ 
 5  & 0.9818 (0.03089) & 1.3047 (0.0431) & 1.2253 (0.03584) &1.4379 (0.03584) &7.0495 (0.31291) & 9.6196 (0.39957) & 11.1636 (0.59128) & 12.1361 (0.59128)\\ 
 \end{tabular}
+\caption{Old results for wt2.}
 \end{table}
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c c c c c c c}
+ & & MSE & &  & EDF & \\ 
+ & MDS & soap & thin plate & MDS & soap & thin plate\\ 
+0.1  & 0.0033 (3e-05) & 0.0022 (3e-05) & 0.0391 (0.00057) &46.7498 (0.31561) & 38.9315 (0.25237) & 92.6071 (0.08282)\\ 
+1  & 0.0426 (0.00104) & 0.0476 (0.00137) & 0.2313 (0.00252) &8.1902 (0.34042) & 10.3035 (0.27974) & 45.9797 (0.3936)\\ 
+10  & 2.1158 (0.13359) & 2.5656 (0.15506) & 3.6544 (0.15732) &5.095 (0.28589) & 5.9414 (0.30168) & 7.299 (0.46056)\\ 
+\end{tabular}
+\caption{Old results for Ramsay}
+\end{table}
+
 
 
 \subsection{3D?}
@@ -203,6 +227,14 @@ x=\frac{1}{2}\sqrt{\phi}\cos(\phi), \quad y=\frac{1}{2}\sqrt{\phi}\sin(\phi)
 
 More difficult/esoteric shapes. Take longer to fit, justify using the partial paths
 
+% spiral sample with transformed shape
+\begin{figure}
+\centering
+\includegraphics[width=6in]{su-figs/spiralmap.pdf} \\
+\caption{A random sample of 250 points from the spiral, and it's mapping in MDS space.}
+\label{spiralmap}
+% generated spiralmap.R
+\end{figure}
 
 
 

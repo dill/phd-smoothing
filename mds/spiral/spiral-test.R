@@ -2,6 +2,7 @@
 # Copyright David Lawrence Miller 2010
 source("mds.R")
 source("spiral/make_spiral.R")
+source("spiral/sp_test.R")
 
 spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
 
@@ -25,7 +26,7 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
    noise<-rnorm(samp.size)*noise.level
 
    samp.data<-data.frame(x=xx[samp.ind],y=yy[samp.ind],
-                         z=fs.test(xx[samp.ind],yy[samp.ind])+noise)
+                         z=sp_test(xx[samp.ind],yy[samp.ind])+noise)
 
    # insert the sample
    samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd,faster=faster)
@@ -34,7 +35,7 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
    ### create prediction data
    # non-mapped prediction data
    pred.data<-data.frame(x=xx[-samp.ind],y=yy[-samp.ind],
-                         z=fs.test(xx[-samp.ind],yy[-samp.ind]))
+                         z=sp_test(xx[-samp.ind],yy[-samp.ind]))
 
    # new MDS coords for the prediction points
    pred.mds<-insert.mds(pred.data,my.grid,grid.mds,bnd,faster=faster)
@@ -48,14 +49,14 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
    pred.data.mds$y[-samp.ind]<-pred.mds[,2]
 
    # prediction data for non mds'd
-   pred.data<-list(x=xx,y=yy,z=fs.test(xx,yy))
+   pred.data<-list(x=xx,y=yy,z=sp_test(xx,yy))
 
    # boundary, only for drawing the line around the outside
    fsb <- fs.boundary()
    
    # truth
    z.truth<-matrix(NA,m,n)
-   z.truth[onoff]<-fs.test(xx,yy)
+   z.truth[onoff]<-sp_test(xx,yy)
    
    ### mapping
    b.mapped<-gam(z~s(x,y,k=100),data=samp.data.mds)
