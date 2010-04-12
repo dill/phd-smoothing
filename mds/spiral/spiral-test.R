@@ -7,7 +7,7 @@ source("spiral/sp_test.R")
 spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
 
    # create boundary
-   spir.dat<-make_spiral()
+   spir.dat<-make_spiral(25,50)
    bnd<-spir.dat$bnd
    xx<-spir.dat$dat$x
    yy<-spir.dat$dat$y

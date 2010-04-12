@@ -50,6 +50,14 @@ pred.points<-make_soap_grid(bnd,pred.n)
 # make the soap prediction
 new.truth<-predict(b.soap,newdata=pred.points)
 
+## taking a summary() of this...
+#> summary(new.truth)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    M
+# 0.8798  1.5230  1.9360  1.8720  2.1690  2.7
+
+
+
+
 # plots
 #pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat
 #pred.mat[!is.na(pred.mat)]<-new.truth
@@ -73,10 +81,12 @@ for(i in 1:n.sim){
    samp.ind<-sample(1:length(new.truth),n.samp)
 
    # add some noise
-   disp <- 0.2, 0.4, 0.6# , stnr corr between y and \hat{y}
-   g    <- exp(eta)
-   y    <- rgamma( rep(1,n) , shape=1/disp,  scale=1/ (1/ (disp*g) ) )
+#   disp <- 0.2 # , 0.4, 0.6# , stnr corr between y and \hat{y}
+#   g    <- exp(eta)
+#   y    <- rgamma( rep(1,n) , shape=1/disp,  scale=1/ (1/ (disp*g) ) )
 
+   #noise<- rgamma(n.samp,2,3.5)
+   noise<-rep(0,n.samp)
 
    samp<-data.frame(x=pred.points$x[samp.ind],
                     y=pred.points$y[samp.ind],
