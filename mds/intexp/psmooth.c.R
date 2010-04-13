@@ -7,16 +7,14 @@ smooth.construct.mdsps.smooth.spec<-function(object,data,knots){
    # make the tprs object as usual
    object<-smooth.construct.ps.smooth.spec(object,data,knots)
 
-   # recreate the S matrix
-   # use finite difference to find the second derivatives
-   eps<- (1e-15)^(1/4)
+   ### recreate the S matrix
 
+   # store the old one first
    oldS<-object$S[[1]] 
 
    k<-dim(object$S[[1]])[1]
    S<-matrix(0,k,k)
 
-   
    m <- object$p.order
 
    # auto ks based adjustment
@@ -24,14 +22,6 @@ smooth.construct.mdsps.smooth.spec<-function(object,data,knots){
    this.dat<-eval(parse(text=paste("data$",object$term,sep="")))
    dens.est<-kde(this.dat,h=hpi(this.dat),eval.points=kp)
    sq<-dens.est$estimate
-
-   # manual
-   #sq<-rep(0,k)
-   #sq[kp<=0.5]<-1
-   #sq[kp>0.5]<-0.5
-   
-
-
 
    # calculate the penalty
    S<-diag(object$bs.dim);
@@ -42,9 +32,7 @@ smooth.construct.mdsps.smooth.spec<-function(object,data,knots){
    }
 
    S<-S*sqrt(1/(sq^3))
-
-   S <- t(S)%*%S  # get penalty
-   
+   S <- t(S)%*%S
 
    # enforce symmetry
    S <- (S + t(S))/2

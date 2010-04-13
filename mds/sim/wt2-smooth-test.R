@@ -61,10 +61,11 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    ### Now do some fitting and prediction
    ### mapping
    # thin plate
-   b.mapped<-gam(z~s(x,y,k=100),data=samp.data)
+   b.mapped<-gam(z~s(x,y,k=140),data=samp.data)
    fv <- predict(b.mapped,newdata=pred.data)
+
    # tensor product of thin plate
-   b.mapped.tp<-gam(z~te(x,y,k=12),data=samp.data)
+   b.mapped.tp<-gam(z~te(x,y,k=15),data=samp.data)
    fv.tp <- predict(b.mapped.tp,newdata=pred.data)
    
    ### normal tprs

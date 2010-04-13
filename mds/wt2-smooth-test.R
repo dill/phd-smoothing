@@ -62,15 +62,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
 
    grid.mds<-grid.mds$points
 
-   # re-align
-#   samp.align<-eig.align(grid.mds,samp.mds)
-#   pred.align<-eig.align(grid.mds,pred.mds)
-#
-#
-#   samp.mds<-samp.align$X.s
-#   pred.mds<-pred.align$X.s
-
-
    # add noise
    noise<-noise.level*rnorm(length(samp.ind))
    #> summary(gendata$z)
