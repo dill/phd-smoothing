@@ -2,7 +2,7 @@
 # Copyright David Lawrence Miller 2009.
 
 source("mds.R")
-source("wt2-smooth-test.R")
+source("sim/wt2-smooth-test.R")
 
 ###############################
 # initial setup
@@ -67,7 +67,7 @@ predd<-gendata.ind$z[ind]
 
 #################################
 
-sim.size<-200
+sim.size<-100
 samp.size<-250
 noise.level<-0.05
 
@@ -90,7 +90,7 @@ for(i in 1:sim.size){
    res.edf$tprs[i]<-res$tprs.edf
 
 }
-write.csv(res.mse,file=paste("wt2-mse-",samp.size,"-",noise.level,".csv",sep=""))
-write.csv(res.edf,file=paste("wt2-edf-",samp.size,"-",noise.level,".csv",sep=""))
+write.csv(res.mse,file=paste("sim/wt2-mse-",samp.size,"-",noise.level,".csv",sep=""))
+write.csv(res.edf,file=paste("sim/wt2-edf-",samp.size,"-",noise.level,".csv",sep=""))
 
 

@@ -45,14 +45,18 @@ vis.gam(b,plot.type="contour",main="tprs fit",asp=1)
 
 # explode top right corner
 xsq<-squash(xx,c(-1,0,1),c(1,2))
-ysq<-squash(yy,c(-1,0,1),c(1,2))
+#ysq<-squash(yy,c(-1,0,1),c(1,2))
 
-dat.sq<-data.frame(x=xsq,y=ysq,z=as.vector(bivn.kde$z))
+dat.sq<-data.frame(x=xsq,y=yy,z=as.vector(bivn.kde$z))
 
 
 b<-gam(z~s(x,y,k=10),data=dat.sq)
 
-vis.gam(b,plot.type="contour",main="squash tprs fit",asp=1)
+pmat<-matrix(predict(b,list(x=xx,y=yy)),length(x),length(y))
+image(z=pmat,x=x,y=y)
+
+#vis.gam(b,plot.type="contour",main="squash tprs fit",asp=1)
+points(xsq,yy)
 
 
 #####################################
@@ -61,8 +65,10 @@ vis.gam(b,plot.type="contour",main="squash tprs fit",asp=1)
 
 b.ps<-gam(z~te(x,y,k=10,bs="mdsps"),data=dat.sq)
 
-vis.gam(b.ps,plot.type="contour",main="hmmmm",asp=1)
+#vis.gam(b.ps,plot.type="contour",main="hmmmm",asp=1)
 
+pmat<-matrix(predict(b.ps,list(x=xsq,y=yy)),length(x),length(y))
+image(z=pmat,y=y)
 
 
 
