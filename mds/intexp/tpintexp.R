@@ -5,7 +5,10 @@ library(ks)
 source("squash.R")
 
 x<-seq(0,1,len=30)
-y<-x^2
+#y<-x^2
+y <- 0.2 * x^11 * (10 * (1 - x))^6 + 10 * (10*x)^3 * (1 - x)^10
+newdat<-data.frame(x=seq(0,0.7,len=30)) 
+
 
 dat<-data.frame(x=x,y=y)
 
@@ -16,7 +19,7 @@ newdat<-data.frame(x=seq(0,1,len=120))
 b<-gam(y~s(x,k=10),data=dat)
 
 par(mfrow=c(2,2))
-plot(x=newdat$x,y=predict(b,newdat),main="no squash",type="l",asp=1,xlim=c(0,1))
+plot(x=newdat$x,y=predict(b,newdat),main="no squash",type="l",xlim=c(0,1))
 
 
 # now do some squashing...
@@ -33,7 +36,7 @@ dat.m<-data.frame(x=x.m,y=y)
 
 b.s<-gam(y~s(x,k=10),data=dat.m)
 
-plot(x=newdat$x,y=predict(b.s,newdat),main="squash fit with data",type="l",asp=1,xlim=c(0,1))
+plot(x=newdat$x,y=predict(b.s,newdat),main="squash fit with data",type="l",xlim=c(0,1))
 points(x.m,y,main="raw squash data",pch=19,cex=0.3)
 
 ##### fixing...
@@ -42,7 +45,7 @@ source("smooth.c.R")
 b.fix<-gam(y~s(x,k=10,bs="mdstp"),data=dat.m)
 
 
-plot(x=newdat$x,y=predict(b.fix,newdat),main="fixed fit (black), truth (red), \ndata, broken fit (green)",type="l",asp=1,xlim=c(0,1))
+plot(x=newdat$x,y=predict(b.fix,newdat),main="fixed fit (black), truth (red), \ndata, broken fit (green)",type="l",xlim=c(0,1))
 lines(x=newdat$x,y=predict(b,newdat),lwd=2,col="red")
 lines(x=newdat$x,y=predict(b.s,newdat),col="green",lwd=2)
 lines(x=newdat$x,y=predict(b.fix,newdat),lwd=1,col="black")

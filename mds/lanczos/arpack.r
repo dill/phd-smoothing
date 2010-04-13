@@ -4,7 +4,7 @@ library(igraph)
 
 f <- function(x, extra) as.vector(extra%*%t(t(x)))
 
-A<-matrix(runif(1000000),1000,1000)
+A<-matrix(100*rnorm(1000000),1000,1000)
 
 A<-A+t(A)
 
