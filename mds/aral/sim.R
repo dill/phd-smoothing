@@ -69,11 +69,16 @@ mds.grid<-make_soap_grid(bnd,15)
 D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd,faster=1)
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
 
-n.sim<-1
+n.sim<-50
 n.samp<-100
 noise.level<-0.5
 
 mses<-matrix(0,n.sim,3)
+edfs<-matrix(0,n.sim,3)
+
+# prediction data for mds
+pred.mds<-insert.mds(pred.points,mds.grid,grid.mds,bnd)
+pred.mds<-list(x=pred.mds[,1],y=pred.mds[,2],chl=new.truth)
 
 for(i in 1:n.sim){
 
@@ -90,33 +95,35 @@ for(i in 1:n.sim){
 
    samp<-data.frame(x=pred.points$x[samp.ind],
                     y=pred.points$y[samp.ind],
-                    chl=new.truth[samp.ind]+noise)
+                    chl=as.numeric(new.truth[samp.ind]+noise))
   
    ### fit some models
    # tprs
-   tp.fit<-gam(chl~s(x,y,k=49),data=samp,family=Gamma(link="log"))
+   tp.fit<-gam(chl~s(x,y,k=80),data=samp,family=Gamma(link="log"))
 
    # soap
-   soap.fit<-gam(chl~s(x,y,k=80,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
+   soap.fit<-gam(chl~s(x,y,k=45,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
             family=Gamma(link="log"),data=samp)
 
    # MDS
    samp.mds<-insert.mds(samp,mds.grid,grid.mds,bnd)
-   samp.mds$chl<-samp$chl[samp.ind]
-   mds.fit<-gam(chl~s(x,y,k=49),data=samp.mds,family=Gamma(link="log"))
+   samp.mds<-list(x=samp.mds[,1],y=samp.mds[,2],chl=samp$chl)
+   mds.fit<-gam(chl~s(x,y,k=80),data=samp.mds,family=Gamma(link="log"))
 
 
    ### do some prediction
-   tp.pred<-predict(tp.fit,newdata=new.truth)
-   soap.pred<-predict(soap.fit,newdata=new.truth)
-
-   pred.mds<-insert.mds(new.truth,mds.grid,grid.mds,bnd)
+   tp.pred<-predict(tp.fit,newdata=pred.points)
+   soap.pred<-predict(soap.fit,newdata=pred.points)
    mds.pred<-predict(mds.fit,newdata=pred.mds)
 
 
    # calculate the MSE
-   mses[i,1]<-mean((tp.pred.mapped-new.truth)^2,na.rm=T)
+   mses[i,1]<-mean((tp.pred-new.truth)^2,na.rm=T)
    mses[i,2]<-mean((soap.pred-new.truth)^2,na.rm=T)
    mses[i,3]<-mean((mds.pred-new.truth)^2,na.rm=T)
 
+   # calculate the EDFs
+   edfs[i,1]<-sum(tp.fit$edf)
+   edfs[i,2]<-sum(soap.fit$edf)
+   edfs[i,3]<-sum(mds.fit$edf)
 }

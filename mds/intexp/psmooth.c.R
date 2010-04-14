@@ -17,11 +17,17 @@ smooth.construct.mdsps.smooth.spec<-function(object,data,knots){
 
    m <- object$p.order
 
+   if(object$term=="x"){
+
    # auto ks based adjustment
    kp<-object$knots[((m[1]+2)/2+1):(length(object$knots)-(m[1]+2)/2)]
    this.dat<-eval(parse(text=paste("data$",object$term,sep="")))
    dens.est<-kde(this.dat,h=hpi(this.dat),eval.points=kp)
    sq<-dens.est$estimate
+
+   }else{
+   sq<-1
+   }
 
    # calculate the penalty
    S<-diag(object$bs.dim);
@@ -31,7 +37,9 @@ smooth.construct.mdsps.smooth.spec<-function(object,data,knots){
       }
    }
 
-   S<-S*sqrt(1/(sq^3))
+   # adjust the penalty
+   S<-S*sqrt((1/sq)^3)
+
    S <- t(S)%*%S
 
    # enforce symmetry

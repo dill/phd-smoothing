@@ -11,7 +11,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # make the tprs object as usual
    object<-smooth.construct.tp.smooth.spec(object,data,knots)
 
-
    # recreate the S matrix
    # use finite difference to find the second derivatives
    eps<- (1e-15)^(1/4)
@@ -21,7 +20,11 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    k<-dim(object$S[[1]])[1]
    S<-matrix(0,k,k)
 
-   a<-0; b<-1
+   # integration limits
+   a<-0
+   b<-1
+   a<-min(data$x)
+   b<-max(data$x)
 
    N<-1000
    
@@ -32,12 +35,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    dens.est<-kde(data$x,h=hpi(data$x),eval.points=xs)
    sq<-dens.est$estimate
    
-   # manual
-   #sq<-rep(0,N)
-   #sq[xs<=0.5]<-1
-   #sq[xs>0.5]<-0.5
-
-
    # second difference
    fd<-(Predict.matrix(object,data.frame(x=xs+2*eps))-
        2*Predict.matrix(object,data.frame(x=xs+eps))+
@@ -52,7 +49,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # do something here to adjust lambda
    #fd<-fd*100000
    fd<-fd*sqrt((1/sq)^3)
-   #fd<-fd*sqrt((1/sq))
+#   fd<-fd*(sq)^2
 
    # do the integration
    S<-t(fd)%*%fd

@@ -171,4 +171,6 @@ source("intexp/psmooth.c.R")
    ### calculate MSEs
    mses<-list(ps=mean((fv.ps-gendata.ind$z[ind])^2,na.rm=T),
               mdsps=mean((fv.mdsps-gendata.ind$z[ind])^2,na.rm=T))
- 
+
+cat("old=",mses$ps,"\n")
+cat("new=",mses$mdsps,"\n")
