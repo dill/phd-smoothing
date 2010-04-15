@@ -39,6 +39,22 @@
 % call \times \cross
 \newcommand{\cross}{\times}
 
+% LaTeX laziness!
+\newcommand{\bc}{\begin{center}}
+\newcommand{\ec}{\end{center}}
+\newcommand{\bn}{\begin{enumerate}}
+\newcommand{\en}{\end{enumerate}}
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\be}{\begin{eqnarray}}
+\newcommand{\ee}{\end{eqnarray}}
+\newcommand{\bes}{\begin{eqnarray*}}
+\newcommand{\ees}{\end{eqnarray*}}
+\newcommand{\expect}[1]{\mathbb{E}\left[ #1 \right]}
+
+
+
+
 \title{Something something something statistical ecology}
 \author{David Lawrence Miller}
 \degree{Doctor of Philosophy}
@@ -65,14 +81,24 @@ Pretty abstract so far...
 \listoffigures
 
 \chapter{An Introduction}
-A long time ago in a galaxy far, far away...
+
+\input{intro/intro}
+
 
 \chapter{\sch}
+
+\input{sc/sc}
+
 \chapter{Multidimensional scaling}
+
 \chapter{Mixture model distance sampling}
+
 \chapter{Parallel QR model fitting}
+
 \chapter{Something else?}
 
+\bibliographystyle{chicago}
+\bibliography{bib-hell}
 
 
 \end{document}
