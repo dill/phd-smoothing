@@ -30,7 +30,6 @@ aral.dat<-data.frame(x=aral.km$km.e,
 bnd.km<-latlong2km(bnd[,2],bnd[,3],59.5,45)
 bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 
-
 ### First fit the soap
 
 # create prediction grid for soap
@@ -38,22 +37,37 @@ s.grid<-make_soap_grid(bnd,10)
 
 s.grid<-pe(s.grid,-2)
 
-b.soap<-gam(chl~s(x,y,k=80,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
-            family=Gamma(link="log"),data=aral.dat)
+#b.soap<-gam(chl~s(x,y,k=80,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
+#            family=Gamma(link="log"),data=aral.dat)
 
 # now predict over the domain, this is now "truth"
-pred.n<-80 # prediction grid size
+pred.n<-50 # prediction grid size
 
 # create the prediction points
 pred.points<-make_soap_grid(bnd,pred.n)
 
 # make the soap prediction
-new.truth<-predict(b.soap,newdata=pred.points)
+#new.truth<-predict(b.soap,newdata=pred.points)
 
 ## taking a summary() of this...
 #> summary(new.truth)
 #   Min. 1st Qu.  Median    Mean 3rd Qu.    M
 # 0.8798  1.5230  1.9360  1.8720  2.1690  2.7
+
+# kde fit...
+library(ks)
+aral.dat<-as.matrix(aral.dat)
+aral.dat<-aral.dat[!is.na(aral.dat[,3]),]
+
+pred.points<-matrix(c(pred.points$x,pred.points$y),length(pred.points$x),2)
+
+
+inpreds<-inSide(bnd,pred.points[,1],pred.points[,2])
+
+kk<-kde(aral.dat,H=Hpi(aral.dat),eval.points=pred.points[inpreds,])
+
+
+
 
 
 
@@ -112,9 +126,9 @@ for(i in 1:n.sim){
 
 
    ### do some prediction
-   tp.pred<-predict(tp.fit,newdata=pred.points)
-   soap.pred<-predict(soap.fit,newdata=pred.points)
-   mds.pred<-predict(mds.fit,newdata=pred.mds)
+   tp.pred<-predict(tp.fit,newdata=pred.points,type="response")
+   soap.pred<-predict(soap.fit,newdata=pred.points,type="response")
+   mds.pred<-predict(mds.fit,newdata=pred.mds,type="response")
 
 
    # calculate the MSE
