@@ -28,7 +28,7 @@ dat<-data.frame(x=x,y=y)
 b<-gam(y~s(x,k=k),data=dat)
 
 par(mfrow=c(2,2))
-plot(x=newdat$x,y=predict(b,newdat),main="no squash",type="l",xlim=c(0,1),col="red")
+plot(x=newdat$x,y=predict(b,newdat),main="unsquahed function",type="l",xlim=c(0,1),col="red",xlab="x",ylab="y")
 
 
 ###### now do some squashing...
@@ -46,17 +46,14 @@ newdat.m<-data.frame(x=squash(newdat$x,lims,sq))
 
 b.s<-gam(y~s(x,k=k),data=dat.m)
 
-plot(x=newdat.m$x,y=predict(b.s,newdat.m),main="squash fit with data",type="l",xlim=c(0,max(x.m)),col="blue")
-points(x.m,y,main="raw squash data",pch=19,cex=0.3)
-
+plot(x=x.m,y=y,main="squashed function",type="l",xlim=c(0,max(x.m)),col="black",xlab="x",ylab="y")
 
 
 ##### fixing...
 
 b.fix<-gam(y~s(x,k=k,bs=basis),data=dat.m)
 
-plot(x=newdat.m$x,y=predict(b.fix,newdat.m),main="fixed fit (green), truth (red), \ndata, broken fit (blue)",type="n",xlim=c(0,max(x.m)))
-lines(x=newdat.m$x,y=predict(b,newdat.m),lwd=2,col="red")
+plot(x=newdat.m$x,y=predict(b.fix,newdat.m),main="adjusted fit (green), data (black),\n unadjusted fit (blue)",type="n",xlim=c(0,max(x.m)),xlab="x",ylab="y")
 lines(x=newdat.m$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
 lines(x=newdat.m$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
 
@@ -64,7 +61,7 @@ points(x.m,y,pch=19,cex=0.3)
 
 # now unsquash the predicted values...
 
-plot(x=newdat$x,y=predict(b,newdat),main="fixed fit (green), truth (red), \ndata, broken fit (blue)",type="n",xlim=c(0,1))
+plot(x=newdat$x,y=predict(b,newdat),main="adjusted fit (green), truth (red), \nunadjusted fit (blue)",type="n",xlim=c(0,1),xlab="x",ylab="y")
 lines(x=newdat$x,y=predict(b,newdat),lwd=2,col="red")
 lines(x=newdat$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
 lines(x=newdat$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
