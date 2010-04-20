@@ -46,10 +46,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #fd[k,]<-rep(0,k)
    #fd[,k]<-rep(0,k)
 
-   # do something here to adjust lambda
-   #fd<-fd*100000
+   # adjust the entries of S
    fd<-fd*sqrt((1/sq)^3)
-#   fd<-fd*(sq)^2
 
    # do the integration
    S<-t(fd)%*%fd
