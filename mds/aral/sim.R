@@ -4,9 +4,19 @@
 
 # run from phd-smoothing/mds
 
+#### OPTIONS!
+
+plot.it=FALSE # should we do some plotting?
+n.sim<-100 # size of the simulation  (!!!! Set this to 1 if the above is TRUE)
+n.samp<-100 # number of samples per run
+noise.level<-0.5 # noise
+#################
+
+
 # libraries
 library(mgcv)
 library(soap)
+library(np)
 
 # mds files
 source("mds.R")
@@ -33,7 +43,7 @@ bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 ### First fit the soap
 
 # create prediction grid for soap
-s.grid<-make_soap_grid(bnd,10)
+s.grid<-as.data.frame(make_soap_grid(bnd,10))
 
 s.grid<-pe(s.grid,-2)
 
@@ -48,34 +58,32 @@ pred.points<-make_soap_grid(bnd,pred.n)
 
 # make the soap prediction
 #new.truth<-predict(b.soap,newdata=pred.points)
+# soap plots
+#if(plot.it==TRUE){
+#   par(mfrow=c(2,2))
+#   pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat
+#   pred.mat[!is.na(pred.mat)]<-new.truth
+#   image(pred.mat)
+#}
 
 ## taking a summary() of this...
 #> summary(new.truth)
 #   Min. 1st Qu.  Median    Mean 3rd Qu.    M
 # 0.8798  1.5230  1.9360  1.8720  2.1690  2.7
 
-# kde fit...
-library(ks)
-aral.dat<-as.matrix(aral.dat)
-aral.dat<-aral.dat[!is.na(aral.dat[,3]),]
-
-pred.points<-matrix(c(pred.points$x,pred.points$y),length(pred.points$x),2)
+## using np to create the "truth"
+npmodbw<-npregbw(formula=chl~x+y,regtype = "ll",bwmethod = "cv.aic",data =aral.dat,bwtype="adaptive_nn")
+npmod<-npreg(npmodbw)
+new.truth<-predict(npmod,data=aral.dat,newdata=pred.points)
 
 
-inpreds<-inSide(bnd,pred.points[,1],pred.points[,2])
+if(plot.it==TRUE){
+   par(mfrow=c(2,2))
+   pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat
+   pred.mat[!is.na(pred.mat)]<-new.truth
+   image(pred.mat,main="data from np")
+}
 
-kk<-kde(aral.dat,H=Hpi(aral.dat),eval.points=pred.points[inpreds,])
-
-
-
-
-
-
-
-# plots
-#pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat
-#pred.mat[!is.na(pred.mat)]<-new.truth
-#image(pred.mat)
 
 
 # pre-calculate the MDS base configuration
@@ -83,10 +91,7 @@ mds.grid<-make_soap_grid(bnd,15)
 D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd,faster=1)
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
 
-n.sim<-50
-n.samp<-100
-noise.level<-0.5
-
+# storage for the MSEs and EDFs
 mses<-matrix(0,n.sim,3)
 edfs<-matrix(0,n.sim,3)
 
@@ -116,7 +121,7 @@ for(i in 1:n.sim){
    tp.fit<-gam(chl~s(x,y,k=80),data=samp,family=Gamma(link="log"))
 
    # soap
-   soap.fit<-gam(chl~s(x,y,k=45,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
+   soap.fit<-gam(chl~s(x,y,k=40,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
             family=Gamma(link="log"),data=samp)
 
    # MDS
@@ -129,6 +134,19 @@ for(i in 1:n.sim){
    tp.pred<-predict(tp.fit,newdata=pred.points,type="response")
    soap.pred<-predict(soap.fit,newdata=pred.points,type="response")
    mds.pred<-predict(mds.fit,newdata=pred.mds,type="response")
+
+   if(plot.it==TRUE){
+
+      pred.mat[!is.na(pred.mat)]<-tp.pred
+      image(pred.mat,main="tprs")
+
+      pred.mat[!is.na(pred.mat)]<-soap.pred
+      image(pred.mat,main="soap")
+
+      pred.mat[!is.na(pred.mat)]<-mds.pred
+      image(pred.mat,main="mds")
+
+   }
 
 
    # calculate the MSE
