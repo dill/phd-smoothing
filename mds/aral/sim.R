@@ -8,7 +8,7 @@
 
 plot.it=FALSE # should we do some plotting?
 n.sim<-100 # size of the simulation  (!!!! Set this to 1 if the above is TRUE)
-n.samp<-100 # number of samples per run
+n.samp<-250 # number of samples per run
 noise.level<-0.5 # noise
 #################
 

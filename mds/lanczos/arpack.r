@@ -16,7 +16,4 @@ t2<-system.time(ei<-eigen(A))[3]
 cat("ARPACK=",t1,"\n")
 cat("eigen=",t2,"\n")
 
-# check
-#(A-ei$values[1]*diag(10))%*%ei$vector[,1]
-#(A-ap$values[1]*diag(10))%*%ap$vector[,1]
 
