@@ -119,13 +119,13 @@ pred.data$y[samp.ind]<-samp.mds[,2]
 
    ### Now do some fitting and prediction
    ### pspline 
-   b.ps<-gam(z~te(x,y,k=12,bs="ps"),data=samp.data)
+   b.ps<-gam(z~s(x,y,k=80,bs="tp"),data=samp.data)
    fv.ps<-predict(b.ps,newdata=pred.data)
 
-source("intexp/psmooth.c.R")
+source("intexp/smooth2.c.R")
 
    # clever psline 
-   b.mdsps<-gam(z~te(x,y,k=12,bs="mdsps"),data=samp.data)
+   b.mdsps<-gam(z~s(x,y,k=80,bs="mdstp"),data=samp.data)
    fv.mdsps <- predict(b.mdsps,newdata=pred.data)
 
 #   b.mdsps<-gam(z~te(x,y,k=9,bs="ps"),data=samp.data)
