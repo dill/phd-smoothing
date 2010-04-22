@@ -20,9 +20,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    oldS<-object$S[[1]] 
 
    k<-dim(object$S[[1]])[1]
-   S<-matrix(0,k,k)
 
-   N<-100
+   N<-200
 
    # mesh function
    mesh <- function(x,d,w=1/length(x)+x*0) { 
@@ -39,25 +38,41 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # evaluation points
    ep <- mesh((1:N-.5)/N*2-1,2,rep(2/N,N))
+   ep$w<-sqrt(ep$w)
 
    # let's create some matrices
-   Dx<-ep$w*(Predict.matrix(object,data.frame(x=ep$X[,1]+2*eps,y=ep$X[,2]))-
-         2*Predict.matrix(object,data.frame(x=ep$X[,1]+eps,y=ep$X[,2]))+
-         Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2])))/eps^2
-   Dy<-ep$w*(Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2]+2*eps))-
-         2*Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2]+eps))+
-         Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2])))/eps^2
+   # finite second differences wrt x and y
+   dxee<-Predict.matrix(object,data.frame(x=ep$X[,1]+2*eps,y=ep$X[,2]))
+   dxe <-Predict.matrix(object,data.frame(x=ep$X[,1]+eps,y=ep$X[,2]))
+   dxy <-Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2]))
+   dxye<-Predict.matrix(object,data.frame(x=ep$X[,1]+eps,y=ep$X[,2]+eps))
+   dyee<-Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2]+2*eps))
+   dye <-Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2]+eps))
+
+   Dx<-ep$w*(dxee-2*dxe+dxy)/eps^2
+   Dy<-ep$w*(dyee-2*dye+dxy)/eps^2
+   Dxy<-ep$w*(dxye-dxe-dye+dxy)/eps^2
+
+   # zero some rows and columns
+   Dx[(k-1):k,]<-rep(0,k*2)
+   Dx[,(k-1):k]<-rep(0,k*2)
+   Dy[(k-1):k,]<-rep(0,k*2)
+   Dy[,(k-1):k]<-rep(0,k*2)
+   Dxy[(k-1):k,]<-rep(0,k*2)
+   Dxy[,(k-1):k]<-rep(0,k*2)
 
    ## auto ks based adjustment
-   dat<-matrix(c(data$x,data$y),length(data$x),2)
-   dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
-   sq<-sqrt((1/dens.est$estimate^3))
-
+#   dat<-matrix(c(data$x,data$y),length(data$x),2)
+#   dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
+#   sq<-sqrt((1/dens.est$estimate)^3)
+#
 #   Dx<-sq*Dx
 #   Dy<-sq*Dy
 
    # actually do the integration
-   fd<-t(Dx)%*%Dx + t(Dx)%*%Dy + t(Dy)%*%Dy
+   fd<-t(Dx)%*%Dx + t(Dxy)%*%Dxy + t(Dy)%*%Dy
+
+   S<-fd
 
    ## do the integration
    #S<-t(fd)%*%fd
@@ -69,10 +84,10 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    object$S[[1]]<-S
 
    # zero the last two rows and cols
-   #object$S[[1]][(k-1):k,]<-rep(0,k*2)
-   #object$S[[1]][,(k-1):k]<-rep(0,k*2)
-   object$S[[1]][k,]<-rep(0,k)
-   object$S[[1]][,k]<-rep(0,k)
+   object$S[[1]][(k-1):k,]<-rep(0,k*2)
+   object$S[[1]][,(k-1):k]<-rep(0,k*2)
+#   object$S[[1]][k,]<-rep(0,k)
+#   object$S[[1]][,k]<-rep(0,k)
 
    cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
 

@@ -1,6 +1,8 @@
 # function to run simulations on the wigglytop 2 domain
 # Copyright David Lawrence Miller 2009.
 source("mds.R")
+
+set.seed(1)
  
 samp.size=250
 noise.level=0.05
@@ -101,25 +103,25 @@ pred.data$y[-samp.ind]<-pred.mds[,2]
 pred.data$x[samp.ind]<-samp.mds[,1]
 pred.data$y[samp.ind]<-samp.mds[,2]
  
-   ind<-pred.data$x<min(samp.data$x)
-   pred.data$x[ind]<-NA
-   pred.data$y[ind]<-NA
-
-   ind<-pred.data$x>max(samp.data$x)
-   pred.data$x[ind]<-NA
-   pred.data$y[ind]<-NA
-
-   ind<-pred.data$y<min(samp.data$y)
-   pred.data$x[ind]<-NA
-   pred.data$y[ind]<-NA
-
-   ind<-pred.data$y>max(samp.data$y)
-   pred.data$x[ind]<-NA
-   pred.data$y[ind]<-NA
+#   ind<-pred.data$x<min(samp.data$x)
+#   pred.data$x[ind]<-NA
+#   pred.data$y[ind]<-NA
+#
+#   ind<-pred.data$x>max(samp.data$x)
+#   pred.data$x[ind]<-NA
+#   pred.data$y[ind]<-NA
+#
+#   ind<-pred.data$y<min(samp.data$y)
+#   pred.data$x[ind]<-NA
+#   pred.data$y[ind]<-NA
+#
+#   ind<-pred.data$y>max(samp.data$y)
+#   pred.data$x[ind]<-NA
+#   pred.data$y[ind]<-NA
 
    ### Now do some fitting and prediction
    ### pspline 
-   b.ps<-gam(z~s(x,y,k=80,bs="tp"),data=samp.data)
+   b.ps<-gam(z~s(x,y,k=80),data=samp.data)
    fv.ps<-predict(b.ps,newdata=pred.data)
 
 source("intexp/smooth2.c.R")
@@ -127,9 +129,6 @@ source("intexp/smooth2.c.R")
    # clever psline 
    b.mdsps<-gam(z~s(x,y,k=80,bs="mdstp"),data=samp.data)
    fv.mdsps <- predict(b.mdsps,newdata=pred.data)
-
-#   b.mdsps<-gam(z~te(x,y,k=9,bs="ps"),data=samp.data)
-#   fv.mdsps <- predict(b.mdsps,newdata=pred.data)
 
    # create the image
    gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
