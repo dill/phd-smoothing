@@ -36,8 +36,12 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       list(X=X,w=w) ## each row of X gives co-ordinates of a node
    }
 
+   # set the integration limits
+   a<-min(data$x,data$y)
+   b<-max(data$x,data$y)
+
    # evaluation points
-   ep <- mesh((1:N-.5)/N*2-1,2,rep(2/N,N))
+   ep <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
    ep$w<-sqrt(ep$w)
 
    # let's create some matrices

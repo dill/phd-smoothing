@@ -17,8 +17,7 @@ names(fsb[[1]]) <- c("v","w") ## correct boundary names
 
 
 # first take a line that runs along the centre of the horseshoe
-# can do thi using the transform in fs.test
-
+# can do this using the transform in fs.test
 
 # leg x coordinates (these are the same for both)
 leg.x<-seq(0,max(fsb[[1]]$v),0.01)
