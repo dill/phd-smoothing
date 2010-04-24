@@ -31,7 +31,13 @@ General GAM setup
 \item other stuff
 	\bi
 	\item MSE
+	\begin{equation}
+\text{MSE}(\hat{f}) = \frac{1}{P} \sum_{j=1}^P (\hat{f}(x_j) - z_j)^2,
+\end{equation}
+the mean difference between the model ($\hat{f}$) evaluated at the prediction points ($\{x_j : j=1 \dots P\}$) and the true value of the function ($\{z_j : j=1 \dots P\}$.) This gives the MSE per model, since here many realisations are run, the mean of these over all simulations is taken and the standard error is calculated.
 	\item EDF
+	The estimated degrees of freedom of a model gives an idea of the complexity of the spline that was fit to the data, the higher the EDF, the more basis functions were used and  the more complex the model.  Since the models used here are penalised, it is the penalty term that controls the overall ``wigglyness'' of the spline and hence the EDF. Although the basis dimension is set in the model this is just an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite{simonbook}, p. 161.) 
+
 	\ei
 \ei
 
@@ -43,6 +49,10 @@ General GAM setup
 	\bi
 		\item p. 1 of ramsay writeup for \sch
 		\item section 4.1 mds report
+		It differs from the figure in \cite{ramsay} in that a slight curvature in the function along the major axis has been added such that the gradient is not perpendicular to the boundary. This curvature was added in \cite{soap}  in order to avoid the horseshoe function lying in the nullspace of the soap film's penalty, making the problem too easy for a soap film smoother.
+
+		
+		
 	\ei
 \item Comparison of different approaches
 	\bi
