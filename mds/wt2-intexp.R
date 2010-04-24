@@ -103,32 +103,20 @@ pred.data$y[-samp.ind]<-pred.mds[,2]
 pred.data$x[samp.ind]<-samp.mds[,1]
 pred.data$y[samp.ind]<-samp.mds[,2]
  
-#   ind<-pred.data$x<min(samp.data$x)
-#   pred.data$x[ind]<-NA
-#   pred.data$y[ind]<-NA
-#
-#   ind<-pred.data$x>max(samp.data$x)
-#   pred.data$x[ind]<-NA
-#   pred.data$y[ind]<-NA
-#
-#   ind<-pred.data$y<min(samp.data$y)
-#   pred.data$x[ind]<-NA
-#   pred.data$y[ind]<-NA
-#
-#   ind<-pred.data$y>max(samp.data$y)
-#   pred.data$x[ind]<-NA
-#   pred.data$y[ind]<-NA
-
-   ### Now do some fitting and prediction
-   ### pspline 
-   b.ps<-gam(z~s(x,y,k=80),data=samp.data)
-   fv.ps<-predict(b.ps,newdata=pred.data)
+### Now do some fitting and prediction
+### tprs on transformed data
+b.tp<-gam(z~s(x,y,k=80),data=samp.data)
+fv.tp<-predict(b.ps,newdata=pred.data)
 
 source("intexp/smooth2.c.R")
 
+### adjusted tprs on untransformed data
+b.utp<-gam(z~s(x,y,k=80),data=nsamp.data)
+fv.utp<-predict(b.ps,newdata=npred.data)
+
    # clever psline 
-   b.mdsps<-gam(z~s(x,y,k=80,bs="mdstp"),data=samp.data)
-   fv.mdsps <- predict(b.mdsps,newdata=pred.data)
+   b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp"),data=samp.data)
+   fv.mdstp<-predict(b.mdsps,newdata=pred.data)
 
    # create the image
    gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
@@ -155,15 +143,21 @@ source("intexp/smooth2.c.R")
       contour(xscale,yscale,pred.mat,add=T)
    
       pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-fv.ps
+      pred.mat[ind]<-fv.tp
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="MDS + ps",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="MDS + tp",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
       
       pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-fv.mdsps
+      pred.mat[ind]<-fv.utp
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="MDS + ps + mod",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="tp + modified",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      contour(xscale,yscale,pred.mat,add=T)
+
+      pred.mat<-rep(NA,length(gendata.ind$x))
+      pred.mat[ind]<-fv.mdstp
+      pred.mat<-matrix(pred.mat,50,50)
+      image(xscale,yscale,pred.mat,main="MDS + tp + mod",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
 
  
