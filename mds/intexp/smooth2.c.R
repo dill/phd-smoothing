@@ -37,8 +37,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    }
 
    # set the integration limits
-   a<-min(data$x,data$y)
-   b<-max(data$x,data$y)
+   #a<-min(data$x,data$y)
+   #b<-max(data$x,data$y)
+   a<-0;b<-1
 
    # evaluation points
    ep <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
@@ -59,11 +60,11 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # zero some rows and columns
    Dx[(k-1):k,]<-rep(0,k*2)
-   Dx[,(k-1):k]<-rep(0,k*2)
+#   Dx[,(k-1):k]<-rep(0,k*2)
    Dy[(k-1):k,]<-rep(0,k*2)
-   Dy[,(k-1):k]<-rep(0,k*2)
+#   Dy[,(k-1):k]<-rep(0,k*2)
    Dxy[(k-1):k,]<-rep(0,k*2)
-   Dxy[,(k-1):k]<-rep(0,k*2)
+#   Dxy[,(k-1):k]<-rep(0,k*2)
 
    ## auto ks based adjustment
 #   dat<-matrix(c(data$x,data$y),length(data$x),2)

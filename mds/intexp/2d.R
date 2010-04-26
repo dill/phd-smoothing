@@ -35,42 +35,49 @@ dat<-data.frame(x=xx,y=yy,z=as.vector(bivn.kde$z))
 
 image(matrix(dat$z,res,res),x=bivn.kde$x,y=bivn.kde$y,main="raw data",asp=1)
 
-b<-gam(z~s(x,y,k=10),data=dat)
+b<-gam(z~s(x,y,k=30),data=dat)
 
 vis.gam(b,plot.type="contour",main="tprs fit",asp=1)
 
 
-###################################
-# now something interesting
+source("smooth2.c.R")
 
-# explode top right corner
-xsq<-squash(xx,c(-1,0,1),c(1,2))
-#ysq<-squash(yy,c(-1,0,1),c(1,2))
+b<-gam(z~s(x,y,k=30,bs="mdstp"),data=dat)
 
-dat.sq<-data.frame(x=xsq,y=yy,z=as.vector(bivn.kde$z))
+vis.gam(b,plot.type="contour",main="tprs fit",asp=1)
 
 
-b<-gam(z~s(x,y,k=10),data=dat.sq)
-
-pmat<-matrix(predict(b,list(x=xx,y=yy)),length(x),length(y))
-image(z=pmat,x=x,y=y)
-
-#vis.gam(b,plot.type="contour",main="squash tprs fit",asp=1)
-points(xsq,yy)
-
-
-#####################################
-# do some kind of fitting
-
-
-b.ps<-gam(z~te(x,y,k=10,bs="mdsps"),data=dat.sq)
-
-#vis.gam(b.ps,plot.type="contour",main="hmmmm",asp=1)
-
-pmat<-matrix(predict(b.ps,list(x=xsq,y=yy)),length(x),length(y))
-image(z=pmat,y=y)
-
-
-
+####################################
+## now something interesting
+#
+## explode top right corner
+#xsq<-squash(xx,c(-1,0,1),c(1,2))
+##ysq<-squash(yy,c(-1,0,1),c(1,2))
+#
+#dat.sq<-data.frame(x=xsq,y=yy,z=as.vector(bivn.kde$z))
+#
+#
+#b<-gam(z~s(x,y,k=10),data=dat.sq)
+#
+#pmat<-matrix(predict(b,list(x=xx,y=yy)),length(x),length(y))
+#image(z=pmat,x=x,y=y)
+#
+##vis.gam(b,plot.type="contour",main="squash tprs fit",asp=1)
+#points(xsq,yy)
+#
+#
+######################################
+## do some kind of fitting
+#
+#
+#b.ps<-gam(z~te(x,y,k=10,bs="mdsps"),data=dat.sq)
+#
+##vis.gam(b.ps,plot.type="contour",main="hmmmm",asp=1)
+#
+#pmat<-matrix(predict(b.ps,list(x=xsq,y=yy)),length(x),length(y))
+#image(z=pmat,y=y)
+#
+#
+#
 
 

@@ -5,7 +5,7 @@ source("mds.R")
 set.seed(1)
  
 samp.size=250
-noise.level=0.05
+noise.level=0.5
 
 library(ks)
  
@@ -106,17 +106,17 @@ pred.data$y[samp.ind]<-samp.mds[,2]
 ### Now do some fitting and prediction
 ### tprs on transformed data
 b.tp<-gam(z~s(x,y,k=80),data=samp.data)
-fv.tp<-predict(b.ps,newdata=pred.data)
+fv.tp<-predict(b.tp,newdata=pred.data)
 
 source("intexp/smooth2.c.R")
 
 ### adjusted tprs on untransformed data
 b.utp<-gam(z~s(x,y,k=80),data=nsamp.data)
-fv.utp<-predict(b.ps,newdata=npred.data)
+fv.utp<-predict(b.utp,newdata=npred.data)
 
    # clever psline 
    b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp"),data=samp.data)
-   fv.mdstp<-predict(b.mdsps,newdata=pred.data)
+   fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
    # create the image
    gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
@@ -162,8 +162,10 @@ fv.utp<-predict(b.ps,newdata=npred.data)
 
  
    ### calculate MSEs
-   mses<-list(ps=mean((fv.ps-gendata.ind$z[ind])^2,na.rm=T),
-              mdsps=mean((fv.mdsps-gendata.ind$z[ind])^2,na.rm=T))
+   mses<-list(tp=mean((fv.tp-gendata.ind$z[ind])^2,na.rm=TRUE),
+              utp=mean((fv.utp-gendata.ind$z[ind])^2,na.rm=TRUE),
+              mdstp=mean((fv.mdstp-gendata.ind$z[ind])^2,na.rm=TRUE))
 
-cat("old=",mses$ps,"\n")
-cat("new=",mses$mdsps,"\n")
+cat("tp=",mses$tp,"\n")
+cat("utp=",mses$utp,"\n")
+cat("mdstp=",mses$mdstp,"\n")
