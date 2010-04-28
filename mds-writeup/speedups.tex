@@ -249,7 +249,7 @@ S_{ij}=\int\int_\Omega \mathsf{K}(x,y) \Big( \frac{\partial^2 b_i(x,y)}{\partial
 \end{equation}
 using the finite differences from \eqn{bfinitediff} for differentials $x$ and $y$ individually and
 \be
-b^{\prime\prime}_i(x,y) = \frac{ b_i(x+\epsilon,y+\epsilon) - b_i(x+\epsilon,y) - b_i(x,y+\epsilon) + b_i(x,y)}{\epsilon^2}.
+\frac{\partial^2 b_i(x,y)}{\partial x \partial y} = \frac{ b_i(x+\epsilon,y+\epsilon) - b_i(x+\epsilon,y) - b_i(x,y+\epsilon) + b_i(x,y)}{\epsilon^2}.
 \ee
 for the cross term. We can then construct matrices analogous to the 1-D case:
 \be

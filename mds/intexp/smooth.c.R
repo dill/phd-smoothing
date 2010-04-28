@@ -19,8 +19,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # integration limits
    a<-0
    b<-1
-   a<-min(data$x)
-   b<-max(data$x)
+   #a<-min(data$x)
+   #b<-max(data$x)
 
    N<-1000
    
@@ -32,19 +32,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #sq<-dens.est$estimate
 
    # find the density
-
-#   # use the old boundary to find the limits of the grid
-#   # in the old space
-#   oa<-xt$bnd[0]
-#   ob<-xt$bnd[1]
-#   oN<-floor((ob-oa)/diff(xs))
-#   old.grid<-oa+(1:N -0.5)*(ob-oa)/N
-   
-   sq<-object$xt$dens
-
-
-#   sq<-dens(old.grid,old.points,new.grid,new.points)
-
+   sq<-object$xt$dens/diff(xs)[1]
 
    # second difference
    fd<-(Predict.matrix(object,data.frame(x=xs+2*eps))-
