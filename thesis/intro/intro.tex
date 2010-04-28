@@ -28,7 +28,7 @@ General GAM setup
 \label{GAMobjfcn}
 \item penalties
 \label{GAMpenalties}
-\item bases - TPRS and maybe P-splines?
+\item bases - TPRS (and maybe P-splines?)
 \item fitting - GCV REML etc
 \item other stuff
 	\bi
@@ -58,11 +58,27 @@ Splines are a popular way of performing spatial smoothing in two dimensions. In 
 \label{leakage}
 \end{figure}
 
-When the geographical region has a \emph{complex boundary}, features from one part of the domain can unduly influence other parts. Typically a complex boundary consists of having some peninsula-like feature(s) in the domain with notably different observation values on either side of the feature; there must also be some scientific motivation as to why those parts of the domain should not affect each other. Features such as peninsulae give rise to a phenomenon known as \emph{leakage}; a typical example can be seen in \fig{leakage}. Leakage is problematic since it causes the fitted surface to be mis-estimated; this can then lead to incorrect inference (eg. incorrect abundance estimates), which is clearly not desirable. This can be seen in \fig{leakage} where the high values in the upper part of the domain leak across the gap to the lower values below and vice versa.
+When the geographical region has a \emph{complex boundary}, features from one part of the domain can unduly influence other parts. Considering a boundary boundary as a polygon, a complex boundary is a non-convex polygon, in particular when the non-convexity is relatively extreme. Often this consists of having some peninsula-like feature(s) in the domain with notably different observation values on either side of the feature. Given that there is some scientific motivation as to why those parts of the domain should not affect each other, features such as peninsulae give rise to a phenomenon known as \emph{leakage}; a typical example can be seen in \fig{leakage}. Leakage is the unwanted contamination of one region of an estimated function with those values from another part of the estimated function.
+
+Leakage is problematic since it causes the fitted surface to be mis-estimated; this can then lead to incorrect inference (eg. incorrect abundance estimates), which is clearly not desirable. This can be seen in \fig{leakage} where the high values in the upper part of the domain leak across the gap to the lower values below and vice versa.
+
+The problem of leakage arises because of the way in which the smoother defines how near objects are. Most smoothing techniques use the Euclidean metric to measure the distance between data. Clearly though, this approach is a bad idea: biological populations do not conform to Euclidean geometry in their movement patterns. Just as whales no not uniformly distribute themselves across sea and glacier, domesticated sheep do not spend a lot of time in the middle of the M4. Natural and man made barriers carve up the landscape (and seascape), segregating populations.
+
+The distribution of the population is smooth, just not over $\mathbb{R}^2$ (\cite{wangranalli}.) Instead the structure of the domain that is under investigation must be taken into account and, the appropraite technique used to draw inference.
 
 \subsection{Ramsay's horseshoe function as a benchmark for finite area smoothing}
 
-\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe which is flat across the domain but ranges from $-4$ to $4$ along the domain's major axis. \cite{soap} modifies the shape by adding curvature across the minor axis of the shape. The so-called ``Ramsay horseshoe'' is shown in \fig{leakage}.
+\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe shape which is flat across the domain but ranges from $-4$ to $4$ along the domain's major axis. \cite{soap} modifies the shape by adding curvature across the minor axis of the shape. The so-called ``Ramsay horseshoe'' is shown in \fig{leakage}.
+
+% leakage example 
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=4in]{intro/figs/orig-fs.pdf}\\
+\caption{The horseshoe function as it appeared in \cite{ramsay}.}
+\label{leakage}
+\end{figure}
+
 
 The test function highlights a common problem in spatial smoothing: that of ``leakage''. When the problem is specified in Euclidean distance, the model thinks that the distance between the $-4$ and $4$ points of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high density from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes the smooth to be calculated incorrectly.
 
