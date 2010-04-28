@@ -19,7 +19,7 @@ newdat<-data.frame(x=x)
 
 k<-60
 method<-"GCV.Cp"
-method<-"REML"
+#method<-"REML"
 basis<-"mdsps"
 basis<-"mdstp"
 
