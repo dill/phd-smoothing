@@ -6,7 +6,7 @@ Say something about how, given that SC buggered up, we want a data dependent way
 
 \subsection{Proposition}
 
-Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) (\cite{gower1966}) is a method commonly used in multivariate analysis. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}.) The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225), or could instead be distances that occur in the data naturally,  for example comparative distances between stimuli response in a psychological experiment (\cite{torgerson}.) Here we concentrate on geographical distances.
+Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) (\cite{gower1966}) is a method commonly used in multivariate analysis. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}.) The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225), or could instead be distances that occur in the data naturally,  for example comparative distances between stimuli response in a psychophysical experiment (\cite{torgerson}.) Here we concentrate on geographical distances.
 
 MDS takes this matrix of distances and projects the data in such a way that Euclidean inter-point distances in the projection are approximately the same as the distances in the matrix (\cite{chatfieldcollins}, p. 187.) If the matrix of distances is of rank $m$ then the projection can be in $m-1$ or less dimensions; a projection into 2 dimensions is a typical choice. For this reason one can also think of MDS as a dimension reduction technique, finding a projection of a data cloud into lower dimensional space, while still retaining information about the distances between the points.
 
@@ -71,12 +71,10 @@ where $I$ is the identity matrix, as usual, and $\mathbf{1}$ is an $n \cross 1$ 
 By pre- and post-multiplying any matrix by $H$ the matrix is double centred (such that row and column means are 0.) This is true since, pre- and post-multiplying \eqn{dijmat} by $H$ yields:
 \begin{equation}
 HDH = -2HSH.
-\label{eqH}
 \end{equation}
 The first two terms in on the right hand side of \eqn{dijmat} are zero since the rows of $\mathbf{s}_\text{diag}\tr{\mathbf{1}}$ and the columns of  $\mathbf{1}\tr{\mathbf{s}_\text{diag}}$ are constant. Since $S$ is already centred so $HSH=S$. Rearranging, the following relation between $S$ and $D$ holds:
 \begin{equation}
 S = -\frac{1}{2}HDH.
-\label{eqH}
 \end{equation}
 
 Now we can deal with $S$ rather than $D$. In order to find $\tilde{X}^{*}$ we must factor $S$. One option for factoring $S$ is to use the Cholesky decomposition, however, with MDS we are looking to decompose the space based on the directions of largest variation, \emph{ie.} those that have the largest contribution to $s_{ij}$. For that reason we use the eigen-decomposition.
