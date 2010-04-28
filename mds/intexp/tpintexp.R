@@ -15,7 +15,7 @@ x<-seq(0,1,len=n)
 #y<-x^2
 y <- 0.2 * x^11 * (10 * (1 - x))^6 + 10 * (10*x)^3 * (1 - x)^10
 # x values for prediction 
-newdat<-data.frame(x=seq(0,1,len=n)) 
+newdat<-data.frame(x=x) 
 
 k<-100
 method<-"GCV.Cp"
@@ -42,7 +42,8 @@ sq<-c(1/0.05,1,1/20,1)
 x.m<-squash(x,lims,sq)
 dat.m<-data.frame(x=x.m,y=y)
 
-newdat.m<-data.frame(x=squash(newdat$x,lims,sq))
+#newdat.m<-data.frame(x=squash(newdat$x,lims,sq))
+newdat.m<-data.frame(x=x.m)
 
 b.s<-gam(y~s(x,k=k),data=dat.m)
 
@@ -63,7 +64,7 @@ dens<-c(rep(sq[1],sum(xs<=lims[2])),
 
 b.fix<-gam(y~s(x,k=k,bs=basis,xt=list(dens=dens)),data=dat.m)
 
-plot(x=newdat.m$x,y=predict(b.fix,newdat.m),main="adjusted fit (green), data (black),\n unadjusted fit (blue)",type="n",xlim=c(0,max(x.m)),xlab="x",ylab="y")
+plot(x=newdat.m$x,y=predict(b.fix,newdat.m),main="adjusted fit (green), data (black),\n unadjusted fit (blue)",type="n",xlim=c(0,0.5),xlab="x",ylab="y")
 lines(x=newdat.m$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
 lines(x=newdat.m$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
 rug(newdat.m$x)
@@ -76,7 +77,7 @@ plot(x=newdat$x,y=predict(b,newdat),main="adjusted fit (green), truth (red), \nu
 lines(x=newdat$x,y=predict(b,newdat),lwd=2,col="red")
 lines(x=newdat$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
 lines(x=newdat$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
-rug(newdat.m$x)
+rug(newdat$x)
 
 
 
