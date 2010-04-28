@@ -177,20 +177,23 @@ Give some intro here.
 
 \cite{wood2000} shows that given some transform of a variable, $y$ say, such that $y_i^\prime=y_i/k$, then $f(x,y^\prime k)$ will give the same fit as $f(x,y)$ (ie. the fit will be the same under the new coordinates) but the penalty will change to:
 \begin{equation}
-\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2k\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + k^3\Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y,
+\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big)^2 + 2k\Big( \frac{\partial^2 f}{\partial x \partial y} \Big)^2 + k^3\Big( \frac{\partial^2 f}{\partial y^2} \Big)^2 \text{d}x \text{d}y,
 \label{adjustedintegral}
 \end{equation}
 from the usual penalty:
 \begin{equation*}
-\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + \Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y.
+\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big)^2 + 2\Big( \frac{\partial^2 f}{\partial x \partial y} \Big)^2 + \Big( \frac{\partial^2 f}{\partial y^2} \Big)^2 \text{d}x \text{d}y.
 \end{equation*}
 
 This approach will only handle a linear rescaling in one dimension; in the case of the MDS distortions, non-linear rescalings in two dimensions must be addressed. To generalize this concept, a kernel density estimate can be used to vary the penalty over space. Given we have a function of the kernel density estimate, $\mathsf{K}(x,y)$, \eqn{adjustedintegral} can be written as:
 \begin{equation}
-\int\int_\Omega \mathsf{K}(x,y) \Big( \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial y \partial x}\Big) + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2\Big) \text{d}x\text{d}y.
+\int\int_\Omega \mathsf{K}(x,y) \Big( \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial y \partial x}\Big)^2 + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2\Big) \text{d}x\text{d}y.
 \label{kdeadjust}
 \end{equation}
-
+rather than the usual thin plate regression spline penalty (\cite{simonbook}, p. 155):
+\begin{equation}
+\int\int_\Omega \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial y \partial x}\Big)^2 + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2 \text{d}x\text{d}y.
+\end{equation}
 
 
 \subsection{Testing in 1 dimension}
@@ -241,7 +244,7 @@ S=\frac{b-a}{N}\tr{D}D.
 
 Using a similar procedures as for 1 dimension, the two dimensional case can be addressed. Again looking at the $ij^\text{th}$ element of $S$:
 \begin{equation}
-S_{ij}=\int\int_\Omega \mathsf{K}(x,y) \frac{\partial^2 b_i(x,y)}{\partial x^2}\frac{\partial^2 b_j(x,y)}{\partial x^2}+2\frac{\partial^2 b_i(x,y)}{\partial x \partial y}\frac{\partial^2 b_j(x,y)}{\partial x \partial y}+\frac{\partial^2 b_i(x,y)}{\partial y^2}\frac{\partial^2 b_j(x,y)}{\partial y^2} \text{d}x\text{d}y.
+S_{ij}=\int\int_\Omega \mathsf{K}(x,y) \Big( \frac{\partial^2 b_i(x,y)}{\partial x^2}\frac{\partial^2 b_j(x,y)}{\partial x^2}+2\frac{\partial^2 b_i(x,y)}{\partial x \partial y}\frac{\partial^2 b_j(x,y)}{\partial x \partial y}+\frac{\partial^2 b_i(x,y)}{\partial y^2}\frac{\partial^2 b_j(x,y)}{\partial y^2} \Big) \text{d}x\text{d}y.
 \label{kdeadjust}
 \end{equation}
 using the finite differences from \eqn{bfinitediff} for differentials $x$ and $y$ individually and
@@ -260,15 +263,20 @@ for the cross term. We can then construct matrices analogous to the 1-D case:
 \ee
 So we may then express $S$ as:
 \be
-S=\tr{D_x}D_x + \tr{D_{xy}}D_{xy} + \tr{D_y}D_y
+S=\tr{D_x}D_x + \tr{D_{xy}}D_{xy} + \tr{D_y}D_y.
 \ee
-
-redefining $x_k$ and $y_k$ as...
-
-
-
-
-
+Now $x_k$ and $y_k$ form a grid which we want to integrate over. First defining $x^*_k$ and $y^*_k$ as:
+\be
+x^*_k=a_x+\frac{(k-0.5)(b_x-a_x)}{N},\\
+y^*_k=a_y+\frac{(k-0.5)(b_y-a_y)}{N},
+\ee
+then
+\be
+\{x_k : k=1\dots N\} = \{x^*_1,x^*_1,x^*_1,\dots, x^*_2, x^*_2, x^*_2,\dots, x^*_N, x^*_N, x^*_N\},
+\ee
+\be
+\{y_k : k=1\dots N\} = \{y^*_1,y^*_2, y^*_3,\dots, y^*_N,y^*_1,y^*_2, y^*_3,\dots, y^*_N,\dots\}.
+\ee
 
 
 

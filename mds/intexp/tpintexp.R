@@ -7,7 +7,7 @@ source("squash.R")
 # code for the thin plate adjustment
 source("smooth.c.R")
 # code for the p-spline adjustment
-source("psmooth.c.R")
+#source("psmooth.c.R")
 
 
 n<-300
@@ -50,12 +50,23 @@ plot(x=x.m,y=y,main="squashed function",type="l",xlim=c(0,max(x.m)),col="black",
 
 
 ##### fixing...
+alim<-min(x)
+blim<-max(x)
+N<-1000
+xs<-alim+(1:N -0.5)*(blim-alim)/N
 
-b.fix<-gam(y~s(x,k=k,bs=basis),data=dat.m)
+
+dens<-c(rep(sq[1],sum(xs<=lims[2])),
+        rep(sq[2],sum(xs>lims[2] & xs<=lims[3])),
+        rep(sq[3],sum(xs>lims[3] & xs<=lims[4])),
+        rep(sq[4],sum(xs>lims[4] & xs<=lims[5])))
+
+b.fix<-gam(y~s(x,k=k,bs=basis,xt=list(dens=dens)),data=dat.m)
 
 plot(x=newdat.m$x,y=predict(b.fix,newdat.m),main="adjusted fit (green), data (black),\n unadjusted fit (blue)",type="n",xlim=c(0,max(x.m)),xlab="x",ylab="y")
 lines(x=newdat.m$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
 lines(x=newdat.m$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
+rug(newdat.m$x)
 
 points(x.m,y,pch=19,cex=0.3)
 
@@ -65,6 +76,7 @@ plot(x=newdat$x,y=predict(b,newdat),main="adjusted fit (green), truth (red), \nu
 lines(x=newdat$x,y=predict(b,newdat),lwd=2,col="red")
 lines(x=newdat$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
 lines(x=newdat$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
+rug(newdat.m$x)
 
 
 

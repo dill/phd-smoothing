@@ -35,16 +35,16 @@ dat<-data.frame(x=xx,y=yy,z=as.vector(bivn.kde$z))
 
 image(matrix(dat$z,res,res),x=bivn.kde$x,y=bivn.kde$y,main="raw data",asp=1)
 
-b<-gam(z~s(x,y,k=30),data=dat)
+b<-gam(z~s(x,y,k=60),data=dat)
 
 vis.gam(b,plot.type="contour",main="tprs fit",asp=1)
 
 
 source("smooth2.c.R")
 
-b<-gam(z~s(x,y,k=30,bs="mdstp"),data=dat)
+b.fix<-gam(z~s(x,y,k=60,bs="mdstp"),data=dat)
 
-vis.gam(b,plot.type="contour",main="tprs fit",asp=1)
+vis.gam(b.fix,plot.type="contour",main="mdstp fit",asp=1)
 
 
 ####################################

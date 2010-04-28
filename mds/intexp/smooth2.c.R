@@ -37,9 +37,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    }
 
    # set the integration limits
-   #a<-min(data$x,data$y)
-   #b<-max(data$x,data$y)
-   a<-0;b<-1
+   a<-min(data$x,data$y)
+   b<-max(data$x,data$y)
+   #a<-0;b<-1
 
    # evaluation points
    ep <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
@@ -58,31 +58,23 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    Dy<-ep$w*(dyee-2*dye+dxy)/eps^2
    Dxy<-ep$w*(dxye-dxe-dye+dxy)/eps^2
 
-   # zero some rows and columns
+   # zero some rows
    Dx[(k-1):k,]<-rep(0,k*2)
-#   Dx[,(k-1):k]<-rep(0,k*2)
    Dy[(k-1):k,]<-rep(0,k*2)
-#   Dy[,(k-1):k]<-rep(0,k*2)
    Dxy[(k-1):k,]<-rep(0,k*2)
-#   Dxy[,(k-1):k]<-rep(0,k*2)
 
    ## auto ks based adjustment
-#   dat<-matrix(c(data$x,data$y),length(data$x),2)
-#   dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
-#   sq<-sqrt((1/dens.est$estimate)^3)
-#
-#   Dx<-sq*Dx
-#   Dy<-sq*Dy
+   dat<-matrix(c(data$x,data$y),length(data$x),2)
+   dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
+   sq<-sqrt((1/dens.est$estimate)^3)
+   Dx<-sq*Dx
+   Dy<-sq*Dy
 
    # actually do the integration
    fd<-t(Dx)%*%Dx + t(Dxy)%*%Dxy + t(Dy)%*%Dy
 
    S<-fd
 
-   ## do the integration
-   #S<-t(fd)%*%fd
-   #S<-((b-a)/N)*S
-   
    # enforce symmetry (from smooth.construct.tp...)
    S <- (S + t(S))/2
 
@@ -91,8 +83,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # zero the last two rows and cols
    object$S[[1]][(k-1):k,]<-rep(0,k*2)
    object$S[[1]][,(k-1):k]<-rep(0,k*2)
-#   object$S[[1]][k,]<-rep(0,k)
-#   object$S[[1]][,k]<-rep(0,k)
 
    cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
 

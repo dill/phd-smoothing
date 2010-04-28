@@ -4,10 +4,6 @@
 ## The constructor for a tprs basis object with MDS modifications.
 smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
-#   dens.est<-kde(data$x,h=hpi(data$x),eval.points=data$x)
-#   dat<-data$x
-#   data$x<-data$x*(dens.est$estimate)^2
-
    # make the tprs object as usual
    object<-smooth.construct.tp.smooth.spec(object,data,knots)
 
@@ -32,19 +28,28 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    xs<-a+(1:N -0.5)*(b-a)/N
    
    # auto ks based adjustment
-   dens.est<-kde(data$x,h=hpi(data$x),eval.points=xs)
-   sq<-dens.est$estimate
+   #dens.est<-kde(data$x,h=hpi(data$x),eval.points=xs)
+   #sq<-dens.est$estimate
+
+   # find the density
+
+#   # use the old boundary to find the limits of the grid
+#   # in the old space
+#   oa<-xt$bnd[0]
+#   ob<-xt$bnd[1]
+#   oN<-floor((ob-oa)/diff(xs))
+#   old.grid<-oa+(1:N -0.5)*(ob-oa)/N
    
+   sq<-object$xt$dens
+
+
+#   sq<-dens(old.grid,old.points,new.grid,new.points)
+
+
    # second difference
    fd<-(Predict.matrix(object,data.frame(x=xs+2*eps))-
        2*Predict.matrix(object,data.frame(x=xs+eps))+
        Predict.matrix(object,data.frame(x=xs)))/eps^2
-
-   # zero the last row
-   #fd[(k-1):k,]<-rep(0,k*2)
-   #fd[,(k-1):k]<-rep(0,k*2)
-   #fd[k,]<-rep(0,k)
-   #fd[,k]<-rep(0,k)
 
    # adjust the entries of S
    fd<-fd*sqrt((1/sq)^3)

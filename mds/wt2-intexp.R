@@ -151,13 +151,13 @@ fv.utp<-predict(b.utp,newdata=npred.data)
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.utp
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="tp + modified",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="tp + modified penalty",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
 
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.mdstp
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="MDS + tp + mod",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+      image(xscale,yscale,pred.mat,main="MDS + tp + modified penalty",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
       contour(xscale,yscale,pred.mat,add=T)
 
  
@@ -167,5 +167,5 @@ fv.utp<-predict(b.utp,newdata=npred.data)
               mdstp=mean((fv.mdstp-gendata.ind$z[ind])^2,na.rm=TRUE))
 
 cat("tp=",mses$tp,"\n")
-cat("utp=",mses$utp,"\n")
-cat("mdstp=",mses$mdstp,"\n")
+cat("tp + modified penalty=",mses$utp,"\n")
+cat("tp + mds + modified penalty=",mses$mdstp,"\n")
