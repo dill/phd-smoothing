@@ -50,9 +50,9 @@ z.truth<-matrix(NA,m,n)
 z.truth[onoff]<-fs.test(xx,yy)
 
 
-pdf(file="orig-fs.pdf",2,1)
+pdf(file="orig-fs.pdf",2.5,1.25)
 
-par(mar=c(1,1,1,1))
+par(mar=c(0.2,1,0.2,1))
 image(xm,yn,z.truth,col=heat.colors(100),xlab="",ylab="",main="",las=1,asp=1,lwd=2, axes=FALSE)
 contour(xm,yn,z.truth,add=TRUE,levels=seq(-5,5,by=.25),labcex=0.3,lwd=0.5)
 lines(bnd)

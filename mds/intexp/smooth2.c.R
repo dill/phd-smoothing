@@ -21,8 +21,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    k<-dim(object$S[[1]])[1]
 
-   N<-200
+   N<-100
 
+   ### first need to create the mesh we want to integrate over
    # mesh function
    mesh <- function(x,d,w=1/length(x)+x*0) { 
       n <- length(x) 
@@ -36,14 +37,36 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       list(X=X,w=w) ## each row of X gives co-ordinates of a node
    }
 
+
+   # take the boundary (actually something a bit smaller?)
+   # mapped it into the space
+   bnd<-object$xt$bnd # passed in pre-mapped!
+
    # set the integration limits
-   a<-min(data$x,data$y)
-   b<-max(data$x,data$y)
+   a<-min(bnd$x)
+   b<-max(bnd$y)
+   # take a grid in the mds space
+   ep <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
+
+   # knock out those points outside the boundary
+   onoff<-inSide(bnd,ep$X[,1],ep$X[,2])
+
+   ep$X<-ep$X[onoff,]
+   ep$w<-ep$w[onoff]
+
+   # root the weights, since we square them in a bit
+   ep$w<-sqrt(ep$w)
+   # done?
+
+
+
+
    #a<-0;b<-1
 
    # evaluation points
-   ep <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
-   ep$w<-sqrt(ep$w)
+
+
+
 
    # let's create some matrices
    # finite second differences wrt x and y
@@ -66,6 +89,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    ## auto ks based adjustment
    dat<-matrix(c(data$x,data$y),length(data$x),2)
    dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
+
+
+   # do the squashing
    sq<-sqrt((1/dens.est$estimate)^3)
    Dx<-sq*Dx
    Dy<-sq*Dy

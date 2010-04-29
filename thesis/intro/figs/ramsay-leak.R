@@ -38,18 +38,22 @@ z.truth[onoff]<-fs.test(xx,yy)
 b.tprs<-gam(z~s(x,y,k=100),data=samp.data)
 fv.tprs <- predict(b.tprs,newdata=pred.data)
 
+
+pdf(file="ramsay-leak.pdf",5,1.25)
+
 par(mfrow=c(1,2))
-par(mar=c(1,1,1,1))
+par(mar=c(0.2,1,0.2,1))
 
 # truth
 image(xm,yn,z.truth,col=heat.colors(100),xlab="",ylab="",main="",las=1,asp=1,lwd=2, axes=FALSE)
-contour(xm,yn,z.truth,levels=seq(-5,5,by=.25),add=TRUE,labcex=0.9)
+contour(xm,yn,z.truth,levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb,lwd=2)
 
 # tprs
 pred.mat<-matrix(NA,m,n)
 pred.mat[onoff]<-fv.tprs
 image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="",las=1,asp=1,lwd=2,axes=FALSE)
-contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE,labcex=0.9)
+contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb,lwd=2)
 
+dev.off()

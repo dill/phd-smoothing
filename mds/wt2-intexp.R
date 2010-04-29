@@ -65,6 +65,11 @@ samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=1)
 # prediction points insertion
 pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd,faster=1)
 
+# mapped boundary...
+bnd.mds<-insert.mds(bnd,my.grid,grid.mds,bnd,faster=1)
+bnd.mds<-list(x=bnd.mds[,1],y=bnd.mds[,2])
+
+# put the grid in the right format
 grid.mds<-grid.mds$points
 
 # add noise
@@ -110,12 +115,13 @@ fv.tp<-predict(b.tp,newdata=pred.data)
 
 source("intexp/smooth2.c.R")
 
+
 ### adjusted tprs on untransformed data
-b.utp<-gam(z~s(x,y,k=80),data=nsamp.data)
+b.utp<-gam(z~s(x,y,k=80,xt=list(bnd=bnd)),data=nsamp.data)
 fv.utp<-predict(b.utp,newdata=npred.data)
 
-   # clever psline 
-   b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp"),data=samp.data)
+   # clever tprs 
+   b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp",xt=list(bnd=bnd.mds)),data=samp.data)
    fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
    # create the image
