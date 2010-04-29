@@ -42,9 +42,12 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # mapped it into the space
    bnd<-object$xt$bnd # passed in pre-mapped!
 
+   #bnd$x<-bnd$x+abs(min(bnd$x))
+   #bnd$y<-bnd$y+abs(min(bnd$y))
+
    # set the integration limits
-   a<-min(bnd$x)
-   b<-max(bnd$y)
+   a<-min(c(bnd$x,bnd$y))
+   b<-max(c(bnd$x,bnd$y))
    # take a grid in the mds space
    ip <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
 
@@ -88,25 +91,38 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # first work out the density at 1/2 resolution of the integration
    # mesh...
 
-   dgrid<-mesh(a+(1:N/2-.5)/(N/2)*(b-a),2,rep(2/(N/2),N/2))
+   dgrid<-mesh(a+(1:(N/2)-.5)/(N/2)*(b-a),2,rep(2/(N/2),N/2))
    
    # extract the points we're going to use to calculate the density
    dpoints<-object$xt$dens.points
 
    # find the grid cells they lie in
    xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
-   xdel<-diff(dgrid$X[,1])[1]; ydel<-diff(dgrid$X[,2])[1];
+   xdel<-diff(unique(dgrid$X[,1]))[1]
+   ydel<-diff(unique(dgrid$X[,2]))[1];
    dxi<-floor((dpoints$x-xstart)/xdel)
    dyj<-floor((dpoints$y-ystart)/ydel)
+
+   dmat<-matrix(0,N/2,N/2)
+
+   for(i in 1:length(dxi)){
+      dmat[dxi[i],dyj[i]]<-dmat[dxi[i],dyj[i]]+1
+   }
 
    # now find the grid cell the integration meshpoints lie in...
    mxi<-floor((ip$X[,1]-xstart)/xdel)
    myj<-floor((ip$X[,2]-ystart)/ydel)
 
-   dens.est<-table(dxi,dyj)[mxi+length(myj)*myj]
+   mxi<-mxi[onoff]
+   myj<-myj[onoff]
+
+   #dens.est<-table(dxi,dyj)[mxi+length(myj)*myj]
+
+   dens.est<-dmat[mxi+length(myj)*myj]
+
 
    # do the squashing
-   sq<-sqrt((1/dens.est)^3)
+   sq<-sqrt((dens.est)^3)
    Dx<-sq*Dx
    Dy<-sq*Dy
 
