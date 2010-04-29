@@ -63,7 +63,7 @@ When the geographical region has a \emph{complex boundary}, features from one pa
 
 Leakage is problematic since it causes the fitted surface to be mis-estimated; this can then lead to incorrect inference (eg. incorrect abundance estimates), which is clearly not desirable. This can be seen in \fig{leakage} where the high values in the upper part of the domain leak across the gap to the lower values below and vice versa.
 
-The problem of leakage arises because of the way in which the smoother defines how near objects are. Most smoothing techniques use the Euclidean metric to measure the distance between data. Clearly though, this approach is a bad idea: biological populations do not conform to Euclidean geometry in their movement patterns. Just as whales no not uniformly distribute themselves across sea and glacier, domesticated sheep do not spend a lot of time in the middle of the M4. Natural and man made barriers carve up the landscape (and seascape), segregating populations.
+The problem of leakage arises because of the way in which the smoother defines how near objects are. Most smoothing techniques use the Euclidean metric to measure the distance between data. Clearly though, this approach is a bad idea: biological populations do not conform to Euclidean geometry in their movement patterns. Just as whales no not uniformly distribute themselves across sea and glacier, domesticated sheep do not spend a lot of time in the middle of the M4. Natural and man-made barriers carve up the landscape (and seascape), segregating populations.
 
 The distribution of the population is smooth, just not over $\mathbb{R}^2$ (\cite{wangranalli}.) Instead the structure of the domain that is under investigation must be taken into account and, the appropriate technique used to draw inference.
 
@@ -86,9 +86,7 @@ The test function highlights a common problem in spatial smoothing: that of leak
 		
 \subsection{Previous approaches}
 
-The cause of leakage can be characterised in two ways: either the smooth does not respect the boundary of the domain, or the smooth does not take into account the geometry of the domain; in particular with regard to the distance between points within the domain. Previous work in this area has been to combat leakage along these two lines. Work of \cite{ramsay} and \cite{soap} both use a PDE boundary condition approach to try to prevent leakage, where as \cite{wangranalli} and \cite{eilerstalk}  attempt to approximate the intrinsic structure of the domain while not treating the boundary a something special in the basis setup. Here I will be adopting the the latter approach.
-
-The four main works on the topic may be summarised as follows:
+The cause of leakage can be characterised in two ways: either the smooth does not respect the boundary of the domain, or the smooth does not take into account the geometry of the domain; in particular with regard to the distance between points within the domain. Previous work in this area has been to combat leakage along these two lines. Work of \cite{ramsay} and \cite{soap} both use a PDE boundary condition approach to try to prevent leakage, where as \cite{wangranalli} and \cite{eilerstalk}  attempt to approximate the intrinsic structure of the domain while not treating the boundary a something special in the basis setup. These four main works may be summarised as follows:
 
 \begin{enumerate}
 \item \cite{ramsay} proposes finite element $L$-splines (FELSPLINEs.) The $L$-spline has a differential operator in its penalty, which cannot be analytically solved in two dimensions. However, to combat this, the author triangulates the domain and then constructs a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. The union of these functions is then a solution to the PDE in the penalty and therefore the solution to the usual smoothing objective function (see \secref{GAMobjfcn}.)

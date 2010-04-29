@@ -46,26 +46,19 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    a<-min(bnd$x)
    b<-max(bnd$y)
    # take a grid in the mds space
-   ep <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
+   ip <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
 
    # knock out those points outside the boundary
-   onoff<-inSide(bnd,ep$X[,1],ep$X[,2])
+   onoff<-inSide(bnd,ip$X[,1],ip$X[,2])
 
-   ep$X<-ep$X[onoff,]
-   ep$w<-ep$w[onoff]
+   ep<-list()
+
+   ep$X<-ip$X[onoff,]
+   ep$w<-ip$w[onoff]
 
    # root the weights, since we square them in a bit
    ep$w<-sqrt(ep$w)
    # done?
-
-
-
-
-   #a<-0;b<-1
-
-   # evaluation points
-
-
 
 
    # let's create some matrices
@@ -87,12 +80,33 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    Dxy[(k-1):k,]<-rep(0,k*2)
 
    ## auto ks based adjustment
-   dat<-matrix(c(data$x,data$y),length(data$x),2)
-   dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
+   #dat<-matrix(c(data$x,data$y),length(data$x),2)
+   #dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
 
+   # now do the adjustment based on the point density
+
+   # first work out the density at 1/2 resolution of the integration
+   # mesh...
+
+   dgrid<-mesh(a+(1:N/2-.5)/(N/2)*(b-a),2,rep(2/(N/2),N/2))
+   
+   # extract the points we're going to use to calculate the density
+   dpoints<-object$xt$dens.points
+
+   # find the grid cells they lie in
+   xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
+   xdel<-diff(dgrid$X[,1])[1]; ydel<-diff(dgrid$X[,2])[1];
+   dxi<-floor((dpoints$x-xstart)/xdel)
+   dyj<-floor((dpoints$y-ystart)/ydel)
+
+   # now find the grid cell the integration meshpoints lie in...
+   mxi<-floor((ip$X[,1]-xstart)/xdel)
+   myj<-floor((ip$X[,2]-ystart)/ydel)
+
+   dens.est<-table(dxi,dyj)[mxi+length(myj)*myj]
 
    # do the squashing
-   sq<-sqrt((1/dens.est$estimate)^3)
+   sq<-sqrt((1/dens.est)^3)
    Dx<-sq*Dx
    Dy<-sq*Dy
 
