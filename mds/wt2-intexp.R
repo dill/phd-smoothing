@@ -66,7 +66,10 @@ samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=1)
 pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd,faster=1)
 
 # mapped boundary...
-bnd.mds<-insert.mds(bnd,my.grid,grid.mds,bnd,faster=1)
+bnd.mds<-read.csv(file="wt2-bnd-in.csv")
+bnd.mds$X<-NULL
+bnd.mds[29,]<-bnd.mds[1,]
+bnd.mds<-insert.mds(bnd.mds,my.grid,grid.mds,bnd,faster=1)
 bnd.mds<-list(x=bnd.mds[,1],y=bnd.mds[,2])
 
 # put the grid in the right format
@@ -114,61 +117,62 @@ b.tp<-gam(z~s(x,y,k=80),data=samp.data)
 fv.tp<-predict(b.tp,newdata=pred.data)
 
 source("intexp/smooth2.c.R")
+#library(debug)
+#mtrace(smooth.construct.mdstp.smooth.spec)
+
+# clever tprs 
+b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp",
+             xt=list(bnd=bnd.mds,dens.points=pred.data)),data=samp.data)
+fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
 
 ### adjusted tprs on untransformed data
 b.utp<-gam(z~s(x,y,k=80,xt=list(bnd=bnd,dens.points=npred.data)),data=nsamp.data)
 fv.utp<-predict(b.utp,newdata=npred.data)
 
-#library(debug)
-#mtrace(smooth.construct.mdstp.smooth.spec)
 
-   # clever tprs 
-   b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp",
-                xt=list(bnd=bnd.mds,dens.points=pred.data)),data=samp.data)
-   fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
-   # create the image
-   gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
-   ind<-c(1:length(gendata.ind$x))
+# create the image
+gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
+ind<-c(1:length(gendata.ind$x))
+pred.mat<-rep(NA,length(gendata.ind$x))
+ind<-ind[gendata.ind$inside==1]
+na.ind<-!(is.na(gendata.ind$x[gendata.ind$inside==1])&is.na(gendata.ind$y[gendata.ind$inside==1])&is.na(gendata.ind$z[gendata.ind$inside==1]))
+ind<-ind[na.ind]
+ind<-ind[onoff]
+
+
+   # plot for truth, mds, tprs and soap
+    par(mfrow=c(2,2))
+    par(mar=c(3,3,3,3))
+   
+   # axis scales
+   xscale<-seq(min(gendata$x),max(gendata$x),length.out=50)
+   yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
+
    pred.mat<-rep(NA,length(gendata.ind$x))
-   ind<-ind[gendata.ind$inside==1]
-   na.ind<-!(is.na(gendata.ind$x[gendata.ind$inside==1])&is.na(gendata.ind$y[gendata.ind$inside==1])&is.na(gendata.ind$z[gendata.ind$inside==1]))
-   ind<-ind[na.ind]
-   ind<-ind[onoff]
- 
- 
-      # plot for truth, mds, tprs and soap
-      par(mfrow=c(2,2))
-      par(mar=c(3,3,3,3))
-      
-      # axis scales
-      xscale<-seq(min(gendata$x),max(gendata$x),length.out=50)
-      yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
-   
-      pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-gendata.ind$z[ind]
-      pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="True",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
-   
-      pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-fv.tp
-      pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="MDS + tp",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
-      
-      pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-fv.utp
-      pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="tp + modified penalty",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
+   pred.mat[ind]<-gendata.ind$z[ind]
+   pred.mat<-matrix(pred.mat,50,50)
+   image(xscale,yscale,pred.mat,main="True",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+   contour(xscale,yscale,pred.mat,add=T)
 
-      pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-fv.mdstp
-      pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="MDS + tp + modified penalty",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
+    pred.mat<-rep(NA,length(gendata.ind$x))
+    pred.mat[ind]<-fv.tp
+    pred.mat<-matrix(pred.mat,50,50)
+    image(xscale,yscale,pred.mat,main="MDS + tp",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+    contour(xscale,yscale,pred.mat,add=T)
+    
+    pred.mat<-rep(NA,length(gendata.ind$x))
+    pred.mat[ind]<-fv.utp
+    pred.mat<-matrix(pred.mat,50,50)
+    image(xscale,yscale,pred.mat,main="tp + modified penalty",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+    contour(xscale,yscale,pred.mat,add=T)
+
+   pred.mat<-rep(NA,length(gendata.ind$x))
+   pred.mat[ind]<-fv.mdstp
+   pred.mat<-matrix(pred.mat,50,50)
+   image(xscale,yscale,pred.mat,main="MDS + tp + modified penalty",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+   contour(xscale,yscale,pred.mat,add=T)
 
  
    ### calculate MSEs
@@ -176,6 +180,6 @@ fv.utp<-predict(b.utp,newdata=npred.data)
               utp=mean((fv.utp-gendata.ind$z[ind])^2,na.rm=TRUE),
               mdstp=mean((fv.mdstp-gendata.ind$z[ind])^2,na.rm=TRUE))
 
-cat("tp=",mses$tp,"\n")
+cat("tp + mds =",mses$tp,"\n")
 cat("tp + modified penalty=",mses$utp,"\n")
 cat("tp + mds + modified penalty=",mses$mdstp,"\n")

@@ -99,30 +99,21 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # find the grid cells they lie in
    xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
    xdel<-diff(unique(dgrid$X[,1]))[1]
-   ydel<-diff(unique(dgrid$X[,2]))[1];
-   dxi<-floor((dpoints$x-xstart)/xdel)
-   dyj<-floor((dpoints$y-ystart)/ydel)
-
-   dmat<-matrix(0,N/2,N/2)
-
-   for(i in 1:length(dxi)){
-      dmat[dxi[i],dyj[i]]<-dmat[dxi[i],dyj[i]]+1
-   }
+   ydel<-diff(unique(dgrid$X[,2]))[1]
+   dxi<-abs(floor((dpoints$x-xstart)/xdel))
+   dyj<-abs(floor((dpoints$y-ystart)/ydel))
 
    # now find the grid cell the integration meshpoints lie in...
-   mxi<-floor((ip$X[,1]-xstart)/xdel)
-   myj<-floor((ip$X[,2]-ystart)/ydel)
+   mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
+   myj<-abs(floor((ip$X[,2]-ystart)/ydel))
 
    mxi<-mxi[onoff]
    myj<-myj[onoff]
 
-   #dens.est<-table(dxi,dyj)[mxi+length(myj)*myj]
-
-   dens.est<-dmat[mxi+length(myj)*myj]
-
+   dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
 
    # do the squashing
-   sq<-sqrt((dens.est)^3)
+   sq<-sqrt((dens.est)^3)#+1e-10
    Dx<-sq*Dx
    Dy<-sq*Dy
 
