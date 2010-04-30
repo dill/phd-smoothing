@@ -11,6 +11,46 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       return(1)
    }
 
+   #first do the MDS stuff
+   # NOT TESTED YET!!
+   # set up some objects and throw some errors if we need to
+
+#   if(object$xt$bnd){
+#      bnd<-object$xt$bnd
+#   }else{
+#      stop("No boundary supplied!\n")
+#   }
+#
+#   if(is.na(object$xt$refgrid.n){
+#      refgridsize<-120
+#   }else{
+#      refgridsize<-object$xt$refgrid.n
+#   }
+#
+#   if(object$xt$faster){
+#      faster<-object$xt$faster
+#   }else{
+#      faster<-1
+#   }
+#
+#   # create the grid
+#   my.grid<-create_refgrid(bnd,120)
+#   
+#   ## do the MDS on the grid 
+#   # create D
+#   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster)
+#   
+#   # perform mds on D
+#   grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
+#   
+#   # sample points insertion
+#   datanames<-names(data)
+#   names(data)<-c("x","y")
+#   samp.mds<-insert.mds(data,my.grid,grid.mds,bnd,faster)
+#   names(data)<-datanames
+
+
+
    # make the tprs object as usual
    object<-smooth.construct.tp.smooth.spec(object,data,knots)
 
@@ -42,9 +82,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # mapped it into the space
    bnd<-object$xt$bnd # passed in pre-mapped!
 
-   #bnd$x<-bnd$x+abs(min(bnd$x))
-   #bnd$y<-bnd$y+abs(min(bnd$y))
-
    # set the integration limits
    a<-min(c(bnd$x,bnd$y))
    b<-max(c(bnd$x,bnd$y))
@@ -55,14 +92,13 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    onoff<-inSide(bnd,ip$X[,1],ip$X[,2])
 
    ep<-list()
-
    ep$X<-ip$X[onoff,]
    ep$w<-ip$w[onoff]
 
    # root the weights, since we square them in a bit
    ep$w<-sqrt(ep$w)
    # done?
-
+   #ep$w<-sqrt(1/sum(onoff))
 
    # let's create some matrices
    # finite second differences wrt x and y
@@ -83,37 +119,38 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    Dxy[(k-1):k,]<-rep(0,k*2)
 
    ## auto ks based adjustment
-   #dat<-matrix(c(data$x,data$y),length(data$x),2)
-   #dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
+   dat<-matrix(c(data$x,data$y),length(data$x),2)
+   dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
+   dens.est<-1/dens.est$estimate
 
    # now do the adjustment based on the point density
 
    # first work out the density at 1/2 resolution of the integration
    # mesh...
 
-   dgrid<-mesh(a+(1:(N/2)-.5)/(N/2)*(b-a),2,rep(2/(N/2),N/2))
-   
-   # extract the points we're going to use to calculate the density
-   dpoints<-object$xt$dens.points
+   #dgrid<-mesh(a+(1:(N/2)-.5)/(N/2)*(b-a),2,rep(2/(N/2),N/2))
+   #
+   ## extract the points we're going to use to calculate the density
+   #dpoints<-object$xt$dens.points
 
-   # find the grid cells they lie in
-   xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
-   xdel<-diff(unique(dgrid$X[,1]))[1]
-   ydel<-diff(unique(dgrid$X[,2]))[1]
-   dxi<-abs(floor((dpoints$x-xstart)/xdel))
-   dyj<-abs(floor((dpoints$y-ystart)/ydel))
+   ## find the grid cells they lie in
+   #xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
+   #xdel<-diff(unique(dgrid$X[,1]))[1]
+   #ydel<-diff(unique(dgrid$X[,2]))[1]
+   #dxi<-abs(floor((dpoints$x-xstart)/xdel))
+   #dyj<-abs(floor((dpoints$y-ystart)/ydel))
 
-   # now find the grid cell the integration meshpoints lie in...
-   mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
-   myj<-abs(floor((ip$X[,2]-ystart)/ydel))
+   ## now find the grid cell the integration meshpoints lie in...
+   #mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
+   #myj<-abs(floor((ip$X[,2]-ystart)/ydel))
 
-   mxi<-mxi[onoff]
-   myj<-myj[onoff]
+   #mxi<-mxi[onoff]
+   #myj<-myj[onoff]
 
-   dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
+   #dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
 
    # do the squashing
-   sq<-sqrt((dens.est)^3)#+1e-10
+   sq<-sqrt((dens.est)^3)
    Dx<-sq*Dx
    Dy<-sq*Dy
 
