@@ -61,15 +61,15 @@ Splines are a popular way of performing spatial smoothing in two dimensions. In 
 
 When the geographical region has a \emph{complex boundary}, features from one part of the domain can unduly influence other parts. Considering the boundary as a polygon, a complex boundary is a non-convex polygon, in particular when the non-convexity is relatively extreme. Often this consists of having some peninsula-like feature(s) in the domain with notably different observation values on either side of the feature. Given that there is some scientific motivation as to why those parts of the domain should not affect each other, features such as peninsulae give rise to a phenomenon known as \emph{leakage}; a typical example can be seen in \fig{leakage}. Leakage is the unwanted contamination of one region of an estimated function with those values from another part of the estimated function.
 
-Leakage is problematic since it causes the fitted surface to be mis-estimated; this can then lead to incorrect inference (eg. incorrect abundance estimates), which is clearly not desirable. This can be seen in \fig{leakage} where the high values in the upper part of the domain leak across the gap to the lower values below and vice versa.
+Leakage is problematic since it causes the fitted surface to be mis-estimated; this can then lead to incorrect inference (eg. incorrect abundance estimates), which is clearly not desirable. Leakage can be seen in \fig{leakage} where the high values in the upper part of the domain leak across the gap to the lower values below and vice versa.
 
 The problem of leakage arises because of the way in which the smoother defines how near objects are. Most smoothing techniques use the Euclidean metric to measure the distance between data. Clearly though, this approach is a bad idea: biological populations do not conform to Euclidean geometry in their movement patterns. Just as whales no not uniformly distribute themselves across sea and glacier, domesticated sheep do not spend a lot of time in the middle of the M4. Natural and man-made barriers carve up the landscape (and seascape), segregating populations.
 
-The distribution of the population is smooth, just not over $\mathbb{R}^2$ (\cite{wangranalli}.) Instead the structure of the domain that is under investigation must be taken into account and, the appropriate technique used to draw inference.
+The distribution of the population is smooth, just not over $\mathbb{R}^2$ (\cite{wangranalli}.) Instead the structure of the domain that is under investigation must be taken into account and the appropriate technique used to draw inference.
 
 \subsection{Ramsay's horseshoe function as a benchmark for finite area smoothing}
 
-\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe shape which is flat across the domain has a gradient along the domain's major axis. This can be seen in \fig{orig-fs}. \cite{soap} modifies the shape by adding curvature across the minor axis of the shape. This was added in order to avoid the horseshoe function lying in the nullspace of the soap film's penalty, making the problem trivial for a soap film smoother. This second shape shall be referred to as the \emph{Ramsay horseshoe} throughout and is shown in \fig{leakage}.
+\cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe shape which is flat across the domain has a gradient along the domain's major axis. This can be seen in \fig{orig-fs}. \cite{soap} modifies the shape by adding curvature across the minor axis of the shape. This was added in order to avoid the horseshoe function lying in the nullspace of their model's penalty, making the problem trivial. This second shape shall be referred to as the \emph{Ramsay horseshoe} throughout and is shown in \fig{leakage}.
 
 % original horseshoe from Ramsay's paper
 \begin{figure}
@@ -80,9 +80,7 @@ The distribution of the population is smooth, just not over $\mathbb{R}^2$ (\cit
 \label{orig-fs}
 \end{figure}
 
-The test function highlights a common problem in spatial smoothing: that of leakage. When the problem is specified in Euclidean distance, the model thinks that the distance between the two arms of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high function values from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes the smooth to be calculated incorrectly.
-
-
+The test function highlights leakage well. When the smoothing problem is specified in Euclidean distance, the model thinks that the distance between the two arms of the horseshoe is the distance over the gap in between them, rather than the distance along the major axis of the shape. This causes the high function values from one side to contaminate the other (or the low to contaminate the high.) It is easy to see that this causes the smooth to be calculated incorrectly.
 		
 \subsection{Previous approaches}
 
@@ -93,11 +91,15 @@ The cause of leakage can be characterised in two ways: either the smooth does no
 
 Although FELSPLINE does not exhibit leakage on the horseshoe, in practice it make unrealistic assumptions about the model it fits. The boundary conditions of FELSPLINE specify that the gradient is normal to the boundary at every point, this is not always physically realistic and as \cite{soap} showed, merely by adding a small amount of curvature to the gradient of the Ramsay horseshoe, the method's performance begins to falter.
 
+As can be seen, FELSPLINE does not offer a realistic physical model for the finite area smoothing problem in general.
+
 \item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. In this case they take the geodesic distance between two points, that being the shortest path within the domain. This gives a definition of how near objects are in the domain.
 
 Wang and Ranalli approximate the geodesic distance in order to calculate the shortest path. For this they create a weighted, undirected graph, $G$ with datum at each vertex and the distance between each pair of vertices as the weights on the edges. Floyd's algorithm is then used to find the $k$ nearest neighbours of each vertex, they then take the restricted graph of $G$, $G_k$ in which each vertex is only connected to its $k$ nearest neighbours. With this new, restricted, graph the geodesic distances between each pair of vertices can be calculated using Floyds algorithm.
 
-As the author point out, the quality of the approximation is dependent on the size of the data set and its density. At low densities the estimated geodesic distance will tend towards the Euclidean, at high densities the approximation tends, asymptotically toward the true geodesic distance (\cite{bernstein}.)Even with dense data, Floyd's algorithm is cubic in the number of vertices (in this case the size of the data set) so the procedure will be rather slow. Although the $k$-nearest neighbours algorithm used is not specified in the paper SAY SOMETHING MORE HERE!!!!
+As the author point out, the quality of the approximation is dependent on the size of the data set and its density. At low densities the estimated geodesic distance will tend towards the Euclidean, at high densities the approximation tends, asymptotically toward the true geodesic distance (\cite{bernstein}.)Even with dense data, Floyd's algorithm is cubic in the number of vertices (in this case the size of the data set) so the procedure will be rather slow. Although the $k$-nearest neighbours algorithm used is not specified in the paper, in general such procedures are computationally expensive.
+
+Taking these points into account, Wang and Ranalli's approach appears cumbersome, slow and dependent on dense data.
 
 \item \cite{soap} consider constructing a soap film over the domain. The film is then weighed down by the data, the objective is then to minimize the surface tension in the film. The domain is bounded by some polygon with known or estimated boundary conditions.
 
@@ -116,6 +118,8 @@ with $\rho=\rho_i(x,y)$, where $i$ indexes the data, the set of basis functions 
 where $\Omega$ is the domain in question and the squaring of the whole integrand rather than each term individually allows the $x$ and $y$ terms to be traded off against each other such that the nullspace of the penalty is infinite dimensional. This allows those functions in the nullspace to be sufficiently wiggly to meet any boundary conditions.
 
 The solution of the PDEs above, giving the basis and penalty is the most computationally expensive part of the procedure. Knots to use for $x_k^*$ and $y_k^*$ must be specified and although a grid is usually used, numerical problems occur when knots are placed in boundary cells in the PDE solution grid.
+
+Although mathematically elegant, the soap film smoother is a rather complex model... HRM
 
 \item An alternative approach is to morph the points within the domain to instead lie in a domain which is more suitable for smoothing. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe into a long strip and then smooth on that domain. Indeed, \cite{eilerstalk} proposed using the \sch transform for this very purpose (I, independently, came to this method via my obsessive listening to BBC Radio 4.)
 

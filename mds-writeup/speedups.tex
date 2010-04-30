@@ -81,7 +81,7 @@
 
 \section{Introduction}
 
-Following from the conclusions of the 12 month report, the main aims from here should be to speed up the algorithm for calculating the within-area distances and improve the accuracy (in terms of mean squared error) of the proposed model. More simulations are also run on different shapes and scenarios to show the stability and generality of using the mDS approach to smoothing. If these objectives are accomplished then the method will be truly competative with the current best approach, soap film smoothing \cite{soap}.
+Following from the conclusions of the 12 month report, the main aims from here should be to speed up the algorithm for calculating the within-area distances and improve the accuracy (in terms of mean squared error) of the proposed model. More simulations are also run on different shapes and scenarios to show the stability and generality of using the MDS approach to smoothing. If these objectives are accomplished then the method will be truly competitive with the current best approach, soap film smoothing \cite{soap}.
 
 
 \section{Making the procedure faster}
@@ -192,9 +192,9 @@ This approach will only handle a linear rescaling in one dimension; in the case 
 \end{equation}
 rather than the usual thin plate regression spline penalty (\cite{simonbook}, p. 155):
 \begin{equation}
-\int\int_\Omega \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial y \partial x}\Big)^2 + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2 \text{d}x\text{d}y.
+\int\int_{\mathbb{R}^2} \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial y \partial x}\Big)^2 + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2 \text{d}x\text{d}y.
 \end{equation}
-
+Note the change of integration domain from $\mathbb{R}^2$ to $\Omega$ the transformed domain.
 
 \subsection{Testing in 1 dimension}
 
@@ -278,7 +278,7 @@ then
 \{y_k : k=1\dots N\} = \{y^*_1,y^*_2, y^*_3,\dots, y^*_N,y^*_1,y^*_2, y^*_3,\dots, y^*_N,\dots\}.
 \ee
 
-
+Finally, those $(x_k,y_k)$ that are not inside the boundary in MDS space are removed leaving only those points that lie inside.
 
 
 
