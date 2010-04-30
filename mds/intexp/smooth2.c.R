@@ -125,10 +125,10 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # now do the adjustment based on the point density
 
-   # first work out the density at 1/2 resolution of the integration
-   # mesh...
+   # first work out the density at resolution dres
 
-   dgrid<-mesh(a+(1:(N/2)-.5)/(N/2)*(b-a),2,rep(2/(N/2),N/2))
+   dres<-N/2
+   dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
    
    # extract the points we're going to use to calculate the density
    dpoints<-object$xt$dens.points
@@ -148,7 +148,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    myj<-myj[onoff]
 
    dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
-   #dens.est<-table(dxi,dyj)[myj+sqrt(length(mxi))*mxi]
 
    # do the squashing
    sq<-sqrt((dens.est)^3)
