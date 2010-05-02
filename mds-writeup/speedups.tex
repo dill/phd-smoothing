@@ -98,9 +98,11 @@ A quick benchmark shows that \texttt{ARPACK++} can compute the first two eigenva
 
 \subsection{Partial path calculation}
 
-NEED TO THINK ABOUT: do we want to store Euclidean paths? Why? Always more expensive.
+Many of the distances stored in $D$ are calculated by simply using the Euclidean metric since for the corresponding point pairs, there is no part of the path between them that lies outside of the domain.This leads us to believe that there are many sets of paths that are rather similar. These paths may perhaps only differ in their final vertex. Given that, in this case, there is a low of wasted computational time calculating the same path repetitively, it would be useful to exploit this in order to make path calculation faster.
 
-Outline: Use sparse grid, calculate paths there, then hook up the new points onto pre-calculated paths there. Hope to get rid of the main part of the calculation (ie. the modifications in the middle where the action hopefully happens.)
+In outline the idea is to use a sparse grid to first calculate a set of paths that are saved. The points that the shortest paths are required for are then added to the ends of these pre-calculated paths. Finally, these paths are optimized in the same manner as in algorithm REF. This removes the expensive calculation in the ``middle'' of the path, where there are interactions with the boundary.
+
+\subsubsection{Algorithm definition}
 
 Notation is as in algorithm for the path calculation. Taking points $p_i$ and $p_j$ in the set of points in the domain that we wish to find the shortest paths for and drawing a path between them, finding within-area distance with respect to the boundary of $\Gamma$.
 
@@ -119,6 +121,8 @@ This is a modification of the the original algorithm, the routines INIT, DELETE,
 
 \end{enumerate}
 \end{enumerate}
+
+Note that those paths in the sparse grid which are Euclidean are not stored since it is always at least as expensive to store, add and optimize those paths then calculating them from scratch. An argument towards why is this is true is as follows: if the path we want to calculate is Euclidean anyway, then retrieving a Euclidean path and then optimizing it to be Euclidean will take long than just creating a Euclidean path to being with. If the path we wish to calculate is non-Euclidean then it must be cross the boundary outside the stored path (by definition) and therefore will take the same number of operations to find the boundary crossing points and calculate the shortest path around the feature locally as it will to calculating the whole path from scratch.
 
 
 \subsubsection{Results}
@@ -170,7 +174,7 @@ Prediction & & & 53.5105 & 53.4204 & 29.3946 & 0.1249\\
 
 \section{Adjusting the penalty}
 
-Give some intro here.
+The higher MSEs shown in CITE at lower noise levels might be explained by the smooth's response to the change in density of points in the domain after it has been transformed into MDS space. In this case it makes sense to adjust the penalty in order to take into account the change in point density over space.
 
 \cite{wood2000} shows that given some transform of a variable, $y$ say, such that $y_i^\prime=y_i/k$, then $f(x,y^\prime k)$ will give the same fit as $f(x,y)$ (ie. the fit will be the same under the new coordinates) but the penalty will change to:
 \begin{equation}
