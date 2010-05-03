@@ -3,7 +3,7 @@
 source("mds.R")
  
 wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
-                          gendata,bnd,grid.mds,my.grid,soap.knots,predd){
+                          gendata,bnd,grid.mds,my.grid,soap.knots,predd,bnd.mds){
  
    # create the sample index
    samp.ind<-sample(1:length(gendata$x),samp.size)
@@ -65,11 +65,11 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    fv <- predict(b.mapped,newdata=pred.data)
 
    # tensor product of thin plate
-   b.mapped.tp<-gam(z~te(x,y,k=15),data=samp.data)
-   fv.tp <- predict(b.mapped.tp,newdata=pred.data)
+   b.mapped.mod<-gam(z~s(x,y,k=140,bs="mdstp",xt=list(bnd=bnd.mds,dens.points=pred.data)),data=samp.data)
+   fv.mod <- predict(b.mapped.mod,newdata=pred.data)
    
    ### normal tprs
-   b.tprs<-gam(z~s(x,y,k=100),data=nsamp.data)
+   b.tprs<-gam(z~s(x,y,k=140),data=nsamp.data)
    fv.tprs <- predict(b.tprs,newdata=npred.data)
 
    ### soap
@@ -78,11 +78,11 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
  
    ### calculate MSEs
    res<-list(mds=mean((fv-predd)^2,na.rm=T),
-             mdstp=mean((fv.tp-predd)^2,na.rm=T),
+             mdsmod=mean((fv.mod-predd)^2,na.rm=T),
              tprs=mean((fv.tprs-predd)^2,na.rm=T),
              soap=mean((fv.soap-predd)^2,na.rm=T),
              mds.edf=sum(b.mapped$edf),
-             mdstp.edf=sum(b.mapped.tp$edf),
+             mdsmod.edf=sum(b.mapped.mod$edf),
              tprs.edf=sum(b.tprs$edf),
              soap.edf=sum(b.soap$edf))
  
