@@ -126,8 +126,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # now do the adjustment based on the point density
 
    # first work out the density at resolution dres
-
-   dres<-N/2
+   dres<-N#/1.5
    dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
    
    # extract the points we're going to use to calculate the density
