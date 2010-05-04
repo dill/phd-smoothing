@@ -23,7 +23,7 @@ method<-"GCV.Cp"
 basis<-"mdstp"
 
 noise<-rep(0,length(x))
-noise<-rnorm(length(x))*0.1
+noise<-rnorm(length(x))*0.2
 
 dat<-data.frame(x=x,y=y+noise)
 
