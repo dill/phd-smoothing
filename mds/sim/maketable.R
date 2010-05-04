@@ -60,10 +60,10 @@ for(errlev in errlevs){
    cat(round(mses[1],4)," (",round(ses[1],5),") & ",sep="")
    cat(round(mses[2],4)," (",round(ses[2],5),") & ",sep="")
    cat(round(mses[3],4)," (",round(ses[3],5),") &",sep="")
-   cat(round(mses[4],4)," (",round(ses[3],5),") &",sep="")
+   cat(round(mses[4],4)," (",round(ses[4],5),") &",sep="")
    cat(round(edfs[1],4)," (",round(edfse[1],5),") & ",sep="")
    cat(round(edfs[2],4)," (",round(edfse[2],5),") & ",sep="")
    cat(round(edfs[3],4)," (",round(edfse[3],5),") & ",sep="")
-   cat(round(edfs[4],4)," (",round(edfse[3],5),")\\\\ \n",sep="")
+   cat(round(edfs[4],4)," (",round(edfse[4],5),")\\\\ \n",sep="")
 
 }
