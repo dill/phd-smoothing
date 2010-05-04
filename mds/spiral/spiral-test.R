@@ -18,7 +18,7 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
    # map the grid
    spir.grid<-make_spiral(25,n.grid=15)
    my.grid<-list(x=spir.grid$dat$x,y=spir.grid$dat$y)
-   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1)
+   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=faster)
    grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
    # make the sample
@@ -90,22 +90,20 @@ spiral_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,faster=0){
       lines(bnd,lwd=2)
 
       # mapped
-      pred.mat<-matrix(NA,grid.m,grid.m)
-      pred.mat[onoff]<-fv.mapped
+      pred.mat<-spir.dat$mat
+      pred.mat[!is.na(pred.mat)]<-fv.mapped
       image(pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="MDS",las=1,asp=1)
       contour(pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
       lines(bnd,lwd=2)
 
       # tprs
-      pred.mat<-matrix(NA,grid.m,grid.m)
-      pred.mat[onoff]<-fv.tprs
+      pred.mat[!is.na(pred.mat)]<-fv.tprs
       image(pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tprs",las=1,asp=1)
       contour(pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
       lines(bnd,lwd=2)
 
       # soap
-      pred.mat<-matrix(NA,grid.m,grid.m)
-      pred.mat[onoff]<-fv.soap
+      pred.mat[!is.na(pred.mat)]<-fv.soap
       image(pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="soap",las=1,asp=1)
       contour(pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
       lines(bnd,lwd=2)
