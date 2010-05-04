@@ -3,7 +3,8 @@ source("spiral/make_spiral.R")
 
 #
 
-spdat<-make_spiral()
+spdat<-make_spiral(spiral.res=45,n.grid=45)
+spdat<-make_spiral(spiral.res=100,n.grid=100)
 
 
 image(z=spdat$mat,
