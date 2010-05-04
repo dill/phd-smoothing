@@ -34,11 +34,10 @@ make_spiral<-function(spiral.res=100,n.grid=100){
    phi[x==0 & y<0]<- 3*pi/2
 
    z<-rep(0,length(x))
-
    z<-phi
 
    # now make sure that the whole thing is continuous, hack a bit
-#   dphi<-bphi[(bphi>=(2*pi))]
+#   dphi<-bphi[(bphi>(2*pi))]
    dphi<-seq(2*pi,4*pi,length.out=sum((bphi>(2*pi))& (bphi<=(4*pi))))
    bnd1<-list(x=offset+f1(dphi)*1.1,y=offset+f2(dphi)*1.1)
    bnd2<-list(x=offset+f1(dphi)*0.9,y=offset+f2(dphi)*0.9)
@@ -63,8 +62,6 @@ make_spiral<-function(spiral.res=100,n.grid=100){
    mat[!is.na(mat)]<-z
 
    return(list(dat=dat,bnd=bbnd,mat=mat))
-
-
 }
 
 ### test code
