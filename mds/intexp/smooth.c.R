@@ -17,10 +17,10 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    S<-matrix(0,k,k)
 
    # integration limits
-   a<-0
-   b<-1
-   #a<-min(data$x)
-   #b<-max(data$x)
+   #a<-0
+   #b<-1
+   a<-min(data$x)
+   b<-max(data$x)
 
    N<-1000
    
@@ -28,6 +28,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    xs<-a+(1:N -0.5)*(b-a)/N
    
    # auto ks based adjustment
+   #library(ks)
    #dens.est<-kde(data$x,h=hpi(data$x),eval.points=xs)
    #sq<-dens.est$estimate
 
@@ -57,7 +58,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    object$S[[1]][k,]<-rep(0,k)
    object$S[[1]][,k]<-rep(0,k)
 
-   cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
+#   cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
 
    class(object)<-"mdstp.smooth"
    object

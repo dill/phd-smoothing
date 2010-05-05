@@ -1,6 +1,6 @@
 # integration experiment (thin plate version)
 library(mgcv)
-library(ks)
+#library(ks)
 
 # code to do the squashing
 source("squash.R")
@@ -9,8 +9,8 @@ source("smooth.c.R")
 # code for the p-spline adjustment
 #source("psmooth.c.R")
 
-
-n<-80
+n<-100 
+#n<-200 # changing to 200 shows the wiggles
 x<-seq(0,1,len=n)
 #y<-x^2
 y <- 0.2 * x^11 * (10 * (1 - x))^6 + 10 * (10*x)^3 * (1 - x)^10
@@ -53,10 +53,10 @@ b.s<-gam(y~s(x,k=k),data=dat.m,method=method)
 
 
 ##### fixing...
-#alim<-min(x)
-#blim<-max(x)
-alim<-0
-blim<-1
+alim<-min(x)
+blim<-max(x)
+#alim<-0
+#blim<-1
 N<-1000
 xs<-alim+(1:N -0.5)*(blim-alim)/N
 

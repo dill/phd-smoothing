@@ -14,8 +14,6 @@ source("smooth.c.R")
 n<-100
 x<-seq(0,1,len=n)
 y <- 0.2 * x^11 * (10 * (1 - x))^6 + 10 * (10*x)^3 * (1 - x)^10
-# x values for prediction 
-newdat<-data.frame(x=x)
 
 k<-80
 method<-"GCV.Cp"
@@ -33,12 +31,14 @@ sq<-c(1/0.09,1,1/20,1)
 # do the squashing
 x.m<-squash(x,lims,sq)
 dat.m<-data.frame(x=x.m,y=y+noise)
-newdat.m<-data.frame(x=x.m)
 
+# x values for prediction 
+newdat<-data.frame(x=seq(0,1,len=500))
+newdat.m<-data.frame(x=squash(seq(0,1,len=500),lims,sq))
 
 ##### fixing...
-alim<-0
-blim<-1
+alim<-min(x)
+blim<-max(x)
 N<-1000
 xs<-alim+(1:N -0.5)*(blim-alim)/N
 dens<-c(rep(sq[1],sum(xs<=lims[2])),
@@ -50,82 +50,60 @@ dens<-c(rep(sq[1],sum(xs<=lims[2])),
 # now time to fit some models
 
 par(mfrow=c(3,2))
+#par(mfrow=c(1,2))
 
-# EDF=71 (ish)
+
+
 # set sp
-sp.fix<-4.000971e-05 
-sp.s<-0.000000001
 
-b.fix<-gam(y~s(x,k=k,bs=basis,xt=list(dens=dens)),data=dat.m,method=method,sp=sp.fix)
-
-b.s<-gam(y~s(x,k=k),data=dat.m,method=method,sp=sp.s)
-
-cat("unfixed EDF=",sum(b.s$edf),"\n")
-cat("fixed EDF=",sum(b.fix$edf),"\n")
-cat("correlation=",cor(predict(b.s,newdat.m),predict(b.fix,newdat.m)),"\n")
+# 1) EDF=71 (ish) 2) EDF= 19 3) EDF=42
+sp.fix<-c(2.3e-06, 0.4, 0.0013) 
+sp.s<-c(0.000000001,0.00024,0.00000025)
+edf<-c(71,19,42)
 
 
-# plot in squashed space
-plot(x=newdat.m$x,y=predict(b.fix,newdat.m),main="adjusted fit (green), data (black),\n unadjusted fit (blue)",type="n",xlim=c(0,max(x.m)),xlab="x",ylab="y")
-lines(x=newdat.m$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
-lines(x=newdat.m$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
-points(x.m,y,pch=19,cex=0.3)
-# unsquashed space
-plot(x=x,y=y,main="adjusted fit (green), truth (red), \nunadjusted fit (blue)",type="n",xlim=c(0,1),xlab="x",ylab="y")
-lines(x=x,y=y,lwd=2,col="red")
-lines(x=newdat$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
-lines(x=newdat$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
-points(x=x,y=y+noise,pch=19,cex=0.3)
+for (i in 1:3){
+   b.fix<-gam(y~s(x,k=k,bs=basis,xt=list(dens=dens)),data=dat.m,method=method,sp=sp.fix[i])
+   
+   b.s<-gam(y~s(x,k=k),data=dat.m,method=method,sp=sp.s[i])
+   
+   cat("unfixed EDF=",sum(b.s$edf),"\n")
+   cat("fixed EDF=",sum(b.fix$edf),"\n")
+   cat("correlation=",cor(predict(b.s,newdat.m),predict(b.fix,newdat.m)),"\n")
+   
+   # plot in squashed space
+   plot(x=x.m,y=y+noise,main="adjusted fit (green), data (black),\n unadjusted fit (blue)",type="n",xlim=c(0,max(x.m)),xlab="x",ylab="y")
+   lines(x=newdat.m$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
+   lines(x=newdat.m$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
+   points(x.m,y+noise,pch=19,cex=0.3)
+   legend(1,6,paste("unfixed EDF =",round(sum(b.s$edf),1),
+                    "\nfixed EDF     =",round(sum(b.fix$edf),1)),bty="n")
 
 
-## EDF= 19
-# set sp
-sp.fix<-10000 
-sp.s<-0.0002
-
-b.fix<-gam(y~s(x,k=k,bs=basis,xt=list(dens=dens)),data=dat.m,method=method,sp=sp.fix)
-
-b.s<-gam(y~s(x,k=k),data=dat.m,method=method,sp=sp.s)
-
-cat("unfixed EDF=",sum(b.s$edf),"\n")
-cat("fixed EDF=",sum(b.fix$edf),"\n")
-cat("correlation=",cor(predict(b.s,newdat.m),predict(b.fix,newdat.m)),"\n")
+   # unsquashed space
+   plot(x=x,y=y,main="adjusted fit (green), truth (red), \nunadjusted fit (blue)",type="n",xlim=c(0,1),xlab="x",ylab="y")
+   lines(x=x,y=y,lwd=2,col="red")
+   lines(x=newdat$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
+   lines(x=newdat$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
+   points(x=x,y=y+noise,pch=19,cex=0.3)
+}
 
 
-# plot in unsquashed space
-plot(x=x,y=y+noise,main="adjusted fit (green), data (black),\n unadjusted fit (blue)",type="n",xlim=c(0,max(x.m)),xlab="x",ylab="y")
-lines(x=newdat.m$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
-lines(x=newdat.m$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
-points(x.m,y,pch=19,cex=0.3)
-# unsquashed space
-plot(x=x,y=y,main="adjusted fit (green), truth (red), \nunadjusted fit (blue)",type="n",xlim=c(0,1),xlab="x",ylab="y")
-lines(x=x,y=y,lwd=2,col="red")
-lines(x=newdat$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
-lines(x=newdat$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
-points(x=x,y=y+noise,pch=19,cex=0.3)
+# check that \beta^TS\beta is correct...
+pr<-seq(0,max(x.m),len=1000)
+eps<-1e-6
 
-## EDF=42
-# set sp
-sp.fix<-0.05 
-sp.s<-0.00000025
+fd<-(predict(b.fix,list(x=pr+2*eps))-
+     2*predict(b.fix,list(x=pr+eps))+
+     predict(b.fix,list(x=pr)))/eps^2
 
-b.fix<-gam(y~s(x,k=k,bs=basis,xt=list(dens=dens)),data=dat.m,method=method,sp=sp.fix)
+sbs1<-sum(fd^2)
 
-b.s<-gam(y~s(x,k=k),data=dat.m,method=method,sp=sp.s)
+beta<-b.fix$coefficients[2:length(b.fix$coefficients)]
+S<-b.fix$smooth[[1]]$S[[1]]
 
-cat("unfixed EDF=",sum(b.s$edf),"\n")
-cat("fixed EDF=",sum(b.fix$edf),"\n")
-cat("correlation=",cor(predict(b.s,newdat.m),predict(b.fix,newdat.m)),"\n")
+sbs2<-t(beta)%*%S%*%beta
+
+cat("diff in penalty term =",abs(sbs1-sbs2),"\n")
 
 
-# plot in unsquashed space
-plot(x=x,y=y+noise,main="adjusted fit (green), data (black),\n unadjusted fit (blue)",type="n",xlim=c(0,max(x.m)),xlab="x",ylab="y")
-lines(x=newdat.m$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
-lines(x=newdat.m$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
-points(x.m,y,pch=19,cex=0.3)
-# unsquashed space
-plot(x=x,y=y,main="adjusted fit (green), truth (red), \nunadjusted fit (blue)",type="n",xlim=c(0,1),xlab="x",ylab="y")
-lines(x=x,y=y,lwd=2,col="red")
-lines(x=newdat$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
-lines(x=newdat$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
-points(x=x,y=y+noise,pch=19,cex=0.3)
