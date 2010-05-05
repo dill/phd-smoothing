@@ -72,19 +72,19 @@ b.fix<-gam(y~s(x,k=k,bs=basis,xt=list(dens=dens)),data=dat.m,method=method)
 par(mfrow=c(2,1))
 
 plot(x=newdat.m$x,y=predict(b.fix,newdat.m),main="adjusted fit (green), data (black),\n unadjusted fit (blue)",type="n",xlim=c(0,max(x.m)),xlab="x",ylab="y")
+points(x.m,y,pch=19,cex=0.3)
 lines(x=newdat.m$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
 lines(x=newdat.m$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
 rug(newdat.m$x)
 
-points(x.m,y,pch=19,cex=0.3)
 
 # now unsquash the predicted values...
 
 plot(x=newdat$x,y=predict(b,newdat),main="adjusted fit (green), truth (red), \nunadjusted fit (blue)",type="n",xlim=c(0,1),xlab="x",ylab="y")
+points(x=x,y=y+noise,pch=19,cex=0.3)
 lines(x=newdat$x,y=predict(b,newdat),lwd=2,col="red")
 lines(x=newdat$x,y=predict(b.s,newdat.m),col="blue",lwd=2)
 lines(x=newdat$x,y=predict(b.fix,newdat.m),col="green",lwd=2)
-points(x=x,y=y+noise,pch=19,cex=0.3)
 rug(newdat$x)
 
 

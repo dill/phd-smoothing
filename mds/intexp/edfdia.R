@@ -1,6 +1,6 @@
 # see what models are fit when they have the same EDF
 
-set.seed(1)
+#set.seed(1)
 
 # import some libraries and do the setup as in tpintexp.R
 
