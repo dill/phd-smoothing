@@ -110,8 +110,9 @@ pred.data$y[-samp.ind]<-pred.mds[,2]
 pred.data$x[samp.ind]<-samp.mds[,1]
 pred.data$y[samp.ind]<-samp.mds[,2]
  
+
 ### Now do some fitting and prediction
-### tprs on transformed data
+### tprs (tp+mds)on transformed data
 b.tp<-gam(z~s(x,y,k=80),data=samp.data)
 fv.tp<-predict(b.tp,newdata=pred.data)
 
@@ -129,7 +130,7 @@ b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp",
 fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
 
-### unadjusted tprs on untransformed data
+### just thin plate (no mds, no adjustments)
 b.utp<-gam(z~s(x,y,k=80),data=nsamp.data)
 fv.utp<-predict(b.utp,newdata=npred.data)
 
@@ -168,7 +169,7 @@ ind<-ind[onoff]
     pred.mat<-rep(NA,length(gendata.ind$x))
     pred.mat[ind]<-fv.utp
     pred.mat<-matrix(pred.mat,50,50)
-    image(xscale,yscale,pred.mat,main="tp + modified penalty",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
+    image(xscale,yscale,pred.mat,main="tp",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
     contour(xscale,yscale,pred.mat,add=T)
 
    pred.mat<-rep(NA,length(gendata.ind$x))
@@ -184,5 +185,5 @@ ind<-ind[onoff]
               mdstp=mean((fv.mdstp-gendata.ind$z[ind])^2,na.rm=TRUE))
 
 cat("tp + mds =",mses$tp,"\n")
-cat("tp + modified penalty=",mses$utp,"\n")
+cat("tp =",mses$utp,"\n")
 cat("tp + mds + modified penalty=",mses$mdstp,"\n")

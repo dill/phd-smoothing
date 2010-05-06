@@ -126,22 +126,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    ##################################################
    # now do the adjustment based on the point density
 
-   # first work out the density at resolution dres
-   # at the moment ths is just the same as doing this for the
-   # integration grid, so we can replace that eventually...
-   dres<-N#/1.5
-   dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
-   
-
-
-
-
-   # extract the points we're going to use to calculate the density
-   # this might well be the prediction points, if they aren't specified
-   # we might want to generate them here
-   #dpoints<-object$xt$dens.points
-
-
    # lets generate some grids
 
    # create base grid
@@ -191,12 +175,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
                  y=c(tlg$y,trg$y,brg$y,blg$y))
 
    # MDS these points...
-   # this should be an INSERT!!!!
    biglist.mds<-insert.mds(biglist,object$xt$op,object$xt$mds.obj,bnd,faster=1)
-#   biglist.D<-create_distance_matrix(biglist$x,biglist$y,bnd,faster=1)
-#   biglist.mds<-cmdscale(biglist.D,eig=TRUE,k=2,x.ret=TRUE)
-#   biglist.mds<-biglist.mds$points
-
 
    # pull them back out in the right order
    len<-length(tlg$x)
@@ -234,8 +213,11 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    dpoints<-list(x=pts.x,y=pts.y)
 
-
-   # BELOW HERE probably doesn't need to be modified
+   # work out the density at resolution dres
+   # at the moment ths is just the same as doing this for the
+   # integration grid, so we can replace that eventually...
+   dres<-N#/1.5
+   dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
 
    # find the grid cells they lie in
    xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
@@ -248,6 +230,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
    myj<-abs(floor((ip$X[,2]-ystart)/ydel))
 
+   onoff<-inSide(bnd.mds,ip$X[,1],ip$X[,2])
    mxi<-mxi[onoff]
    myj<-myj[onoff]
 
