@@ -21,7 +21,11 @@ method<-"GCV.Cp"
 basis<-"mdstp"
 
 noise<-rep(0,length(x))
-noise<-rnorm(length(x))*0.2
+noise<-rnorm(length(x))*0.4
+
+# plot vals for noise?
+# 0.05,
+
 
 dat<-data.frame(x=x,y=y+noise)
 

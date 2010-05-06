@@ -145,7 +145,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # lets generate some grids
 
    # create base grid
-   m<-25;n<-25 # need to set these somewhere
+   m<-20;n<-20 # need to set these somewhere
    xmin<-min(bnd$x)
    ymin<-min(bnd$y)
    xmax<-max(bnd$x)
@@ -191,10 +191,48 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
                  y=c(tlg$y,trg$y,brg$y,blg$y))
 
    # MDS these points...
-   biglist.D<-create_distance_matrix(biglist$x,biglist$y,bnd,faster=1)
-   biglist.mds<-cmdscale(biglist.D,eig=TRUE,k=2,x.ret=TRUE)
+   # this should be an INSERT!!!!
+   biglist.mds<-insert.mds(biglist,object$xt$op,object$xt$mds.obj,bnd,faster=1)
+#   biglist.D<-create_distance_matrix(biglist$x,biglist$y,bnd,faster=1)
+#   biglist.mds<-cmdscale(biglist.D,eig=TRUE,k=2,x.ret=TRUE)
+#   biglist.mds<-biglist.mds$points
 
-   # now go for lunch...
+
+   # pull them back out in the right order
+   len<-length(tlg$x)
+   mtlg<-biglist.mds[1:len,]
+   mtrg<-biglist.mds[(len+1):(2*len),]
+   mbrg<-biglist.mds[(2*len+1):(3*len),]
+   mblg<-biglist.mds[(3*len+1):(4*len),]
+
+   # again, check that worked!
+   #plot(mtlg,pch=19)
+   #points(mtrg,pch=19,col="green",cex=0.9)
+   #points(mbrg,pch=19,col="blue",cex=0.8)
+   #points(mblg,pch=19,col="orange",cex=0.7)
+
+   # grid resolution
+   gres<-10
+
+   pts.x<-c()
+   pts.y<-c()
+
+   # for every quadrilateral
+   for(i in 1:len){
+      # create the divisions on the top and bottom
+      tlx<-seq(mtlg[i,1],mtrg[i,1],len=gres)
+      tly<-seq(mtlg[i,2],mtrg[i,2],len=gres)
+      blx<-seq(mblg[i,1],mbrg[i,1],len=gres)
+      bly<-seq(mblg[i,2],mbrg[i,2],len=gres)
+
+      # split those divisions
+      for(j in 1:gres){
+         pts.x<-c(pts.x,seq(tlx[j],blx[j],len=gres))
+         pts.y<-c(pts.y,seq(tly[j],bly[j],len=gres))
+      }
+   }
+
+   dpoints<-list(x=pts.x,y=pts.y)
 
 
    # BELOW HERE probably doesn't need to be modified

@@ -56,6 +56,7 @@ D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0)
 
 # perform mds on D
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
+mds.obj<-grid.mds
 
 # sample points insertion
 samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=1)
@@ -120,12 +121,16 @@ source("intexp/smooth2.c.R")
 
 # clever tprs 
 b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp",
-             xt=list(bnd.mds=bnd.mds,,bnd=bnd,dens.points=pred.data)),data=samp.data)
+             xt=list(bnd.mds=bnd.mds,
+                     bnd=bnd,
+                     op=my.grid,
+                     mds.obj=mds.obj)),
+             data=samp.data)
 fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
 
-### adjusted tprs on untransformed data
-b.utp<-gam(z~s(x,y,k=80,xt=list(bnd=bnd,dens.points=npred.data)),data=nsamp.data)
+### unadjusted tprs on untransformed data
+b.utp<-gam(z~s(x,y,k=80),data=nsamp.data)
 fv.utp<-predict(b.utp,newdata=npred.data)
 
 
