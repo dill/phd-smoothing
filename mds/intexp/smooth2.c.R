@@ -78,18 +78,18 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    }
 
 
-   # take the boundary (actually something a bit smaller?)
+   # take the boundary
    # mapped it into the space
-   bnd<-object$xt$bnd # passed in pre-mapped!
+   bnd.mds<-object$xt$bnd.mds # passed in pre-mapped!
 
    # set the integration limits
-   a<-min(c(bnd$x,bnd$y))
-   b<-max(c(bnd$x,bnd$y))
+   a<-min(c(bnd.mds$x,bnd.mds$y))
+   b<-max(c(bnd.mds$x,bnd.mds$y))
    # take a grid in the mds space
    ip <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
 
    # knock out those points outside the boundary
-   onoff<-inSide(bnd,ip$X[,1],ip$X[,2])
+   onoff<-inSide(bnd.mds,ip$X[,1],ip$X[,2])
 
    ep<-list()
    ep$X<-ip$X[onoff,]
@@ -123,14 +123,81 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
    #dens.est<-1/dens.est$estimate
 
+   ##################################################
    # now do the adjustment based on the point density
 
    # first work out the density at resolution dres
+   # at the moment ths is just the same as doing this for the
+   # integration grid, so we can replace that eventually...
    dres<-N#/1.5
    dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
    
+
+
+
+
    # extract the points we're going to use to calculate the density
-   dpoints<-object$xt$dens.points
+   # this might well be the prediction points, if they aren't specified
+   # we might want to generate them here
+   #dpoints<-object$xt$dens.points
+
+
+   # lets generate some grids
+
+   # create base grid
+   m<-25;n<-25 # need to set these somewhere
+   xmin<-min(bnd$x)
+   ymin<-min(bnd$y)
+   xmax<-max(bnd$x)
+   ymax<-max(bnd$y)
+   # create the grid
+   xm <- seq(xmin,xmax,length=m)
+   yn<-seq(ymin,ymax,length=n)
+
+   # one extra grid cell bigger on all sides
+   xdel<-diff(xm)[1]
+   ydel<-diff(yn)[1]
+   blx<-xm[1]-xdel # big left x
+   brx<-xm[length(xm)]+xdel # big right x
+   bby<-yn[1]-ydel # big bottom y
+   bty<-yn[length(yn)]+ydel # big top y
+
+   # now create 4 grids, one for each corner
+   # top left, top right, bottom left, bottom right
+   tlg<-list(x=rep(c(blx,xm),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
+   trg<-list(x=rep(c(xm,brx),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
+   blg<-list(x=rep(c(blx,xm),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
+   brg<-list(x=rep(c(xm,brx),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
+
+   # now just take the full squares that are inside
+   onoff<-inSide(bnd,tlg$x,tlg$y)
+   onoff<-onoff & inSide(bnd,trg$x,trg$y)
+   onoff<-onoff & inSide(bnd,brg$x,brg$y)
+   onoff<-onoff & inSide(bnd,blg$x,blg$y)
+
+   tlg<-pe(tlg,onoff)
+   trg<-pe(trg,onoff)
+   blg<-pe(blg,onoff)
+   brg<-pe(brg,onoff)
+
+   # check that this was okay...
+   #plot(tlg,pch=19)
+   #points(trg,pch=19,col="green",cex=0.9)
+   #points(brg,pch=19,col="blue",cex=0.8)
+   #points(blg,pch=19,col="orange",cex=0.7)
+
+   # make a list of all these points
+   biglist<-list(x=c(tlg$x,trg$x,brg$x,blg$x),
+                 y=c(tlg$y,trg$y,brg$y,blg$y))
+
+   # MDS these points...
+   biglist.D<-create_distance_matrix(biglist$x,biglist$y,bnd,faster=1)
+   biglist.mds<-cmdscale(biglist.D,eig=TRUE,k=2,x.ret=TRUE)
+
+   # now go for lunch...
+
+
+   # BELOW HERE probably doesn't need to be modified
 
    # find the grid cells they lie in
    xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
@@ -147,6 +214,12 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    myj<-myj[onoff]
 
    dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
+
+
+
+
+   #################################################
+
 
    # do the squashing
    sq<-sqrt((dens.est)^3)

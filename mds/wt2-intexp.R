@@ -7,8 +7,6 @@ set.seed(1)
 samp.size=250
 noise.level=0.5
 
-library(ks)
- 
 ## create a boundary...
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
 
@@ -122,7 +120,7 @@ source("intexp/smooth2.c.R")
 
 # clever tprs 
 b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp",
-             xt=list(bnd=bnd.mds,dens.points=pred.data)),data=samp.data)
+             xt=list(bnd.mds=bnd.mds,,bnd=bnd,dens.points=pred.data)),data=samp.data)
 fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
 
