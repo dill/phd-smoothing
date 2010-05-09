@@ -12,8 +12,8 @@ xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 tru <- fs.test(xx,yy) 
 
 # read in the predicition grid from matlab
-predback.real<-read.csv("../../matlab/preal.csv",header=F)
-predback.imag<-read.csv("../../matlab/pimag.csv",header=F)
+predback.real<-read.csv("../../sc/matlab/preal.csv",header=F)
+predback.imag<-read.csv("../../sc/matlab/pimag.csv",header=F)
 prediction.grid<-data.frame(v=predback.real[[1]],w=predback.imag[[1]])
 
 # bit of faffing with titles
@@ -61,25 +61,6 @@ b.tp.mapped<-gam(y~s(v,w),data=mapped.data)
 fv.tp.mapped <- predict(b.tp.mapped,prediction.grid)
 fv.tp.mapped[!insiders]<-NA
 
-
-
-
-############ First figure, two image plots
-pdf("compsmooth.pdf",6,2)
-par(mfrow=c(1,3))
-
-# sc+ps mapping example
-image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,asp=1,main="",ylim=c(-1.1,1.1))
-contour(xm,yn,matrix(fv.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE)
-names(fsb[[1]])<-c("x","y")
-lines(fsb[[1]],lwd=3)
-
-image(xm,yn,matrix(fv.tp.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,asp=1,main="",ylim=c(-1.1,1.1))
-contour(xm,yn,matrix(fv.tp.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE)
-lines(fsb[[1]],lwd=3)
-
 # soap example
 knots <- data.frame(v=rep(seq(-.5,3,by=.5),4),
                     w=rep(c(-.6,-.3,.3,.6),rep(8,4)))
@@ -87,36 +68,64 @@ names(fsb[[1]]) <- c("v","w")
 b <- gam(y~s(v,w,k=40,bs="so",xt=list(bnd=fsb)),knots=knots,data=orig.data)
 fv <- predict(b,newdata=data.frame(v=xx,w=yy),block.size=-1)
 
+
+
+############ First figure, two image plots
+#pdf("compsmooth.pdf",6,2)
+par(mfrow=c(2,2))
+
+names(fsb[[1]])<-c("x","y")
+
+image(xm,yn,matrix(fs.test(xx,yy),m,n),col=heat.colors(100),xlab="",ylab="",
+      asp=1,main="",lwd=2,las=1)
+contour(xm,yn,matrix(fs.test(xx,yy),m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
+lines(fsb[[1]],lwd=2)
+
+
+
+
+# sc+ps mapping example
+image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
+      cex.axis=0.5,asp=1,main="",ylim=c(-1.1,1.1))
+contour(xm,yn,matrix(fv.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
+lines(fsb[[1]],lwd=2)
+
+# sc+tp
+image(xm,yn,matrix(fv.tp.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
+      cex.axis=0.5,asp=1,main="",ylim=c(-1.1,1.1))
+contour(xm,yn,matrix(fv.tp.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
+lines(fsb[[1]],lwd=2)
+
+# soap
 image(xm,yn,matrix(fv,m,n),col=heat.colors(100),xlab="",ylab="",
       cex.axis=0.5,main="",asp=1,ylim=c(-1.1,1.1))
-contour(xm,yn,matrix(fv,m,n),levels=seq(-5,5,by=.25),add=TRUE)
-names(fsb[[1]]) <- c("x","y")
-lines(fsb[[1]],lwd=3)
+contour(xm,yn,matrix(fv,m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
+lines(fsb[[1]],lwd=2)
 
-dev.off()
+#dev.off()
 
 ########## Second plots, boxplot comparison between soap and sc
 
-pdf("scvssoapboxplot.pdf",6,4)
-par(mfrow=c(1,3))
-
-# load the data
-soapcomp<-read.csv("../../ramseysim/results.file.txt",header=T)
-psplinecomp<-read.csv("../../ramseysim/pspline.results.txt",header=T)
-
-# find the limits on the y axis
-ylims<-c(0,max(soapcomp$mapped,soapcomp$soap,psplinecomp$x))
-#ylims<-c(min(soapcomp$soap,psplinecomp$x),max(soapcomp$soap,psplinecomp$x))
-
-# plot the boxplots
-# mapped+ps
-boxplot(psplinecomp$mapped,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
-
-# mapped+tp
-boxplot(soapcomp$mapped,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
-
-# soap
-boxplot(soapcomp$soap,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
-
-dev.off()
-
+#pdf("scvssoapboxplot.pdf",6,4)
+#par(mfrow=c(1,3))
+#
+## load the data
+#soapcomp<-read.csv("../../ramseysim/results.file.txt",header=T)
+#psplinecomp<-read.csv("../../ramseysim/pspline.results.txt",header=T)
+#
+## find the limits on the y axis
+#ylims<-c(0,max(soapcomp$mapped,soapcomp$soap,psplinecomp$x))
+##ylims<-c(min(soapcomp$soap,psplinecomp$x),max(soapcomp$soap,psplinecomp$x))
+#
+## plot the boxplots
+## mapped+ps
+#boxplot(psplinecomp$mapped,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
+#
+## mapped+tp
+#boxplot(soapcomp$mapped,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
+#
+## soap
+#boxplot(soapcomp$soap,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
+#
+#dev.off()
+#
