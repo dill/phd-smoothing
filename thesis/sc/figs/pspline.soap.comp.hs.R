@@ -2,6 +2,8 @@
 # domain for the Ramsay horseshoe.
 library(soap)
 
+# probably a good idea to set a seed here...
+
 fsb <- list(fs.boundary())
 # create the grid
 m<-100;n<-50
@@ -12,8 +14,8 @@ xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 tru <- fs.test(xx,yy) 
 
 # read in the predicition grid from matlab
-predback.real<-read.csv("../../sc/matlab/preal.csv",header=F)
-predback.imag<-read.csv("../../sc/matlab/pimag.csv",header=F)
+predback.real<-read.csv("../../../sc/matlab/preal.csv",header=F)
+predback.imag<-read.csv("../../../sc/matlab/pimag.csv",header=F)
 prediction.grid<-data.frame(v=predback.real[[1]],w=predback.imag[[1]])
 
 # bit of faffing with titles
@@ -39,17 +41,20 @@ knots.sc$w<-unique(sort(c(seq(from=min(knots.sc$w),by=-w.spacing,length.out=4) ,
 # load the original data set
 orig.data<-read.csv("ramsey-1.csv",header=T)
 
+# create the sample index
+sind<-sample(1:length(orig.data$v),250)
+
+orig.data<-list(v=orig.data$v[sind],w=orig.data$w[sind],y=orig.data$y[sind])
+
 # load the mapped data set
 mapped.data<-read.csv("ramsey-mapped-1.csv",header=F)
 # add in the y column
-mapped.data<-cbind(orig.data[[1]],mapped.data)
-# correct titles
-names(mapped.data) <- c("y","v","w")
+#mapped.data<-cbind(orig.data[[1]],mapped.data)
+mapped.data<-list(v=mapped.data[sind,1],w=mapped.data[sind,2],y=orig.data$y)
 
 # fit with sc
 # using the p-spline basis
-# ie. m[1]
-pspline.order<-2
+pspline.order<-2 # ie. m[1]
 b.mapped<-gam(y~te(v,w,bs="ps",m=pspline.order,k=c(6,10)),data=mapped.data,knots=knots.sc)
 # get predictions
 fv.mapped <- predict(b.mapped,prediction.grid)
@@ -71,38 +76,37 @@ fv <- predict(b,newdata=data.frame(v=xx,w=yy),block.size=-1)
 
 
 ############ First figure, two image plots
-#pdf("compsmooth.pdf",6,2)
-par(mfrow=c(2,2))
+pdf("compsmooth.pdf",width=4,height=2.9)
+par(mfrow=c(2,2),mar=c(1.8,1.5,1.8,1.5))
+
 
 names(fsb[[1]])<-c("x","y")
 
 image(xm,yn,matrix(fs.test(xx,yy),m,n),col=heat.colors(100),xlab="",ylab="",
-      asp=1,main="",lwd=2,las=1)
+      asp=1,main="truth",lwd=2,las=1,cex.axis=0.5)
 contour(xm,yn,matrix(fs.test(xx,yy),m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb[[1]],lwd=2)
 
 
-
-
 # sc+ps mapping example
 image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,asp=1,main="",ylim=c(-1.1,1.1))
+      cex.axis=0.5,asp=1,main="sc+ps",las=1)
 contour(xm,yn,matrix(fv.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb[[1]],lwd=2)
 
 # sc+tp
 image(xm,yn,matrix(fv.tp.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,asp=1,main="",ylim=c(-1.1,1.1))
+      cex.axis=0.5,asp=1,main="sc+tp",las=1)
 contour(xm,yn,matrix(fv.tp.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb[[1]],lwd=2)
 
 # soap
 image(xm,yn,matrix(fv,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,main="",asp=1,ylim=c(-1.1,1.1))
+      cex.axis=0.5,main="soap",asp=1,las=1)
 contour(xm,yn,matrix(fv,m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb[[1]],lwd=2)
 
-#dev.off()
+dev.off()
 
 ########## Second plots, boxplot comparison between soap and sc
 
