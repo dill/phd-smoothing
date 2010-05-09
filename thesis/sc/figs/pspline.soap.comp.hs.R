@@ -108,28 +108,3 @@ lines(fsb[[1]],lwd=2)
 
 dev.off()
 
-########## Second plots, boxplot comparison between soap and sc
-
-#pdf("scvssoapboxplot.pdf",6,4)
-#par(mfrow=c(1,3))
-#
-## load the data
-#soapcomp<-read.csv("../../ramseysim/results.file.txt",header=T)
-#psplinecomp<-read.csv("../../ramseysim/pspline.results.txt",header=T)
-#
-## find the limits on the y axis
-#ylims<-c(0,max(soapcomp$mapped,soapcomp$soap,psplinecomp$x))
-##ylims<-c(min(soapcomp$soap,psplinecomp$x),max(soapcomp$soap,psplinecomp$x))
-#
-## plot the boxplots
-## mapped+ps
-#boxplot(psplinecomp$mapped,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
-#
-## mapped+tp
-#boxplot(soapcomp$mapped,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
-#
-## soap
-#boxplot(soapcomp$soap,ylim=ylims,main="",pch=20,cex=0.5,cex.axis=0.5)
-#
-#dev.off()
-#
