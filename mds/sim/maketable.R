@@ -4,7 +4,9 @@
 #ramsay
 basefilename.mse<-"ramsay-mse-250-"
 basefilename.edf<-"ramsay-edf-250-"
-errlevs<-c(0.1,1,10)
+#errlevs<-c(0.1,1,10)
+errlevs<-c(0.35,0.9,1.55)
+
 
 sqrtn<-sqrt(250)
 cat(" & & MSE & &  & EDF & \\\\ \n")

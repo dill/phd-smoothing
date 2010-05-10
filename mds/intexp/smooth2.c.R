@@ -236,11 +236,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
 
-
-
-
    #################################################
-
 
    # do the squashing
    sq<-sqrt((dens.est)^3)
