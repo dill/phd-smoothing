@@ -249,7 +249,7 @@ Again, we start with the modified Ramsay horseshoe since it clearly illustrates 
 
 \subsubsection{Setup}
 
-For the modified horseshoe, 100 replications of samples of 250 points with normal errors (at 3 levels: 0.1, 1 and 10) were run. From these samples, three models were fitted to the data and predictions over 718 points (including the sample locations) and the mean squared error was calculated between the model prediction and the true value of the horseshoe function. The three models fitted were as follows using the \textsf{R} packages \texttt{mgcv} and \texttt{soap}:
+For the horseshoe, 100 replications of samples of 250 points with normal errors (at 3 levels: 0.1, 1 and 10) were run. (These are the settings used in \cite{soap}.) From these samples, three models were fitted to the data and predictions over 718 points (including the sample locations) and the mean squared error was calculated between the model prediction and the true value of the horseshoe function. The three models fitted were as follows using the \textsf{R} packages \texttt{mgcv} and \texttt{soap}:
 
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100.
