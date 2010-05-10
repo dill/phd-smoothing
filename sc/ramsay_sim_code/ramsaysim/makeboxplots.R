@@ -8,6 +8,7 @@ par(cex.lab=0.75)
 # b l t r
 #par(mar=c(7,3,2,1)+.1)
 #par(mgp=c(6,2,0))
+par(las=1)
 
 pspl<-read.csv("pspline.results.txt")
 other<-read.csv("results.file.txt")
@@ -39,8 +40,11 @@ xlab=paste("sc + p-splines: MSE=",mses[1]," se(MSE)=",ses[1],"\n",
 # log for plotting
 dat$mse<-log(dat$mse)
 
-boxplot(mse~labs,data=dat,main="")#,xlab=xlab)
+boxplot(mse~labs,data=dat,main="",axes=FALSE)#,xlab=xlab)
 
-legend(0.5,-2,xlab,bty="n")
+axis(1,at=c(0,1,2,3,4),label=c("",unique(dat$labs)),tick=FALSE,line=NULL)
+axis(2,at=seq(-7,0,by=1),label=seq(-7,0,by=1))
+
+legend(0.25,-2,xlab,bty="n")
 
 #dev.off()
