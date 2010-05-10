@@ -45,11 +45,11 @@ D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1)
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
 # mapped boundary...
-bnd.mds<-read.csv(file="wt2-bnd-in.csv")
-bnd.mds$X<-NULL
-bnd.mds[29,]<-bnd.mds[1,]
-bnd.mds<-insert.mds(bnd.mds,my.grid,grid.mds,bnd,faster=1)
-bnd.mds<-list(x=bnd.mds[,1],y=bnd.mds[,2])
+#bnd.mds<-read.csv(file="wt2-bnd-in.csv")
+#bnd.mds$X<-NULL
+#bnd.mds[29,]<-bnd.mds[1,]
+#bnd.mds<-insert.mds(bnd.mds,my.grid,grid.mds,bnd,faster=1)
+#bnd.mds<-list(x=bnd.mds[,1],y=bnd.mds[,2])
 
 ### setup the soap knots
 knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
@@ -88,13 +88,13 @@ res.edf<-list(mds=rep(0,sim.size), mdstp=rep(0,sim.size),
 
 for(i in 1:sim.size){
    res<-wt2_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
-                          gendata,bnd,grid.mds,my.grid,soap.knots,predd,bnd.mds)
+                          gendata,bnd,grid.mds,my.grid,soap.knots)#,predd,bnd.mds)
    res.mse$mds[i]<- res$mds
-   res.mse$mdsmod[i]<- res$mdsmod
+#   res.mse$mdsmod[i]<- res$mdsmod
    res.mse$soap[i]<-res$soap
    res.mse$tprs[i]<-res$tprs
    res.edf$mds[i]<- res$mds.edf
-   res.edf$mdsmod[i]<- res$mdsmod.edf
+#   res.edf$mdsmod[i]<- res$mdsmod.edf
    res.edf$soap[i]<-res$soap.edf
    res.edf$tprs[i]<-res$tprs.edf
 
