@@ -6,6 +6,8 @@ Some general remarks about stat ecol perhaps.
 
 \section{Themes}
 
+Some sort of general intro here.
+
 \bi
 	\item Morphing
 	\item Modifying penalties
@@ -30,6 +32,7 @@ General GAM setup. The is will mostly be taken from \cite{simonbook}, \cite{rwc}
 \label{GAMpenalties}
 \item bases - TPRS (and maybe P-splines?)
 \item fitting - GCV REML etc
+% see p. 122 RWC here GCV vs REML -> same MSE but different tradeoffs in Var and Bias
 \item other stuff - MSE, EDF etc
 \item \texttt{mgcv}
 %	\bi
@@ -71,7 +74,9 @@ The problem of leakage arises because of the way in which the smoother defines h
 The distribution of the population is smooth, just not necessarily over $\mathbb{R}^2$ (\cite{wangranalli}). Instead the structure of the domain that is under investigation must be modelled (implicitly or explicitly) for the correct inference to be drawn.
 
 \subsection{Ramsay's horseshoe function as a benchmark for finite area smoothing}
-\ref{ramsayfunc}
+
+\label{ramsayfunc}
+
 \cite{ramsay} proposes a function which can be used to benchmark new approaches to 2-dimensional smoothing. The function takes the form of a horseshoe shape which is flat across the domain has a gradient along the domain's major axis. This can be seen in \fig{orig-fs}. \cite{soap} modifies the test function by adding curvature across the minor axis of the shape. This was added in order to avoid the horseshoe function lying in the nullspace of their model's penalty, making the problem trivial. It is the second shape that will be used for simulations here and shall be referred to as the \emph{Ramsay horseshoe} throughout; it is shown in \fig{leakage}.
 
 % original horseshoe from Ramsay's paper
@@ -87,14 +92,14 @@ The test function highlights leakage well. As mentioned above, when the smoothin
 		
 \subsection{Previous approaches to leakage}
 
-The cause of leakage can be characterised in two ways: either the smooth does not respect the boundary of the domain, or the smooth does not take into account the geometry of the domain (in particular with regard to the distance between points within the domain). Previous work in this area has been to combat leakage along these two lines. Work of \cite{ramsay} and \cite{soap} both use a PDE boundary condition approach to try to prevent leakage, where as \cite{wangranalli} and \cite{eilerstalk}  attempt to approximate the intrinsic structure of the domain while not treating the boundary as something special in the basis setup. These four main works may be summarised as follows:
+The cause of leakage can be characterised in two ways: either the smooth does not respect the boundary of the domain, or the smooth does not take into account the geometry of the domain (in particular with regard to the distance between points within the domain). Previous work in this area has been to combat leakage along these two lines. Work of \cite{ramsay} and \cite{soap} both use a partial differential equation (PDE) boundary condition approach to try to prevent leakage, where as \cite{wangranalli} and \cite{eilerstalk}  attempt to approximate the intrinsic structure of the domain while not treating the boundary as something special in the basis setup. These four main works may be summarised as follows:
 
 \begin{enumerate}
-\item \cite{ramsay} proposes finite element $L$-splines (FELSPLINEs). The $L$-spline replaced the penalty term (see \secref{GAMpenalties}) with:
+\item \cite{ramsay} proposes finite element $L$-splines (FELSPLINEs). The $L$-spline replaces the usual penalty term (see \secref{GAMpenalties}) with:
 \be
 \int_\Omega (L_p f)^2 \text{d}\Omega,
 \ee
-where $L_p$ is a roughness operator defined as:
+where $\Omega$ is the domain in question and $L_p$ is a roughness operator defined as:
 \be
 L_p=\Delta^p+c_{p-1}\Delta^{p-1}+\dots+c_1\Delta+c_0I.
 \ee
@@ -102,13 +107,13 @@ Here $I$ is the identity operator, the $\{c_0,\dots, c_p\}$ are constants and th
 
 The PDE in the penalty cannot be analytically solved in two dimensions. Ramsay takes a finite element approach and triangulates the domain. He then constructs a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. The union of these functions is then a solution to the PDE in the penalty and therefore the solution to the usual smoothing objective function (see \secref{GAMobjfcn}).
 
-Since the triangulation and hence the penalty of the FELSPLINE is only calculated over the domain, and the continuity is specified over neighbouring cells, the method prevents leakage. Howevr, although FELSPLINE does not exhibit leakage on the original horseshoe (as in \fig{orig-fs}), in practice the model makes unrealistic physical assumptions. The boundary conditions of FELSPLINE specify that the gradient is zero, along normals to the boundary. This is not always physically realistic and as \cite{soap} show, by adding a small amount of curvature to the gradient of the Ramsay horseshoe the FELSPLINE performance begins to falter.
+Since the triangulation and hence the penalty of the FELSPLINE is only calculated over the domain, and the continuity is specified over neighbouring cells, the method prevents leakage. However, although FELSPLINE does not exhibit leakage on the original horseshoe (as in \fig{orig-fs}), in practice the model makes unrealistic physical assumptions. The boundary conditions of FELSPLINE specify that the gradient is zero, along normals to the boundary. This is not always physically realistic and as \cite{soap} show, by adding a small amount of curvature to the gradient of the Ramsay horseshoe the FELSPLINE performance begins to falter.
 
 FELSPLINE does not offer a realistic physical model and is therefore not a viable solution to the finite area smoothing problem in general.
 
 \item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. They take the geodesic distance between two points, that being the shortest path within the domain. This gives a definition of how near objects are in the domain. 
 
-Since geodesic distance is only know if the true, intrinsic structure of the domain is known (which is effectively not possible), an approximation is used. Wang and Ranalli first create a weighted, undirected graph ($G$, say) with a data point at each vertex and the distance between each pair of vertices as the weights on the edges. They then take the restricted graph of $G$, $G_k$, in which each vertex is only connected to its $k$ nearest neighbours. With this new, restricted graph the geodesic distances between each pair of vertices can be calculated using Floyds algorithm.
+Since geodesic distance is only know if the true, intrinsic structure of the domain is known (which is effectively not possible), an approximation is used. Wang and Ranalli first create a weighted, undirected graph ($G$, say) with a data point at each vertex and the distance between each pair of vertices as the weights on the edges. They then take the restricted graph of $G$, $G_k$, in which each vertex is only connected to its $k$ nearest neighbours. With this new, restricted graph the geodesic distances between each pair of vertices can be calculated using Floyd's algorithm (\cite{Floyd}).
 
 As the authors point out, the quality of the approximation is dependent on the size of the data set and its density. At low densities the estimated geodesic distance will tend towards the Euclidean, at high densities the approximation tends, asymptotically toward the true geodesic distance (\cite{bernstein}). Even if  dense enough data were available, the method will be rather slow since Floyd's algorithm is cubic in the number of vertices (the size of the data set). Finally, although the $k$-nearest neighbours algorithm used is not specified in the paper, in general such procedures are computationally expensive, adding another source of impedance to the technique.
 
@@ -127,7 +132,7 @@ except at one of the knots ($x^*_k,y^*_k$). Then, solving Poisson's equation in 
 \ee
 with $\rho=\rho_k(x,y)$, where $k$ indexes the knots, the set of basis functions for the soap film smoother, $g_k(x,y)$ is found, along with $a(x,y)$ (the solutions to \eqn{soap-poisson} when $\rho=0$). These bases are then summed to form:
 \be
-f=a(x,y)+\sum_{k=1}^n \gamma_k g_k(x,y),
+f(x,y)=a(x,y)+\sum_{k=1}^n \gamma_k g_k(x,y),
 \ee
 the soap film smoother, where the $\gamma_k$ are parameters to be estimated. The (isotropic) penalty term (\secref{GAMpenalties}) is:
 \be
@@ -137,7 +142,7 @@ Differing from the standard \tprs penalty since (\emph{i}) the integration occur
 
 The solution of the PDEs above, yielding the basis and penalty, is the most computationally expensive part of the procedure. Knots to use for $x_k^*$ and $y_k^*$ must be specified, usually using a grid. Numerical problems occur when knots are placed in boundary cells in the PDE solution grid.
 
-Although mathematically elegant, the soap film smoother is a rather complex model. It also treats the boundary as a special case and uses a cyclic spline in order to approximate the boundary values. This treatment of the boundary seems rather unnatural...
+Although mathematically elegant, the soap film smoother is a rather complex model. It also treats the boundary as a special case and uses a cyclic spline in order to approximate the boundary values. This treatment of the boundary seems rather unnatural and it may not always be physically realistic to consider the boundary in such a way.
 
 \item An alternative approach to treating the boundary as something special is to transform the space in which the points lie to instead lie in a different domain which is more suitable for smoothing. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe into a long strip and then smooth on that domain.
 

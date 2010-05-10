@@ -192,7 +192,7 @@ To calculate the backwards mapping, there are two possible approaches: (i) using
 \label{scivp}
 \frac{dw^*}{dw}=\frac{1}{\phi^{-1}(w^*)} \quad \text{and} \quad \phiinv(w_0)=w^*_0.
 \end{equation}
-In fact a combination of these methods are used. Solving \eqn{scivp} approximately gives the starting values for the Newton iterations which are significantly faster (since $\phi^{-1}$ is cheaper than $\phi$ to compute.) (\cite{driscoll} \emph{p. 29}).
+In fact a combination of these methods are used. Solving \eqn{scivp} approximately gives the starting values for the Newton iterations which are significantly faster (since $\phi^{-1}$ is cheaper than $\phi$ to compute.) (\cite{driscoll} p. 29).
 
 The only problem with this is that the path from $w_0$ to the point to map, $w$, must lie entirely inside the polygon. Whether this is true is not known, since after the mapping has been computed, the only known points are the vertices (at which the IVP is singular). So, to combat this, all points on the path are checked sequentially. This computation, although inelegant, is fast compared to the IVP/Newton iterations.
 
@@ -238,11 +238,11 @@ This idea can be extended by noting that the polygon is identical when additiona
 
 In the solution to the \sch parameter problem given in \secref{sc-parprob}, conditions on the side lengths and orientations of the polygon are enforced. The CRDT algorithm imposes conditions about quadrilateral sections of the polygon and the diagonals of the polygon. First a Delaunay triangulation of the domain is performed and then pairs of triangles are merged into quadrilaterals. A measure is then defined (the \emph{cross-ratio}) which specifies a set of non-linear equations to be solved. These equations enforce the constraint that the cross-ratio in mapped polygon comes out correctly. 
 
-Putting all of these ideas together gives the CRDT algorithm. We first add edges to the polygon with internal angle $\pi$ to remove enlongated parts of the domain and then triangulate the domain. Once the domain is triangulated we calculate the cross-ratio:
+Putting all of these ideas together gives the CRDT algorithm (\cite{driscoll}, pp. 30-39). We first add edges to the polygon with internal angle $\pi$ to remove enlongated parts of the domain and then triangulate the domain. Once the domain is triangulated we find the cross-ratio:
 \begin{equation}
 \rho(a,b,c,d) = \frac{(d-a)(b-c)}{(c-d)(a-b)},
 \end{equation}
-for each quadrilateral in the polygon. Then, analogously to \eqn{optimizeme} we set up a series of equations, specifying that the cross-ratios remain the same in the polygon and the transform of the rectangle back to the polygon. We then wish to solve for the values of $\rho$ for the original domain in the same manner as we solved for side lengths in the original problem. 
+for each of the $n-3$ quadrilaterals in the polygon (where $a,b,c,d$ are prevertices.) Then, analogously to \eqn{optimizeme} we set up a series of equations, specifying that the cross-ratios remain the same in the polygon and the transform of the rectangle back to the polygon. We then wish to solve for the values of $\rho$ for the original domain in the same manner as we solved for side lengths in the original problem. 
 
 In \fig{uncrowdeddisk} the CRDT method is used with a rectangular domain, crowding has been alleviated to some degree. The point density, as well as vertex density seems to be more uniform than in \fig{crowdeddisk}.
 
@@ -254,12 +254,7 @@ In \fig{uncrowdeddisk} the CRDT method is used with a rectangular domain, crowdi
 \label{uncrowdeddisk}
 \end{figure}
 
-The downside of using CRDT is that it may add too many vertices to maintain the aspect ratio (\cite{driscoll05}), so the algorithm tends to take longer than the one specified in \secref{algorithmsketch} since it is $O(n^3)$ JUSTIFY AND ELABORATE ON THIS!. This is, of course, offset against the fact that the problem becomes tractable.
-
-
-
-
-
+The downside of using CRDT is that it may add too many vertices to maintain the aspect ratio, so the algorithm takes longer to run than the one specified in \secref{algorithmsketch} since it tends to be cubic in the number of vertices (\cite{driscoll05}). This is offset against the fact that the problem becomes tractable.
 
 \section{Simulation experiments}
 
@@ -284,15 +279,12 @@ A sample of 1000 points was then taken from the horseshoe and noise added to the
 \centering
 % trim order l b r t
 \includegraphics[width=4in]{sc/figs/compsmooth.pdf} \\
-\caption{Comparison of smooths given using P-splines on the transformed domain (top right), thin plate splines on the transformed domain (bottom left) and soap film smoother (bottom right) for the Ramsay horseshoe (top left). Here sample size was 250, noise level was set to $\sigma=1$.}
+\caption{A typical set of predictions using P-splines on the transformed domain (top right), thin plate splines on the transformed domain (bottom left) and soap film smoother (bottom right) for the Ramsay horseshoe (top left). Sample size was 250, noise level was set to $\sigma=1$.}
 \label{compsmooth}
 % generated by figs/pspline.soap.comp.hs.R
 \end{figure}
 
-\Fig{compsmooth} shows the true function and typical realisations of: the fit given using a \tprs without transformation, the fit given by a \tprs with transformation and the fit given by the soap film smoother. Looking at the heat maps one can see that the horseshoe function is clearly However, visual inspection alone is clearly not enough basis for accepting the method, therefore we now look at the mean squared error of the models.
-
-Note that using the SC transform, we don't capture the curvature in the function.
-
+\Fig{compsmooth} shows the true function and typical realisations of: the fit given by a \tprs on the transformed domain, a P-spline fit on the transformed domain and the fit given by the soap film smoother. Looking at the heat maps one can see that the general shape of the horseshoe function is clearly being reproduced by all methods (especially in comparison to that in \fig{leakage}). However, on the transformed domains the curvature across the minor axis is not being captured.
 
 \begin{table}[tb]
 \begin{tabular}{c c}\\
@@ -312,6 +304,8 @@ $n$ & $\sigma$ \\
 \end{table}
 
 \Tabref{scramsimtable} shows the settings for noise level and sample size of the simulations. Mean squared error between the true function and the fitted model was used to evaluate the model's performance. In the following tables we provide the mean squared error over a prediction grid of 1000 points averaged over 1000 generated data sets.
+
+
 
 \Tabref{scramsayres} shows the results from the simulations for the standard horseshoe. A cursory glance show that that results were better than those for the soap film smoother for larger sample sizes and standard errors were comparable. Once we get to 100 samples the method performance degrades over all methods. Once noise is introduced into the data we can see that the soap film and transformation method do as well as each other, MSEs are approximately the same and the standard errors are of the same order.
 
@@ -460,8 +454,7 @@ At this point it is useful to get an idea about what the transformation is doing
 
 \section{Conclusions \& Analysis}
 
+This brief foray into conformal mapping has provided plenty of insights into how smoothers will act under mapping schemes. It also gives insight into which criteria are useful for a transformation-based method. For example, the angle-preserving properties of the \sch transform are of little use in a smoothing context. It is also clear that a method that does not produce crowding-type phenomena is desirable. These examples show the serious disadvantages of the approach, the ability of the transform to clearly split the domain and truly separate those parts interfering with one another is very useful.
 
+Although the \sch transform is rather disappointing in practice, it does show that a mapping-type technique can produce some reliable results, even if it is on a limited number of domains. In essence the main downfall of the \sch transform is that it re-maps the domain too rigidly. There is no flexibility to the domain into which one is mapping, it must be one of those detailed above. It is now clear that such an inflexible strategy will not yield good results in all situations and, indeed, there are a limited number of situations in which such an approach will be useful.
 
-
-
-Why this doesn't work but why it wasn't a waste of time.
