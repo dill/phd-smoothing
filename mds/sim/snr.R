@@ -1,7 +1,7 @@
 # signal to noise ratio...
 library(soap)
 samp.size<-250
-noise.level<-0.5
+noise.level<-1.55
 
 
    bnd <- read.csv("wt2-verts.csv",header=FALSE)

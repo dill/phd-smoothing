@@ -74,7 +74,8 @@ predd<-gendata.ind$z[ind]
 
 #################################
 
-sim.size<-100
+#sim.size<-200
+sim.size<-1
 samp.size<-250
 noise.level<-0.5
 
