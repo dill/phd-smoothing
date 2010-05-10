@@ -74,10 +74,11 @@ predd<-gendata.ind$z[ind]
 
 #################################
 
-#sim.size<-200
-sim.size<-1
+sim.size<-200
 samp.size<-250
-noise.level<-0.5
+# noise levels = 0.35,0.9,1.55
+# snr = 0.95,0.75,0.50
+noise.level<-0.35
 
 res.mse<-list(mds=rep(0,sim.size), mdstp=rep(0,sim.size), 
               soap=rep(0,sim.size),tprs=rep(0,sim.size))
