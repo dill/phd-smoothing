@@ -2,10 +2,10 @@
 # Copyright David Lawrence Miller 2009.
 source("mds.R")
 
-set.seed(1)
+#set.seed(1)
  
 samp.size=250
-noise.level=0.9
+noise.level=0.35
 
 ## create a boundary...
 bnd <- read.csv("wt2-verts.csv",header=FALSE)

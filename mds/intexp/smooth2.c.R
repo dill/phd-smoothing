@@ -243,6 +243,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    sq<-sqrt((dens.est)^3)
    Dx<-sq*Dx
    Dy<-sq*Dy
+   Dxy<-sq*Dxy
 
    # actually do the integration
    fd<-t(Dx)%*%Dx + t(Dxy)%*%Dxy + t(Dy)%*%Dy
