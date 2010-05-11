@@ -236,11 +236,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
 
-
-
-
    #################################################
-
 
    # do the squashing
    sq<-sqrt((dens.est)^3)
@@ -261,7 +257,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    object$S[[1]][(k-1):k,]<-rep(0,k*2)
    object$S[[1]][,(k-1):k]<-rep(0,k*2)
 
-   cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
+   #cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
 
    class(object)<-"mdstp.smooth"
    object
