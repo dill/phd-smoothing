@@ -18,7 +18,7 @@ dev.copy2pdf(file="ramsay-mds-boxplots.pdf")
 
 #wt2
 basefilename<-"wt2-mse-250-"
-errlevs<-c(0.05,0.5,5)
+errlevs<-c(0.35,0.9,1.55)
 
 for(errlev in errlevs){
 

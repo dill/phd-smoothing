@@ -4,8 +4,7 @@
 #ramsay
 basefilename.mse<-"ramsay-mse-250-"
 basefilename.edf<-"ramsay-edf-250-"
-#errlevs<-c(0.1,1,10)
-errlevs<-c(0.35,0.9,1.55)
+errlevs<-c(0.1,1,10)
 
 
 sqrtn<-sqrt(250)
@@ -38,7 +37,8 @@ cat("\n\n")
 #wt2
 basefilename.mse<-"wt2-mse-250-"
 basefilename.edf<-"wt2-edf-250-"
-errlevs<-c(0.05,0.5,5)
+#errlevs<-c(0.05,0.5,5)
+errlevs<-c(0.35,0.9,1.55)
 
 cat(" & & MSE & &  & EDF & \\\\ \n")
 cat(" & MDS & MDS (tensor) & soap & thin plate & MDS & MDS (tensor) & soap & thin plate\\\\ \n")

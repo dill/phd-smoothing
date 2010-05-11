@@ -4,7 +4,7 @@
 
 \section{Introduction}
 
-Say something about how, given that SC buggered up, we want a data dependent way of doing the transformation..
+Cary on from previous chapter, need data-dependent way of doing transform...
 
 \subsection{Proposition}
 
@@ -342,27 +342,32 @@ Table \ref{wt2resultstable} shows that when there is low error, both the soap fi
 
 INVESTIGATE THE ABOVE!!!!
 
-
 \begin{table}[ht]
 \centering
 \begin{tabular}{c c c c c}
  &  & MSE  & &\\ 
 $\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
 \hline
-0.05  & 0.0948 (0.00084) & 0.0603 (0.00352) & 0.0237 (0.00039) &0.0504 (0.00039) \\ 
-0.5  & 0.1426 (0.00078) & 0.1106 (0.00133) & 0.1013 (0.02151) &0.1123 (0.02151) \\ 
-5  & 0.9179 (0.02644) & 1.2481 (0.04159) & 1.1987 (0.04111) &1.3865 (0.04111)\\ 
+0.35  & 0.07 (0.00062) & 0 (0) & 0.0539 (5e-04) &0.082 (0.00104)\\
+0.9  & 0.177 (0.00184) & 0 (0) & 0.1308 (0.00197) &0.1938 (0.00241)\\
+1.55  & 0.2859 (0.00438) & 0 (0) & 0.2362 (0.00434) &0.3509 (0.00471)\\
+%0.05  & 0.0948 (0.00084) & 0.0603 (0.00352) & 0.0237 (0.00039) &0.0504 (0.00039) \\ 
+%0.5  & 0.1426 (0.00078) & 0.1106 (0.00133) & 0.1013 (0.02151) &0.1123 (0.02151) \\ 
+%5  & 0.9179 (0.02644) & 1.2481 (0.04159) & 1.1987 (0.04111) &1.3865 (0.04111)\\ 
 \end{tabular}
 \begin{tabular}{c c c c c}
  &  & EDF  & &\\ 
 $\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
 \hline
-0.05 &72.262 (0.89606) & 78.2691 (0.679) & 94.5187 (0.78697) & 86.9415 (0.78697)\\ 
-0.5 &40.7981 (0.46687) & 50.5025 (0.36223) & 45.2341 (0.74063) & 58.418 (0.74063)\\ 
-5  &6.8274 (0.36097) & 8.577 (0.3649) & 11.5419 (0.83982) & 11.9407 (0.83982)\\ 
+0.35 &80.9039 (0.57103) & 0 (0) & 55.6979 (0.51448) & 77.9619 (0.46726)\\ 
+0.9 &35.0185 (0.76449) & 0 (0) & 29.7171 (0.57477) & 48.0508 (0.47636)\\ 
+1.55 &19.4625 (0.57265) & 0 (0) & 20.2918 (0.36634) & 32.2715 (0.47961)\\ 
+%0.05 &72.262 (0.89606) & 78.2691 (0.679) & 94.5187 (0.78697) & 86.9415 (0.78697)\\ 
+%0.5 &40.7981 (0.46687) & 50.5025 (0.36223) & 45.2341 (0.74063) & 58.418 (0.74063)\\ 
+%5  &6.8274 (0.36097) & 8.577 (0.3649) & 11.5419 (0.83982) & 11.9407 (0.83982)\\ 
 \end{tabular}
 
-\caption{Mean MSE and EDF for the four models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations. THE SES HERE ARE WRONG FOR THE LAST TWO COLS!!!}
+\caption{Mean MSE and EDF for the four models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
 \label{wt2resultstable}
 \end{table}
 
@@ -386,57 +391,4 @@ As with the Ramsay horseshoe, it is interesting to see what the projection into 
 % generated using thesis/mds/figs/mdswt2points
 \end{figure}
 
-
-
-\section{Improvements}
-
-Although these results are encouraging, the inability of the smooth to capture all the features in the right side of the domain when using an isotropic smoother is disappointing. Proposed further work is to follow the lead from \cite{wood2000}, which shows that given some transform of a variable, $y$ say, such that $y_i^\prime=y_i/k$, then $f(x,y^\prime k)$ will give the same fit as $f(x,y)$ (ie. the fit will be the same under the new coordinates) but the penalty will change to:
-\begin{equation}
-\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2k\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + k^3\Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y,
-\label{adjustedintegral}
-\end{equation}
-from:
-\begin{equation*}
-\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + \Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y.
-\end{equation*}
-In the case of the MDS, the integral would need to be split over a grid such that each cell captured the distortion in space over the area of the cell. Mathematically, $\Omega$ would be split into a subsets, $\omega_i$ (where $\bigcup_{\forall j} \omega_j = \Omega$) and (\ref{adjustedintegral}) becomes:
-\begin{equation}
-\sum_{\forall j} \int\int_{\omega_j} l_j^3 \Big( \frac{\partial^2 f}{\partial x^2} \Big) + 2k_jl_j\Big( \frac{\partial^2 f}{\partial x \partial y} \Big) + k_j^3\Big( \frac{\partial^2 f}{\partial y^2} \Big) \text{d}x \text{d}y,
-\end{equation}
-where $k_j$ is the scaling in the $y$ direction and $l_j$ is the scaling in the $x$ direction for the $j^{\text{th}}$ cell. We assume here that $f(x,y)$ is ``nice''.
-
-Using this penalty may allow for the distortions in space to be taken account of and therefore get around the problem of the details being smoothed over, as seen above. It will be easiest to first build this using a tensor product of $P$-splines to test its utility (since their penalty is discrete) and then move on to the thin plate spline penalty.
-
-In order to make this MDS approach competitive with \texttt{soap} (assuming that the above distortion adjustment is successful) a speed-up in the computation of the within-area distances must be achieved. At the moment this is the major bottleneck in the calculation since model fitting consists only of fitting a thin plate spline. 
-
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{c || c c c}
- & MDS & Soap film & Thin plate\\ 
-\hline
-Fit & 3.39225 & 10.87688 & 0.61492\\
-Prediction & 4.80357 & 8.87535 & 0.10845\\
-\end{tabular}
-\label{ramsaytime}
-\caption{Average time (in seconds) to fit a realisation of the modified Ramsay horseshoe for the three models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function.}
-\end{table}
-
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{c || c c c c}
- & MDS & MDS (tensor) & Soap film & Thin plate\\ 
-\hline
-Fit & 84.85242 & 85.35168 & 36.24865 & 0.51721\\
-Prediction & 155.4004 & 155.2419 & 44.22065 & 0.20994 \\
-\end{tabular}
-\label{wt2time}
-\caption{Average time (in seconds) to fit a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function.}
-\end{table}
-
-
-Speed-ups can be achieved by minimizing the number of calculations for within-area distance that are needed. In \cite{landmark} a method to calculate MDS coordinates using a sparse grid of landmark points is suggested; although the authors are sceptical about how this will perform with non-Euclidean distances. There is clearly some work here in finding some minimal set of landmark points for the within-area distance metric obtained from the above algorithm.
-
-The calculation of within-area distances could be linked into a ``landmark''-type process by calculating the within-area distances between a set of points in a sparse grid, then saving those paths. The distances between desired points can then be found by modifying the path with the end points nearest to those of the desired points.
 
