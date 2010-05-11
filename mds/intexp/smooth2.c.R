@@ -129,7 +129,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # lets generate some grids
 
    # create base grid
-   m<-20;n<-20 # need to set these somewhere
+   m<-25;n<-25 # need to set these somewhere
    xmin<-min(bnd$x)
    ymin<-min(bnd$y)
    xmax<-max(bnd$x)
@@ -190,7 +190,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #points(mbrg,pch=19,col="blue",cex=0.8)
    #points(mblg,pch=19,col="orange",cex=0.7)
 
-   # grid resolution
+   # grid resolution - number of divisions of the other grid
+   # to make
    gres<-10
 
    pts.x<-c()

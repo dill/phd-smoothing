@@ -5,7 +5,7 @@ source("mds.R")
 set.seed(1)
  
 samp.size=250
-noise.level=0.5
+noise.level=0.9
 
 ## create a boundary...
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
