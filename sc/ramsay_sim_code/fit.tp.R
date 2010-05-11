@@ -3,12 +3,6 @@
 # we do this by just taking a sample from the data we already have
 # on file and then adding more noise to the "heights" (ie. y value).
 
-
-library(soap)
-
-## create the prediction grid 
-fsb <- list(fs.boundary())
-
 # create the grid
 m<-100;n<-50
 xm <- seq(-1,3.5,length=m);yn<-seq(-1,1,length=n)
@@ -19,7 +13,6 @@ tru <- fs.test(xx,yy)
 
 # read in the predicition grid from matlab
 prediction.grid<-data.frame(v=xx,w=yy)
-
 
 # bit of faffing with titles
 names(fsb[[1]]) <- c("x","y") ## correct boundary names
@@ -66,7 +59,7 @@ n.samples<-1000
 
 #   cat("mses$mapped mean for noise level",noise.level,"is",mean(mses$tpmapped),"\n")
 
-   write.csv(file=paste("tp-",noise.level,"-",samp.size,".results.txt",sep=""),mses)
+   write.csv(file=paste(alt,"tp-",noise.level,"-",samp.size,".results.txt",sep=""),mses)
 
 #   cat("written file!\nEND\n")
 

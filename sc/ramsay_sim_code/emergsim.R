@@ -1,9 +1,11 @@
 # do some emergency simulations
 
+library(soap)
+
 nl<-c(0.3,0.3,0.3,0.3,0.5,1,2)
 samps<-c(1000,500,250,100,1000,1000,1000)
 
-j<-1
+#j<-1
 
 for(j in 1:length(nl)){
 
