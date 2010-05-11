@@ -21,7 +21,7 @@ this.file<-read.csv(paste("ramsay/tp-noisey-0.5.results.txt",sep=""))
 tp.mse<-round(mean(this.file$tpmapped),5)
 tp.se<-round(sd(this.file$tpmapped)/sqrtn,5)
 
-this.file<-read.csv(paste("ramsay/tp-0.5-1000.results.txt",sep=""))
+this.file<-read.csv(paste("ramsay/tp-0.3-1000.results.txt",sep=""))
 tprs.mse<-round(mean(this.file$tp),5)
 tprs.se<-round(sd(this.file$tp)/sqrtn,5)
 
@@ -55,8 +55,8 @@ for(my.size in sample.sizes){
 
    # read in the tp stuff    
    this.file<-read.csv(paste("ramsay/tp-sample.size.",my.size,".results.txt",sep=""))
-   tp.mse<-round(mean(this.file$tpmapped)/sqrtn,5)
-   tp.se<-round(sd(this.file$tpmapped),5)
+   tp.mse<-round(mean(this.file$tpmapped),5)
+   tp.se<-round(sd(this.file$tpmapped)/sqrtn,5)
 
    this.file<-read.csv(paste("ramsay/tp-0.3-",my.size,".results.txt",sep=""))
    tprs.mse<-round(mean(this.file$tp),5)
