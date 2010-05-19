@@ -122,10 +122,10 @@ source("intexp/smooth2.c.R")
 
 # clever tprs 
 b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp",
-             xt=list(bnd.mds=bnd.mds,
-                     bnd=bnd,
-                     op=my.grid,
-                     mds.obj=mds.obj)),
+                 xt=list(bnd.mds=bnd.mds,
+                         bnd=bnd,
+                         op=my.grid,
+                         mds.obj=mds.obj)),
              data=samp.data)
 fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
