@@ -2,7 +2,7 @@
 # Copyright David Lawrence Miller 2009.
 source("mds.R")
  
-wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
+wt2_smooth_test<-function(samp.size=250,noise.level=0.9,plot.it=FALSE){
  
    ## create a boundary...
    bnd <- read.csv("wt2-verts.csv",header=FALSE)
@@ -99,19 +99,19 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    pred.data$y[samp.ind]<-samp.mds[,2]
  
    ### Now do some fitting and prediction
-   ### mapping
-   b.mapped.te<-gam(z~te(x,y,k=12),data=samp.data)
-   fv.te <- predict(b.mapped.te,newdata=pred.data)
-
    # tensor thin plate   
+   #b.mapped.te<-gam(z~te(x,y,k=12),data=samp.data)
+   #fv.te <- predict(b.mapped.te,newdata=pred.data)
+
+   # mapping
    b.mapped.s<-gam(z~s(x,y,k=100),data=samp.data)
    fv.s <- predict(b.mapped.s,newdata=pred.data)
 
-   ### normal tprs
+   # normal tprs
    b.tprs<-gam(z~s(x,y,k=100),data=nsamp.data)
    fv.tprs <- predict(b.tprs,newdata=npred.data)
 
-   ### soap
+   # soap
    knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
    knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
    insideknots<-inSide(bnd,knots.x,knots.y)
@@ -134,48 +134,50 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE){
    if(plot.it){
  
       # plot for truth, mds, tprs and soap
-      par(mfrow=c(2,2))
-      par(mar=c(3,3,3,3))
+      #par(mfrow=c(2,2))
+      #par(mar=c(3,3,3,3))
+      par(mfrow=c(2,2),mar=c(1.8,1.5,1.8,1.5),las=1)
       
+
       # axis scales
       xscale<-seq(min(gendata$x),max(gendata$x),length.out=50)
       yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
    
-#      pred.mat<-rep(NA,length(gendata.ind$x))
-#      pred.mat[ind]<-gendata.ind$z[ind]
-#      pred.mat<-matrix(pred.mat,50,50)
-#      image(xscale,yscale,pred.mat,main="True",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-#      contour(xscale,yscale,pred.mat,add=T)
+      pred.mat<-rep(NA,length(gendata.ind$x))
+      pred.mat[ind]<-gendata.ind$z[ind]
+      pred.mat<-matrix(pred.mat,50,50)
+      image(xscale,yscale,pred.mat,main="Truth",asp=1,xlab="",ylab="",col=heat.colors(100),cex.axis=0.5)
+      contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
    
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.s
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="MDS + tp",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
+      image(xscale,yscale,pred.mat,main="mds+tprs",asp=1,xlab="",ylab="",col=heat.colors(100),cex.axis=0.5)
+      contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
       
-      pred.mat<-rep(NA,length(gendata.ind$x))
-      pred.mat[ind]<-fv.te
-      pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="MDS + tptp",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
+ #     pred.mat<-rep(NA,length(gendata.ind$x))
+ #     pred.mat[ind]<-fv.te
+ #     pred.mat<-matrix(pred.mat,50,50)
+ #     image(xscale,yscale,pred.mat,main="MDS + tptp",asp=1,xlab="",ylab="",col=heat.colors(100))
+ #     contour(xscale,yscale,pred.mat,add=T)
 
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.tprs
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="tprs",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
+      image(xscale,yscale,pred.mat,main="tprs",asp=1,xlab="",ylab="",col=heat.colors(100),cex.axis=0.5)
+      contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
       
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.soap
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="soap",asp=1,las=1,xlab="x",ylab="y",col=heat.colors(100))
-      contour(xscale,yscale,pred.mat,add=T)
+      image(xscale,yscale,pred.mat,main="soap",asp=1,xlab="",ylab="",col=heat.colors(100),cex.axis=0.5)
+      contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
  
    }
  
    ### calculate MSEs
    mses<-list(mds=mean((fv.s-gendata.ind$z[ind])^2,na.rm=T),
-              mdstp=mean((fv.te-gendata.ind$z[ind])^2,na.rm=T),
+#              mdstp=mean((fv.te-gendata.ind$z[ind])^2,na.rm=T),
               tprs=mean((fv.tprs-gendata.ind$z[ind])^2,na.rm=T),
               soap=mean((fv.soap-gendata.ind$z[ind])^2,na.rm=T))
  

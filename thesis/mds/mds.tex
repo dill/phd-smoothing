@@ -314,7 +314,7 @@ The Ramsay horseshoe is an easy domain to smooth over since it is obvious how th
 
 \subsubsection{Setup}
 
-The simulations consisted of 200 realisations of 250 samples from the surface in \fig{wt2-truth}. Normal errors were added at three levels $\sigma=0.35$, 0.9, 1.55 (corresponding to signal-to-noise ratios (SNRs) of 0.95, 0.75 and 0.5, respectively. SNRs were calculated as the mean squared correlation between true function value and the truth with error added.) Mean squared error over 1253 prediction points (including those points in the sample) was calculated and recorded, along with EDF for each model. The models fitted were:
+The simulations consisted of 200 realisations of 250 samples from the surface in \fig{wt2-truth}. Normal errors were added at three levels $\sigma=0.35$, 0.9 and 1.55 (corresponding to signal-to-noise ratios (SNRs) of 0.95, 0.75 and 0.5, respectively. SNRs were calculated as the mean squared correlation between true function value and the truth with error added.) Mean squared error over 1253 prediction points (including those points in the sample) was calculated and recorded, along with EDF for each model. The models fitted were:
 
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100. 
@@ -336,9 +336,9 @@ Looking at a typical realisation in \fig{wt2-fit-0.5}, we see that soap (bottom 
 % generated (roughly) using wt2-smooth-test.R
 \end{figure}
 
-The final model, above, was chosen after it appeared that the MDS with a bivariate thin plate spline did not adequately model the peak in the right corner of the domain (\fig{wt2-fit-0.5}, top left panel.) After using a tensor product of thin plate splines a better fit to the right peak was found (\fig{wt2-fit-0.5}, top right panel), although this is not reflected particularly well in terms of mean squared error (see table \ref{wt2resultstable}.) The visual improvement in fit can be explained by thin plate splines in two dimensions being an isotropic smooth and since space has not been transformed in a uniform way in both dimensions.
+%The final model, above, was chosen after it appeared that the MDS with a bivariate thin plate spline did not adequately model the peak in the right corner of the domain (\fig{wt2-fit-0.5}, top left panel.) After using a tensor product of thin plate splines a better fit to the right peak was found (\fig{wt2-fit-0.5}, top right panel), although this is not reflected particularly well in terms of mean squared error (see table \ref{wt2resultstable}.) The visual improvement in fit can be explained by thin plate splines in two dimensions being an isotropic smooth and since space has not been transformed in a uniform way in both dimensions.
 
-Table \ref{wt2resultstable} shows that when there is low error, both the soap film and thin plate splines outperform the MDS approach, but once the errors are increased the MDS does much better. The MDS approach also benefits from having a smaller EDF than all the other approaches in all of the noise scenarios, the tensor MDS doing better at lower noise levels. This is encouraging and shows that perhaps there is a place for this technique alongside the soap film smoother if the method can be improved for low noise situations.
+%Table \ref{wt2resultstable} shows that when there is low error, both the soap film and thin plate splines outperform the MDS approach, but once the errors are increased the MDS does much better. The MDS approach also benefits from having a smaller EDF than all the other approaches in all of the noise scenarios, the tensor MDS doing better at lower noise levels. This is encouraging and shows that perhaps there is a place for this technique alongside the soap film smoother if the method can be improved for low noise situations.
 
 INVESTIGATE THE ABOVE!!!!
 
@@ -346,22 +346,24 @@ INVESTIGATE THE ABOVE!!!!
 \centering
 \begin{tabular}{c c c c c}
  &  & MSE  & &\\ 
-$\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
+%$\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
+$\sigma$ & MDS & Soap film & Thin plate\\ 
 \hline
-0.35  & 0.07 (0.00062) & 0 (0) & 0.0539 (5e-04) &0.082 (0.00104)\\
-0.9  & 0.177 (0.00184) & 0 (0) & 0.1308 (0.00197) &0.1938 (0.00241)\\
-1.55  & 0.2859 (0.00438) & 0 (0) & 0.2362 (0.00434) &0.3509 (0.00471)\\
+0.35  & 0.07 (0.00062) & 0.0539 (5e-04) &0.082 (0.00104)\\
+0.9  & 0.177 (0.00184) & 0.1308 (0.00197) &0.1938 (0.00241)\\
+1.55  & 0.2859 (0.00438) & 0.2362 (0.00434) &0.3509 (0.00471)\\
 %0.05  & 0.0948 (0.00084) & 0.0603 (0.00352) & 0.0237 (0.00039) &0.0504 (0.00039) \\ 
 %0.5  & 0.1426 (0.00078) & 0.1106 (0.00133) & 0.1013 (0.02151) &0.1123 (0.02151) \\ 
 %5  & 0.9179 (0.02644) & 1.2481 (0.04159) & 1.1987 (0.04111) &1.3865 (0.04111)\\ 
 \end{tabular}
 \begin{tabular}{c c c c c}
  &  & EDF  & &\\ 
-$\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
+%$\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
+$\sigma$ & MDS & Soap film & Thin plate\\ 
 \hline
-0.35 &80.9039 (0.57103) & 0 (0) & 55.6979 (0.51448) & 77.9619 (0.46726)\\ 
-0.9 &35.0185 (0.76449) & 0 (0) & 29.7171 (0.57477) & 48.0508 (0.47636)\\ 
-1.55 &19.4625 (0.57265) & 0 (0) & 20.2918 (0.36634) & 32.2715 (0.47961)\\ 
+0.35 &80.9039 (0.57103) & 55.6979 (0.51448) & 77.9619 (0.46726)\\ 
+0.9 &35.0185 (0.76449) & 29.7171 (0.57477) & 48.0508 (0.47636)\\ 
+1.55 &19.4625 (0.57265) & 20.2918 (0.36634) & 32.2715 (0.47961)\\ 
 %0.05 &72.262 (0.89606) & 78.2691 (0.679) & 94.5187 (0.78697) & 86.9415 (0.78697)\\ 
 %0.5 &40.7981 (0.46687) & 50.5025 (0.36223) & 45.2341 (0.74063) & 58.418 (0.74063)\\ 
 %5  &6.8274 (0.36097) & 8.577 (0.3649) & 11.5419 (0.83982) & 11.9407 (0.83982)\\ 
