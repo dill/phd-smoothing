@@ -112,6 +112,7 @@ void sp_do_intersect(double p1[], double p2[], int nbnd, double **bnd,int *bndin
             bndint[i]=0;
          }
       }
+
    }
 }
 
@@ -873,7 +874,7 @@ int compare_doubles (const void *a, const void *b){
 // my very own, very poor find
 // returns the first element of the array to match the value
 int crapfind(int narr, double *arr, double val){
-   int i, index;
+   int i, index=-1;
 
    for(i=0;i<narr;i++){
       if(arr[i]==val){

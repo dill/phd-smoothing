@@ -86,7 +86,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p2[0]=x[j]; p2[1]=y[j];
 //printf("cat(\"p1=list(x=%.16f,y=%.16f);p2=list(x=%.16f,y=%.16f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
 
-//            printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
+            printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
 
 
             if(*faster){
@@ -199,7 +199,7 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
          sp_do_intersect(p1, p2, nbnd, bnd, retint);
    
          //                           vvv just hypot when we touch only 1 vertex 
-         if(iarrsum((nbnd-1), retint)>1){
+         if(iarrsum((nbnd-1), retint)>0){
             pathlen[k] = (-1);
          }else{
             pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
