@@ -20,7 +20,7 @@
 # shared object file
 rm wood.so
 #gcc  -Wall -O0 -pedantic -lm -g -std=gnu99 -shared inout.c utils.c wood.c -o wood.so -L/usr/lib/R/lib  -fPIC #-lefence #-lR
-#gcc  -Wall -O0 -pedantic -lm -g -std=gnu99 -shared inout.c utils.c wood.c -o wood.so  -fPIC #-lefence #-lR
+gcc  -Wall -O0 -pedantic -lm -g -std=gnu99 -shared inout.c utils.c wood.c -o wood.so  -fPIC
 
 # optimised...
-gcc  -Wall -O2 -pedantic -lm -std=gnu99 -shared inout.c utils.c wood.c -o wood.so  -fPIC #-lefence #-lR
+#gcc  -Wall -O2 -pedantic -lm -std=gnu99 -shared inout.c utils.c wood.c -o wood.so  -fPIC

@@ -4,14 +4,12 @@ par(mfrow=c(2,2))
 
 # load MASS for bivar Normal
 library(MASS)
-
 library(mgcv)
 library(soap)
 
-library(ks)
 
-source("squash.R")
-source("psmooth.c.R")
+#source("squash.R")
+source("smooth2.c.R")
 
 set.seed(1)
 
@@ -35,14 +33,22 @@ dat<-data.frame(x=xx,y=yy,z=as.vector(bivn.kde$z))
 
 image(matrix(dat$z,res,res),x=bivn.kde$x,y=bivn.kde$y,main="raw data",asp=1)
 
-b<-gam(z~s(x,y,k=60),data=dat)
+#b<-gam(z~s(x,y,k=60),data=dat)
 
-vis.gam(b,plot.type="contour",main="tprs fit",asp=1)
+#vis.gam(b,plot.type="contour",main="tprs fit",asp=1)
+
+bnd.mds<-list(x=c(max(x),max(x),
+                  min(x),min(x),max(x)),
+              y=c(max(y),min(y),
+                  min(y),max(y),max(y)))
 
 
-source("smooth2.c.R")
 
-b.fix<-gam(z~s(x,y,k=60,bs="mdstp"),data=dat)
+b.fix<-gam(z~s(x,y,k=100,bs="mdstp",
+               xt=list(bnd.mds=bnd.mds,
+                       bnd=bnd.mds,
+                       op=NULL,
+                       mds.obj=NULL)),data=dat)
 
 vis.gam(b.fix,plot.type="contour",main="mdstp fit",asp=1)
 

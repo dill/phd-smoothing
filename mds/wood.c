@@ -125,8 +125,17 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
                err=iter_path(&thispath,*nbnd,bnd);
             }
 
-            // find the length of the path
-            pathlen[k]=hull_length(&thispath);
+            // make sure that we can measure the length of the path
+            if(thispath ==NULL){
+               // use hypot() and warn!
+               pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
+               printf("# ERROR: make_bnd_path FAILED. Using hypot()!\n");
+               printf("# DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
+            }else{
+               // find the length of the path
+               pathlen[k]=hull_length(&thispath);
+            }
+
 // DEBUG
 //printf("cat(\"### final ###\\n\")\n");
 //PrintPath(&thispath);
@@ -437,7 +446,7 @@ int make_bnd_path(double p1[], double p2[], int nbnd, double **bnd, node** path,
       return 0;
    }else{
       *path=NULL;
-// printf("# ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
+//      printf("# ERROR: make_bnd_path FAILED. Error returned from first_ips\n");
 // printf("# DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
       return 1;
    }// end of error if()
