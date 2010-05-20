@@ -86,7 +86,7 @@ void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xb
             p2[0]=x[j]; p2[1]=y[j];
 //printf("cat(\"p1=list(x=%.16f,y=%.16f);p2=list(x=%.16f,y=%.16f)\\n\")\n",p1[0],p1[1],p2[0],p2[1]);
 
-            printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
+//            printf("cat(\"i=%d,j=%d\\n\")\n",i+1,j+1);
 
 
             if(*faster){
