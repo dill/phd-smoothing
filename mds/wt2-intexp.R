@@ -2,7 +2,7 @@
 # Copyright David Lawrence Miller 2009.
 source("mds.R")
 
-#set.seed(1)
+set.seed(1)
  
 samp.size=250
 noise.level=0.35
@@ -65,11 +65,12 @@ samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=1)
 pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd,faster=1)
 
 # mapped boundary...
-bnd.mds<-read.csv(file="wt2-bnd-in.csv")
-bnd.mds$X<-NULL
-bnd.mds[29,]<-bnd.mds[1,]
-bnd.mds<-insert.mds(bnd.mds,my.grid,grid.mds,bnd,faster=1)
-bnd.mds<-list(x=bnd.mds[,1],y=bnd.mds[,2])
+bnd.mds<-NULL
+#bnd.mds<-read.csv(file="wt2-bnd-in.csv")
+#bnd.mds$X<-NULL
+#bnd.mds[29,]<-bnd.mds[1,]
+#bnd.mds<-insert.mds(bnd.mds,my.grid,mds.obj,bnd,faster=1)
+#bnd.mds<-list(x=bnd.mds[,1],y=bnd.mds[,2])
 
 # put the grid in the right format
 grid.mds<-grid.mds$points

@@ -79,8 +79,12 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
 
    # take the boundary
-   # mapped it into the space
-   bnd.mds<-object$xt$bnd.mds # passed in pre-mapped!
+   # map it into the space
+#cat("########cat\n")
+   bnd.mds<-insert.mds(object$xt$bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0)
+   bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])
+#   bnd.mds<-object$xt$bnd.mds # passed in pre-mapped!
+#cat("########cat\n")
 
    # set the integration limits
    a<-min(c(bnd.mds$x,bnd.mds$y))
@@ -96,7 +100,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    ep$w<-ip$w[onoff]
 
    # root the weights, since we square them in a bit
-#   ep$w<-sqrt(ep$w)
+   ep$w<-sqrt(ep$w)
    # done?
    #ep$w<-sqrt(1/sum(onoff))
 
@@ -125,134 +129,134 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
    #dens.est<-1/dens.est$estimate
 
-#   ##################################################
-#   # now do the adjustment based on the point density
-#
-#   # lets generate some grids
-#
-#   # create base grid
-#   m<-25;n<-25 # need to set these somewhere
-#   xmin<-min(bnd$x)
-#   ymin<-min(bnd$y)
-#   xmax<-max(bnd$x)
-#   ymax<-max(bnd$y)
-#   # create the grid
-#   xm <- seq(xmin,xmax,length=m)
-#   yn<-seq(ymin,ymax,length=n)
-#
-#   # one extra grid cell bigger on all sides
-#   xdel<-diff(xm)[1]
-#   ydel<-diff(yn)[1]
-#   blx<-xm[1]-xdel # big left x
-#   brx<-xm[length(xm)]+xdel # big right x
-#   bby<-yn[1]-ydel # big bottom y
-#   bty<-yn[length(yn)]+ydel # big top y
-#
-#   # now create 4 grids, one for each corner
-#   # top left, top right, bottom left, bottom right
-#   tlg<-list(x=rep(c(blx,xm),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
-#   trg<-list(x=rep(c(xm,brx),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
-#   blg<-list(x=rep(c(blx,xm),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
-#   brg<-list(x=rep(c(xm,brx),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
-#
-#   # now just take the full squares that are inside
-#   onoff<-inSide(bnd,tlg$x,tlg$y)
-#   onoff<-onoff & inSide(bnd,trg$x,trg$y)
-#   onoff<-onoff & inSide(bnd,brg$x,brg$y)
-#   onoff<-onoff & inSide(bnd,blg$x,blg$y)
-#
-#   tlg<-pe(tlg,onoff)
-#   trg<-pe(trg,onoff)
-#   blg<-pe(blg,onoff)
-#   brg<-pe(brg,onoff)
-#
-#   # check that this was okay...
-#   #plot(tlg,pch=19)
-#   #points(trg,pch=19,col="green",cex=0.9)
-#   #points(brg,pch=19,col="blue",cex=0.8)
-#   #points(blg,pch=19,col="orange",cex=0.7)
-#
-#   # make a list of all these points
-#   biglist<-list(x=c(tlg$x,trg$x,brg$x,blg$x),
-#                 y=c(tlg$y,trg$y,brg$y,blg$y))
-#
-#   # MDS these points...
-#   biglist.mds<-insert.mds(biglist,object$xt$op,object$xt$mds.obj,bnd,faster=1)
-#
-#   # pull them back out in the right order
-#   len<-length(tlg$x)
-#   mtlg<-biglist.mds[1:len,]
-#   mtrg<-biglist.mds[(len+1):(2*len),]
-#   mbrg<-biglist.mds[(2*len+1):(3*len),]
-#   mblg<-biglist.mds[(3*len+1):(4*len),]
-#
-#   # again, check that worked!
-#   #plot(mtlg,pch=19)
-#   #points(mtrg,pch=19,col="green",cex=0.9)
-#   #points(mbrg,pch=19,col="blue",cex=0.8)
-#   #points(mblg,pch=19,col="orange",cex=0.7)
-#
-#   # grid resolution - number of divisions of the other grid
-#   # to make
-#   gres<-10
-#
-#   pts.x<-c()
-#   pts.y<-c()
-#
-#   # for every quadrilateral
-#   for(i in 1:len){
-#      # create the divisions on the top and bottom
-#      tlx<-seq(mtlg[i,1],mtrg[i,1],len=gres)
-#      tly<-seq(mtlg[i,2],mtrg[i,2],len=gres)
-#      blx<-seq(mblg[i,1],mbrg[i,1],len=gres)
-#      bly<-seq(mblg[i,2],mbrg[i,2],len=gres)
-#
-#      # split those divisions
-#      for(j in 1:gres){
-#         pts.x<-c(pts.x,seq(tlx[j],blx[j],len=gres))
-#         pts.y<-c(pts.y,seq(tly[j],bly[j],len=gres))
-#      }
-#   }
-#
-#   dpoints<-list(x=pts.x,y=pts.y)
-#
-#   # work out the density at resolution dres
-#   # at the moment ths is just the same as doing this for the
-#   # integration grid, so we can replace that eventually...
-#   dres<-N#/1.5
-#   dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
-#
-#   # find the grid cells they lie in
-#   xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
-#   xdel<-diff(unique(dgrid$X[,1]))[1]
-#   ydel<-diff(unique(dgrid$X[,2]))[1]
-#   dxi<-abs(floor((dpoints$x-xstart)/xdel))
-#   dyj<-abs(floor((dpoints$y-ystart)/ydel))
-#
-#   # now find the grid cell the integration meshpoints lie in...
-#   mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
-#   myj<-abs(floor((ip$X[,2]-ystart)/ydel))
-#
-#   onoff<-inSide(bnd.mds,ip$X[,1],ip$X[,2])
-#   mxi<-mxi[onoff]
-#   myj<-myj[onoff]
-#
-#   dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
-#
-#   # image of the density function
-##   X11()
-##   denf<-table(dxi,dyj)
-##   denf[-(mxi+sqrt(length(myj))*myj)]<-NA
-##   image(denf,col=heat.colors(1000))
-#
-#
-#   #################################################
-#
-#   # do the squashing
-#   sq<-sqrt((dens.est)^3)
-##   Dx<-sq*Dx
-##   Dy<-sq*Dy
-##   Dxy<-sq*Dxy
+   ##################################################
+   # now do the adjustment based on the point density
+
+   # lets generate some grids
+
+   # create base grid
+   m<-25;n<-25 # need to set these somewhere
+   xmin<-min(bnd$x)
+   ymin<-min(bnd$y)
+   xmax<-max(bnd$x)
+   ymax<-max(bnd$y)
+   # create the grid
+   xm <- seq(xmin,xmax,length=m)
+   yn<-seq(ymin,ymax,length=n)
+
+   # one extra grid cell bigger on all sides
+   xdel<-diff(xm)[1]
+   ydel<-diff(yn)[1]
+   blx<-xm[1]-xdel # big left x
+   brx<-xm[length(xm)]+xdel # big right x
+   bby<-yn[1]-ydel # big bottom y
+   bty<-yn[length(yn)]+ydel # big top y
+
+   # now create 4 grids, one for each corner
+   # top left, top right, bottom left, bottom right
+   tlg<-list(x=rep(c(blx,xm),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
+   trg<-list(x=rep(c(xm,brx),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
+   blg<-list(x=rep(c(blx,xm),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
+   brg<-list(x=rep(c(xm,brx),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
+
+   # now just take the full squares that are inside
+   onoff<-inSide(bnd,tlg$x,tlg$y)
+   onoff<-onoff & inSide(bnd,trg$x,trg$y)
+   onoff<-onoff & inSide(bnd,brg$x,brg$y)
+   onoff<-onoff & inSide(bnd,blg$x,blg$y)
+
+   tlg<-pe(tlg,onoff)
+   trg<-pe(trg,onoff)
+   blg<-pe(blg,onoff)
+   brg<-pe(brg,onoff)
+
+   # check that this was okay...
+   #plot(tlg,pch=19)
+   #points(trg,pch=19,col="green",cex=0.9)
+   #points(brg,pch=19,col="blue",cex=0.8)
+   #points(blg,pch=19,col="orange",cex=0.7)
+
+   # make a list of all these points
+   biglist<-list(x=c(tlg$x,trg$x,brg$x,blg$x),
+                 y=c(tlg$y,trg$y,brg$y,blg$y))
+
+   # MDS these points...
+   biglist.mds<-insert.mds(biglist,object$xt$op,object$xt$mds.obj,bnd,faster=1)
+
+   # pull them back out in the right order
+   len<-length(tlg$x)
+   mtlg<-biglist.mds[1:len,]
+   mtrg<-biglist.mds[(len+1):(2*len),]
+   mbrg<-biglist.mds[(2*len+1):(3*len),]
+   mblg<-biglist.mds[(3*len+1):(4*len),]
+
+   # again, check that worked!
+   #plot(mtlg,pch=19)
+   #points(mtrg,pch=19,col="green",cex=0.9)
+   #points(mbrg,pch=19,col="blue",cex=0.8)
+   #points(mblg,pch=19,col="orange",cex=0.7)
+
+   # grid resolution - number of divisions of the other grid
+   # to make
+   gres<-10
+
+   pts.x<-c()
+   pts.y<-c()
+
+   # for every quadrilateral
+   for(i in 1:len){
+      # create the divisions on the top and bottom
+      tlx<-seq(mtlg[i,1],mtrg[i,1],len=gres)
+      tly<-seq(mtlg[i,2],mtrg[i,2],len=gres)
+      blx<-seq(mblg[i,1],mbrg[i,1],len=gres)
+      bly<-seq(mblg[i,2],mbrg[i,2],len=gres)
+
+      # split those divisions
+      for(j in 1:gres){
+         pts.x<-c(pts.x,seq(tlx[j],blx[j],len=gres))
+         pts.y<-c(pts.y,seq(tly[j],bly[j],len=gres))
+      }
+   }
+
+   dpoints<-list(x=pts.x,y=pts.y)
+
+   # work out the density at resolution dres
+   # at the moment ths is just the same as doing this for the
+   # integration grid, so we can replace that eventually...
+   dres<-N#/1.5
+   dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
+
+   # find the grid cells they lie in
+   xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
+   xdel<-diff(unique(dgrid$X[,1]))[1]
+   ydel<-diff(unique(dgrid$X[,2]))[1]
+   dxi<-abs(floor((dpoints$x-xstart)/xdel))
+   dyj<-abs(floor((dpoints$y-ystart)/ydel))
+
+   # now find the grid cell the integration meshpoints lie in...
+   mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
+   myj<-abs(floor((ip$X[,2]-ystart)/ydel))
+
+   onoff<-inSide(bnd.mds,ip$X[,1],ip$X[,2])
+   mxi<-mxi[onoff]
+   myj<-myj[onoff]
+
+   dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
+
+   # image of the density function
+#   X11()
+#   denf<-table(dxi,dyj)
+#   denf[-(mxi+sqrt(length(myj))*myj)]<-NA
+#   image(denf,col=heat.colors(1000))
+
+
+   #################################################
+
+   # do the squashing
+   sq<-sqrt((dens.est)^3)
+   Dx<-sq*Dx
+   Dy<-sq*Dy
+   Dxy<-sq*Dxy
 
    # actually do the integration
    fd<-t(Dx)%*%Dx + t(Dxy)%*%Dxy + t(Dy)%*%Dy
