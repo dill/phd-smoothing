@@ -250,10 +250,10 @@ Again, we start with the modified Ramsay horseshoe since it clearly illustrates 
 
 \subsubsection{Setup}
 
-For the horseshoe, samples of 250 points with normal errors (at 3 levels: 0.1, 1 and 10) were taken. (These are the settings used in \cite{soap}.) From these samples, three models were fitted to the data and predictions over 718 points (including the sample locations). 200 realisations were generated and the EDF and MSE recorded for each replicate. The three models fitted were as follows using the \textsf{R} packages \texttt{mgcv} and \texttt{soap} (with additional bespoke software for finding the within-area distances):
+For the horseshoe, samples of 250 points with normal errors (at 3 levels:  $\sigma= 0.1$, 1 and 10) were taken. (These are the settings used in \cite{soap}.) Using these samples, three models were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the EDF and MSE recorded for each replicate. The three models fitted were as follows (using the \textsf{R} packages \texttt{mgcv} and \texttt{soap} with additional bespoke software for finding the within-area distances):
 
 \begin{enumerate}
-\item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100.
+\item \emph{Thin plate spline}: bivariate \tprs with basis size 100.
 \item \emph{Soap film smoother}: 32 knots evenly spread over a grid over the domain, cyclic spline on the boundary was of basis size 39.
 \item \emph{MDS}: Used a thin plate spline of basis dimension 100. The initial MDS grid was 20 points wide by 10 points tall.
 \end{enumerate} 
@@ -262,7 +262,7 @@ Note that due to time and computational restrictions, the boundary was reduced f
 
 \subsubsection{Results}
 
-A typical realisation from the models can be seen from \fig{mds-ramsay-fit-1}, where $\sigma=1$ with a sample size of 250. Both the soap film smoother and MDS are able to reproduce the main features of the true horseshoe function due to their ability to respect the boundary (in the case of the soap film) or the geometry of the domain (in the case of MDS.) The thin plate regression spline shows leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and MDS have significantly smaller average MSE. When the noise level is high the MDS approach outperforms the soap film smoother in MSE terms.
+Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, where $\sigma=1$ with a sample size of 250. Both the soap film smoother and MDS are able to reproduce the main features of the true horseshoe function due to their ability to respect the boundary (in the case of the soap film) or the geometry of the domain (in the case of MDS.) The \tprs shows leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and MDS have significantly smaller average MSE. When the noise level is high the MDS approach outperforms the soap film smoother in MSE terms (and is less variable).
 
 \begin{table}[ht]
 \centering
@@ -282,11 +282,11 @@ $\sigma$ & MDS & Soap film & Thin plate\\
 1  & 8.3828 (0.3452) & 11.868 (0.4010) & 46.607 (0.4238)\\ 
 10 & 5.0577 (0.3324) & 5.5863 (0.2876) & 5.9786 (0.2511)\\ 
 \end{tabular}
-\caption{Mean MSE and estimated degrees of freedom (EDF) for the three models fitted to the modified Ramsay horseshoe function with standard errors (in brackets) over 200 realisations.}
+\caption{Mean MSE and estimated degrees of freedom (EDF) for the three models fitted to the modified Ramsay horseshoe function with standard errors (in brackets) over 200 realisations. Sample size was 250 with error levels given in the column marked $\sigma$.}
 \label{ramsayresultstable}
 \end{table}
 
-The EDFs in table \ref{ramsayresultstable} show that the MDS approach fits a less complex model than using a thin plate spline on average, and for the two higher error situations, has a lower EDF than the soap film. Given that this is coupled with a lower MSE, it appears that the MDS approach simultaneously yields both a more accurate and less complex model than the soap film for the horseshoe when there is a high level of noise.
+The EDFs in table \ref{ramsayresultstable} show that the MDS approach fits a less complex model than the thin plate spline on average, and for the two higher error situations, has a lower EDF than the soap film. Given that this is coupled with a lower MSE, it appears that the MDS approach simultaneously yields both a more accurate and less complex model than the soap film for the horseshoe when there is a high level of noise.
 
 % Ramsay fit with error=1 
 \begin{figure}
@@ -297,7 +297,7 @@ The EDFs in table \ref{ramsayresultstable} show that the MDS approach fits a les
 % generated (roughly) using ramsay-smooth-test.R
 \end{figure}
 
-Just as when the \sch transform was being used to morph the domain, it is interesting to see what has happened to the distribution of points in space. \Fig{mdsrampoints} shows the effect of the transform on a regular grid of points (left) when they are projected into MDS space (right.) The projection has also succeeded in parting the two arms of the horseshoe, reducing leakage (as can be seen in the realisations in \fig{mds-ramsay-fit-1}).
+Just as when the \sch transform was used to morph the domain, it is interesting to see what has happened to the distribution of points in space. \Fig{mdsrampoints} shows the effect of the transform on a regular grid of points (left) when they are projected into MDS space (right.) The projection has also succeeded in parting the two arms of the horseshoe, reducing leakage (as can be seen in the realisations in \fig{mds-ramsay-fit-1}).
 
 \begin{figure}
 \centering
