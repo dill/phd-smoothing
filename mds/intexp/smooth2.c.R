@@ -83,6 +83,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #plot(bnd.mds,type="l")
 
    # set the integration limits
+   # just make an overly big bounding box
    a<-min(c(bnd.mds$x,bnd.mds$y))
    b<-max(c(bnd.mds$x,bnd.mds$y))
    # take a grid in the mds space
@@ -96,8 +97,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    ep$w<-ip$w[onoff]
 
    # plot the integration grid
-   #plot(bnd.mds,type="l",col="red")
-   #points(ep$X,pch=19,cex=0.3)
+   plot(ep$X,pch=19,cex=0.3)
+   lines(bnd.mds,type="l",col="red")
 
    # root the weights, since we square them in a bit
    ep$w<-sqrt(ep$w)
