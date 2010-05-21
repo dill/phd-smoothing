@@ -382,19 +382,16 @@ $\sigma$ & MDS & Soap film & Thin plate\\
 \label{wt2resultstable}
 \end{table}
 
+As with the Ramsay horseshoe, it is interesting to see what the projection into MDS space has done to the distribution of the points in the domain. \Fig{wt2-2d-proj} shows points in the domain in Euclidean space and MDS space. There appears to be some high concentrations of points in the far left peninsula and in the right side in the MDS space. This is due to the projection from $n$-dimensional space into 2-dimensional space, which can be easily seen in \fig{wt2-3d-proj} where the points have been projected into 3-dimensional space. This shows that there is separation between the smaller peninsulae and the far left peninsula is a plane but the 2D projection just views it along it's edge rather than showing it's width.
 
-
-
-
-
-As with the Ramsay horseshoe, it is interesting to see what the projection into MDS space has done to the distribution of the points in the domain. \Fig{mdswt2points} shows this 
+This high point density in the right side of the MDS space could be the reason for the poor reproduction of the function in that region, seen in \fig{wt2-comp-0.9}. In this portion of space (and in the left peninsula) there is a breakdown in isotropy, which the \tprs does not handle well. This must be accounted for in the smooth if accurate models are to be built.
 
 % how the points are projected for wt2
 \begin{figure}
 \centering
 \includegraphics[width=4.5in]{mds/figs/wt2-2d-proj.pdf} \\
 \caption{A regular grid over the peninulae domain (left) and its projection into MDS space (right.)}
-\label{mdswt2points}
+\label{wt2-2d-proj}
 % generated using thesis/mds/figs/mdswt2points
 \end{figure}
 
@@ -402,8 +399,8 @@ As with the Ramsay horseshoe, it is interesting to see what the projection into 
 \begin{figure}
 \centering
 \includegraphics[width=6in]{mds/figs/wt2-3d-proj.pdf} \\
-\caption{}
-\label{mdswt2points-3d}
+\caption{The peninsula domain projected into 3-dimensional MDS space. The plots show combinations of axes, note that the $x^*,y^*$ combination is the same as the 2-dimensional projection in \fig{wt2-2d-proj}.}
+\label{wt2-3d-proj}
 % generated using thesis/mds/figs/mdswt2points
 \end{figure}
 
