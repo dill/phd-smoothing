@@ -99,20 +99,15 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #plot(bnd.mds,type="l",col="red")
    #points(ep$X,pch=19,cex=0.3)
 
-
    # root the weights, since we square them in a bit
-#   ep$w<-sqrt(ep$w)
-   # done?
-   #ep$w<-sqrt(1/sum(onoff))
+   ep$w<-sqrt(ep$w)
 
    # let's create some matrices
    # finite second differences wrt x and y
    dxee<-Predict.matrix(object,data.frame(x=ep$X[,1]+2*eps,y=ep$X[,2]))
    dxe <-Predict.matrix(object,data.frame(x=ep$X[,1]+eps,y=ep$X[,2]))
-
    dyee<-Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2]+2*eps))
    dye <-Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2]+eps))
-
    dxy <-Predict.matrix(object,data.frame(x=ep$X[,1],y=ep$X[,2]))
    dxye<-Predict.matrix(object,data.frame(x=ep$X[,1]+eps,y=ep$X[,2]+eps))
 
@@ -124,11 +119,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 #   Dx[(k-1):k,]<-rep(0,k*2)
 #   Dy[(k-1):k,]<-rep(0,k*2)
 #   Dxy[(k-1):k,]<-rep(0,k*2)
-
-   ## auto ks based adjustment
-   #dat<-matrix(c(data$x,data$y),length(data$x),2)
-   #dens.est<-kde(dat,H=Hpi(dat),eval.points=ep$X)
-   #dens.est<-1/dens.est$estimate
 
 #   ##################################################
 #   # now do the adjustment based on the point density
@@ -272,13 +262,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    object$S[[1]][,(k-1):k]<-rep(0,k*2)
 
    cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
-#   hist(oldS-object$S[[1]])
-#   print(quantile(oldS-object$S[[1]]))
-#   cat("mean diff=",mean(oldS-object$S[[1]]),"\n")
-#   X11()
-#   par(mfrow=c(1,2))
-#   image(oldS,col=heat.colors(1000))
-#   image(object$S[[1]],col=heat.colors(1000))
 
    object$oldS<-oldS
 
