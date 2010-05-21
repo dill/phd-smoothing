@@ -406,7 +406,68 @@ This high point density in the right side of the MDS space could be the reason f
 
 \subsection{Areas for improvement}
 
-From this set of simulations areas for improvements of the MDS approach can be see. First, the above problem of the accuracy of the model (in MSE terms) needs to be addressed. Second, running the model is actually quite slow, the calculation of the within-area distances by the algorithm given in \secref{mdsdist} has considerable computational cost, even in comparison to the soap film smoother setup. Table show the average timings for running the \tprs, MDS and soap film smoothers over the peninsula domain
+From this set of simulations areas for improvements of the MDS approach can be see. First, the above problem of the accuracy of the model (in MSE terms) needs to be addressed. Second, running the model is actually quite slow, the calculation of the within-area distances by the algorithm given in \secref{mdsdist} has considerable computational cost, even in comparison to the soap film smoother setup. Table \ref{wt2time} shows the average timings for running the MDS, \tprs and soap film smoothers over the peninsula domain
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c || c c c c c c}
+%  no speedup           speedup
+ & MDS & Soap film & Thin plate\\ 
+\hline
+Fit & 84.85242 & 24.6783 & 0.4022\\ 
+Prediction &  53.5105 & 29.3946 & 0.1249\\
+\end{tabular}
+\label{wt2time}
+\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted.}
+\end{table}
+
+Given these problems, in order to make it worthwhile for a practitioner to use the method, it would be preferable for it not only to have a sensible physical model, but also outperform the soap film smoother in either (or both) of accuracy and speed.
+
+
+
+
+\section{Improvements}
+\label{MDSimprov}
+
+With the above points in mind, the necessary improvements must be made. To begin with the speed of the procedure will be the focus, moving on to the accuracy of the model.
+
+\subsection{Making the procedure faster}
+
+\subsubsection{Calculating MDS by Lanczos iteration}
+
+The \textsf{R} command used to perform the multidimensional scaling, \texttt{cmdscale}, uses the routine \texttt{eigen} in order to perform the requisite matrix eigen-decomposition. This routine will calculate a full eigen-decomposition of the matrix, even if only the first $k$ eigenvalues and/or eigenvectors are required. The Lanczos iteration will only calculate the first $k$ eigenvalues (in numeric or algebraic size order.)
+
+The \texttt{igraph} library for \textsf{R} provides an interface to the C++ package \texttt{ARPACK++} which implements the Lanczos procedure. Replacing the \texttt{cmdscale} command with one that uses the \texttt{ARPACK++} interface provided by \texttt{igraph} will decrease the number of computations needed, thus making the calculation of the eigenvalues and vectors faster.
+
+A quick benchmark shows that \texttt{ARPACK++} can compute the first two eigenvalues and vectors faster than just using \texttt{eigen} when the matrix to be eigen-decomposed is large. Generating a 1000 by 1000 symmetric matrix of Normal random variates with mean 0 and variance 1000, then performing an eigen-decomposition takes 1.68 seconds using \texttt{ARPACK++} and 3.26 seconds using \texttt{eigen} (averaged over 100 runs.) This advantage drops once the matrix is around 100 by 100 and the cost of calling the C++ code begins to dominate; in this case \texttt{ARPACK++} takes 0.037 seconds and \texttt{eigen} takes 0.034 (over 100 runs.) Given that the disadvantage is in the order of hundredths of a second and the advantage is a two-fold decrease in computational time, it makes sense to use the \texttt{ARPACK++} code in all cases.
+
+% sim code is at ~/phd-smoothing/mds/lanczos/time-arpack.R
+
+\subsubsection{Partial path calculation}
+
+Many of the distances stored in $D$ are calculated by simply using the Euclidean metric since for the corresponding point pairs, there is no part of the path between them that lies outside of the domain.This leads us to believe that there are many sets of paths that are rather similar. These paths may perhaps only differ in their final vertex. Given that, in this case, there is a low of wasted computational time calculating the same path repetitively, it would be useful to exploit this in order to make path calculation faster.
+
+The idea here is to use a sparse grid to first calculate a set of paths that are saved. The points that the shortest paths are required for are then added to the ends of these pre-calculated paths. Finally, these paths are optimized in the same manner as the algorithm given in \secref{mdsdist}. This removes the expensive calculation in the middle of the path, where there are interactions with the boundary.
+
+Notation is as in algorithm for the path calculation. Taking points $p_i$ and $p_j$ in the set of points in the domain that we wish to find the shortest paths for and drawing a path between them, finding within-area distance with respect to the boundary of $\Gamma$.
+
+This is a modification of the the original algorithm, the routines INIT, DELETE, ALTER, ITER are identical.
+
+\begin{enumerate}
+ \item Begin by creating a sparse grid within $\Gamma$ and calculate the non-Euclidean within-area paths between all pairs of points exactly as in algorithm 1. Store these paths as they are calculated as $\mathcal{P}_1,\ldots, \mathcal{P}_M$.
+\item For each unique pairing of $p_i$ and $p_j$ in the full data set calculate the path use one of the following:
+	\begin{enumerate}
+	\item Find a $\mathcal{P}_k$ such that the path between $p_i$ and one end of $\mathcal{P}_k$ and $p_j$ and the other end of $\mathcal{P}_k$ is Euclidean within the $\Gamma$. Join $p_i$ and $p_j$ onto the appropriate ends of $\mathcal{P}_k$ and run ITER until convergence.
+	\item If there is no Euclidean path between $p_i$ and $p_j$ and any of the ends of $\mathcal{P}_k$, then use the algorithm 1 to calculate the path between $p_i$ and $p_j$. 
+	\end{enumerate}
+\end{enumerate}
+
+Note that those paths in the sparse grid which are Euclidean are not stored since it is always at least as expensive to store, add and optimize those paths then calculating them from scratch. An argument towards why is this is true is as follows: if the path we want to calculate is Euclidean anyway, then retrieving a Euclidean path and then optimizing it to be Euclidean will take long than just creating a Euclidean path to being with. If the path we wish to calculate is non-Euclidean then it must be cross the boundary outside the stored path (by definition) and therefore will take the same number of operations to find the boundary crossing points and calculate the shortest path around the feature locally as it will to calculating the whole path from scratch.
+
+
+\subsubsection{Results}
+
+
 
 \begin{table}[ht]
 \centering
@@ -418,20 +479,7 @@ Fit & 84.85242 & 18.6526 & 24.6783 & 0.4022\\
 Prediction & 155.4004 & 53.5105 & 29.3946 & 0.1249\\
 \end{tabular}
 \label{wt2time}
-\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted. For the MDS+TPRS models \textit{pp} indicates the cases where the partial paths were pre-calculated, those not marked use algorithm 1.}
+\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted. For the MDS models \textit{pp} indicates the cases where the partial paths were pre-calculated, those not marked use algorithm 1.}
 \end{table}
-
-Given these problems, in order to make it worthwhile for a practitioner to use the method, it would be preferable for it not only to have a sensible physical model, but also outperform the soap film smoother in either (or both) of accuracy and speed.
-
-
-
-
-\section{Improvements}
-\label{MDSimprov}
-
-
-
-
-
 
 
