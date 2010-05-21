@@ -314,18 +314,7 @@ The Ramsay horseshoe is an easy domain to smooth over since it is obvious how th
 
 \subsubsection{Setup}
 
-The simulations consisted of 200 realisations of 250 samples from the surface in \fig{wt2-truth}. Normal errors were added at three levels $\sigma=0.35$, 0.9 and 1.55 (corresponding to signal-to-noise ratios (SNRs) of 0.95, 0.75 and 0.5, respectively. SNRs were calculated as the mean squared correlation between true function value and the truth with error added.) Mean squared error over 1253 prediction points (including those points in the sample) was calculated and recorded, along with EDF for each model. The models fitted were:
-
-\begin{enumerate}
-\item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100. 
-\item \emph{Soap film smoother}: cyclic spline on boundary of basis size 60, 109 internal knots evenly spaced over the domain on a grid.
-\item \emph{MDS}: after transform a bivariate thin plate spline with basis size 100 was fit. The initial MDS grid was 74 points square.
-%\item \emph{MDS with tensor product}: tensor product of two thin plate splines, each of basis dimension 12. The initial MDS grid was 74 points square.
-\end{enumerate} 
-
-\subsubsection{Results}
-
-Looking at a typical realisation in \fig{wt2-fit-0.5}, we see that soap (bottom right panel) does very well, as can be expected, and the thin plate spline (\fig{wt2-fit-0.5}, bottom left panel) fit shows leakage (again, as can be expected.) 
+The simulations consisted of 200 realisations of 250 samples from the surface in \fig{wt2-truth}. Normal errors were added at three levels $\sigma=$ 0.35, 0.9, and 1.55 (corresponding to signal-to-noise ratios (SNRs) of 0.95, 0.75 and 0.5, respectively. SNRs were calculated as the mean squared correlation between true function value and the truth with error added.) Mean squared error over 1253 prediction points (including those points in the sample) was calculated and recorded, along with EDF for each model. The models fitted were:
 
 % wt2 truth 
 \begin{figure}
@@ -336,11 +325,32 @@ Looking at a typical realisation in \fig{wt2-fit-0.5}, we see that soap (bottom 
 % generated (roughly) using wt2-smooth-test.R
 \end{figure}
 
+\begin{enumerate}
+\item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100. 
+\item \emph{Soap film smoother}: cyclic spline on boundary of basis size 60, 109 internal knots evenly spaced on a grid over the domain.
+\item \emph{MDS}: after transform a bivariate thin plate spline with basis size 100 was fit. The initial MDS grid was 74 points square.
+%\item \emph{MDS with tensor product}: tensor product of two thin plate splines, each of basis dimension 12. The initial MDS grid was 74 points square.
+\end{enumerate} 
+
+\subsubsection{Results}
+
+% wt2 fit with error=0.9
+\begin{figure}
+\centering
+\includegraphics[width=6in]{mds/figs/wt2-comp-09.pdf} \\
+\caption{A typical realisation of fits from the multiple peninsulae domain when $\sigma$ is set to 0.9 (SNR = 0.75) and sample size is 250. Prediction grid was of size 1253. Clockwise from top left: the true function, prediction from: MDS projection smoothed with \tprs, the soap film smoother and \tprs.}
+\label{wt2-comp-0.9}
+% generated (roughly) using wt2-smooth-test.R
+\end{figure}
+
+Looking at a typical realisation in \fig{wt2-comp-0.9} ($\sigma=$ 0.9, SNR = 0.75, sample size 250), the \tprs can be seen showing signs on leakage across the two main peninsulae, whereas MDS and soap do not show this. However the \tprs does reproduce the peak in the lower right much more faithfully, the other two smoothing over it. In this realisation, the MDS approach deals with the values inside the peninsula a little better than the soap film smoother (the contour lines are closer to those in the true function). On the other hand, the soap film captures the shape of the lower right peak slightly more accurately.
+
+Table \ref{wt2resultstable} gives the MSE and EDF for the models above averaged over 200 realisations. There is not a massive difference between the results in MSE terms, the soap film smoother consistently has a lower MSE, although not by much. The soap film also tends to fit simpler models than the other two approaches.
+
+
 %The final model, above, was chosen after it appeared that the MDS with a bivariate thin plate spline did not adequately model the peak in the right corner of the domain (\fig{wt2-fit-0.5}, top left panel.) After using a tensor product of thin plate splines a better fit to the right peak was found (\fig{wt2-fit-0.5}, top right panel), although this is not reflected particularly well in terms of mean squared error (see table \ref{wt2resultstable}.) The visual improvement in fit can be explained by thin plate splines in two dimensions being an isotropic smooth and since space has not been transformed in a uniform way in both dimensions.
 
 %Table \ref{wt2resultstable} shows that when there is low error, both the soap film and thin plate splines outperform the MDS approach, but once the errors are increased the MDS does much better. The MDS approach also benefits from having a smaller EDF than all the other approaches in all of the noise scenarios, the tensor MDS doing better at lower noise levels. This is encouraging and shows that perhaps there is a place for this technique alongside the soap film smoother if the method can be improved for low noise situations.
-
-INVESTIGATE THE ABOVE!!!!
 
 \begin{table}[ht]
 \centering
@@ -368,30 +378,35 @@ $\sigma$ & MDS & Soap film & Thin plate\\
 %0.5 &40.7981 (0.46687) & 50.5025 (0.36223) & 45.2341 (0.74063) & 58.418 (0.74063)\\ 
 %5  &6.8274 (0.36097) & 8.577 (0.3649) & 11.5419 (0.83982) & 11.9407 (0.83982)\\ 
 \end{tabular}
-
 \caption{Mean MSE and EDF for the four models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
 \label{wt2resultstable}
 \end{table}
 
-% wt2 fit with error=0.5
-\begin{figure}
-\centering
-\includegraphics[width=4in]{mds/figs/wt2-comp-09.pdf} \\
-\caption{A typical realisation of fits from the multiple peninsulae domain when $\sigma$ is set to 0.9.}
-\label{wt2-fit-0.5}
-% generated (roughly) using wt2-smooth-test.R
-\end{figure}
 
-As with the Ramsay horseshoe, it is interesting to see what the projection into MDS space has done to the distribution of the points in the domain. \Fig{mdswt2points} shows
+
+
+
+
+As with the Ramsay horseshoe, it is interesting to see what the projection into MDS space has done to the distribution of the points in the domain. \Fig{mdswt2points} shows this 
 
 % how the points are projected for wt2
 \begin{figure}
 \centering
-\includegraphics[width=6in,trim=0.5in 0.5in 0in 0.5in]{mds/figs/mdswt2points.pdf} \\
+\includegraphics[width=4.5in]{mds/figs/wt2-2d-proj.pdf} \\
 \caption{A regular grid over the peninulae domain (left) and its projection into MDS space (right.)}
 \label{mdswt2points}
 % generated using thesis/mds/figs/mdswt2points
 \end{figure}
+
+% how the points are projected for wt2 in 3D!
+\begin{figure}
+\centering
+\includegraphics[width=6in]{mds/figs/wt2-3d-proj.pdf} \\
+\caption{}
+\label{mdswt2points-3d}
+% generated using thesis/mds/figs/mdswt2points
+\end{figure}
+
 
 \section{Improvements}
 \label{MDSimprov}
