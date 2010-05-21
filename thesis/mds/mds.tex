@@ -404,6 +404,34 @@ This high point density in the right side of the MDS space could be the reason f
 % generated using thesis/mds/figs/mdswt2points
 \end{figure}
 
+\subsection{Areas for improvement}
+
+From this set of simulations areas for improvements of the MDS approach can be see. First, the above problem of the accuracy of the model (in MSE terms) needs to be addressed. Second, running the model is actually quite slow, the calculation of the within-area distances by the algorithm given in \secref{mdsdist} has considerable computational cost, even in comparison to the soap film smoother setup. Table show the average timings for running the \tprs, MDS and soap film smoothers over the peninsula domain
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c || c c c c c c}
+%  no speedup           speedup
+ & MDS & MDS (\textit{pp}) & Soap film & Thin plate\\ 
+\hline
+Fit & 84.85242 & 18.6526 & 24.6783 & 0.4022\\ 
+Prediction & 155.4004 & 53.5105 & 29.3946 & 0.1249\\
+\end{tabular}
+\label{wt2time}
+\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted. For the MDS+TPRS models \textit{pp} indicates the cases where the partial paths were pre-calculated, those not marked use algorithm 1.}
+\end{table}
+
+Given these problems, in order to make it worthwhile for a practitioner to use the method, it would be preferable for it not only to have a sensible physical model, but also outperform the soap film smoother in either (or both) of accuracy and speed.
+
+
+
 
 \section{Improvements}
 \label{MDSimprov}
+
+
+
+
+
+
+
