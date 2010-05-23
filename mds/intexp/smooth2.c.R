@@ -97,8 +97,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    ep$w<-ip$w[onoff]
 
    # plot the integration grid
-   plot(ep$X,pch=19,cex=0.3)
-   lines(bnd.mds,type="l",col="red")
+   #plot(ep$X,pch=19,cex=0.3)
+   #lines(bnd.mds,type="l",col="red")
 
    # root the weights, since we square them in a bit
    ep$w<-sqrt(ep$w)

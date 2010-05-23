@@ -446,6 +446,8 @@ Given these problems, in order to make it worthwhile for a practitioner to use t
 \section{Improvements}
 \label{MDSimprov}
 
+CHECK ALL THIS!!!!
+
 With the above points in mind, the necessary improvements must be made. To begin with the speed of the procedure will be the focus, moving on to the accuracy of the model.
 
 \subsection{Making the procedure faster}
@@ -479,7 +481,7 @@ This is a modification of the the original algorithm, the routines INIT, DELETE,
 	\end{enumerate}
 \end{enumerate}
 
-Note that those paths in the sparse grid which are Euclidean are not stored since it is always at least as expensive to store, add and optimize those paths then calculating them from scratch. An argument towards why is this is true is as follows: if the path we want to calculate is Euclidean anyway, then retrieving a Euclidean path and then optimizing it to be Euclidean will take long than just creating a Euclidean path to being with. If the path we wish to calculate is non-Euclidean then it must be cross the boundary outside the stored path (by definition) and therefore will take the same number of operations to find the boundary crossing points and calculate the shortest path around the feature locally as it will to calculating the whole path from scratch.
+Note that those paths in the sparse grid which are Euclidean are not stored since it is always at least as expensive to store, add and optimize those paths then calculating them from scratch. An argument towards why is this is true is as follows: if the path we want to calculate is Euclidean anyway, then retrieving a Euclidean path and then optimizing it to be Euclidean will take longer than just creating a Euclidean path to begin with. If the path we wish to calculate is non-Euclidean then it must cross the boundary outside the stored path (by definition) and therefore will take the same number of operations to find the boundary crossing points and calculate the shortest path around the feature locally as it will to calculating the whole path from scratch.
 
 
 \subsubsection{Results}
