@@ -88,13 +88,13 @@ res.edf<-list(mds=rep(0,sim.size), mdstp=rep(0,sim.size),
 
 for(i in 1:sim.size){
    res<-wt2_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
-                          gendata,bnd,grid.mds,my.grid,soap.knots)#,predd,bnd.mds)
+                          gendata,bnd,grid.mds,my.grid,soap.knots,predd,bnd.mds)
    res.mse$mds[i]<- res$mds
-#   res.mse$mdsmod[i]<- res$mdsmod
+   res.mse$mdsmod[i]<- res$mdsmod
    res.mse$soap[i]<-res$soap
    res.mse$tprs[i]<-res$tprs
    res.edf$mds[i]<- res$mds.edf
-#   res.edf$mdsmod[i]<- res$mdsmod.edf
+   res.edf$mdsmod[i]<- res$mdsmod.edf
    res.edf$soap[i]<-res$soap.edf
    res.edf$tprs[i]<-res$tprs.edf
 
