@@ -1,6 +1,6 @@
 # 2d testing of the integration
 
-source("smooth2.c.R")
+source("smooth2NA.c.R")
 
 # from the example in gam()
 library(mgcv)

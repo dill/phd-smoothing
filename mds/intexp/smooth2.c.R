@@ -258,9 +258,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    object$S[[1]]<-S
 
-   # zero the last two rows and cols
-   object$S[[1]][(k-1):k,]<-rep(0,k*2)
-   object$S[[1]][,(k-1):k]<-rep(0,k*2)
+   # zero the last three rows and cols
+   object$S[[1]][(k-2):k,]<-rep(0,k*3)
+   object$S[[1]][,(k-2):k]<-rep(0,k*3)
 
    cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
 
