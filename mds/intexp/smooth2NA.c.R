@@ -258,17 +258,29 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    object$S[[1]]<-S
 
-   # zero the last three rows and cols
-   object$S[[1]][(k-2):k,]<-rep(0,k*3)
-   object$S[[1]][,(k-2):k]<-rep(0,k*3)
+#   # zero the last three rows and cols
+#   object$S[[1]][(k-2):k,]<-rep(0,k*3)
+#   object$S[[1]][,(k-2):k]<-rep(0,k*3)
 
    cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
+   cat("max oldS=",max(oldS),"\n")
+   cat("max S=",max(object$S[[1]]),"\n")
+   cat("min oldS=",min(oldS),"\n")
+   cat("min S=",min(object$S[[1]]),"\n")
 
    object$oldS<-oldS
 
    class(object)<-"mdstp.smooth"
 
    cat("dim(S)=",dim(object$S[[1]]),"\n")
+
+   X11()
+   par(mfrow=c(2,2))
+   hist(oldS-S)
+   br<-seq(-10000,220000,5000)
+   hist(oldS,breaks=br)
+   hist(S,breaks=br)
+
 
    object
 }
