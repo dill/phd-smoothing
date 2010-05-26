@@ -33,11 +33,11 @@ mapped.data<-cbind(orig.data[[1]],mapped.data)
 names(mapped.data) <- c("y","v","w")
 
 # thin plate too
-b.tp.mapped<-gam(y~s(v,w),data=mapped.data)
+b.tp.mapped<-gam(y~s(w,v),data=mapped.data)
 
 # plotting
-pdf("hsvisgam.pdf",3,4)
-par(mfrow=c(1,2))
+pdf("hsvisgam.pdf",height=2.5,width=4)
+par(mfrow=c(2,1),mar=c(2,2,2,1),las=1,cex.axis=0.7)
 
 # plot the true function...
 
@@ -79,16 +79,16 @@ for(rad in rads){
 
 im<-matrix(fs.test(fse$x,fse$y),length(c(r.leg.x,curve.x,leg.x)),length(rads))
 
-image(z=t(im),x=rads,y=seq(0,3.25*2+pi/2,len=length(c(leg.y.t,curve.y,leg.y.b))),col=heat.colors(100),xlab="",ylab="",cex.axis=0.3,asp=1)
+image(z=im,y=rads,x=seq(0,3.25*2+pi/2,len=length(c(leg.y.t,curve.y,leg.y.b))),col=heat.colors(100),xlab="",ylab="",asp=1)
 
-contour(z=t(im),x=rads,y=seq(0,3.25*2+pi/2,len=length(c(leg.y.t,curve.y,leg.y.b))),add=TRUE)
+contour(z=im,y=rads,x=seq(0,3.25*2+pi/2,len=length(c(leg.y.t,curve.y,leg.y.b))),add=TRUE)
 
 
 
 
 
 # plot the fit on the transformed domain
-vis.gam(b.tp.mapped,main="",plot.type="contour",ylab="",xlab="",asp=1,cex.axis=0.3,contour.col="black")
+vis.gam(b.tp.mapped,main="",plot.type="contour",ylab="",xlab="",asp=1,contour.col="black")
 dev.off()
 
 
