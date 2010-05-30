@@ -19,11 +19,11 @@ source("intexp/smooth2.c.R")
 
 ######################################################
 # OPTIONS
-sim.size<-1#200
+sim.size<-200
 samp.size<-250
 # noise levels = 0.35,0.9,1.55
 # snr = 0.95,0.75,0.50
-noise.level<-1.55
+#noise.level<-1.55
 
 
 
@@ -89,25 +89,28 @@ predd<-gendata.ind$z[ind]
 #################################
 # actually do the work now... 
 
-# set up some containers
-res.mse<-matrix(NA,sim.size,6)
-res.edf<-matrix(NA,sim.size,6)
+noiselevels<-c(0.35,0.9,1.55)
 
-# do the sims
-for(i in 1:sim.size){
-   res<-wt2_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
-                          gendata,bnd,grid.mds,grid.mds3,my.grid,soap.knots,predd)
-
-   res.mse[i,]<-res$mse
-   res.edf[i,]<-res$edf
+for(noise.level in noiselevels){
+   # set up some containers
+   res.mse<-matrix(NA,sim.size,6)
+   res.edf<-matrix(NA,sim.size,6)
+   
+   # do the sims
+   for(i in 1:sim.size){
+      res<-wt2_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
+                             gendata,bnd,grid.mds,grid.mds3,my.grid,soap.knots,predd)
+      res.mse[i,]<-res$mse
+      res.edf[i,]<-res$edf
+   }
+   
+   # put it all in a nice data frame
+   res.mse<-as.data.frame(res.mse)
+   names(res.mse)<-c("tprs","mds+tp","mds+cr","mds+tp(3D)","mds+tp+adj","soap")
+   res.edf<-as.data.frame(res.edf)
+   names(res.edf)<-c("tprs","mds+tp","mds+cr","mds+tp(3D)","mds+tp+adj","soap")
+   
+   # write the files...
+   write.csv(res.mse,file=paste("sim/wt2-mse-",samp.size,"-",noise.level,".csv",sep=""))
+   write.csv(res.edf,file=paste("sim/wt2-edf-",samp.size,"-",noise.level,".csv",sep=""))
 }
-
-# put it all in a nice data frame
-res.mse<-as.data.frame(res.mse)
-names(res.mse)<-c("tprs","mds+tp","mds+cr","mds+tp(3D)","mds+tp+adj","soap")
-res.edf<-as.data.frame(res.edf)
-names(res.edf)<-c("tprs","mds+tp","mds+cr","mds+tp(3D)","mds+tp+adj","soap")
-
-# write the files...
-write.csv(res.mse,file=paste("sim/wt2-mse-",samp.size,"-",noise.level,".csv",sep=""))
-write.csv(res.edf,file=paste("sim/wt2-edf-",samp.size,"-",noise.level,".csv",sep=""))
