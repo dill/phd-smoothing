@@ -80,7 +80,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    bnd.mds<-insert.mds(object$xt$bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0)
    bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])
    #bnd.mds<-object$xt$bnd.mds
-   plot(bnd.mds,type="l")
+   #plot(bnd.mds,type="l")
 
    # set the integration limits
    # just make an overly big bounding box
@@ -97,9 +97,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    ep$w<-ip$w[onoff]
 
    # plot the integration grid
-   plot(ep$X,pch=19,cex=0.3)
-   lines(bnd.mds,type="l",col="red")
-   X11()
+   #plot(ep$X,pch=19,cex=0.3)
+   #lines(bnd.mds,type="l",col="red")
+   #X11()
 
    # root the weights, since we square them in a bit
    ep$w<-sqrt(ep$w)
@@ -263,7 +263,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    object$S[[1]][(k-2):k,]<-rep(0,k*3)
    object$S[[1]][,(k-2):k]<-rep(0,k*3)
 
-   cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
+   #cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
 
    object$oldS<-oldS
 

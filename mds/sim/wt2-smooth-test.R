@@ -93,12 +93,12 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
    # mds+cr
-   b.mdscr<-gam(z~te(x,y,k=140,bs="cr"),data=samp.data)
+   b.mdscr<-gam(z~te(x,y,k=c(15,15),bs="cr"),data=samp.data)
    fv.mdscr<-predict(b.mdscr,newdata=pred.data)
 
    # mds+tp (3D)
-   b.mds.3d<-gam(z~s(w,x,y,k=140),data=samp.data)
-   fv.mds.3d<-predict(b.mds.3d,newdata=pred.data)
+   b.mds.3d<-gam(z~s(w,x,y,k=140),data=samp.data.3d)
+   fv.mds.3d<-predict(b.mds.3d,newdata=pred.data.3d)
 
    # mds+tp+adj
    b.mds.adj<-gam(z~s(x,y,k=140,bs="mdstp",xt=list(bnd=bnd,op=my.grid,mds.obj=grid.mds)),data=samp.data)
