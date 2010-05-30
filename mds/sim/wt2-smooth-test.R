@@ -93,7 +93,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
    # mds+cr
-   b.mdscr<-gam(z~te(x,y,k=c(15,15),bs="cr"),data=samp.data)
+   b.mdscr<-gam(z~te(x,y,k=c(12,12),bs="cr"),data=samp.data)
    fv.mdscr<-predict(b.mdscr,newdata=pred.data)
 
    # mds+tp (3D)
