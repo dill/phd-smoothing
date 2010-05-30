@@ -118,7 +118,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
            mean((fv.mds.adj-predd)^2,na.rm=T),
            mean((fv.soap-predd)^2,na.rm=T))
 
-   mses<-c(sum(b.tp$edf),
+   edfs<-c(sum(b.tp$edf),
            sum(b.mdstp$edf),
            sum(b.mdscr$edf),
            sum(b.mds.3d$edf),
