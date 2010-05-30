@@ -92,6 +92,11 @@ predd<-gendata.ind$z[ind]
 noiselevels<-c(0.35,0.9,1.55)
 
 for(noise.level in noiselevels){
+
+   set.seed(1)
+
+   cat("Noise level=",noise.level,"\n")
+
    # set up some containers
    res.mse<-matrix(NA,sim.size,6)
    res.edf<-matrix(NA,sim.size,6)
