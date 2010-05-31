@@ -111,9 +111,9 @@ for(noise.level in noiselevels){
    
    # put it all in a nice data frame
    res.mse<-as.data.frame(res.mse)
-   names(res.mse)<-c("tprs","mds+tp","mds+cr","mds+tp(3D)","mds+tp+adj","soap")
+   names(res.mse)<-c("tprs","mds+tp","mds+cr","mds+tp 3D","mds+tp+adj","soap")
    res.edf<-as.data.frame(res.edf)
-   names(res.edf)<-c("tprs","mds+tp","mds+cr","mds+tp(3D)","mds+tp+adj","soap")
+   names(res.edf)<-c("tprs","mds+tp","mds+cr","mds+tp 3D","mds+tp+adj","soap")
    
    # write the files...
    write.csv(res.mse,file=paste("sim/wt2-mse-",samp.size,"-",noise.level,".csv",sep=""))

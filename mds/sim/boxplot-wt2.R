@@ -1,6 +1,6 @@
 # make some boxplots
 
-pdf(file="mds-wt2-boxplot.pdf",width=6,height=5)
+#pdf(file="mds-wt2-boxplot.pdf",width=6,height=5)
 
 # make the text look better for printout
 par(cex.lab=0.75)
@@ -42,4 +42,4 @@ for(err.lev in c("0.35","0.9","1.55")){
    boxplot(mse,main="")#,xlab=xlab)
 }
 
-dev.off()
+#dev.off()

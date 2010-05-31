@@ -9,7 +9,9 @@ errlevs<-c(0.1,1,10)
 
 sqrtn<-sqrt(250)
 cat(" & & MSE & &  & EDF & \\\\ \n")
-cat(" & MDS & soap & thin plate & MDS & soap & thin plate\\\\ \n")
+mods<-c("TPRS","MDS (tprs)","MDS (cr)","MDS (3D tprs)","MDS (tprs adjust)","Soap film")
+cat(paste(mods,mods,sep=" & "))
+cat("\\\\ \n")
 
 for(errlev in errlevs){
 
