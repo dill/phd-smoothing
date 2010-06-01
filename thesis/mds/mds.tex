@@ -548,11 +548,11 @@ f(x)=\sum_{\forall j} \beta_j b_j(x) = \tr{\mathbf{\beta}}\mathbf{b}(x).
 \ee
 In this case, \eqn{kdeadjust} may be written as:
 \be
-S_{ij}= \int_a^b \frac{1}{\mathsf{K}(x)^3} \frac{\partial^2 b_i(x)}{\partial x^2}\frac{\partial^2 b_j(x)}{\partial x^2} \text{d}x = \int_a^b \frac{1}{\mathsf{K}(x)^3} b^{\prime\prime}_i(x) b^{\prime\prime}_j(x) \text{d}x,
+S_{ij}= \int_a^b \mathsf{K}(x) \frac{\partial^2 b_i(x)}{\partial x^2}\frac{\partial^2 b_j(x)}{\partial x^2} \text{d}x = \int_a^b \mathsf{K}(x) b^{\prime\prime}_i(x) b^{\prime\prime}_j(x) \text{d}x,
 \ee
 in one dimension (letting a prime indicate differentiation with respect to $x$). The integral can then be approximated by the midpoint rule as:
 \be
-S_{ij}= \frac{b-a}{N}\sum_{k=1}^N \frac{1}{\mathsf{K}(x_k)^3} b^{\prime\prime}_i(x_k) b^{\prime\prime}_j(x_k) \quad \text{for} \quad x_k=a+\frac{(k-0.5)(b-a)}{N},
+S_{ij}= \frac{b-a}{N}\sum_{k=1}^N \mathsf{K}(x_k) b^{\prime\prime}_i(x_k) b^{\prime\prime}_j(x_k) \quad \text{for} \quad x_k=a+\frac{(k-0.5)(b-a)}{N},
 \ee
 for $k=1\dots N$. Second derivatives are evaluated by finite differences in the usual manner:
 \be
@@ -561,14 +561,14 @@ b^{\prime\prime}_i(x) = \frac{ b_i(x+2\epsilon) - 2b_i(x+\epsilon) + b_i(x)}{\ep
 \ee
 For the sake of efficiency, we infact calculate:
 \be
-D_{kj}=\sqrt{\frac{1}{\mathsf{K}(x_k)^3}} b^{\prime\prime}_j(x_k),
+D_{kj}=\sqrt{\mathsf{K}(x_k)} b^{\prime\prime}_j(x_k),
 \ee
 for $x_k$ as above. Then $S$ may be calculated as:
 \be
 S=\frac{b-a}{N}\tr{D}D.
 \ee
 
-Here $\mathsf{K}(x)$ was simply calculated using the inverse of the factor used to squash the part of the domain (given above). 
+Here $\mathsf{K}(x)$ was simply calculated using the inverse of the cube of the factor by which the relevant part of the domain (given above) was squashed. 
 
 \subsubsection{Checking that the adjustment works}
 
@@ -584,7 +584,6 @@ Here $\mathsf{K}(x)$ was simply calculated using the inverse of the factor used 
 \end{figure}
 
 
-
 \subsection{Penalty adjustments in 2 dimensions}
 
 Using a similar procedures as for 1 dimension, the two dimensional case can be addressed. Again looking at the $ij^\text{th}$ element of $S$:
@@ -597,32 +596,35 @@ using the finite differences from \eqn{bfinitediff} for differentials $x$ and $y
 \ee
 for the cross term. We can then construct matrices analogous to the 1-D case:
 \be
-[D_x]_{kj}=\sqrt{\frac{1}{\mathsf{K}(x_k,y_k)^3}} \frac{\partial^2 b_j(x_k,y_k)}{\partial x^2},
+[D_x]_{kj}=\sqrt{\mathsf{K}(x_k,y_k)} \frac{\partial^2 b_j(x_k,y_k)}{\partial x^2},
 \ee
 \be
-[D_y]_{kj}=\sqrt{\frac{1}{\mathsf{K}(x_k,y_k)^3}} \frac{\partial^2 b_j(x_k,y_k)}{\partial y^2},
+[D_y]_{kj}=\sqrt{\mathsf{K}(x_k,y_k)} \frac{\partial^2 b_j(x_k,y_k)}{\partial y^2},
 \ee
 \be
-[D_{xy}]_{kj}=\sqrt{\frac{1}{\mathsf{K}(x_k,y_k)^3}} \frac{\partial^2 b_j(x_k,y_k)}{\partial x \partial y}.
+[D_{xy}]_{kj}=\sqrt{\mathsf{K}(x_k,y_k)} \frac{\partial^2 b_j(x_k,y_k)}{\partial x \partial y}.
 \ee
 So we may then express $S$ as:
 \be
 S=\tr{D_x}D_x + \tr{D_{xy}}D_{xy} + \tr{D_y}D_y.
 \ee
-Now $x_k$ and $y_k$ form a grid which we want to integrate over. First defining $x^*_k$ and $y^*_k$ as:
+Now $x_k$ and $y_k$ form a grid which we want to integrate over. First defining $x^\dagger_k$ and $y^\dagger_k$ as:
 \be
-x^*_k=a_x+\frac{(k-0.5)(b_x-a_x)}{N},\\
-y^*_k=a_y+\frac{(k-0.5)(b_y-a_y)}{N},
+x^\dagger_k=a_x+\frac{(k-0.5)(b_x-a_x)}{N},\\
+y^\dagger_k=a_y+\frac{(k-0.5)(b_y-a_y)}{N},
 \ee
 then
 \be
-\{x_k : k=1\dots N\} = \{x^*_1,x^*_1,x^*_1,\dots, x^*_2, x^*_2, x^*_2,\dots, x^*_N, x^*_N, x^*_N\},
+\{x_k : k=1\dots N\} = \{x^\dagger_1,x^\dagger_1,x^\dagger_1,\dots, x^\dagger_2, x^\dagger_2, x^\dagger_2,\dots, x^\dagger_N, x^\dagger_N, x^\dagger_N\},
 \ee
 \be
-\{y_k : k=1\dots N\} = \{y^*_1,y^*_2, y^*_3,\dots, y^*_N,y^*_1,y^*_2, y^*_3,\dots, y^*_N,\dots\}.
+\{y_k : k=1\dots N\} = \{y^\dagger_1,y^\dagger_2, y^\dagger_3,\dots, y^\dagger_N,y^\dagger_1,y^\dagger_2, y^\dagger_3,\dots, y^\dagger_N,\dots\}.
 \ee
 
 Finally, those $(x_k,y_k)$ that are not inside the boundary in MDS space are removed leaving only those points that lie inside.
+
+Calculating $\mathsf{K}(x,y)$ in two dimensions is a little more tricky than previously. Since the two-dimensional case is to be used in practise, the method for finding $\mathsf{K}(x,y)$ must depend on the MDS configuration.
+
 
 Lots more to add here!
 
