@@ -588,11 +588,11 @@ Here $\mathsf{K}(x)$ was simply calculated using the inverse of the cube of the 
 
 Using a similar procedures as for 1 dimension, the two dimensional case can be addressed. Again looking at the $ij^\text{th}$ element of $S$:
 \begin{equation}
-S_{ij}=\int\int_\Omega \mathsf{K}(x,y) \Big( \frac{\partial^2 b_i(x,y)}{\partial x^2}\frac{\partial^2 b_j(x,y)}{\partial x^2}+2\frac{\partial^2 b_i(x,y)}{\partial x \partial y}\frac{\partial^2 b_j(x,y)}{\partial x \partial y}+\frac{\partial^2 b_i(x,y)}{\partial y^2}\frac{\partial^2 b_j(x,y)}{\partial y^2} \Big) \text{d}x\text{d}y.
+S_{ij}=\int\int_\Omega \mathsf{K}(x,y) \Big( \frac{\partial^2 b_i(x,y)}{\partial x^2}\frac{\partial^2 b_j(x,y)}{\partial x^2}+2\frac{\partial^2 b_i(x,y)}{\partial x \partial y}\frac{\partial^2 b_j(x,y)}{\partial x \partial y}+\frac{\partial^2 b_i(x,y)}{\partial y^2}\frac{\partial^2 b_j(x,y)}{\partial y^2} \Big) \text{d}x\text{d}y, 
 \end{equation}
 using the finite differences from \eqn{bfinitediff} for differentials $x$ and $y$ individually and
 \be
-\frac{\partial^2 b_i(x,y)}{\partial x \partial y} = \frac{ b_i(x+\epsilon,y+\epsilon) - b_i(x+\epsilon,y) - b_i(x,y+\epsilon) + b_i(x,y)}{\epsilon^2}.
+\frac{\partial^2 b_i(x,y)}{\partial x \partial y} = \frac{ b_i(x+\epsilon,y+\epsilon) - b_i(x+\epsilon,y) - b_i(x,y+\epsilon) + b_i(x,y)}{\epsilon^2},
 \ee
 for the cross term. We can then construct matrices analogous to the 1-D case:
 \be
@@ -608,7 +608,7 @@ So we may then express $S$ as:
 \be
 S=\tr{D_x}D_x + \tr{D_{xy}}D_{xy} + \tr{D_y}D_y.
 \ee
-Now $x_k$ and $y_k$ form a grid which we want to integrate over. First defining $x^\dagger_k$ and $y^\dagger_k$ as:
+Where the partial derivatives are to be evaluated ($x_k$ and $y_k$) now form a grid for the integration to be calculated over. First defining $x^\dagger_k$ and $y^\dagger_k$ as:
 \be
 x^\dagger_k=a_x+\frac{(k-0.5)(b_x-a_x)}{N},\\
 y^\dagger_k=a_y+\frac{(k-0.5)(b_y-a_y)}{N},
@@ -623,7 +623,9 @@ then
 
 Finally, those $(x_k,y_k)$ that are not inside the boundary in MDS space are removed leaving only those points that lie inside.
 
-Calculating $\mathsf{K}(x,y)$ in two dimensions is a little more tricky than previously. Since the two-dimensional case is to be used in practise, the method for finding $\mathsf{K}(x,y)$ must depend on the MDS configuration.
+Calculating $\mathsf{K}(x,y)$ in two dimensions is a little more tricky than in the 1-D case. Since the two-dimensional case is to be used in practise, the method for finding $\mathsf{K}(x,y)$ must depend on the MDS configuration, as the stretch factors will not be known \emph{a priori}.
+
+In order to find $\mathsf{K}(x,y)$ a grid in the original space is mapped into the MDS space. The mapped points were then used to estimate the overall point density in MDS space by simply counting the number of points there were in each of a set of squares made from the integration grid. This is shown in \fig{densgrid}. In order to make sure that there were enough points in each square to calculate the density, while not incurring a huge computational burden by calculating many within-domain paths, the grid made by the points in the MDS space was interpolated. This consisted of taking 10 equally spaced points on each side of the square and drawing lines between points on opposing sides. Where the lines crossed were the extra points (along with those points lying on the square itself.)
 
 
 Lots more to add here!

@@ -1,6 +1,7 @@
 # function to run simulations on the wigglytop 2 domain
-# Copyright David Lawrence Miller 2009.
+# Copyright David Lawrence Miller 2009-2010.
 source("mds.R")
+source("intexp/smooth2.c.R")
 
 set.seed(1)
  
@@ -117,15 +118,16 @@ pred.data$y[samp.ind]<-samp.mds[,2]
 b.tp<-gam(z~s(x,y,k=80),data=samp.data)
 fv.tp<-predict(b.tp,newdata=pred.data)
 
-source("intexp/smooth2.c.R")
 #library(debug)
 #mtrace(smooth.construct.mdstp.smooth.spec)
 
 # clever tprs 
+source("intexp/smooth2.c.R")
 b.mdstp<-gam(z~s(x,y,k=80,bs="mdstp",
                  xt=list(bnd.mds=bnd.mds,
                          bnd=bnd,
                          op=my.grid,
+#                         b.grid=c(15,15),
                          mds.obj=mds.obj)),
              data=samp.data)
 fv.mdstp<-predict(b.mdstp,newdata=pred.data)

@@ -77,7 +77,18 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # take the boundary
    # map it into the space
-   bnd.mds<-insert.mds(object$xt$bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0)
+   bnd<-object$xt$bnd
+   int.bnd<-bnd
+
+   # interpolate the boundary
+   #xb<-matrix(c(bnd$x,bnd$x[c(2:length(bnd$x),1)]),length(bnd$x),2)[-length(bnd$x),] 
+   #xb<-xb[-dim(xb),]
+   #yb<-matrix(c(bnd$y,bnd$y[c(2:length(bnd$y),1)]),length(bnd$y),2)[-length(bnd$y),] 
+   #yb<-yb[-dim(yb),]
+   #int.bnd<-list(x=vecseq(xb,10),
+   #              y=vecseq(yb,10))
+
+   bnd.mds<-insert.mds(int.bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0)
    bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])
    #bnd.mds<-object$xt$bnd.mds
    #plot(bnd.mds,type="l")
@@ -128,7 +139,13 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # lets generate some grids
 
    # create base grid
-   m<-25;n<-25 # need to set these somewhere
+   if(is.null(object$xt$b.grid)){
+      m<-25;n<-25 # need to set these somewhere
+   }else{
+      m<-object$xt$b.grid[1]
+      n<-object$xt$b.grid[2]
+   }
+
    xmin<-min(bnd$x)
    ymin<-min(bnd$y)
    xmax<-max(bnd$x)
@@ -163,8 +180,19 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    blg<-pe(blg,onoff)
    brg<-pe(brg,onoff)
 
+   # uncomment for diagram for thesis!
+   pdf(file="densgrid.pdf",width=5,height=2.5)
+   par(mfrow=c(1,2),mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
+   xlims<-c(min(tlg$x,trg$x,brg$x,blg$x),max(tlg$x,trg$x,brg$x,blg$x))
+   ylims<-c(min(tlg$y,trg$y,brg$y,blg$y),max(tlg$y,trg$y,brg$y,blg$y))
+   plot(tlg,pch=19,asp=1,cex=0.2,las=1,xlab="x",ylab="y",xlim=xlims,ylim=ylims,col="red")
+   lines(bnd,lwd=2)
+   points(trg,pch=19,cex=0.2,col="red")
+   points(brg,pch=19,cex=0.2,col="red")
+   points(blg,pch=19,cex=0.2,col="red")
+
    # check that this was okay...
-   #plot(tlg,pch=19)
+   #plot(tlg,pch=19,asp=1)
    #points(trg,pch=19,col="green",cex=0.9)
    #points(brg,pch=19,col="blue",cex=0.8)
    #points(blg,pch=19,col="orange",cex=0.7)
@@ -183,8 +211,17 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    mbrg<-biglist.mds[(2*len+1):(3*len),]
    mblg<-biglist.mds[(3*len+1):(4*len),]
 
+   # uncomment for diagram for thesis!
+   xlims<-c(min(bnd.mds[,1]),max(bnd.mds[,1]))
+   ylims<-c(min(bnd.mds[,2]),max(bnd.mds[,2]))
+   plot(mtlg,pch=19,asp=1,cex=0.2,las=1,xlab="x*",ylab="y*",xlim=xlims,ylim=ylims,col="red")
+   lines(bnd.mds,lwd=2)
+   points(mtrg,pch=19,cex=0.2,col="red")
+   points(mbrg,pch=19,cex=0.2,col="red")
+   points(mblg,pch=19,cex=0.2,col="red")
+
    # again, check that worked!
-   #plot(mtlg,pch=19)
+   #plot(mtlg,pch=19,asp=1)
    #points(mtrg,pch=19,col="green",cex=0.9)
    #points(mbrg,pch=19,col="blue",cex=0.8)
    #points(mblg,pch=19,col="orange",cex=0.7)
@@ -236,15 +273,20 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
 
+
+   # uncomment for thesis diagam
+   points(ep$X,cex=0.1,pch=19)
+   dev.off()
+   X11()
+
+
    # image of the density function
 #   X11()
 #   denf<-table(dxi,dyj)
 #   denf[-(mxi+sqrt(length(myj))*myj)]<-NA
 #   image(denf,col=heat.colors(1000))
 
-
    #################################################
-
    # do the squashing
    sq<-sqrt((dens.est)^3)
    Dx<-sq*Dx

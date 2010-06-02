@@ -4,6 +4,7 @@
 source("mds-wrap.R")
 source("insert.mds.R")
 source("pe.R")
+source("vecseq.R")
 source("makesoapgrid.R")
 source("createrefgrid.R")
 library(soap)
