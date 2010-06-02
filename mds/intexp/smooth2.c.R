@@ -181,15 +181,15 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    brg<-pe(brg,onoff)
 
    # uncomment for diagram for thesis!
-   pdf(file="densgrid.pdf",width=5,height=2.5)
-   par(mfrow=c(1,2),mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
-   xlims<-c(min(tlg$x,trg$x,brg$x,blg$x),max(tlg$x,trg$x,brg$x,blg$x))
-   ylims<-c(min(tlg$y,trg$y,brg$y,blg$y),max(tlg$y,trg$y,brg$y,blg$y))
-   plot(tlg,pch=19,asp=1,cex=0.2,las=1,xlab="x",ylab="y",xlim=xlims,ylim=ylims,col="red")
-   lines(bnd,lwd=2)
-   points(trg,pch=19,cex=0.2,col="red")
-   points(brg,pch=19,cex=0.2,col="red")
-   points(blg,pch=19,cex=0.2,col="red")
+   #pdf(file="densgrid.pdf",width=5,height=2.5)
+   #par(mfrow=c(1,2),mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
+   #xlims<-c(min(tlg$x,trg$x,brg$x,blg$x),max(tlg$x,trg$x,brg$x,blg$x))
+   #ylims<-c(min(tlg$y,trg$y,brg$y,blg$y),max(tlg$y,trg$y,brg$y,blg$y))
+   #plot(tlg,pch=19,asp=1,cex=0.2,las=1,xlab="x",ylab="y",xlim=xlims,ylim=ylims,col="red")
+   #lines(bnd,lwd=2)
+   #points(trg,pch=19,cex=0.2,col="red")
+   #points(brg,pch=19,cex=0.2,col="red")
+   #points(blg,pch=19,cex=0.2,col="red")
 
    # check that this was okay...
    #plot(tlg,pch=19,asp=1)
@@ -212,13 +212,13 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    mblg<-biglist.mds[(3*len+1):(4*len),]
 
    # uncomment for diagram for thesis!
-   xlims<-c(min(bnd.mds[,1]),max(bnd.mds[,1]))
-   ylims<-c(min(bnd.mds[,2]),max(bnd.mds[,2]))
-   plot(mtlg,pch=19,asp=1,cex=0.2,las=1,xlab="x*",ylab="y*",xlim=xlims,ylim=ylims,col="red")
-   lines(bnd.mds,lwd=2)
-   points(mtrg,pch=19,cex=0.2,col="red")
-   points(mbrg,pch=19,cex=0.2,col="red")
-   points(mblg,pch=19,cex=0.2,col="red")
+   #xlims<-c(min(bnd.mds[,1]),max(bnd.mds[,1]))
+   #ylims<-c(min(bnd.mds[,2]),max(bnd.mds[,2]))
+   #plot(mtlg,pch=19,asp=1,cex=0.2,las=1,xlab="x*",ylab="y*",xlim=xlims,ylim=ylims,col="red")
+   #lines(bnd.mds,lwd=2)
+   #points(mtrg,pch=19,cex=0.2,col="red")
+   #points(mbrg,pch=19,cex=0.2,col="red")
+   #points(mblg,pch=19,cex=0.2,col="red")
 
    # again, check that worked!
    #plot(mtlg,pch=19,asp=1)
@@ -275,8 +275,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
 
    # uncomment for thesis diagam
-   points(ep$X,cex=0.1,pch=19)
-   dev.off()
+   #points(ep$X,cex=0.1,pch=19)
+   #dev.off()
    X11()
 
 
