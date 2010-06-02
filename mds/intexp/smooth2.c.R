@@ -264,14 +264,29 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    dyj<-abs(floor((dpoints$y-ystart)/ydel))
 
    # now find the grid cell the integration meshpoints lie in...
-   mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
-   myj<-abs(floor((ip$X[,2]-ystart)/ydel))
+   #mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
+   #myj<-abs(floor((ip$X[,2]-ystart)/ydel))
 
-   onoff<-inSide(bnd.mds,ip$X[,1],ip$X[,2])
-   mxi<-mxi[onoff]
-   myj<-myj[onoff]
+   #onoff<-inSide(bnd.mds,ip$X[,1],ip$X[,2])
+   #mxi<-mxi[onoff]
+   #myj<-myj[onoff]
 
-   dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
+   mxi<-abs(floor((ep$X[,1]-xstart)/xdel))
+   myj<-abs(floor((ep$X[,2]-ystart)/ydel))
+
+
+   # so now we have our function K(x,y)
+   K<-table(dxi,dyj)
+   x.names<-as.numeric(attr(K,"dimnames")$dxi)
+   y.names<-as.numeric(attr(K,"dimnames")$dyj)
+   Kt<-matrix(0,N,N)
+   Kt[x.names,y.names]<-K
+   K<-Kt
+   
+
+   #Kx<-dim(K)[1]
+   #Ky<-dim(K)[2]
+   dens.est<-K[mxi+N*myj]
 
 
    # uncomment for thesis diagam
@@ -280,11 +295,16 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    X11()
 
 
+
    # image of the density function
-#   X11()
-#   denf<-table(dxi,dyj)
-#   denf[-(mxi+sqrt(length(myj))*myj)]<-NA
+#   denf<-matrix(NA,N,N)
+#   onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
+#   denf[onoff]<-K[mxi+N*myj]
+#   #denf[onoff]<-K[mxi+Kx*myj]
+##   denf[onoff]<-K[myj+N*mxi]
 #   image(denf,col=heat.colors(1000))
+#   X11()
+#   stop()
 
    #################################################
    # do the squashing
