@@ -25,12 +25,12 @@ Given a sample $\{\mathbf{x}_i, z_i : i=1\dots n\}$, the set of points in the do
 \begin{enumerate}
 \item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to define the configuration, they are discarded afterward. Representative points could be a sparse grid over the domain or subset of $\{\mathbf{x}_i : i=1\dots n\}$; more detail and justification is provided in section \ref{grids}, below.
 
-\item Using the MDS configuration obtained above along with Gower's interpolation (see section \ref{gowers}) obtain the location of the sample in the MDS configuration: $\{\mathbf{\tilde{x}}_i, z_i : i=1\dots n\}$.
+\item Using the MDS configuration obtained above along with Gower's interpolation (see section \ref{gowers}) obtain the location of the sample in the MDS configuration: $\{\mathbf{x^*}_i, z_i : i=1\dots n\}$.
 
-\item Smooth $\{\mathbf{\tilde{x}}_i, z_i : i=1\dots n\}$ using a regression spline.
+\item Smooth $\{\mathbf{x^*}_i, z_i : i=1\dots n\}$ using a regression spline.
 
 \item To predict at a location $\mathbf{x_j}$ in the original domain, use Gower's interpolation to 
-obtain the point's location in the MDS space: $\mathbf{\tilde{x}}_j$. Predict $\hat{z}_j$ at $\mathbf{x}_j$ using the smooth at $\mathbf{\tilde{x}}_j$.
+obtain the point's location in the MDS space: $\mathbf{x^*}_j$. Predict $\hat{z}_j$ at $\mathbf{x}_j$ using the smooth at $\mathbf{x^*}_j$.
 \end{enumerate}
 
 The rest of this chapter is structured as follows: in \secref{MDStechdet} an overview of MDS is given, along with technical details of how the MDS configuration is calculated; \secref{mdsdist} focuses on how the within-area distances are found; \secref{mdssims} shows some examples of this method on simulated data. Finally \secref{MDSimprov} shows some improvements to the initial method and further simulations.
@@ -90,7 +90,7 @@ Finding the eigen-decomposition of $S$, we obtain $S=U\Lambda\tr{U}$. Here $U$ i
 
 Following these steps $\tilde{X}^*$ is an $n \cross n$ matrix. Multidimensional scaling is performed to reduce the dimensionality of the data and, indeed, the aim here is to smooth in two dimensions. To represent the space using two dimensions the directions with the two largest eigenvalues are chosen and the others discarded. These two largest eigenvalues and their associated eigenvectors constitute the two largest sources of variation in distance (since they are the two largest contributions to $S$) this gives the two dimensional representation of the data. 
 
-Defining $\tilde{X}$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a 2-dimensional representation has been obtained. More generally, we can reduce the $\tilde{X}^*$ to an $n \cross k$ matrix, where $k$ is the chosen dimensionality of the MDS space.
+Defining $X^*$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a 2-dimensional representation has been obtained. More generally, we can reduce the $\tilde{X}^*$ to an $n \cross k$ matrix, where $k$ is the chosen dimensionality of the MDS space.
 
 In summary, to calculate the MDS configuration of a set of points (given their inter-point distances) we merely need to double centre the matrix of distances and perform an eigen-decomposition on the resulting matrix, $S$. 
 
@@ -104,15 +104,15 @@ Note that an additive constant can be computed and added to the non-diagonal ent
 \label{gowers}
 Given the setup in \secref{mdsproc}, once the MDS configuration has been found, further points will need to be inserted into our MDS representation. For example when further data is collected, or in order to predict over points not in the initial grid. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years; Gower's interpolation (\cite{gower1968}) is covered here.
 
-Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $\tilde{x}_{\text{new}}$ in the MDS configuration, $\tilde{X}$. The position of $\tilde{x}_{\text{new}}$ is at a distance from the points in $\tilde{X}$ which is approximately the same as that of $x_{\text{new}}$ to the points in the non-transformed space. 
+Say we have some point, $x_{\text{new}}$ and we wish to find its new location, $x^*_{\text{new}}$ in the MDS configuration, $X^*$. The position of $x^*_{\text{new}}$ is at a distance from the points in $X^*$ which is approximately the same as that of $x_{\text{new}}$ to the points in the non-transformed space. 
 
 Note that here we are assuming that a 2 dimensional projection has been used in the initial MDS configuration, obviously Gower's interpolation remains valid for the case in which the initial MDS projection is $k$ dimensional.
 
 \subsubsection{Gower's interpolation formula}
 
-We may find the new position, $\tilde{x}_{\text{new}}$ , of some new datum $x_{\text{new}}$ using:
+We may find the new position, $x^*_{\text{new}}$ , of some new datum $x_{\text{new}}$ using:
 \begin{equation}
-\tilde{x}_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{\tilde{X}} \mathbb{D}.
+x^*_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{X^*} \mathbb{D}.
 \label{gower}
 \end{equation}
 Here $\Lambda$ ($2 \cross 2$) and $\tr{\tilde{X}}$ ($2 \cross n$) are as above, $\mathbb{D}$ ($n \cross 1$) is the centred distance from the points in the original configuration to $x_{\text{new}}$.
@@ -120,7 +120,7 @@ Here $\Lambda$ ($2 \cross 2$) and $\tr{\tilde{X}}$ ($2 \cross n$) are as above, 
 % Thesis fact: this paragraph infact represents about 3 months of work :(
 In Gower's paper, he defines the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{X}^*\tilde{X^{* \text{T}}}$ \emph{ie}. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{X}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(S)_{ii})$. Since $S$ is already known, it appears more sensible to use this expression for computation as it doesn't imply any extra matrix multiplication.
 
-Gower's interpolation extends simply to the case when $m$ new points are inserted by making $\tilde{x}_{\text{new}}$ as $k \cross m$ matrix and $\mathbb{D}$ an $n \cross m$ matrix.
+Gower's interpolation extends simply to the case when $m$ new points are inserted by making $x^*_{\text{new}}$ as $k \cross m$ matrix and $\mathbb{D}$ an $n \cross m$ matrix.
 
 
 \subsection{Practical considerations}
