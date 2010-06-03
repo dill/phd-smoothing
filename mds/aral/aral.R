@@ -9,7 +9,7 @@ library(soap)
 
 # mds files
 source("mds.R")
-
+source("createrefgrid.R")
 source("latlong2km.R")
 
 # load the data and boundary
@@ -43,7 +43,7 @@ image(x=unique(aral.dat$x),y=unique(aral.dat$y),z=matrix(aral.dat$chl,46,46),
 lines(bnd)
 
 #### fit a thin plate model
-tp.fit<-gam(chl~s(x,y,k=49),data=aral.dat)
+tp.fit<-gam(chl~s(x,y,k=49),data=aral.dat,family=Gamma(link="log"))
 
 # prediction grid
 m<-50;n<-50
@@ -57,6 +57,8 @@ tp.pred<-predict(tp.fit,newdata=pred.grid)
 pred.mat<-matrix(NA,m,n)
 pred.mat[pred.onoff]<-tp.pred
 image(pred.mat,x=unique(xx),y=unique(yy),main="tprs",xlab="km (East)",ylab="km (North)")
+
+
 
 #### MDS
 # mds grid
@@ -77,16 +79,10 @@ aral.mds<-data.frame(x=aral.mds[,1],
                      y=aral.mds[,2],
                      chl=aral.dat$chl)
 
+# fit the model
+mds.fit<-gam(chl~s(x,y,k=49),data=aral.mds,family=Gamma(link="log"))
 
-mds.fit<-gam(chl~s(x,y,k=49),data=aral.mds)
-
-# prediction grid
-m<-50;n<-50
-xm <- seq(min(aral.dat$x),max(aral.dat$x),length=m)
-yn<-seq(min(aral.dat$y),max(aral.dat$y),length=n)
-xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
-pred.onoff<-inSide(bnd,xx,yy)
-pred.grid<-data.frame(x=xx[pred.onoff],y=yy[pred.onoff])
+# mds prediction grid
 pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd,faster=1)
 
 pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
@@ -97,28 +93,19 @@ pred.mat[pred.onoff]<-mds.pred
 image(pred.mat,x=unique(xx),y=unique(yy),main="mds",xlab="km (East)",ylab="km (North)")
 
 #### soap 
-#tp.fit<-gam(chl~s(x,y,k=49),data=aral.dat)
-#
-## prediction grid
-#m<-50;n<-50
-#xm <- seq(min(aral.dat$x),max(aral.dat$x),length=m)
-#yn<-seq(min(aral.dat$y),max(aral.dat$y),length=n)
-#xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
-#pred.onoff<-inSide(bnd,xx,yy)
-#pred.grid<-data.frame(x=xx[pred.onoff],y=yy[pred.onoff])
-#
-#tp.pred<-predict(tp.fit,newdata=pred.grid)
-#pred.mat<-matrix(NA,m,n)
-#pred.mat[pred.onoff]<-tp.pred
-#image(pred.mat,x=unique(xx),y=unique(yy),main="tprs")
+# first setup the knots
+s.knots<-create_refgrid(bnd,140)
+s.knots$nrefx<-NULL
+s.knots$nrefy<-NULL
+s.knots<-as.data.frame(s.knots)
 
+soap.fit<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.knots,
+            family=Gamma(link="log"),data=aral.dat)
 
-
-
-
-
-
-
-
+# prediction
+soap.pred<-predict(soap.fit,newdata=pred.grid)
+pred.mat<-matrix(NA,m,n)
+pred.mat[pred.onoff]<-soap.pred
+image(pred.mat,x=unique(xx),y=unique(yy),main="soap")
 
 
