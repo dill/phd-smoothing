@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   #dia.densmap<-TRUE
+   dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -86,6 +86,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    int.bnd<-bnd
 
    # interpolate the boundary
+   # weird things happen here
    #xb<-matrix(c(bnd$x,bnd$x[c(2:length(bnd$x),1)]),length(bnd$x),2)[-length(bnd$x),] 
    #xb<-xb[-dim(xb),]
    #yb<-matrix(c(bnd$y,bnd$y[c(2:length(bnd$y),1)]),length(bnd$y),2)[-length(bnd$y),] 
@@ -133,17 +134,11 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    Dy<-ep$w*(dyee-2*dye+dxy)/eps^2
    Dxy<-ep$w*(dxye-dxe-dye+dxy)/eps^2
 
-   # zero some rows
-#   Dx[(k-1):k,]<-rep(0,k*2)
-#   Dy[(k-1):k,]<-rep(0,k*2)
-#   Dxy[(k-1):k,]<-rep(0,k*2)
-
    ##################################################
    # now do the adjustment based on the point density
+   # almost all of this section consists of generating grids 
 
-   # lets generate some grids
-
-   # create base grid
+   # create base MDS grid
    if(is.null(object$xt$b.grid)){
       m<-25;n<-25 # need to set these somewhere
    }else{
@@ -156,7 +151,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    xmax<-max(bnd$x)
    ymax<-max(bnd$y)
    # create the grid
-   xm <- seq(xmin,xmax,length=m)
+   xm<-seq(xmin,xmax,length=m)
    yn<-seq(ymin,ymax,length=n)
 
    # one extra grid cell bigger on all sides
@@ -174,7 +169,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    blg<-list(x=rep(c(blx,xm),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
    brg<-list(x=rep(c(xm,brx),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
 
-   # now just take the full squares that are inside
+   # now just take the squares that are totally inside
    onoff<-inSide(bnd,tlg$x,tlg$y)
    onoff<-onoff & inSide(bnd,trg$x,trg$y)
    onoff<-onoff & inSide(bnd,brg$x,brg$y)
@@ -187,9 +182,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # thesis diagam - density map
    if(dia.densmap){
-      #pdf(file="densgrid.pdf",width=5,height=2.5)
-      X11()
-      par(mfrow=c(1,2),mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
+      pdf(file="densgrid.pdf",width=5,height=2.5)
+      #X11()
+      par(mfrow=c(2,2),mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
       xlims<-c(min(tlg$x,trg$x,brg$x,blg$x),max(tlg$x,trg$x,brg$x,blg$x))
       ylims<-c(min(tlg$y,trg$y,brg$y,blg$y),max(tlg$y,trg$y,brg$y,blg$y))
       plot(tlg,pch=19,asp=1,cex=0.2,las=1,xlab="x",ylab="y",xlim=xlims,ylim=ylims,col="red")
@@ -240,23 +235,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # to make
    gres<-10
 
-   pts.x<-c()
-   pts.y<-c()
-
-   ## for every quadrilateral
-   #for(i in 1:len){
-   #   # create the divisions on the top and bottom
-   #   tlx<-seq(mtlg[i,1],mtrg[i,1],len=gres)
-   #   tly<-seq(mtlg[i,2],mtrg[i,2],len=gres)
-   #   blx<-seq(mblg[i,1],mbrg[i,1],len=gres)
-   #   bly<-seq(mblg[i,2],mbrg[i,2],len=gres)
-
-   #   # split those divisions
-   #   for(j in 1:gres){
-   #      pts.x<-c(pts.x,seq(tlx[j],blx[j],len=gres))
-   #      pts.y<-c(pts.y,seq(tly[j],bly[j],len=gres))
-   #   }
-   #}
+   # do the interpolation, cut the boxes into 10 on each side,
+   # then join up the lines...
 
    # do something clever with vectorised seq()
    # put mtlg[,1] and mtrg[,1] into a 2xlength matrix,
@@ -272,6 +252,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    blx<-vecseq(bxmat,gres)
    bly<-vecseq(bymat,gres)
 
+   pts.x<-c()
+   pts.y<-c()
+
    for(i in 1:gres){
       xs<-vecseq(matrix(c(tlx[,i],blx[,i]),length(blx[,i]),2),gres)
       pts.x<-c(pts.x,c(t(xs)))
@@ -280,14 +263,15 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       pts.y<-c(pts.y,c(t(ys)))
    }
 
-
    dpoints<-list(x=pts.x,y=pts.y)
 
-   #X11()
-   #plot(dpoints,pch=19,cex=0.3)
-   #X11()
-
-
+   if(dia.densmap){
+      # check that the interpolation worked...
+      #X11()
+      plot(dpoints,pch=19,cex=0.3,col=rgb(1,0,0,0.5))
+      lines(bnd.mds,lwd=2)
+      #X11()
+   }
    # work out the density at resolution dres
    # at the moment ths is just the same as doing this for the
    # integration grid, so we can replace that eventually...
@@ -301,45 +285,39 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    dxi<-abs(floor((dpoints$x-xstart)/xdel))
    dyj<-abs(floor((dpoints$y-ystart)/ydel))
 
-   # now find the grid cell the integration meshpoints lie in...
-   #mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
-   #myj<-abs(floor((ip$X[,2]-ystart)/ydel))
-
-   #onoff<-inSide(bnd.mds,ip$X[,1],ip$X[,2])
-   #mxi<-mxi[onoff]
-   #myj<-myj[onoff]
-
+   # find the grid cells the integration points lie in
    mxi<-abs(floor((ep$X[,1]-xstart)/xdel))
    myj<-abs(floor((ep$X[,2]-ystart)/ydel))
 
-
    # so now we have our function K(x,y)
    K<-table(dxi,dyj)
+
+   # table doesn't return an NxN table, so this hack
+   # makes K NxN...
    x.names<-as.numeric(attr(K,"dimnames")$dxi)
    y.names<-as.numeric(attr(K,"dimnames")$dyj)
    Kt<-matrix(0,N,N)
    Kt[x.names,y.names]<-K
    K<-Kt
    
+   ### Evaluate K!
+   # make sure that K>0 everywhere, so we don't kill any elements
+   # this is fine since it should get absorbed into lambda
    dens.est<-K[mxi+n*myj]+1
-#   dens.est<-K[mxi,myj]
-
 
    # thesis diagam - density map
    if(dia.densmap){
-      #points(ep$X,cex=0.1,pch=19)
-      #dev.off()
-      X11()
-   }
+      points(ep$X,cex=0.1,pch=19)
 
-   ## image of the density function
-   #denf<-matrix(NA,N,N)
-   #onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
-   #denf[onoff]<-K[mxi+N*myj]+1
-   ##denf[onoff]<-K[mxi,myj]
-   #image(denf,col=heat.colors(1000))
-   #X11()
-#   stop()
+      # image of the density function
+      denf<-matrix(NA,N,N)
+      onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
+      denf[onoff]<-K[mxi+N*myj]+1
+      #denf[onoff]<-K[mxi,myj]
+      image(denf,col=heat.colors(1000))
+      dev.off()
+      #X11()
+   }
 
    #################################################
    # do the squashing
@@ -354,15 +332,15 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # enforce symmetry (from smooth.construct.tp...)
    S <- (S + t(S))/2
 
+   # store the object
    object$S[[1]]<-S
 
    # zero the last three rows and cols
    object$S[[1]][(k-2):k,]<-rep(0,k*3)
    object$S[[1]][,(k-2):k]<-rep(0,k*3)
 
-   #cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
-
-   object$oldS<-oldS
+   # uncomment to return the old version of S
+   #object$oldS<-oldS
 
    class(object)<-"mdstp.smooth"
    object
