@@ -112,10 +112,10 @@ Note that here we are assuming that a 2 dimensional projection has been used in 
 
 We may find the new position, $x^*_{\text{new}}$ , of some new datum $x_{\text{new}}$ using:
 \begin{equation}
-x^*_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{X^*} \mathbb{D}.
+x^*_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{(X^*)} \mathbb{D}.
 \label{gower}
 \end{equation}
-Here $\Lambda$ ($2 \cross 2$) and $\tr{\tilde{X}}$ ($2 \cross n$) are as above, $\mathbb{D}$ ($n \cross 1$) is the centred distance from the points in the original configuration to $x_{\text{new}}$.
+Here $\Lambda$ ($2 \cross 2$) and $\tr{(X^*)}$ ($2 \cross n$) are as above, $\mathbb{D}$ ($n \cross 1$) is the centred distance from the points in the original configuration to $x_{\text{new}}$.
 
 % Thesis fact: this paragraph infact represents about 3 months of work :(
 In Gower's paper, he defines the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{X}^*\tilde{X^{* \text{T}}}$ \emph{ie}. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{X}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbf{d}$ as $-(d^2_{i,n+1}-\text{diag}(S)_{ii})$. Since $S$ is already known, it appears more sensible to use this expression for computation as it doesn't imply any extra matrix multiplication.
