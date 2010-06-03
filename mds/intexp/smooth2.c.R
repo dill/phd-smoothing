@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   dia.densmap<-TRUE
+   #dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -243,22 +243,50 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    pts.x<-c()
    pts.y<-c()
 
-   # for every quadrilateral
-   for(i in 1:len){
-      # create the divisions on the top and bottom
-      tlx<-seq(mtlg[i,1],mtrg[i,1],len=gres)
-      tly<-seq(mtlg[i,2],mtrg[i,2],len=gres)
-      blx<-seq(mblg[i,1],mbrg[i,1],len=gres)
-      bly<-seq(mblg[i,2],mbrg[i,2],len=gres)
+   ## for every quadrilateral
+   #for(i in 1:len){
+   #   # create the divisions on the top and bottom
+   #   tlx<-seq(mtlg[i,1],mtrg[i,1],len=gres)
+   #   tly<-seq(mtlg[i,2],mtrg[i,2],len=gres)
+   #   blx<-seq(mblg[i,1],mbrg[i,1],len=gres)
+   #   bly<-seq(mblg[i,2],mbrg[i,2],len=gres)
 
-      # split those divisions
-      for(j in 1:gres){
-         pts.x<-c(pts.x,seq(tlx[j],blx[j],len=gres))
-         pts.y<-c(pts.y,seq(tly[j],bly[j],len=gres))
-      }
+   #   # split those divisions
+   #   for(j in 1:gres){
+   #      pts.x<-c(pts.x,seq(tlx[j],blx[j],len=gres))
+   #      pts.y<-c(pts.y,seq(tly[j],bly[j],len=gres))
+   #   }
+   #}
+
+   # do something clever with vectorised seq()
+   # put mtlg[,1] and mtrg[,1] into a 2xlength matrix,
+   # same for the others
+   txmat<-matrix(c(mtlg[,1],mtrg[,1]),length(mtrg[,1]),2)
+   tymat<-matrix(c(mtlg[,2],mtrg[,2]),length(mtrg[,2]),2)
+   bxmat<-matrix(c(mblg[,1],mbrg[,1]),length(mbrg[,1]),2)
+   bymat<-matrix(c(mblg[,2],mbrg[,2]),length(mbrg[,2]),2)
+
+   # do some vecseq magic...
+   tlx<-vecseq(txmat,gres)
+   tly<-vecseq(tymat,gres)
+   blx<-vecseq(bxmat,gres)
+   bly<-vecseq(bymat,gres)
+
+   for(i in 1:gres){
+      xs<-vecseq(matrix(c(tlx[,i],blx[,i]),length(blx[,i]),2),gres)
+      pts.x<-c(pts.x,c(t(xs)))
+
+      ys<-vecseq(matrix(c(tly[,i],bly[,i]),length(bly[,i]),2),gres)
+      pts.y<-c(pts.y,c(t(ys)))
    }
 
+
    dpoints<-list(x=pts.x,y=pts.y)
+
+   #X11()
+   #plot(dpoints,pch=19,cex=0.3)
+   #X11()
+
 
    # work out the density at resolution dres
    # at the moment ths is just the same as doing this for the
@@ -304,13 +332,13 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       X11()
    }
 
-   # image of the density function
-   denf<-matrix(NA,N,N)
-   onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
-   denf[onoff]<-K[mxi+N*myj]+1
-   #denf[onoff]<-K[mxi,myj]
-   image(denf,col=heat.colors(1000))
-   X11()
+   ## image of the density function
+   #denf<-matrix(NA,N,N)
+   #onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
+   #denf[onoff]<-K[mxi+N*myj]+1
+   ##denf[onoff]<-K[mxi,myj]
+   #image(denf,col=heat.colors(1000))
+   #X11()
 #   stop()
 
    #################################################
