@@ -182,12 +182,12 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # thesis diagam - density map
    if(dia.densmap){
-      pdf(file="densgrid.pdf",width=5,height=2.5)
+      pdf(file="densgrid.pdf",width=5,height=5)
       #X11()
-      par(mfrow=c(2,2),mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
+      par(mfrow=c(2,2),mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7,las=1)
       xlims<-c(min(tlg$x,trg$x,brg$x,blg$x),max(tlg$x,trg$x,brg$x,blg$x))
       ylims<-c(min(tlg$y,trg$y,brg$y,blg$y),max(tlg$y,trg$y,brg$y,blg$y))
-      plot(tlg,pch=19,asp=1,cex=0.2,las=1,xlab="x",ylab="y",xlim=xlims,ylim=ylims,col="red")
+      plot(tlg,pch=19,asp=1,cex=0.2,xlab="x",ylab="y",xlim=xlims,ylim=ylims,col="red")
       lines(bnd,lwd=2)
       points(trg,pch=19,cex=0.2,col="red")
       points(brg,pch=19,cex=0.2,col="red")
@@ -268,7 +268,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    if(dia.densmap){
       # check that the interpolation worked...
       #X11()
-      plot(dpoints,pch=19,cex=0.3,col=rgb(1,0,0,0.5))
+      plot(dpoints,pch=19,cex=0.3,col="green",xlab="x*",ylab="y*",asp=1)
       lines(bnd.mds,lwd=2)
       #X11()
    }
@@ -309,12 +309,15 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    if(dia.densmap){
       points(ep$X,cex=0.1,pch=19)
 
-      # image of the density function
+      # image plot of the density function
       denf<-matrix(NA,N,N)
       onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
       denf[onoff]<-K[mxi+N*myj]+1
       #denf[onoff]<-K[mxi,myj]
-      image(denf,col=heat.colors(1000))
+      image(z=denf,
+            #xlim=c(min(dgrid$X[,1],max(dgrid$X[,1]))),
+            #ylim=c(min(dgrid$X[,2],max(dgrid$X[,2]))),
+            col=heat.colors(1000),asp=1,xlab="x*",ylab="y*")
       dev.off()
       #X11()
    }
