@@ -72,7 +72,7 @@ pred.points<-make_soap_grid(bnd,pred.n)
 # 0.8798  1.5230  1.9360  1.8720  2.1690  2.7
 
 ## using np to create the "truth"
-npmodbw<-npregbw(formula=chl~x+y,regtype = "ll",bwmethod = "cv.aic",data =aral.dat,bwtype="adaptive_nn")
+npmodbw<-npregbw(formula=chl~x+y,regtype = "ll",bwmethod = "cv.aic",data =aral.dat,bwtype="generalized_nn")
 npmod<-npreg(npmodbw)
 new.truth<-predict(npmod,data=aral.dat,newdata=pred.points)
 
