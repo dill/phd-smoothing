@@ -12,15 +12,15 @@ names(bnd)<-c("x","y")
 # create the grid
 my.grid<-create_refgrid(bnd,300)
 
-plot(bnd,type="l",lwd=2,asp=1)
-points(my.grid,pch=19,cex=0.3)
+#plot(bnd,type="l",lwd=2,asp=1)
+#points(my.grid,pch=19,cex=0.3)
 
 ## do the MDS on the grid 
 D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0)
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
 # plot those points
-plot(grid.mds$points,pch=19,cex=0.3,asp=1)
+#plot(grid.mds$points,pch=19,cex=0.3,asp=1)
 
 # map the boundary 
 bnd.mds<-insert.mds(bnd,my.grid,grid.mds,bnd,faster=0)
@@ -28,8 +28,8 @@ bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])
 
 
 
-plot(grid.mds$points,asp=1,pch=19,cex=0.3)
-lines(bnd.mds,lwd=2)
+#plot(grid.mds$points,asp=1,pch=19,cex=0.3)
+#lines(bnd.mds,lwd=2)
 
 # interpolate the boundary
 # weird things happen here
@@ -43,5 +43,5 @@ int.bnd<-list(x=vecseq(xb,10),
 ibnd.mds<-insert.mds(int.bnd,my.grid,grid.mds,bnd,faster=0)
 ibnd.mds<-data.frame(x=ibnd.mds[,1],y=ibnd.mds[,2])
 
-plot(grid.mds$points,asp=1,pch=19,cex=0.3)
-lines(ibnd.mds,lwd=2)
+#plot(grid.mds$points,asp=1,pch=19,cex=0.3)
+#lines(ibnd.mds,lwd=2)
