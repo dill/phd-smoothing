@@ -38,8 +38,8 @@ par(mfrow=c(2,2))
 
 # plot some raw data
 aral$chl[!onoff]<-NA
-image(x=unique(aral$la),y=unique(aral$lo),z=matrix(aral$chl,46,46),
-      asp=1,main="raw data with boundary")
+image(x=unique(aral.dat$x),y=unique(aral.dat$y),z=matrix(aral.dat$chl,46,46),
+      asp=1,main="raw data",xlab="km (East)",ylab="km (North)")
 lines(bnd)
 
 #### fit a thin plate model
@@ -68,11 +68,11 @@ grid.onoff<-inSide(bnd,xx,yy)
 mds.grid<-data.frame(x=xx[grid.onoff],y=yy[grid.onoff])
 
 # actually do the MDS
-D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd)
+D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd,faster=1)
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
 
 # create the data frame and fit the model
-aral.mds<-insert.mds(aral.dat,mds.grid,grid.mds,bnd)
+aral.mds<-insert.mds(aral.dat,mds.grid,grid.mds,bnd,faster=1)
 aral.mds<-data.frame(x=aral.mds[,1],
                      y=aral.mds[,2],
                      chl=aral.dat$chl)
@@ -87,7 +87,7 @@ yn<-seq(min(aral.dat$y),max(aral.dat$y),length=n)
 xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 pred.onoff<-inSide(bnd,xx,yy)
 pred.grid<-data.frame(x=xx[pred.onoff],y=yy[pred.onoff])
-pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd)
+pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd,faster=1)
 
 pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
                           y=pred.grid.mds[,2])

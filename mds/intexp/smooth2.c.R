@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   dia.densmap<-TRUE
+   #dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -268,7 +268,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    if(dia.densmap){
       # check that the interpolation worked...
       #X11()
-      plot(dpoints,pch=19,cex=0.3,col="green",xlab="x*",ylab="y*",asp=1)
+      plot(dpoints,pch=19,cex=0.3,col="green",xlab="x*",ylab="y*",asp=1,xlim=xlims,ylim=ylims)
       lines(bnd.mds,lwd=2)
       #X11()
    }
@@ -315,9 +315,11 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       denf[onoff]<-K[mxi+N*myj]+1
       #denf[onoff]<-K[mxi,myj]
       image(z=denf,
-            #xlim=c(min(dgrid$X[,1],max(dgrid$X[,1]))),
-            #ylim=c(min(dgrid$X[,2],max(dgrid$X[,2]))),
+            xlim=xlims,ylim=ylims,
+            x=sort(unique(dgrid$X[,1])),
+            y=sort(unique(dgrid$X[,2])),
             col=heat.colors(1000),asp=1,xlab="x*",ylab="y*")
+      lines(bnd.mds,lwd=2)
       dev.off()
       #X11()
    }
