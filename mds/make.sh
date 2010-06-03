@@ -24,3 +24,6 @@ gcc  -Wall -O0 -pedantic -lm -g -std=gnu99 -shared inout.c utils.c wood.c -o woo
 
 # optimised...
 #gcc  -Wall -O2 -pedantic -lm -std=gnu99 -shared inout.c utils.c wood.c -o wood.so  -fPIC
+
+# valgrind to work on snow leopard?
+#gcc -m32 -Wall -O0 -pedantic -lm -g -std=gnu99 -shared inout.c utils.c wood.c -o wood.so  -fPIC
