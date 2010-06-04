@@ -1,6 +1,6 @@
 # make some boxplots
 
-#pdf(file="big-mds-wt2-boxplot.pdf",width=13.3,height=7.88)
+pdf(file="big-mds-wt2-boxplot.pdf",width=13.3,height=7.88)
 
 # make the text look better for printout
 par(cex.axis=0.75,las=1,mgp=c(2,0.75,0),mar=c(2,3,1,1))
@@ -29,4 +29,4 @@ boxplot(mses,main="",names=rep(mod.names,3),
 
 
 
-#dev.off()
+dev.off()
