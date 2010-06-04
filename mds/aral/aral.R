@@ -25,25 +25,31 @@ aral.km<-latlong2km(aral$lo[onoff],aral$la[onoff],59.5,45)
 
 aral.dat<-data.frame(x=aral.km$km.e,
                      y=aral.km$km.n,
-                     chl=aral$chl[onoff])
+                     chl=as.numeric(aral$chl[onoff]))
 
 # convert boundary to northings and eastings
 bnd.km<-latlong2km(bnd[,2],bnd[,3],59.5,45)
 bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 
+######################################################################
 # plot setup
 par(mfrow=c(2,2))
 
-#### plot some raw data
-
 # set the x and y values for the image plot
 aral.lab<-latlong2km(unique(sort(aral$lo)),unique(sort(aral$la)),59.5,45)
+# set the plot limits
+xlims<-c(min(aral.dat$x)-10,max(aral.dat$x)+10)
+ylims<-c(min(aral.dat$y)-10,max(aral.dat$y)+10)
+
+######################################################################
+#### plot some raw data
 
 aral$chl[!onoff]<-NA
 image(z=matrix(aral$chl,46,46),x=aral.lab$km.e,y=aral.lab$km.n,
       asp=1,main="raw data",xlab="km (East)",ylab="km (North)")
-lines(bnd)
+lines(bnd,lwd=2)
 
+######################################################################
 #### fit a thin plate model
 tp.fit<-gam(chl~s(x,y,k=49),data=aral.dat,family=Gamma(link="log"))
 
@@ -59,9 +65,10 @@ tp.pred<-predict(tp.fit,newdata=pred.grid)
 pred.mat<-matrix(NA,m,n)
 pred.mat[pred.onoff]<-tp.pred
 image(pred.mat,x=unique(xx),y=unique(yy),main="tprs",xlab="km (East)",ylab="km (North)")
+lines(bnd,lwd=2)
 
 
-
+######################################################################
 #### MDS
 # mds grid
 m<-20;n<-20
@@ -86,20 +93,31 @@ mds.fit<-gam(chl~s(x,y,k=49),data=aral.mds,family=Gamma(link="log"))
 
 # mds prediction grid
 pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd,faster=1)
-
 pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
                           y=pred.grid.mds[,2])
+
+# do the prediction
 mds.pred<-predict(mds.fit,newdata=pred.grid.mds)
+
+# plot
 pred.mat<-matrix(NA,m,n)
 pred.mat[pred.onoff]<-mds.pred
 image(pred.mat,x=unique(xx),y=unique(yy),main="mds",xlab="km (East)",ylab="km (North)")
+lines(bnd,lwd=2)
 
+
+######################################################################
 #### soap 
+
+### VVVVVVVVVVVVVVVVVVV this doesn't work (?!)
 # first setup the knots
-s.knots<-create_refgrid(bnd,140)
-s.knots$nrefx<-NULL
-s.knots$nrefy<-NULL
-s.knots<-as.data.frame(s.knots)
+#s.knots<-create_refgrid(bnd,140)
+#s.knots$nrefx<-NULL
+#s.knots$nrefy<-NULL
+#s.knots<-as.data.frame(s.knots)
+
+#s.knots<-make_soap_grid(bnd,17)
+s.knots<-make_soap_grid(bnd,c(12,12))
 
 soap.fit<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.knots,
             family=Gamma(link="log"),data=aral.dat)
