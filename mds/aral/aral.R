@@ -130,5 +130,6 @@ soap.pred<-predict(soap.fit,newdata=pred.grid)
 pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-soap.pred
 image(pred.mat,x=unique(gxx),y=unique(gyy),xlab="km (East)",ylab="km (North)",main="soap",xlim=xlims,ylim=ylims,asp=1)
+lines(bnd,lwd=2)
 
 
