@@ -275,7 +275,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # work out the density at resolution dres
    # at the moment ths is just the same as doing this for the
    # integration grid, so we can replace that eventually...
-   dres<-2*N#/1.5
+   dres<-N*1.5
    dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
 
    # find the grid cells they lie in
@@ -286,6 +286,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    dyj<-abs(floor((dpoints$y-ystart)/ydel))
 
    # find the grid cells the integration points lie in
+   # these points are where we will evaluate K
    mxi<-abs(floor((ep$X[,1]-xstart)/xdel))
    myj<-abs(floor((ep$X[,2]-ystart)/ydel))
 
@@ -310,10 +311,10 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       points(ep$X,cex=0.1,pch=19)
 
       # image plot of the density function
-      denf<-matrix(NA,dres,dres)
+      denf<-K
       onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
-      denf[onoff]<-K[mxi+dres*myj]+1
-      #denf[onoff]<-K[mxi,myj]
+      denf[!onoff]<-NA
+      #denf[onoff]<-K[dxi+dres*dyj]+1
       image(z=denf,
             xlim=xlims,ylim=ylims,
             x=sort(unique(dgrid$X[,1])),

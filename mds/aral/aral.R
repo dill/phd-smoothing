@@ -23,22 +23,24 @@ onoff<-inSide(bnd,aral$lo,aral$la)
 # converstion to km
 aral.km<-latlong2km(aral$lo[onoff],aral$la[onoff],59.5,45)
 
-
 aral.dat<-data.frame(x=aral.km$km.e,
                      y=aral.km$km.n,
                      chl=aral$chl[onoff])
 
 # convert boundary to northings and eastings
 bnd.km<-latlong2km(bnd[,2],bnd[,3],59.5,45)
-
 bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 
 # plot setup
 par(mfrow=c(2,2))
 
-# plot some raw data
+#### plot some raw data
+
+# set the x and y values for the image plot
+aral.lab<-latlong2km(unique(sort(aral$lo)),unique(sort(aral$la)),59.5,45)
+
 aral$chl[!onoff]<-NA
-image(x=unique(aral.dat$x),y=unique(aral.dat$y),z=matrix(aral.dat$chl,46,46),
+image(z=matrix(aral$chl,46,46),x=aral.lab$km.e,y=aral.lab$km.n,
       asp=1,main="raw data",xlab="km (East)",ylab="km (North)")
 lines(bnd)
 
