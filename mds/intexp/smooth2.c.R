@@ -304,7 +304,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    ### Evaluate K!
    # make sure that K>0 everywhere, so we don't kill any elements
    # this is fine since it should get absorbed into lambda
-   dens.est<-K[mxi+dres*myj]+1
+   dens.est<-K[mxi+dres*myj]
 
    # thesis diagam - density map
    if(dia.densmap){
@@ -314,7 +314,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       denf<-K
       onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
       denf[!onoff]<-NA
-      #denf[onoff]<-K[dxi+dres*dyj]+1
       image(z=denf,
             xlim=xlims,ylim=ylims,
             x=sort(unique(dgrid$X[,1])),
