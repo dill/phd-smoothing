@@ -61,7 +61,7 @@ lines(bnd,lwd=2)
 
 ######################################################################
 #### fit a thin plate model
-tp.fit<-gam(chl~s(x,y,k=49),data=aral.dat,family=Gamma(link="log"))
+tp.fit<-gam(chl~s(x,y,k=70),data=aral.dat,family=Gamma(link="log"))
 
 
 tp.pred<-predict(tp.fit,newdata=pred.grid)
@@ -92,7 +92,7 @@ aral.mds<-data.frame(x=aral.mds[,1],
                      chl=aral.dat$chl)
 
 # fit the model
-mds.fit<-gam(chl~s(x,y,k=49),data=aral.mds,family=Gamma(link="log"))
+mds.fit<-gam(chl~s(x,y,k=70),data=aral.mds,family=Gamma(link="log"))
 
 # mds prediction grid
 pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd,faster=1)
