@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   #dia.densmap<-TRUE
+   dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -275,7 +275,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # work out the density at resolution dres
    # at the moment ths is just the same as doing this for the
    # integration grid, so we can replace that eventually...
-   dres<-N#/1.5
+   dres<-2*N#/1.5
    dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
 
    # find the grid cells they lie in
@@ -293,26 +293,26 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    K<-table(dxi,dyj)
 
    # table doesn't return an NxN table, so this hack
-   # makes K NxN...
+   # makes K (dres)x(dres)...
    x.names<-as.numeric(attr(K,"dimnames")$dxi)
    y.names<-as.numeric(attr(K,"dimnames")$dyj)
-   Kt<-matrix(0,N,N)
+   Kt<-matrix(0,dres,dres)
    Kt[x.names,y.names]<-K
    K<-Kt
    
    ### Evaluate K!
    # make sure that K>0 everywhere, so we don't kill any elements
    # this is fine since it should get absorbed into lambda
-   dens.est<-K[mxi+n*myj]+1
+   dens.est<-K[mxi+dres*myj]+1
 
    # thesis diagam - density map
    if(dia.densmap){
       points(ep$X,cex=0.1,pch=19)
 
       # image plot of the density function
-      denf<-matrix(NA,N,N)
+      denf<-matrix(NA,dres,dres)
       onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
-      denf[onoff]<-K[mxi+N*myj]+1
+      denf[onoff]<-K[mxi+dres*myj]+1
       #denf[onoff]<-K[mxi,myj]
       image(z=denf,
             xlim=xlims,ylim=ylims,
