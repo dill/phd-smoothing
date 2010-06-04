@@ -27,12 +27,13 @@ knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
 insideknots<-inSide(verts,knots.x,knots.y)
 #insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE
 #insideknots[95]<-FALSE
-insideknots[c(55,96,108)]<-FALSE
-insideknots[c(54,94,106)]<-FALSE
+#insideknots[c(55,96,108)]<-FALSE
+knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
+knots<-data.frame(x=knots$x[-c(55,96,108)],y=knots$y[-c(55,96,108)])
+#insideknots[c(54,94,106)]<-FALSE
 # for 15x15
 boundary.knots<-49
 
-knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
 
 for (samp.size in c(1000,500)){
    for(noise.level in c(0.02, 0.005)){

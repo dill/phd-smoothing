@@ -20,25 +20,25 @@ for (samp.size in c(1000,500)){
       dat<-rbind(dat.1,dat.2)
 
 
-      mses<-c(signif(mean(dat$mse[dat$labs=="SC+TPRS"],na.rm=TRUE),5),
-              signif(mean(dat$mse[dat$labs=="SC+TPRSbbox"],na.rm=TRUE),5),
-              signif(mean(dat$mse[dat$labs=="TPRS"],na.rm=TRUE),5),
-              signif(mean(dat$mse[dat$labs=="soap"],na.rm=TRUE),5)
-             )
+#      mses<-c(signif(mean(dat$mse[dat$labs=="SC+TPRS"],na.rm=TRUE),5),
+#              signif(mean(dat$mse[dat$labs=="SC+TPRSbbox"],na.rm=TRUE),5),
+#              signif(mean(dat$mse[dat$labs=="TPRS"],na.rm=TRUE),5),
+#              signif(mean(dat$mse[dat$labs=="soap"],na.rm=TRUE),5)
+#             )
+#
+#      ses<-c(signif(sd(dat$mse[dat$labs=="SC+TPRS"],na.rm=TRUE),5),
+#             signif(sd(dat$mse[dat$labs=="SC+TPRSbbox"],na.rm=TRUE),5),
+#              signif(sd(dat$mse[dat$labs=="TPRS"],na.rm=TRUE),5),
+#              signif(sd(dat$mse[dat$labs=="soap"],na.rm=TRUE),5)
+#            )
+#
+#      xlab=paste("SC+TPRS: MSE=",mses[1],"se(MSE)=",ses[1],"\n",
+#                 "SC+TPRS (bounding box): MSE=",mses[1],"se(MSE)=",ses[1],"\n",
+#                 "TPRS: MSE=",mses[2],"se(MSE)=",ses[2],"\n",
+#                 "soap: MSE=",mses[3],"se(MSE)=",ses[3],"\n"
+#                )
 
-      ses<-c(signif(sd(dat$mse[dat$labs=="SC+TPRS"],na.rm=TRUE),5),
-             signif(sd(dat$mse[dat$labs=="SC+TPRSbbox"],na.rm=TRUE),5),
-              signif(sd(dat$mse[dat$labs=="TPRS"],na.rm=TRUE),5),
-              signif(sd(dat$mse[dat$labs=="soap"],na.rm=TRUE),5)
-            )
-
-      xlab=paste("SC+TPRS: MSE=",mses[1],"se(MSE)=",ses[1],"\n",
-                 "SC+TPRS (bounding box): MSE=",mses[1],"se(MSE)=",ses[1],"\n",
-                 "TPRS: MSE=",mses[2],"se(MSE)=",ses[2],"\n",
-                 "soap: MSE=",mses[3],"se(MSE)=",ses[3],"\n"
-                )
-
-      boxplot(log(mse)~labs,data=dat,main=paste(samp.size," samples, noise=",noise.level,sep=""),xlab=xlab)
+      boxplot(log(mse)~labs,data=dat,main=paste(samp.size," samples, noise=",noise.level,sep=""))#,xlab=xlab)
    }
 }
 

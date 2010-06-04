@@ -31,9 +31,19 @@ aral.dat<-data.frame(x=aral.km$km.e,
 bnd.km<-latlong2km(bnd[,2],bnd[,3],59.5,45)
 bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
 
+
+# prediction grid
+gm<-50;gn<-50
+gxm <- seq(min(aral.dat$x),max(aral.dat$x),length=gm)
+gyn<-seq(min(aral.dat$y),max(aral.dat$y),length=gn)
+gxx <- rep(gxm,gn)
+gyy<-rep(gyn,rep(gm,gn))
+pred.onoff<-inSide(bnd,gxx,gyy)
+pred.grid<-data.frame(x=gxx[pred.onoff],y=gyy[pred.onoff])
+
 ######################################################################
 # plot setup
-par(mfrow=c(2,2))
+par(mfrow=c(2,2),las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 
 # set the x and y values for the image plot
 aral.lab<-latlong2km(unique(sort(aral$lo)),unique(sort(aral$la)),59.5,45)
@@ -46,25 +56,18 @@ ylims<-c(min(aral.dat$y)-10,max(aral.dat$y)+10)
 
 aral$chl[!onoff]<-NA
 image(z=matrix(aral$chl,46,46),x=aral.lab$km.e,y=aral.lab$km.n,
-      asp=1,main="raw data",xlab="km (East)",ylab="km (North)")
+      asp=1,main="raw data",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims)
 lines(bnd,lwd=2)
 
 ######################################################################
 #### fit a thin plate model
 tp.fit<-gam(chl~s(x,y,k=49),data=aral.dat,family=Gamma(link="log"))
 
-# prediction grid
-m<-50;n<-50
-xm <- seq(min(aral.dat$x),max(aral.dat$x),length=m)
-yn<-seq(min(aral.dat$y),max(aral.dat$y),length=n)
-xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
-pred.onoff<-inSide(bnd,xx,yy)
-pred.grid<-data.frame(x=xx[pred.onoff],y=yy[pred.onoff])
 
 tp.pred<-predict(tp.fit,newdata=pred.grid)
-pred.mat<-matrix(NA,m,n)
+pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-tp.pred
-image(pred.mat,x=unique(xx),y=unique(yy),main="tprs",xlab="km (East)",ylab="km (North)")
+image(pred.mat,x=unique(gxx),y=unique(gyy),main="tprs",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
 lines(bnd,lwd=2)
 
 
@@ -100,9 +103,9 @@ pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
 mds.pred<-predict(mds.fit,newdata=pred.grid.mds)
 
 # plot
-pred.mat<-matrix(NA,m,n)
+pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-mds.pred
-image(pred.mat,x=unique(xx),y=unique(yy),main="mds",xlab="km (East)",ylab="km (North)")
+image(pred.mat,x=unique(gxx),y=unique(gyy),main="mds",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
 lines(bnd,lwd=2)
 
 
@@ -124,8 +127,8 @@ soap.fit<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.knots,
 
 # prediction
 soap.pred<-predict(soap.fit,newdata=pred.grid)
-pred.mat<-matrix(NA,m,n)
+pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-soap.pred
-image(pred.mat,x=unique(xx),y=unique(yy),main="soap")
+image(pred.mat,x=unique(gxx),y=unique(gyy),xlab="km (East)",ylab="km (North)",main="soap",xlim=xlims,ylim=ylims,asp=1)
 
 

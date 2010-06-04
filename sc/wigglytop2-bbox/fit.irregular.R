@@ -3,6 +3,9 @@
 library(mgcv)
 library(soap)
 
+
+pdf(file="wigglytop2-bbox-real.pdf",width=4,height=4)
+
 # load some data...
 true.vals<-read.csv("wtbbtruth.csv",header=TRUE)
 true.vals.mapped<-read.csv("wtbbtruemapped.csv",header=FALSE)
@@ -28,7 +31,7 @@ samp.data.mapped<-data.frame(x=true.vals.mapped$x[this.sample],y=true.vals.mappe
 
 
 res<-sqrt(length(true.vals$x))
-par(mfrow=c(2,2))
+par(mfrow=c(2,2),las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 
 #surf[!inside.points]<-NA
 
@@ -48,7 +51,7 @@ pred.grid<-matrix(c(0),res,res)
 pred.grid[true.vals$inside==1]<-fv
 pred.grid[true.vals$inside==0]<-NA
 
-image(pred.grid,col=heat.colors(100),xlab="x",ylab="y",main="sc+tprs prediction",asp=1)
+image(pred.grid,col=heat.colors(100),xlab="x",ylab="y",main="sc+tprs",asp=1)
 contour(pred.grid,add=T)
 
 ### normal tprs
@@ -58,7 +61,7 @@ fv.tprs <- predict(b.tprs,newdata=data.frame(x=true.vals$x[true.vals$inside==1],
 pred.grid.tprs<-matrix(c(0),res,res)
 pred.grid.tprs[true.vals$inside==1]<-fv.tprs
 pred.grid.tprs[true.vals$inside==0]<-NA
-image(pred.grid.tprs,col=heat.colors(100),xlab="x",ylab="y",main="tprs prediction",asp=1)
+image(pred.grid.tprs,col=heat.colors(100),xlab="x",ylab="y",main="tprs",asp=1)
 contour(pred.grid.tprs,add=T)
 
 ### soap
@@ -67,8 +70,9 @@ knots.x<-rep(seq(-2.9,2.9,length.out=15),15)
 knots.y<-rep(seq(-2.9,3.6,length.out=15),rep(15,15))
 insideknots<-inSide(verts,knots.x,knots.y)
 #insideknots[59]<-FALSE # for 10x10
-insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE # for 15x15
+#insideknots[158]<-FALSE;insideknots[56]<-FALSE;insideknots[141]<-FALSE # for 15x15
 knots<-data.frame(x=knots.x[insideknots],y=knots.y[insideknots])
+knots<-data.frame(x=knots$x[-c(55,96,108)],y=knots$y[-c(55,96,108)])
 boundary.knots<-49
 #plot(verts,type="l");points(knots,col="red")
 
@@ -83,7 +87,7 @@ fv.soap <- predict(b.soap,newdata=data.frame(x=true.vals$x[true.vals$inside==1],
 pred.grid.soap<-matrix(c(0),res,res)
 pred.grid.soap[true.vals$inside==1]<-fv.soap
 pred.grid.soap[true.vals$inside==0]<-NA
-image(pred.grid.soap,col=heat.colors(100),xlab="x",ylab="y",main="soap prediction",asp=1)
+image(pred.grid.soap,col=heat.colors(100),xlab="x",ylab="y",main="soap",asp=1)
 contour(pred.grid.soap,add=T)
 
 
@@ -93,3 +97,4 @@ cat("sc+tprs",mean((true.vals$z[true.vals$inside==1]-fv)^2,na.rm=T),"\n")
 cat("tprs",mean((true.vals$z[true.vals$inside==1]-fv.tprs)^2,na.rm=T),"\n")
 cat("soap",mean((true.vals$z[true.vals$inside==1]-fv.soap)^2,na.rm=T),"\n")
 
+dev.off()
