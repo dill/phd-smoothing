@@ -1,7 +1,7 @@
 % can be run from this directory
 
-path(path,'../matlab/sc')
-path(path,'../matlab/poly_stuff')
+path(path,'../sct')
+
 
 % read in the vertices
 polyv=csvread('figverts.csv',0,0);
