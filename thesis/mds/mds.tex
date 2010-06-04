@@ -4,7 +4,8 @@
 
 \section{Introduction}
 
-Cary on from previous chapter, need data-dependent way of doing transform...
+Following the work of the previous chapter, the objective is now to find a mapping into a space which causes minimum distortion to the density of space, whilst also effectively moving apart those parts of the domain which are subject to leakage. Dictating the final, transformed, domain from the outset will not be a flexible enough approach to work in general. The transformation should be to a domain that adapts itself to the domain in which the data lies.
+
 
 \subsection{Proposition}
 
@@ -25,12 +26,12 @@ Given a sample $\{\mathbf{x}_i, z_i : i=1\dots n\}$, the set of points in the do
 \begin{enumerate}
 \item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to define the configuration, they are discarded afterward. Representative points could be a sparse grid over the domain or subset of $\{\mathbf{x}_i : i=1\dots n\}$; more detail and justification is provided in section \ref{grids}, below.
 
-\item Using the MDS configuration obtained above along with Gower's interpolation (see section \ref{gowers}) obtain the location of the sample in the MDS configuration: $\{\mathbf{x^*}_i, z_i : i=1\dots n\}$.
+\item Using the MDS configuration obtained above along with Gower's interpolation (see section \ref{gowers}) obtain the location of the sample in the MDS configuration: $\{\mathbf{x}_i^*, z_i : i=1\dots n\}$.
 
-\item Smooth $\{\mathbf{x^*}_i, z_i : i=1\dots n\}$ using a regression spline.
+\item Smooth $\{\mathbf{x}_i^*, z_i : i=1\dots n\}$ using a regression spline.
 
 \item To predict at a location $\mathbf{x_j}$ in the original domain, use Gower's interpolation to 
-obtain the point's location in the MDS space: $\mathbf{x^*}_j$. Predict $\hat{z}_j$ at $\mathbf{x}_j$ using the smooth at $\mathbf{x^*}_j$.
+obtain the point's location in the MDS space: $\mathbf{x}_j^*$. Predict $\hat{z}_j$ at $\mathbf{x}_j$ using the smooth at $\mathbf{x}_j^*$.
 \end{enumerate}
 
 The rest of this chapter is structured as follows: in \secref{MDStechdet} an overview of MDS is given, along with technical details of how the MDS configuration is calculated; \secref{mdsdist} focuses on how the within-area distances are found; \secref{mdssims} shows some examples of this method on simulated data. Finally \secref{MDSimprov} shows some improvements to the initial method and further simulations.
@@ -238,11 +239,9 @@ Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean 
 \section{Simulation experiments}
 \label{mdssims}
 
-Some kind of intro to this stuff here!
+In order to investigate the efficacy of \mdsap, a series of simulation experiments were performed. In all cases the results for \mdsap were compared to those of the current best method (the soap film smoother) and the standard approach of a {\tprs} was used (which will not account for leakage).
 
-In all cases smoothing parameter estimation was performed using GCV.
-
-
+The \textsf{R} packages \texttt{mgcv} and \texttt{soap} with additional bespoke software for finding the within-area distances were used. In all cases smoothing parameter estimation was performed using GCV (see \secref{GAMGCV}).
 
 \subsection{The Ramsay horseshoe}
 
@@ -250,25 +249,25 @@ Again, we start with the modified Ramsay horseshoe since it clearly illustrates 
 
 \subsubsection{Setup}
 
-For the horseshoe, samples of 250 points with normal errors (at 3 levels:  $\sigma= 0.1$, 1 and 10) were taken. (These are the settings used in \cite{soap}.) Using these samples, three models were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the EDF and MSE recorded for each replicate. The three models fitted were as follows (using the \textsf{R} packages \texttt{mgcv} and \texttt{soap} with additional bespoke software for finding the within-area distances):
+For the horseshoe, samples of 250 points with normal errors (at 3 levels:  $\sigma= $ 0.1, 1 and 10) were taken. (These are the settings used in \cite{soap}.) Using these samples, three models were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the EDF and MSE recorded for each replicate. The three models fitted were as follows:
 
 \begin{enumerate}
-\item \emph{Thin plate spline}: bivariate \tprs with basis size 100.
+\item \emph{Thin plate spline}: bivariate \tprs  with basis size 100.
 \item \emph{Soap film smoother}: 32 knots evenly spread over a grid over the domain, cyclic spline on the boundary was of basis size 39.
-\item \emph{MDS}: Used a thin plate spline of basis dimension 100. The initial MDS grid was 20 points wide by 10 points tall.
+\item \emph{\mdsap}: Used a thin plate spline of basis dimension 100. The initial MDS grid was 20 points wide by 10 points tall.
 \end{enumerate} 
 
-Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex. This should not cause a major difference in results even if the soap film used the full boundary and the MDS used only the reduced set of edges, since objective is to allow the smoother to get a broad idea of the topology of the domain, rather than the minutiae of the boundary features.
+Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex. This should not cause a major difference in results even if the soap film used the full boundary and \mdsap used only the reduced set of edges, since objective is to allow the smoother to get a broad idea of the topology of the domain, rather than the minutiae of the boundary features.
 
 \subsubsection{Results}
 
-Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, where $\sigma=1$ with a sample size of 250. Both the soap film smoother and MDS are able to reproduce the main features of the true horseshoe function due to their ability to respect the boundary (in the case of the soap film) or the geometry of the domain (in the case of MDS.) The \tprs shows leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and MDS have significantly smaller average MSE. When the noise level is high the MDS approach outperforms the soap film smoother in MSE terms (and is less variable).
+Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, where $\sigma=1$ with a sample size of 250. Both the soap film smoother and \mdsap are able to reproduce the main features of the true horseshoe function due to their ability to respect the boundary (in the case of the soap film) or the geometry of the domain (in the case of \mdsap). The \tprs shows leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and \mdsap have significantly smaller average MSE. When the noise level is high the \mdsap outperforms the soap film smoother in MSE terms (and is less variable).
 
 \begin{table}[ht]
 \centering
 \begin{tabular}{c c c c}
  & & MSE & \\ 
-$\sigma$ & MDS & Soap film & Thin plate\\ 
+$\sigma$ & \mdsap & Soap film & Thin plate\\ 
 \hline
 0.1  & 0.0032 (3$\cross10^{-5}$) & 0.0022 (3$\cross10^{-5}$) & 0.0402 (0.0008) \\ 
 1  & 0.0436 (0.0015) & 0.0482 (0.0014) & 0.2306 (0.0024) \\ 
@@ -276,7 +275,7 @@ $\sigma$ & MDS & Soap film & Thin plate\\
 \end{tabular}
 \begin{tabular}{c  c c c }
 &  & EDF & \\ 
-$\sigma$ & MDS & Soap film & Thin plate\\ 
+$\sigma$ & \mdsap & Soap film & Thin plate\\ 
 \hline
 0.1 & 47.613 (0.3497) & 39.164 (0.26) & 92.5996 (0.1020)\\ 
 1  & 8.3828 (0.3452) & 11.868 (0.4010) & 46.607 (0.4238)\\ 
@@ -286,13 +285,13 @@ $\sigma$ & MDS & Soap film & Thin plate\\
 \label{ramsayresultstable}
 \end{table}
 
-The EDFs in table \ref{ramsayresultstable} show that the MDS approach fits a less complex model than the thin plate spline on average, and for the two higher error situations, has a lower EDF than the soap film. Given that this is coupled with a lower MSE, it appears that the MDS approach simultaneously yields both a more accurate and less complex model than the soap film for the horseshoe when there is a high level of noise. When noise is lower, the soap film and MDS MSEs are still of the same order. \Fig{mds-ramsay-boxplot} shows the logarithm of the per-realisation average MSE for each of the models at each error level.
+The EDFs in table \ref{ramsayresultstable} show that \mdsap fits a less complex model than the thin plate spline on average, and for the two higher error situations, has a lower EDF than the soap film. Given that this is coupled with a lower MSE, it appears that \mdsap simultaneously yields both a more accurate and less complex model than the soap film for the horseshoe when there is a high level of noise. When noise is lower, the soap film and \mdsap MSEs are still of the same order. \Fig{mds-ramsay-boxplot} shows the logarithm of the per-realisation average MSE for each of the models at each error level.
 
 % boxplot for Ramsay
 \begin{figure}
 \centering
 \includegraphics[width=6in, trim=0in 0.5in 0in 0in]{mds/figs/mds-ramsay-boxplot.pdf} \\
-\caption{Boxplots of the logarithm of the MSE per realisation of the Ramsay horseshoe for the MDS approach, soap film smoother and \tprs for error levels $\sigma=$ 0.1, 1 and 10 (left to right, respectively).}
+\caption{Boxplots of the logarithm of the MSE per realisation of the Ramsay horseshoe for \mdsap, the soap film smoother and \tprs for error levels $\sigma=$ 0.1, 1 and 10 (left to right, respectively).}
 \label{mds-ramsay-boxplot}
 % generated using phd-smoothing/mds/sim/ramsay-boxplots.R
 \end{figure}
@@ -338,7 +337,7 @@ The simulations consisted of 200 realisations of 250 samples from the surface in
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate thin plate spline with basis size 100. 
 \item \emph{Soap film smoother}: cyclic spline on boundary of basis size 60, 109 internal knots evenly spaced on a grid over the domain.
-\item \emph{MDS}: after transform a bivariate thin plate spline with basis size 100 was fit. The initial MDS grid was 74 points square.
+\item \emph{\mdsap}: after transform a bivariate thin plate spline with basis size 100 was fit. The initial MDS grid was 74 points square.
 %\item \emph{MDS with tensor product}: tensor product of two thin plate splines, each of basis dimension 12. The initial MDS grid was 74 points square.
 \end{enumerate} 
 
@@ -353,7 +352,7 @@ The simulations consisted of 200 realisations of 250 samples from the surface in
 % generated (roughly) using wt2-smooth-test.R
 \end{figure}
 
-Looking at a typical realisation in \fig{wt2-comp-0.9} ($\sigma=$ 0.9, SNR = 0.75, sample size 250), the \tprs can be seen showing signs on leakage across the two main peninsulae, whereas MDS and soap do not show this. However the \tprs does reproduce the peak in the lower right much more faithfully, the other two smoothing over it. In this realisation, the MDS approach deals with the values inside the peninsula a little better than the soap film smoother (the contour lines are closer to those in the true function). On the other hand, the soap film captures the shape of the lower right peak slightly more accurately.
+Looking at a typical realisation in \fig{wt2-comp-0.9} ($\sigma=$ 0.9, SNR = 0.75, sample size 250), the \tprs can be seen showing signs on leakage across the two main peninsulae, whereas \mdsap and the soap film do not show this. However the \tprs does reproduce the peak in the lower right much more faithfully, the other two smoothing over it. In this realisation, \mdsap deals with the values inside the peninsula a little better than the soap film smoother (the contour lines are closer to those in the true function). On the other hand, the soap film captures the shape of the lower right peak slightly more accurately.
 
 Table \ref{wt2resultstable} gives the MSE and EDF for the models above averaged over 200 realisations. There is not a massive difference between the results in MSE terms, the soap film smoother consistently has a lower MSE, although not by much. The soap film also tends to fit simpler models than the other two approaches. The logarithm of the per-realisation MSEs are also show in boxplots in \fig{mds-wt2-boxplot}.
 
@@ -374,27 +373,19 @@ Table \ref{wt2resultstable} gives the MSE and EDF for the models above averaged 
 \centering
 \begin{tabular}{c c c c c}
  &  & MSE  & &\\ 
-%$\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
-$\sigma$ & MDS & Soap film & Thin plate\\ 
+$\sigma$ & \mdsap & Soap film & Thin plate\\ 
 \hline
 0.35  & 0.07 (0.00062) & 0.0539 (5e-04) &0.082 (0.00104)\\
 0.9  & 0.177 (0.00184) & 0.1308 (0.00197) &0.1938 (0.00241)\\
 1.55  & 0.2859 (0.00438) & 0.2362 (0.00434) &0.3509 (0.00471)\\
-%0.05  & 0.0948 (0.00084) & 0.0603 (0.00352) & 0.0237 (0.00039) &0.0504 (0.00039) \\ 
-%0.5  & 0.1426 (0.00078) & 0.1106 (0.00133) & 0.1013 (0.02151) &0.1123 (0.02151) \\ 
-%5  & 0.9179 (0.02644) & 1.2481 (0.04159) & 1.1987 (0.04111) &1.3865 (0.04111)\\ 
 \end{tabular}
 \begin{tabular}{c c c c c}
  &  & EDF  & &\\ 
-%$\sigma$ & MDS & MDS (tensor) & Soap film & Thin plate\\ 
-$\sigma$ & MDS & Soap film & Thin plate\\ 
+$\sigma$ & \mdsap & Soap film & Thin plate\\ 
 \hline
 0.35 &80.9039 (0.57103) & 55.6979 (0.51448) & 77.9619 (0.46726)\\ 
 0.9 &35.0185 (0.76449) & 29.7171 (0.57477) & 48.0508 (0.47636)\\ 
 1.55 &19.4625 (0.57265) & 20.2918 (0.36634) & 32.2715 (0.47961)\\ 
-%0.05 &72.262 (0.89606) & 78.2691 (0.679) & 94.5187 (0.78697) & 86.9415 (0.78697)\\ 
-%0.5 &40.7981 (0.46687) & 50.5025 (0.36223) & 45.2341 (0.74063) & 58.418 (0.74063)\\ 
-%5  &6.8274 (0.36097) & 8.577 (0.3649) & 11.5419 (0.83982) & 11.9407 (0.83982)\\ 
 \end{tabular}
 \caption{Mean MSE and EDF for the four models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
 \label{wt2resultstable}
@@ -424,13 +415,12 @@ This high point density in the right side of the MDS space could be the reason f
 
 \subsection{Areas for improvement}
 
-From this set of simulations areas for improvements of the MDS approach can be see. First, the above problem of the accuracy of the model (in MSE terms) needs to be addressed. Second, running the model is actually quite slow, the calculation of the within-area distances by the algorithm given in \secref{mdsdist} has considerable computational cost, even in comparison to the soap film smoother setup. Table \ref{wt2time} shows the average timings for running the MDS, \tprs and soap film smoothers over the peninsula domain
+From this set of simulations areas for improvements to \mdsap can be seen. First, the above problem of the accuracy of the model (in MSE terms) needs to be addressed. Second, running the model is actually quite slow, the calculation of the within-area distances by the algorithm given in \secref{mdsdist} has considerable computational cost, even in comparison to the soap film smoother setup. Table \ref{wt2time} shows the average timings for running \mdsap, \tprs and soap film smoothers over the peninsula domain
 
 \begin{table}[ht]
 \centering
 \begin{tabular}{c || c c c c c c}
-%  no speedup           speedup
- & MDS & Soap film & Thin plate\\ 
+ & \mdsap & Soap film & Thin plate\\ 
 \hline
 Fit & 84.85242 & 24.6783 & 0.4022\\ 
 Prediction &  53.5105 & 29.3946 & 0.1249\\
@@ -440,9 +430,6 @@ Prediction &  53.5105 & 29.3946 & 0.1249\\
 \end{table}
 
 Given these problems, in order to make it worthwhile for a practitioner to use the method, it would be preferable for it not only to have a sensible physical model, but also outperform the soap film smoother in either (or both) of accuracy and speed.
-
-
-
 
 \section{Improvements}
 \label{MDSimprov}
@@ -492,19 +479,19 @@ Taking both the Lanczos procedure and the partial path calculation together, a s
 \centering
 \begin{tabular}{c || c c c c c c}
 %  no speedup           speedup
- & MDS & MDS (\textit{pp}) & Soap film & Thin plate\\ 
+ & \mdsap & \mdsap (\textit{pp}) & Soap film & Thin plate\\ 
 \hline
 Fit & 84.85242 & 18.6526 & 24.6783 & 0.4022\\ 
 Prediction & 155.4004 & 53.5105 & 29.3946 & 0.1249\\
 \end{tabular}
 \label{wt2itime}
-\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted. For the MDS models \textit{pp} indicates the cases where the partial paths were pre-calculated, those not marked use the algorithm given in \secref{mdsdist}.}
+\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted. For the \mdsap columns \textit{pp} indicates the cases where the partial paths were pre-calculated, those not marked use the algorithm given in \secref{mdsdist}.}
 \end{table}
 
 
 \subsection{Improving the accuracy of \mdsap by adjusting the penalty}
 
-The higher MSEs shown in CITE at lower noise levels might be explained by the smooth's response to the change in density of points in the domain after it has been transformed into MDS space. In this case it makes sense to adjust the penalty in order to take into account the change in point density over space.
+The higher MSEs shown in \tabref{wt2resultstable} at lower noise levels might be explained by the smooth's response to the change in density of points in the domain after it has been transformed into MDS space. In this case it makes sense to adjust the penalty in order to take into account the change in point density over space.
 
 \cite{wood2000} shows that given some transform of a variable, $y$ say, such that $y_i^\prime=y_i/k$, then $f(x,y^\prime k)$ will give the same fit as $f(x,y)$ (ie. the fit will be the same under the new coordinates) but the penalty will change to:
 \begin{equation}
