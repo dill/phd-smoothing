@@ -64,7 +64,7 @@ lines(bnd,lwd=2)
 tp.fit<-gam(chl~s(x,y,k=70),data=aral.dat,family=Gamma(link="log"))
 
 
-tp.pred<-predict(tp.fit,newdata=pred.grid)
+tp.pred<-predict(tp.fit,newdata=pred.grid,type="response")
 pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-tp.pred
 image(pred.mat,x=unique(gxx),y=unique(gyy),main="tprs",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
@@ -100,7 +100,7 @@ pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
                           y=pred.grid.mds[,2])
 
 # do the prediction
-mds.pred<-predict(mds.fit,newdata=pred.grid.mds)
+mds.pred<-predict(mds.fit,newdata=pred.grid.mds,type="response")
 
 # plot
 pred.mat<-matrix(NA,gm,gn)
@@ -126,7 +126,7 @@ soap.fit<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.knots,
             family=Gamma(link="log"),data=aral.dat)
 
 # prediction
-soap.pred<-predict(soap.fit,newdata=pred.grid)
+soap.pred<-predict(soap.fit,newdata=pred.grid,type="response")
 pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-soap.pred
 image(pred.mat,x=unique(gxx),y=unique(gyy),xlab="km (East)",ylab="km (North)",main="soap",xlim=xlims,ylim=ylims,asp=1)
