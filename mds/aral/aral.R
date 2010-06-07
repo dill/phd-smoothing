@@ -133,3 +133,4 @@ image(pred.mat,x=unique(gxx),y=unique(gyy),xlab="km (East)",ylab="km (North)",ma
 lines(bnd,lwd=2)
 
 
+save.image("aral/aralfit.RData")
