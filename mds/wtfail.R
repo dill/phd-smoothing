@@ -28,13 +28,13 @@ my.grid<-make_soap_grid(bnd,10)
 #y<-c(1.000000,1.000000)
 #x<-c(2.816667,1.5)
 #y<-c(-3,0.2002)
-x<-c(-1.895833,-1.472222)
-y<-c(2.750000,1.666667)
+x<-c(-1.895833,-1.472222,-1.416667)
+y<-c(2.750000,1.666667,2)
 
 #D<-create_distance_matrix(x,y,bnd,faster=1)
 
-my.grid<-create_refgrid(bnd,120)
-D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0)
+my.grid<-create_refgrid(bnd,300)
+D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1)
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 samp.mds<-insert.mds(list(x=x,y=y),my.grid,grid.mds,bnd,faster=1)
 
