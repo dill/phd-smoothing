@@ -1,13 +1,14 @@
 # make some boxplots
 # plots on log scale, MSES reported underneath are _not_
 
-pdf(file="merged-mses-boxplot.pdf",width=5,height=5)
+pdf(file="merged-mses-boxplot.pdf",width=8,height=4)
 
 # make the text look better for printout
 par(cex.lab=0.5)
 
 # b l t r
-par(mar=c(7,3,2,1)+.1,mgp=c(6,2,0),las=1,mfrow=c(2,2))
+#par(mar=c(7,3,2,1)+.1,mgp=c(6,2,0),las=1,mfrow=c(2,2))
+par(mgp=c(1,1.25,0),mar=c(3,4,2,2),las=1,mfrow=c(2,2))
 
 for (samp.size in c(1000,500)){
    for(noise.level in c(0.02, 0.005)){
@@ -36,7 +37,10 @@ for (samp.size in c(1000,500)){
 #                 "soap: MSE=",mses[3],"se(MSE)=",ses[3],"\n"
 #                )
 
-      boxplot(log(mse)~labs,data=dat,main=paste(samp.size," samples, noise=",noise.level,sep=""),ylab="Per realisation log(MSE)",names=c("SC+\nTPRS","TPRS","soap","SC+\nTPRS (bbox)"))
+      boxplot(log(mse)~labs,data=dat,main=paste(samp.size," samples, noise=",noise.level,sep=""),names=c("SC+\nTPRS","TPRS","soap","SC+\nTPRS (bbox)"))
+
+      axis(side=2,labels="Per realisation log(MSE)",at=(max(log(dat$mse))+min(log(dat$mse)))/2,tick=FALSE,las=3,pos=-0.005)
+
    }
 }
 
