@@ -13,11 +13,6 @@ for(i in 1:n.sim){
    ## take the sample
    samp.ind<-sample(1:length(new.truth),n.samp)
 
-   # add some noise
-   # SNR = 0.95, 0.75, 0.5
-   disp<-c(0.15,0.79,1.05)
-   eta<-c(1,1.15,1.7)
-
    # test correlation
    #disp<-1.05
    #eta<-1.7
@@ -30,8 +25,10 @@ for(i in 1:n.sim){
    #}
    #cat("cor=",mean(cc),"\n")
 
+   # add some noise
    #noise<- rgamma(n.samp,2,3.5)
-   noise<-rep(0,n.samp)
+   noise<-rgamma(rep(1,n.samp),shape=1/disp[i.n],scale=1/(1/(disp[i.n]*g)))
+   #noise<-rep(0,n.samp)
 
    samp<-data.frame(x=pred.points$x[samp.ind],
                     y=pred.points$y[samp.ind],
@@ -39,16 +36,16 @@ for(i in 1:n.sim){
   
    ### fit some models
    # tprs
-   tp.fit<-gam(chl~s(x,y,k=80),data=samp,family=Gamma(link="log"))
+   tp.fit<-gam(chl~s(x,y,k=70),data=samp,family=Gamma(link="log"))
 
    # soap
-   soap.fit<-gam(chl~s(x,y,k=40,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
+   soap.fit<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
             family=Gamma(link="log"),data=samp)
 
    # MDS
    samp.mds<-insert.mds(samp,mds.grid,grid.mds,bnd)
    samp.mds<-list(x=samp.mds[,1],y=samp.mds[,2],chl=samp$chl)
-   mds.fit<-gam(chl~s(x,y,k=80),data=samp.mds,family=Gamma(link="log"))
+   mds.fit<-gam(chl~s(x,y,k=70),data=samp.mds,family=Gamma(link="log"))
 
 
    ### do some prediction

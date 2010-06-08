@@ -1,6 +1,8 @@
 # do large scale simulations for the Aral sea
 # Copyright David Lawrence Miller 2010.
 
+set.seed(1)
+
 # libraries
 library(mgcv)
 library(soap)
@@ -22,6 +24,7 @@ source("makesoapgrid.R")
 #     * soap
 ######################################################
 # OPTIONS
+plot.it<-FALSE
 sim.size<-1#200
 samp.size<-250
 # noise levels = 0.35,0.9,1.55
@@ -53,7 +56,7 @@ pred.n<-50 # prediction grid size
 # create the prediction points
 pred.points<-make_soap_grid(bnd,pred.n)
 # create prediction grid for soap
-s.grid<-as.data.frame(make_soap_grid(bnd,10))
+s.grid<-as.data.frame(make_soap_grid(bnd,12))
 s.grid<-pe(s.grid,-2)
 
 
@@ -84,10 +87,17 @@ pred.mds<-insert.mds(pred.points,mds.grid,grid.mds,bnd)
 pred.mds<-list(x=pred.mds[,1],y=pred.mds[,2],chl=new.truth)
 
 
-# actually run the sim
-source("aral/sim.R")
+# SNR = 0.95, 0.75, 0.5
+disp<-c(0.15,0.79,1.05)
+eta<-c(1,1.15,1.7)
 
 
+for(i.n in 1:3){
+
+   # actually run the sim
+   source("aral/sim.R")
+
+}
 
 
 
