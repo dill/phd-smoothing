@@ -5,10 +5,10 @@
 # run from phd-smoothing/mds
 
 # storage for the MSEs and EDFs
-mses<-matrix(0,n.sim,3)
-edfs<-matrix(0,n.sim,3)
+mses<-matrix(0,sim.size,3)
+edfs<-matrix(0,sim.size,3)
 
-for(i in 1:n.sim){
+for(i in 1:sim.size){
 
    ## take the sample
    samp.ind<-sample(1:length(new.truth),n.samp)
@@ -27,7 +27,7 @@ for(i in 1:n.sim){
 
    # add some noise
    #noise<- rgamma(n.samp,2,3.5)
-   noise<-rgamma(rep(1,n.samp),shape=1/disp[i.n],scale=1/(1/(disp[i.n]*g)))
+   noise<-rgamma(rep(1,n.samp),shape=1/disp[i.n],scale=1/(1/(disp[i.n]*exp(eta[i.n]))))
    #noise<-rep(0,n.samp)
 
    samp<-data.frame(x=pred.points$x[samp.ind],
@@ -42,46 +42,56 @@ for(i in 1:n.sim){
    soap.fit<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
             family=Gamma(link="log"),data=samp)
 
-   # MDS
+   # MDS (tp)
    samp.mds<-insert.mds(samp,mds.grid,grid.mds,bnd)
    samp.mds<-list(x=samp.mds[,1],y=samp.mds[,2],chl=samp$chl)
    mds.fit<-gam(chl~s(x,y,k=70),data=samp.mds,family=Gamma(link="log"))
 
+   # MDS (cr)
+   mdscr.fit<-gam(chl~te(x,y,k=c(9,9),bs="cr"),data=samp.mds,family=Gamma(link="log"))
+
+   # MDS (3D)
+   samp.mds3<-insert.mds(samp,mds.grid,grid.mds3,bnd)
+   samp.mds3<-list(x=samp.mds3[,1],y=samp.mds3[,2],z=samp.mds3[,3],chl=samp$chl)
+   mds3.fit<-gam(chl~s(x,y,z,k=70),data=samp.mds3,family=Gamma(link="log"))
+
+   # MDS (adj)
+   mdsadj.fit<-gam(chl~s(x,y,k=70,bs="mdstp",
+                   xt=list(bnd=bnd,op=mds.grid,mds.obj=grid.mds)),
+                   data=samp.mds,family=Gamma(link="log"))
 
    ### do some prediction
    tp.pred<-predict(tp.fit,newdata=pred.points,type="response")
-   soap.pred<-predict(soap.fit,newdata=pred.points,type="response")
    mds.pred<-predict(mds.fit,newdata=pred.mds,type="response")
+   mdscr.pred<-predict(mdscr.fit,newdata=pred.mds,type="response")
+   mds3.pred<-predict(mds3.fit,newdata=pred.mds3,type="response")
+   mdsadj.pred<-predict(mdsadj.fit,newdata=pred.mds,type="response")
+   soap.pred<-predict(soap.fit,newdata=pred.points,type="response")
 
-   if(plot.it==TRUE){
-
-      pred.mat[!is.na(pred.mat)]<-tp.pred
-      image(pred.mat,main="tprs",zlim=c(0,20))
-      contour(pred.mat,add=TRUE,zlim=c(0,20))
-
-      pred.mat[!is.na(pred.mat)]<-soap.pred
-      image(pred.mat,main="soap",zlim=c(0,20))
-      contour(pred.mat,add=TRUE,zlim=c(0,20))
-
-      pred.mat[!is.na(pred.mat)]<-mds.pred
-      image(pred.mat,main="mds",zlim=c(0,20))
-      contour(pred.mat,add=TRUE,zlim=c(0,20))
-
-   }
 
 
    # calculate the MSE
-   mses[i,1]<-mean((tp.pred-new.truth)^2,na.rm=T)
-   mses[i,2]<-mean((soap.pred-new.truth)^2,na.rm=T)
-   mses[i,3]<-mean((mds.pred-new.truth)^2,na.rm=T)
+   mses[i,]<-c(mean((tp.pred-new.truth)^2,na.rm=T),
+               mean((mds.pred-new.truth)^2,na.rm=T),
+               mean((mdscr.pred-new.truth)^2,na.rm=T),
+               mean((mds3.pred-new.truth)^2,na.rm=T),
+               mean((mdsadj.pred-new.truth)^2,na.rm=T),
+               mean((soap.pred-new.truth)^2,na.rm=T))
 
    # calculate the EDFs
-   edfs[i,1]<-sum(tp.fit$edf)
-   edfs[i,2]<-sum(soap.fit$edf)
-   edfs[i,3]<-sum(mds.fit$edf)
+   edfs[i,]<-c(sum(tp.fit$edf),
+               sum(mds.fit$edf),
+               sum(mdscr.fit$edf),
+               sum(mds3.fit$edf),
+               sum(mdsadj.fit$edf),
+               sum(soap.fit$edf))
 }
 
+mses<-as.data.frame(mses)
+names(mses)<-modnames
+edfs<-as.data.frame(edfs)
+names(edfs)<-modnames
 
-write.csv(res.mse,file=paste("aral/sim-mse-",samp.size,"-",noise.level,".csv",sep=""))
-write.csv(res.edf,file=paste("aral/sim-edf-",samp.size,"-",noise.level,".csv",sep=""))
+write.csv(mses,file=paste("aral/sim-mse-",n.samp,"-",snrs[i.n],".csv",sep=""))
+write.csv(edfs,file=paste("aral/sim-edf-",n.samp,"-",snrs[i.n],".csv",sep=""))
 
