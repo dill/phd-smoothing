@@ -14,20 +14,21 @@ for(i in 1:n.sim){
    samp.ind<-sample(1:length(new.truth),n.samp)
 
    # add some noise
-   # SNR = 
-   disp<-c(0.2,0.6,)
-   eta<-c(1,1.25,)
+   # SNR = 0.95, 0.75, 0.5
+   disp<-c(0.15,0.79,1.05)
+   eta<-c(1,1.15,1.7)
 
-   disp<-0.8
-   eta<-1.1
-   n<-length(aral.dat$chl[!is.na(aral.dat$chl)])
-   g    <- exp(eta)
-   cc<-c()
-   for(i in 1:100){
-      y    <- rgamma( rep(1,n) , shape=1/disp,  scale=1/ (1/ (disp*g) ) )
-      cc<-c(cc,cor(aral.dat$chl[!is.na(aral.dat$chl)]+y,aral.dat$chl[!is.na(aral.dat$chl)]))
-   }
-   cat("cor=",mean(cc),"\n")
+   # test correlation
+   #disp<-1.05
+   #eta<-1.7
+   #n<-length(aral.dat$chl[!is.na(aral.dat$chl)])
+   #g    <- exp(eta)
+   #cc<-c()
+   #for(i in 1:100){
+   #   y    <- rgamma( rep(1,n) , shape=1/disp,  scale=1/ (1/ (disp*g) ) )
+   #   cc<-c(cc,cor(aral.dat$chl[!is.na(aral.dat$chl)]+y,aral.dat$chl[!is.na(aral.dat$chl)]))
+   #}
+   #cat("cor=",mean(cc),"\n")
 
    #noise<- rgamma(n.samp,2,3.5)
    noise<-rep(0,n.samp)
