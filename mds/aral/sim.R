@@ -4,113 +4,31 @@
 
 # run from phd-smoothing/mds
 
-#### OPTIONS!
-
-plot.it=FALSE # should we do some plotting?
-n.sim<-100 # size of the simulation  (!!!! Set this to 1 if the above is TRUE)
-n.samp<-250 # number of samples per run
-noise.level<-0.5 # noise
-#################
-
-
-# libraries
-library(mgcv)
-library(soap)
-library(np)
-
-# mds files
-source("mds.R")
-source("latlong2km.R")
-source("makesoapgrid.R")
-
-# load the data and boundary
-aral<-read.csv("aral/aral.dat",sep=" ")
-bnd<-read.csv("aral/aralbnd.csv")
-
-# clean up the data
-# first cut out the crap using inSide
-onoff<-inSide(bnd,aral$lo,aral$la)
-# converstion to km
-aral.km<-latlong2km(aral$lo[onoff],aral$la[onoff],59.5,45)
-aral.dat<-data.frame(x=aral.km$km.e,
-                     y=aral.km$km.n,
-                     chl=aral$chl[onoff])
-
-# convert boundary to northings and eastings
-bnd.km<-latlong2km(bnd[,2],bnd[,3],59.5,45)
-bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
-
-### First fit the soap
-
-# create prediction grid for soap
-s.grid<-as.data.frame(make_soap_grid(bnd,10))
-
-s.grid<-pe(s.grid,-2)
-
-#b.soap<-gam(chl~s(x,y,k=80,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
-#            family=Gamma(link="log"),data=aral.dat)
-
-# now predict over the domain, this is now "truth"
-pred.n<-50 # prediction grid size
-
-# create the prediction points
-pred.points<-make_soap_grid(bnd,pred.n)
-
-# make the soap prediction
-#new.truth<-predict(b.soap,newdata=pred.points)
-# soap plots
-#if(plot.it==TRUE){
-#   par(mfrow=c(2,2))
-#   pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat
-#   pred.mat[!is.na(pred.mat)]<-new.truth
-#   image(pred.mat)
-#}
-
-## taking a summary() of this...
-#> summary(new.truth)
-#   Min. 1st Qu.  Median    Mean 3rd Qu.    M
-# 0.8798  1.5230  1.9360  1.8720  2.1690  2.7
-
-## using np to create the "truth"
-npmodbw<-npregbw(formula=chl~x+y,regtype = "ll",bwmethod = "cv.aic",data =aral.dat,bwtype="adaptive_nn")
-npmod<-npreg(npmodbw)
-new.truth<-predict(npmod,data=aral.dat,newdata=pred.points)
-
-
-if(plot.it==TRUE){
-   par(mfrow=c(2,2))
-   pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat
-   pred.mat[!is.na(pred.mat)]<-new.truth
-   image(pred.mat,main="data from np")
-}
-
-
-
-# pre-calculate the MDS base configuration
-mds.grid<-make_soap_grid(bnd,15)
-D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd,faster=1)
-grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
-
 # storage for the MSEs and EDFs
-mses<-matrix(0,n.sim,3)
-edfs<-matrix(0,n.sim,3)
+mses<-matrix(0,sim.size,3)
+edfs<-matrix(0,sim.size,3)
 
-# prediction data for mds
-pred.mds<-insert.mds(pred.points,mds.grid,grid.mds,bnd)
-pred.mds<-list(x=pred.mds[,1],y=pred.mds[,2],chl=new.truth)
-
-for(i in 1:n.sim){
+for(i in 1:sim.size){
 
    ## take the sample
    samp.ind<-sample(1:length(new.truth),n.samp)
 
-   # add some noise
-#   disp <- 0.2 # , 0.4, 0.6# , stnr corr between y and \hat{y}
-#   g    <- exp(eta)
-#   y    <- rgamma( rep(1,n) , shape=1/disp,  scale=1/ (1/ (disp*g) ) )
+   # test correlation
+   #disp<-1.05
+   #eta<-1.7
+   #n<-length(aral.dat$chl[!is.na(aral.dat$chl)])
+   #g    <- exp(eta)
+   #cc<-c()
+   #for(i in 1:100){
+   #   y    <- rgamma( rep(1,n) , shape=1/disp,  scale=1/ (1/ (disp*g) ) )
+   #   cc<-c(cc,cor(aral.dat$chl[!is.na(aral.dat$chl)]+y,aral.dat$chl[!is.na(aral.dat$chl)]))
+   #}
+   #cat("cor=",mean(cc),"\n")
 
+   # add some noise
    #noise<- rgamma(n.samp,2,3.5)
-   noise<-rep(0,n.samp)
+   noise<-rgamma(rep(1,n.samp),shape=1/disp[i.n],scale=1/(1/(disp[i.n]*exp(eta[i.n]))))
+   #noise<-rep(0,n.samp)
 
    samp<-data.frame(x=pred.points$x[samp.ind],
                     y=pred.points$y[samp.ind],
@@ -118,44 +36,62 @@ for(i in 1:n.sim){
   
    ### fit some models
    # tprs
-   tp.fit<-gam(chl~s(x,y,k=80),data=samp,family=Gamma(link="log"))
+   tp.fit<-gam(chl~s(x,y,k=70),data=samp,family=Gamma(link="log"))
 
    # soap
-   soap.fit<-gam(chl~s(x,y,k=40,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
+   soap.fit<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
             family=Gamma(link="log"),data=samp)
 
-   # MDS
+   # MDS (tp)
    samp.mds<-insert.mds(samp,mds.grid,grid.mds,bnd)
    samp.mds<-list(x=samp.mds[,1],y=samp.mds[,2],chl=samp$chl)
-   mds.fit<-gam(chl~s(x,y,k=80),data=samp.mds,family=Gamma(link="log"))
+   mds.fit<-gam(chl~s(x,y,k=70),data=samp.mds,family=Gamma(link="log"))
 
+   # MDS (cr)
+   mdscr.fit<-gam(chl~te(x,y,k=c(9,9),bs="cr"),data=samp.mds,family=Gamma(link="log"))
+
+   # MDS (3D)
+   samp.mds3<-insert.mds(samp,mds.grid,grid.mds3,bnd)
+   samp.mds3<-list(x=samp.mds3[,1],y=samp.mds3[,2],z=samp.mds3[,3],chl=samp$chl)
+   mds3.fit<-gam(chl~s(x,y,z,k=70),data=samp.mds3,family=Gamma(link="log"))
+
+   # MDS (adj)
+   mdsadj.fit<-gam(chl~s(x,y,k=70,bs="mdstp",
+                   xt=list(bnd=bnd,op=mds.grid,mds.obj=grid.mds)),
+                   data=samp.mds,family=Gamma(link="log"))
 
    ### do some prediction
    tp.pred<-predict(tp.fit,newdata=pred.points,type="response")
-   soap.pred<-predict(soap.fit,newdata=pred.points,type="response")
    mds.pred<-predict(mds.fit,newdata=pred.mds,type="response")
+   mdscr.pred<-predict(mdscr.fit,newdata=pred.mds,type="response")
+   mds3.pred<-predict(mds3.fit,newdata=pred.mds3,type="response")
+   mdsadj.pred<-predict(mdsadj.fit,newdata=pred.mds,type="response")
+   soap.pred<-predict(soap.fit,newdata=pred.points,type="response")
 
-   if(plot.it==TRUE){
-
-      pred.mat[!is.na(pred.mat)]<-tp.pred
-      image(pred.mat,main="tprs")
-
-      pred.mat[!is.na(pred.mat)]<-soap.pred
-      image(pred.mat,main="soap")
-
-      pred.mat[!is.na(pred.mat)]<-mds.pred
-      image(pred.mat,main="mds")
-
-   }
 
 
    # calculate the MSE
-   mses[i,1]<-mean((tp.pred-new.truth)^2,na.rm=T)
-   mses[i,2]<-mean((soap.pred-new.truth)^2,na.rm=T)
-   mses[i,3]<-mean((mds.pred-new.truth)^2,na.rm=T)
+   mses[i,]<-c(mean((tp.pred-new.truth)^2,na.rm=T),
+               mean((mds.pred-new.truth)^2,na.rm=T),
+               mean((mdscr.pred-new.truth)^2,na.rm=T),
+               mean((mds3.pred-new.truth)^2,na.rm=T),
+               mean((mdsadj.pred-new.truth)^2,na.rm=T),
+               mean((soap.pred-new.truth)^2,na.rm=T))
 
    # calculate the EDFs
-   edfs[i,1]<-sum(tp.fit$edf)
-   edfs[i,2]<-sum(soap.fit$edf)
-   edfs[i,3]<-sum(mds.fit$edf)
+   edfs[i,]<-c(sum(tp.fit$edf),
+               sum(mds.fit$edf),
+               sum(mdscr.fit$edf),
+               sum(mds3.fit$edf),
+               sum(mdsadj.fit$edf),
+               sum(soap.fit$edf))
 }
+
+mses<-as.data.frame(mses)
+names(mses)<-modnames
+edfs<-as.data.frame(edfs)
+names(edfs)<-modnames
+
+write.csv(mses,file=paste("aral/sim-mse-",n.samp,"-",snrs[i.n],".csv",sep=""))
+write.csv(edfs,file=paste("aral/sim-edf-",n.samp,"-",snrs[i.n],".csv",sep=""))
+

@@ -1,45 +1,32 @@
 # make some boxplots
 
-pdf(file="mds-wt2-boxplot.pdf",width=6,height=5)
+pdf(file="big-mds-wt2-boxplot.pdf",width=13.3,height=7.88)
 
 # make the text look better for printout
-par(cex.lab=0.75)
+par(cex.axis=0.75,las=1,mgp=c(2,0.75,0),mar=c(2,3,1,1))
 
-# b l t r
-par(las=1,cex=0.9,mfrow=c(1,3))
-
-# ordering is mds, mdstp, soap, tprs
+# stick all of the results into one matrix
+mses<-matrix(NA,200,0)
 
 for(err.lev in c("0.35","0.9","1.55")){
 
    mse<-read.csv(paste("wt2-mse-250-",err.lev,".csv",sep=""))
    mse<-mse[,-1]
-   mse$mdstp<-NULL
-   mse<-log(mse)
-   
-   # find out what happened at 193, but remove for the moment for 0.05
-   #mse<-mse[-193,]
-   
-   # find out what happened at 193, but remove for the moment for 0.05
-#   mse<-mse[-99,]
-#   mse<-mse[-c(61,184),]
-   
-#   mses<-c(signif(mean(mse[,1],na.rm=TRUE),3),
-#           signif(mean(mse[,2],na.rm=TRUE),3),
-#           signif(mean(mse[,3],na.rm=TRUE),3),
-#           signif(mean(mse[,4],na.rm=TRUE),3))
-#   
-#   ses<-c(signif(sd(mse[,1],na.rm=TRUE),3),
-#          signif(sd(mse[,2],na.rm=TRUE),3),
-#          signif(sd(mse[,3],na.rm=TRUE),3),
-#          signif(sd(mse[,4],na.rm=TRUE),3))
-#   
-#   xlab=paste("MDS: MSE=",mses[1],"se(MSE)=",ses[1],"\n",
-#              "MDS (tensor): MSE=",mses[2],"se(MSE)=",ses[2],"\n",
-#              "soap: MSE=",mses[3],"se(MSE)=",ses[3],"\n",
-#              "TPRS: MSE=",mses[4],"se(MSE)=",ses[4],"\n")
-#   
-   boxplot(mse,main="")#,xlab=xlab)
+   mses<-cbind(mses,mse)
+
 }
+
+# log the results
+mses<-log(mses)
+
+# model names
+mod.names<-c("tprs","mds+tp","mds+cr","mds 3D","mds+adj","soap")
+
+# do the plot
+boxplot(mses,main="",names=rep(mod.names,3),
+      xlab="",
+      ylab="log(mean MSE per realisation)")
+
+
 
 dev.off()

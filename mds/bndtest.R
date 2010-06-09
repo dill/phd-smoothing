@@ -1,38 +1,47 @@
-# function to run simulations on the wigglytop 2 domain
-# Copyright David Lawrence Miller 2009.
+# how does the boundary map? 
+# Copyright David Lawrence Miller 2010.
 source("mds.R")
  
+par(mfrow=c(1,3))
+
 ## create a boundary...
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
 
 names(bnd)<-c("x","y")
    
 # create the grid
-#my.grid<-create_refgrid(bnd,300)
-bndc<-pe(bnd,-length(bnd$x))
+my.grid<-create_refgrid(bnd,300)
 
-bnd.tri<-as.matrix(triangulate(bndc))
-
-plot(bnd,asp=1,type="l",lwd=2)
-
-for(i in 1:dim(bnd.tri)[1]){
-   lines(x=bnd.tri[i,c(1,3,5,1)],y=bnd.tri[i,c(2,4,6,2)],col="green")
-}
+#plot(bnd,type="l",lwd=2,asp=1)
+#points(my.grid,pch=19,cex=0.3)
 
 ## do the MDS on the grid 
-# create D
 D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0)
-
-# perform mds on D
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
- 
 
-par(mfrow=c(1,2))
+# plot those points
+#plot(grid.mds$points,pch=19,cex=0.3,asp=1)
 
-plot(my.grid,asp=1,pch=19,cex=0.3)
-lines(bnd, lwd=2)
-#points(pe(my.grid,125),pch=19,col="red",cex=0.5)
-plot(grid.mds$points,asp=1,pch=19,cex=0.3)
-#points(x=grid.mds$points[125,1],y=grid.mds$points[125,2],pch=19,col="red",cex=0.5)
+# map the boundary 
+bnd.mds<-insert.mds(bnd,my.grid,grid.mds,bnd,faster=0)
+bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])
 
 
+
+#plot(grid.mds$points,asp=1,pch=19,cex=0.3)
+#lines(bnd.mds,lwd=2)
+
+# interpolate the boundary
+# weird things happen here
+xb<-matrix(c(bnd$x,bnd$x[c(2:length(bnd$x),1)]),length(bnd$x),2)[-length(bnd$x),] 
+xb<-xb[-dim(xb),]
+yb<-matrix(c(bnd$y,bnd$y[c(2:length(bnd$y),1)]),length(bnd$y),2)[-length(bnd$y),] 
+yb<-yb[-dim(yb),]
+int.bnd<-list(x=vecseq(xb,10),
+              y=vecseq(yb,10))
+
+ibnd.mds<-insert.mds(int.bnd,my.grid,grid.mds,bnd,faster=0)
+ibnd.mds<-data.frame(x=ibnd.mds[,1],y=ibnd.mds[,2])
+
+#plot(grid.mds$points,asp=1,pch=19,cex=0.3)
+#lines(ibnd.mds,lwd=2)

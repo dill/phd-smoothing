@@ -11,6 +11,11 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       return(1)
    }
 
+   # set true to create thesis diagram
+   # REMOVE in production version :)
+   dia.densmap<-FALSE
+   dia.densmap<-TRUE
+
    #first do the MDS stuff
    # NOT TESTED YET!!
    # set up some objects and throw some errors if we need to
@@ -77,9 +82,21 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # take the boundary
    # map it into the space
-#   bnd.mds<-insert.mds(object$xt$bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0)
-#   bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])
-   bnd.mds<-object$xt$bnd.mds
+   bnd<-object$xt$bnd
+   int.bnd<-bnd
+
+   # interpolate the boundary
+   # weird things happen here
+   #xb<-matrix(c(bnd$x,bnd$x[c(2:length(bnd$x),1)]),length(bnd$x),2)[-length(bnd$x),] 
+   #xb<-xb[-dim(xb),]
+   #yb<-matrix(c(bnd$y,bnd$y[c(2:length(bnd$y),1)]),length(bnd$y),2)[-length(bnd$y),] 
+   #yb<-yb[-dim(yb),]
+   #int.bnd<-list(x=vecseq(xb,10),
+   #              y=vecseq(yb,10))
+
+   bnd.mds<-insert.mds(int.bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0)
+   bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])
+   #bnd.mds<-object$xt$bnd.mds
    #plot(bnd.mds,type="l")
 
    # set the integration limits
@@ -99,6 +116,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # plot the integration grid
    #plot(ep$X,pch=19,cex=0.3)
    #lines(bnd.mds,type="l",col="red")
+   #X11()
 
    # root the weights, since we square them in a bit
    ep$w<-sqrt(ep$w)
@@ -116,139 +134,202 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    Dy<-ep$w*(dyee-2*dye+dxy)/eps^2
    Dxy<-ep$w*(dxye-dxe-dye+dxy)/eps^2
 
-   # zero some rows
-#   Dx[(k-1):k,]<-rep(0,k*2)
-#   Dy[(k-1):k,]<-rep(0,k*2)
-#   Dxy[(k-1):k,]<-rep(0,k*2)
+   ##################################################
+   # now do the adjustment based on the point density
+   # almost all of this section consists of generating grids 
 
-#   ##################################################
-#   # now do the adjustment based on the point density
-#
-#   # lets generate some grids
-#
-#   # create base grid
-#   m<-25;n<-25 # need to set these somewhere
-#   xmin<-min(bnd$x)
-#   ymin<-min(bnd$y)
-#   xmax<-max(bnd$x)
-#   ymax<-max(bnd$y)
-#   # create the grid
-#   xm <- seq(xmin,xmax,length=m)
-#   yn<-seq(ymin,ymax,length=n)
-#
-#   # one extra grid cell bigger on all sides
-#   xdel<-diff(xm)[1]
-#   ydel<-diff(yn)[1]
-#   blx<-xm[1]-xdel # big left x
-#   brx<-xm[length(xm)]+xdel # big right x
-#   bby<-yn[1]-ydel # big bottom y
-#   bty<-yn[length(yn)]+ydel # big top y
-#
-#   # now create 4 grids, one for each corner
-#   # top left, top right, bottom left, bottom right
-#   tlg<-list(x=rep(c(blx,xm),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
-#   trg<-list(x=rep(c(xm,brx),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
-#   blg<-list(x=rep(c(blx,xm),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
-#   brg<-list(x=rep(c(xm,brx),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
-#
-#   # now just take the full squares that are inside
-#   onoff<-inSide(bnd,tlg$x,tlg$y)
-#   onoff<-onoff & inSide(bnd,trg$x,trg$y)
-#   onoff<-onoff & inSide(bnd,brg$x,brg$y)
-#   onoff<-onoff & inSide(bnd,blg$x,blg$y)
-#
-#   tlg<-pe(tlg,onoff)
-#   trg<-pe(trg,onoff)
-#   blg<-pe(blg,onoff)
-#   brg<-pe(brg,onoff)
-#
-#   # check that this was okay...
-#   #plot(tlg,pch=19)
-#   #points(trg,pch=19,col="green",cex=0.9)
-#   #points(brg,pch=19,col="blue",cex=0.8)
-#   #points(blg,pch=19,col="orange",cex=0.7)
-#
-#   # make a list of all these points
-#   biglist<-list(x=c(tlg$x,trg$x,brg$x,blg$x),
-#                 y=c(tlg$y,trg$y,brg$y,blg$y))
-#
-#   # MDS these points...
-#   biglist.mds<-insert.mds(biglist,object$xt$op,object$xt$mds.obj,bnd,faster=1)
-#
-#   # pull them back out in the right order
-#   len<-length(tlg$x)
-#   mtlg<-biglist.mds[1:len,]
-#   mtrg<-biglist.mds[(len+1):(2*len),]
-#   mbrg<-biglist.mds[(2*len+1):(3*len),]
-#   mblg<-biglist.mds[(3*len+1):(4*len),]
-#
-#   # again, check that worked!
-#   #plot(mtlg,pch=19)
-#   #points(mtrg,pch=19,col="green",cex=0.9)
-#   #points(mbrg,pch=19,col="blue",cex=0.8)
-#   #points(mblg,pch=19,col="orange",cex=0.7)
-#
-#   # grid resolution - number of divisions of the other grid
-#   # to make
-#   gres<-10
-#
-#   pts.x<-c()
-#   pts.y<-c()
-#
-#   # for every quadrilateral
-#   for(i in 1:len){
-#      # create the divisions on the top and bottom
-#      tlx<-seq(mtlg[i,1],mtrg[i,1],len=gres)
-#      tly<-seq(mtlg[i,2],mtrg[i,2],len=gres)
-#      blx<-seq(mblg[i,1],mbrg[i,1],len=gres)
-#      bly<-seq(mblg[i,2],mbrg[i,2],len=gres)
-#
-#      # split those divisions
-#      for(j in 1:gres){
-#         pts.x<-c(pts.x,seq(tlx[j],blx[j],len=gres))
-#         pts.y<-c(pts.y,seq(tly[j],bly[j],len=gres))
-#      }
-#   }
-#
-#   dpoints<-list(x=pts.x,y=pts.y)
-#
-#   # work out the density at resolution dres
-#   # at the moment ths is just the same as doing this for the
-#   # integration grid, so we can replace that eventually...
-#   dres<-N#/1.5
-#   dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
-#
-#   # find the grid cells they lie in
-#   xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
-#   xdel<-diff(unique(dgrid$X[,1]))[1]
-#   ydel<-diff(unique(dgrid$X[,2]))[1]
-#   dxi<-abs(floor((dpoints$x-xstart)/xdel))
-#   dyj<-abs(floor((dpoints$y-ystart)/ydel))
-#
-#   # now find the grid cell the integration meshpoints lie in...
-#   mxi<-abs(floor((ip$X[,1]-xstart)/xdel))
-#   myj<-abs(floor((ip$X[,2]-ystart)/ydel))
-#
-#   onoff<-inSide(bnd.mds,ip$X[,1],ip$X[,2])
-#   mxi<-mxi[onoff]
-#   myj<-myj[onoff]
-#
-#   dens.est<-table(dxi,dyj)[mxi+sqrt(length(myj))*myj]
-#
-#   # image of the density function
-##   X11()
-##   denf<-table(dxi,dyj)
-##   denf[-(mxi+sqrt(length(myj))*myj)]<-NA
-##   image(denf,col=heat.colors(1000))
-#
-#
-#   #################################################
-#
-#   # do the squashing
-#   sq<-sqrt((dens.est)^3)
-#   Dx<-sq*Dx
-#   Dy<-sq*Dy
-#   Dxy<-sq*Dxy
+   # create base MDS grid
+   if(is.null(object$xt$b.grid)){
+      m<-25;n<-25 # need to set these somewhere
+   }else{
+      m<-object$xt$b.grid[1]
+      n<-object$xt$b.grid[2]
+   }
+
+   xmin<-min(bnd$x)
+   ymin<-min(bnd$y)
+   xmax<-max(bnd$x)
+   ymax<-max(bnd$y)
+   # create the grid
+   xm<-seq(xmin,xmax,length=m)
+   yn<-seq(ymin,ymax,length=n)
+
+   # one extra grid cell bigger on all sides
+   xdel<-diff(xm)[1]
+   ydel<-diff(yn)[1]
+   blx<-xm[1]-xdel # big left x
+   brx<-xm[length(xm)]+xdel # big right x
+   bby<-yn[1]-ydel # big bottom y
+   bty<-yn[length(yn)]+ydel # big top y
+
+   # now create 4 grids, one for each corner
+   # top left, top right, bottom left, bottom right
+   tlg<-list(x=rep(c(blx,xm),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
+   trg<-list(x=rep(c(xm,brx),n+1),y=rep(c(bty,yn),rep(m+1,n+1)))
+   blg<-list(x=rep(c(blx,xm),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
+   brg<-list(x=rep(c(xm,brx),n+1),y=rep(c(yn,bby),rep(m+1,n+1)))
+
+   # now just take the squares that are totally inside
+   onoff<-inSide(bnd,tlg$x,tlg$y)
+   onoff<-onoff & inSide(bnd,trg$x,trg$y)
+   onoff<-onoff & inSide(bnd,brg$x,brg$y)
+   onoff<-onoff & inSide(bnd,blg$x,blg$y)
+
+   tlg<-pe(tlg,onoff)
+   trg<-pe(trg,onoff)
+   blg<-pe(blg,onoff)
+   brg<-pe(brg,onoff)
+
+   # thesis diagam - density map
+   if(dia.densmap){
+      pdf(file="densgrid.pdf",width=5,height=5)
+      #X11()
+      par(mfrow=c(2,2),mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7,las=1)
+      xlims<-c(min(tlg$x,trg$x,brg$x,blg$x),max(tlg$x,trg$x,brg$x,blg$x))
+      ylims<-c(min(tlg$y,trg$y,brg$y,blg$y),max(tlg$y,trg$y,brg$y,blg$y))
+      plot(tlg,pch=19,asp=1,cex=0.2,xlab="x",ylab="y",xlim=xlims,ylim=ylims,col="red")
+      lines(bnd,lwd=2)
+      points(trg,pch=19,cex=0.2,col="red")
+      points(brg,pch=19,cex=0.2,col="red")
+      points(blg,pch=19,cex=0.2,col="red")
+   }
+
+   # check that this was okay...
+   #plot(tlg,pch=19,asp=1)
+   #points(trg,pch=19,col="green",cex=0.9)
+   #points(brg,pch=19,col="blue",cex=0.8)
+   #points(blg,pch=19,col="orange",cex=0.7)
+
+   # make a list of all these points
+   biglist<-list(x=c(tlg$x,trg$x,brg$x,blg$x),
+                 y=c(tlg$y,trg$y,brg$y,blg$y))
+
+   # MDS these points...
+   biglist.mds<-insert.mds(biglist,object$xt$op,object$xt$mds.obj,bnd,faster=1)
+
+   # pull them back out in the right order
+   len<-length(tlg$x)
+   mtlg<-biglist.mds[1:len,]
+   mtrg<-biglist.mds[(len+1):(2*len),]
+   mbrg<-biglist.mds[(2*len+1):(3*len),]
+   mblg<-biglist.mds[(3*len+1):(4*len),]
+
+   # thesis diagam - density map
+   if(dia.densmap){
+      xlims<-c(min(bnd.mds[,1]),max(bnd.mds[,1]))
+      ylims<-c(min(bnd.mds[,2]),max(bnd.mds[,2]))
+      plot(mtlg,pch=19,asp=1,cex=0.2,las=1,xlab="x*",ylab="y*",xlim=xlims,ylim=ylims,col="red")
+      lines(bnd.mds,lwd=2)
+      points(mtrg,pch=19,cex=0.2,col="red")
+      points(mbrg,pch=19,cex=0.2,col="red")
+      points(mblg,pch=19,cex=0.2,col="red")
+   }
+
+   # again, check that worked!
+   #plot(mtlg,pch=19,asp=1)
+   #points(mtrg,pch=19,col="green",cex=0.9)
+   #points(mbrg,pch=19,col="blue",cex=0.8)
+   #points(mblg,pch=19,col="orange",cex=0.7)
+
+   # grid resolution - number of divisions of the other grid
+   # to make
+   gres<-10
+
+   # do the interpolation, cut the boxes into 10 on each side,
+   # then join up the lines...
+
+   # do something clever with vectorised seq()
+   # put mtlg[,1] and mtrg[,1] into a 2xlength matrix,
+   # same for the others
+   txmat<-matrix(c(mtlg[,1],mtrg[,1]),length(mtrg[,1]),2)
+   tymat<-matrix(c(mtlg[,2],mtrg[,2]),length(mtrg[,2]),2)
+   bxmat<-matrix(c(mblg[,1],mbrg[,1]),length(mbrg[,1]),2)
+   bymat<-matrix(c(mblg[,2],mbrg[,2]),length(mbrg[,2]),2)
+
+   # do some vecseq magic...
+   tlx<-vecseq(txmat,gres)
+   tly<-vecseq(tymat,gres)
+   blx<-vecseq(bxmat,gres)
+   bly<-vecseq(bymat,gres)
+
+   pts.x<-c()
+   pts.y<-c()
+
+   for(i in 1:gres){
+      xs<-vecseq(matrix(c(tlx[,i],blx[,i]),length(blx[,i]),2),gres)
+      pts.x<-c(pts.x,c(t(xs)))
+
+      ys<-vecseq(matrix(c(tly[,i],bly[,i]),length(bly[,i]),2),gres)
+      pts.y<-c(pts.y,c(t(ys)))
+   }
+
+   dpoints<-list(x=pts.x,y=pts.y)
+
+   if(dia.densmap){
+      # check that the interpolation worked...
+      #X11()
+      plot(dpoints,pch=19,cex=0.3,col="green",xlab="x*",ylab="y*",asp=1,xlim=xlims,ylim=ylims)
+      lines(bnd.mds,lwd=2)
+      #X11()
+   }
+   # work out the density at resolution dres
+   # at the moment ths is just the same as doing this for the
+   # integration grid, so we can replace that eventually...
+   dres<-N*1.5
+   dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
+
+   # find the grid cells they lie in
+   xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
+   xdel<-diff(unique(dgrid$X[,1]))[1]
+   ydel<-diff(unique(dgrid$X[,2]))[1]
+   dxi<-abs(floor((dpoints$x-xstart)/xdel))
+   dyj<-abs(floor((dpoints$y-ystart)/ydel))
+
+   # find the grid cells the integration points lie in
+   # these points are where we will evaluate K
+   mxi<-abs(floor((ep$X[,1]-xstart)/xdel))
+   myj<-abs(floor((ep$X[,2]-ystart)/ydel))
+
+   # so now we have our function K(x,y)
+   K<-table(dxi,dyj)
+
+   # table doesn't return an NxN table, so this hack
+   # makes K (dres)x(dres)...
+   x.names<-as.numeric(attr(K,"dimnames")$dxi)
+   y.names<-as.numeric(attr(K,"dimnames")$dyj)
+   Kt<-matrix(0,dres,dres)
+   Kt[x.names,y.names]<-K
+   K<-Kt
+   
+   ### Evaluate K!
+   # make sure that K>0 everywhere, so we don't kill any elements
+   # this is fine since it should get absorbed into lambda
+   dens.est<-K[mxi+dres*myj]
+
+   # thesis diagam - density map
+   if(dia.densmap){
+      points(ep$X,cex=0.1,pch=19)
+
+      # image plot of the density function
+      denf<-K
+      onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
+      denf[!onoff]<-NA
+      image(z=denf,
+            xlim=xlims,ylim=ylims,
+            x=sort(unique(dgrid$X[,1])),
+            y=sort(unique(dgrid$X[,2])),
+            col=heat.colors(1000),asp=1,xlab="x*",ylab="y*")
+      lines(bnd.mds,lwd=2)
+      dev.off()
+      #X11()
+   }
+
+   #################################################
+   # do the squashing
+   sq<-sqrt((dens.est)^3)
+   Dx<-sq*Dx
+   Dy<-sq*Dy
+   Dxy<-sq*Dxy
 
    # actually do the integration
    S<-t(Dx)%*%Dx + t(Dxy)%*%Dxy + t(Dy)%*%Dy
@@ -256,15 +337,15 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # enforce symmetry (from smooth.construct.tp...)
    S <- (S + t(S))/2
 
+   # store the object
    object$S[[1]]<-S
 
-   # zero the last two rows and cols
-   object$S[[1]][(k-1):k,]<-rep(0,k*2)
-   object$S[[1]][,(k-1):k]<-rep(0,k*2)
+   # zero the last three rows and cols
+   object$S[[1]][(k-2):k,]<-rep(0,k*3)
+   object$S[[1]][,(k-2):k]<-rep(0,k*3)
 
-   cat("max diff=",max(abs(oldS-object$S[[1]])),"\n")
-
-   object$oldS<-oldS
+   # uncomment to return the old version of S
+   #object$oldS<-oldS
 
    class(object)<-"mdstp.smooth"
    object

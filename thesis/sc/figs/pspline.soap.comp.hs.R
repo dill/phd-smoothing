@@ -77,7 +77,7 @@ fv <- predict(b,newdata=data.frame(v=xx,w=yy),block.size=-1)
 
 ############ First figure, two image plots
 pdf("compsmooth.pdf",width=4,height=2.9)
-par(mfrow=c(2,2),mar=c(1.8,1.5,1.8,1.5))
+par(mfrow=c(2,2),mar=c(2,1.9,1.8,1.5))
 
 
 names(fsb[[1]])<-c("x","y")

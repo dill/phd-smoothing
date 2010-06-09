@@ -40,8 +40,8 @@ curve.x<-curve.x[length(curve.x):1]
 fs.centreline<-list(x=c(r.leg.x,curve.x,leg.x),y=c(leg.y.t,curve.y,leg.y.b))
 
 # test
-pdf("../sc-writeup/figs/horseshoecentreline.pdf",6,3)
-par(mfrow=c(1,2))
+pdf("horseshoecentreline.pdf",6,3)
+par(mfrow=c(1,2),mar=c(1,1,1,1))
 fsb <- fs.boundary()
 m<-300;n<-150 
 xm <- seq(-1,4,length=m);yn<-seq(-1,1,length=n)
@@ -60,16 +60,16 @@ fs.centre.eval<-fs.test(fs.centreline$x,fs.centreline$y)
 
 
 # read the points in
-mapped.centreline<-read.csv("../ramseysim/centrelinemapped.csv",header=F)
+mapped.centreline<-read.csv("centrelinemapped.csv",header=F)
 names(mapped.centreline)<-c("x","y")
 
 # load the prevertices, as mapped by matlab
-preverts<-read.csv("../ramseysim/ramsayprevertices.csv",header=F)
+preverts<-read.csv("ramsayprevertices.csv",header=F)
 names(preverts)<-c("x","y") 
 
 # load data
-predback.real<-read.csv("../matlab/preal.csv",header=F)
-predback.imag<-read.csv("../matlab/pimag.csv",header=F)
+predback.real<-read.csv("preal.csv",header=F)
+predback.imag<-read.csv("pimag.csv",header=F)
 predgrid<-data.frame(v=predback.real[[1]],w=predback.imag[[1]])
 
 
@@ -78,6 +78,12 @@ plot(mapped.centreline$y,mapped.centreline$x,asp=1,type="l",lty=2,axes=FALSE,xla
 lines(c(preverts$y,preverts$y[1]),c(preverts$x,preverts$x[1]),lwd=3,asp=1)
 
 dev.off()
+
+
+
+
+
+
 
 # output
 pdf("../sc-writeup/figs/centrelinelineplots.pdf",5,3)
