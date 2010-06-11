@@ -94,7 +94,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #int.bnd<-list(x=vecseq(xb,10),
    #              y=vecseq(yb,10))
 
-   bnd.mds<-insert.mds(int.bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0,debug=1)
+   bnd.mds<-insert.mds(int.bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0)#,debug=1)
    bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])
    #bnd.mds<-object$xt$bnd.mds
    #plot(bnd.mds,type="l")
