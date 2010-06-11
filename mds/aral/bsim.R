@@ -25,7 +25,7 @@ source("makesoapgrid.R")
 ######################################################
 # OPTIONS
 plot.it<-FALSE
-sim.size<-1#200
+sim.size<-200
 n.samp<-250
 # noise levels = 0.35,0.9,1.55
 # snr = 0.95,0.75,0.50
