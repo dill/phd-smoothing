@@ -422,18 +422,19 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
    // length of the bounding box index
    lbbindex=iarrsum((nbnd-1),retint);
 
-   // setup bbindex, dists, sortdists
-   bbindex=(int*)malloc(sizeof(int)*lbbindex);
-   dists=(double*)malloc(sizeof(double)*lbbindex);
-   sortdists=(double*)malloc(sizeof(double)*lbbindex);
-   for(i=0; i<lbbindex; i++){
-      bbindex[i]=bbindex[0]+i;
-      dists[i]=dists[0]+i;
-      sortdists[i]=sortdists[0]+i;
-   }
-
    // if lbbindex < 2 increment err
    if(lbbindex>1){
+
+      // setup bbindex, dists, sortdists
+      bbindex=(int*)malloc(sizeof(int)*lbbindex);
+      dists=(double*)malloc(sizeof(double)*lbbindex);
+      sortdists=(double*)malloc(sizeof(double)*lbbindex);
+      for(i=0; i<lbbindex; i++){
+         bbindex[i]=bbindex[0]+i;
+         dists[i]=dists[0]+i;
+         sortdists[i]=sortdists[0]+i;
+      }
+
       // find intersections & sort by distance
 
       // populate bbindex   
@@ -498,18 +499,16 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 
       free(ips[0]);
       free(ips);
+      free(bbindex);
+      free(dists);
+      free(sortdists);
 
    }else{
       // let the Robot warn us...
       //printf("### DANGER, WILL ROBINSON! lbbindex=%d (< 2)\n",lbbindex);
       err++;
-//printf("# DEBUG: err!\n");
    } // end of lbbindex<2 check
 
-   free(bbindex);
-   free(dists);
-   free(sortdists);
-//printf("# DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
    free(retint);
    free(bx);
    free(by);

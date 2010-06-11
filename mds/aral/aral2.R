@@ -31,11 +31,14 @@ image(pred.mat,x=unique(gxx),y=unique(gyy),
       xlim=xlims,ylim=ylims,asp=1,zlim=zlims)
 contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5)
 lines(bnd,lwd=2)
+
 # mdstp
+#par(las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-mds.pred
 image(pred.mat,x=unique(gxx),y=unique(gyy),
-      main="mds",xlab="km (East)",ylab="km (North)",
+      main="mds",
+xlab="km (East)",ylab="km (North)",
       xlim=xlims,ylim=ylims,asp=1,zlim=zlims)
 contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5)
 lines(bnd,lwd=2)
