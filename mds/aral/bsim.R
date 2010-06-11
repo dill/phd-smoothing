@@ -30,6 +30,7 @@ n.samp<-250
 # noise levels = 0.35,0.9,1.55
 # snr = 0.95,0.75,0.50
 snrs<-c(0.95,0.75,0.50)
+samp.size<-c(100,250,500)
 #noise.level<-1.55
 
 # model names
@@ -97,11 +98,13 @@ pred.mds3<-list(x=pred.mds3[,1],y=pred.mds3[,2],z=pred.mds3[,3],chl=new.truth)
 disp<-c(0.15,0.79,1.05)
 eta<-c(1,1.15,1.7)
 
-
-for(i.n in 1:3){
+for(i.s in 1:3){
+   for(i.n in 1:3){
 
    # actually run the sim
    source("aral/sim.R")
+
+   }
 
 }
 

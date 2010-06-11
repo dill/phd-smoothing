@@ -8,6 +8,9 @@
 mses<-matrix(0,sim.size,length(modnames))
 edfs<-matrix(0,sim.size,length(modnames))
 
+
+n.samp<-samp.size[i.s]
+
 for(i in 1:sim.size){
 
    ## take the sample
