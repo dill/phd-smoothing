@@ -1,5 +1,5 @@
 # wrapper function for C code
-woodpath<-function(xpoints,ypoints,bnd,start=NA,faster=0){
+woodpath<-function(xpoints,ypoints,bnd,start=NA,faster=0,debug=0){
 
    # put everything in the right format
    xbnd<-bnd$x
@@ -40,7 +40,8 @@ woodpath<-function(xpoints,ypoints,bnd,start=NA,faster=0){
                 xstart=as.double(ref.grid$x[1]),
                 ystart=as.double(ref.grid$y[1]),
                 pathlen=as.double(rep(0,pl)),
-                faster=as.integer(faster))
+                faster=as.integer(faster),
+                debug=as.integer(debug))
 
    # full MDS
    if(!insert){

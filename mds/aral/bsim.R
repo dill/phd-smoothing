@@ -33,7 +33,7 @@ snrs<-c(0.95,0.75,0.50)
 #noise.level<-1.55
 
 # model names
-modnames<-c("tprs","mdstp","mdscr","mdstp3d","mdstpadj","soap")
+modnames<-c("tprs","mdstp","mdscr","mdstp3d","soap")#,"mdstpadj","soap")
 ######################################################
 # PREAMBLE
 # load the data and boundary

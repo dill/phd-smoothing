@@ -5,8 +5,8 @@
 # run from phd-smoothing/mds
 
 # storage for the MSEs and EDFs
-mses<-matrix(0,sim.size,3)
-edfs<-matrix(0,sim.size,3)
+mses<-matrix(0,sim.size,length(modnames))
+edfs<-matrix(0,sim.size,length(modnames))
 
 for(i in 1:sim.size){
 
@@ -56,16 +56,16 @@ for(i in 1:sim.size){
    mds3.fit<-gam(chl~s(x,y,z,k=70),data=samp.mds3,family=Gamma(link="log"))
 
    # MDS (adj)
-   mdsadj.fit<-gam(chl~s(x,y,k=70,bs="mdstp",
-                   xt=list(bnd=bnd,op=mds.grid,mds.obj=grid.mds)),
-                   data=samp.mds,family=Gamma(link="log"))
+#   mdsadj.fit<-gam(chl~s(x,y,k=70,bs="mdstp",
+#                   xt=list(bnd=bnd,op=mds.grid,mds.obj=grid.mds)),
+#                   data=samp.mds,family=Gamma(link="log"))
 
    ### do some prediction
    tp.pred<-predict(tp.fit,newdata=pred.points,type="response")
    mds.pred<-predict(mds.fit,newdata=pred.mds,type="response")
    mdscr.pred<-predict(mdscr.fit,newdata=pred.mds,type="response")
    mds3.pred<-predict(mds3.fit,newdata=pred.mds3,type="response")
-   mdsadj.pred<-predict(mdsadj.fit,newdata=pred.mds,type="response")
+#   mdsadj.pred<-predict(mdsadj.fit,newdata=pred.mds,type="response")
    soap.pred<-predict(soap.fit,newdata=pred.points,type="response")
 
 
@@ -75,7 +75,7 @@ for(i in 1:sim.size){
                mean((mds.pred-new.truth)^2,na.rm=T),
                mean((mdscr.pred-new.truth)^2,na.rm=T),
                mean((mds3.pred-new.truth)^2,na.rm=T),
-               mean((mdsadj.pred-new.truth)^2,na.rm=T),
+ #              mean((mdsadj.pred-new.truth)^2,na.rm=T),
                mean((soap.pred-new.truth)^2,na.rm=T))
 
    # calculate the EDFs
@@ -83,7 +83,7 @@ for(i in 1:sim.size){
                sum(mds.fit$edf),
                sum(mdscr.fit$edf),
                sum(mds3.fit$edf),
-               sum(mdsadj.fit$edf),
+#               sum(mdsadj.fit$edf),
                sum(soap.fit$edf))
 }
 

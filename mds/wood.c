@@ -10,7 +10,7 @@
 // this doesn't actually do anything, eps gets set below.
 double eps=1e-6;
 
-void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *ngrid, double *refdelx, double *refdely, int *refio, int *nref, double *xstart, double *ystart, double *pathlen, int *faster){
+void wood_path(int *len, int *start, double *x, double *y, int *nbnd, double *xbnd, double *ybnd, double *xref, double *yref, int *ngrid, double *refdelx, double *refdely, int *refio, int *nref, double *xstart, double *ystart, double *pathlen, int *faster, int *debug){
    // args:
    //   len         the length of x and y *
    //   start       point to start at *

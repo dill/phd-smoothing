@@ -1,4 +1,4 @@
-"insert.mds"<-function(new.points,old.points,cmd.object,bnd,faster=0){
+"insert.mds"<-function(new.points,old.points,cmd.object,bnd,faster=0,debug){
    # insert a new point into the MDS, see Gower (Biometrika, 1968.)
    # args
    #  new.points     points to insert into the MDS
@@ -26,7 +26,7 @@
    # and n original points to measure to and m new points.
  
    new.dist<-woodpath(c(old.points$x,new.points$x),c(old.points$y,new.points$y),
-                      bnd,start=length(old.points$x),faster=faster)
+                      bnd,start=length(old.points$x),faster=faster,debug=debug)
 
    # the ith element of d is -(d_{i,n+1}^2 - diag(S))
 

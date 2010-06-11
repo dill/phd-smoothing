@@ -10,7 +10,7 @@ source("createrefgrid.R")
 library(soap)
 
 # create the distance matrix
-create_distance_matrix<-function(xpoints,ypoints,bnd,start=NA,faster=0){
+create_distance_matrix<-function(xpoints,ypoints,bnd,start=NA,faster=0,debug=0){
    # requires the library soap   
    # args:
    #  xpoints,ypoints      data points
@@ -29,7 +29,7 @@ create_distance_matrix<-function(xpoints,ypoints,bnd,start=NA,faster=0){
 
    # create a matrix to hold the distances
 
-   D<-woodpath(xpoints,ypoints,bnd,start,faster)
+   D<-woodpath(xpoints,ypoints,bnd,start,faster,debug)
 
    return(D)
 }
