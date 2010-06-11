@@ -503,11 +503,13 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
       // let the Robot warn us...
       //printf("### DANGER, WILL ROBINSON! lbbindex=%d (< 2)\n",lbbindex);
       err++;
+//printf("# DEBUG: err!\n");
    } // end of lbbindex<2 check
 
    free(bbindex);
    free(dists);
    free(sortdists);
+//printf("# DEBUG: p1=list(x=%f,y=%f); p2=list(x=%f,y=%f);\n",p1[0],p1[1],p2[0],p2[1]);
    free(retint);
    free(bx);
    free(by);

@@ -506,15 +506,16 @@ The higher MSEs shown in \tabref{wt2resultstable} at lower noise levels might be
 \end{equation}
 from the usual \tprs penalty (see \secref{GAMtprspenalty}).
 
-This approach will only handle a linear rescaling in one dimension; in the case of the MDS distortions, non-linear re-scalings in two dimensions must be addressed. Moving into two dimensions is trivial (since if the scalings are linear, only one rescaling needs to be calculated). To generalise this to the non-linear two-dimensional case, some function, $\mathsf{K}(x,y)$, must be found that gives the new density at space for given values of $x$ and $y$. Given we have a function of the change in density of the points from the data space to the MDS space \eqn{adjustedintegral} can be written as:
+This approach will only handle a linear rescaling in one dimension; in the case of the MDS distortions, non-linear re-scalings in two dimensions must be addressed. Moving into two dimensions is trivial for the linear case since only one rescaling needs to be calculated. To generalise this to the non-linear two-dimensional case a function must be found, $\mathsf{K}(x,y)$ say, which evaluates to the change in density for each point in the domain. 
+
+Such a function should effectively allow the smoothness to be adapted according to the degree to which space has been squashed, thus getting around the spatial heterogeneity which appears to be affecting the model. The calculation of $\mathsf{K}(x,y)$ is elaborated on below.
+
+Given we have a function of the change in density of the points from the data space to the MDS space \eqn{adjustedintegral} can be written as:
 \begin{equation}
-\int\int_\Omega \mathsf{K}(x,y) \Big( \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial y \partial x}\Big)^2 + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2\Big) \text{d}x\text{d}y.
+\int\int_\Omega \mathsf{K}(x,y) \Big( \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial x \partial y}\Big)^2 + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2\Big) \text{d}x\text{d}y.
 \label{kdeadjust}
 \end{equation}
 rather than the usual \tprs penalty (see \secref{GAMtprspenalty}). Note the change of integration domain from $\mathbb{R}^2$ to $\Omega$ the transformed domain, as well as the pre-multiplication by the density function.
-
-The calculation of $\mathsf{K}(x,y)$ is elaborated on below.
-
 
 \subsection{Penalty adjustments in 1 dimension}
 

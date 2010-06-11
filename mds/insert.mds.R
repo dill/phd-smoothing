@@ -1,4 +1,4 @@
-"insert.mds"<-function(new.points,old.points,cmd.object,bnd,faster=0,debug){
+"insert.mds"<-function(new.points,old.points,cmd.object,bnd,faster=0,debug=0){
    # insert a new point into the MDS, see Gower (Biometrika, 1968.)
    # args
    #  new.points     points to insert into the MDS
