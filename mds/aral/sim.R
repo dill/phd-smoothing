@@ -42,7 +42,7 @@ for(i in 1:sim.size){
    tp.fit<-gam(chl~s(x,y,k=70),data=samp,family=Gamma(link="log"))
 
    # soap
-   soap.fit<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
+   soap.fit<-gam(chl~s(x,y,k=25,bs="so",xt=list(bnd=list(bnd))),knots=s.grid,
             family=Gamma(link="log"),data=samp)
 
    # MDS (tp)
