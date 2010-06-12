@@ -548,6 +548,7 @@ S_{ij}= \int_a^b \mathsf{K}(x) \frac{\partial^2 b_i(x)}{\partial x^2}\frac{\part
 in one dimension (letting a prime indicate differentiation with respect to $x$). The integral can then be approximated by the midpoint rule as:
 \be
 S_{ij}= \frac{b-a}{N}\sum_{k=1}^N \mathsf{K}(x_k) b^{\prime\prime}_i(x_k) b^{\prime\prime}_j(x_k) \quad \text{for} \quad x_k=a+\frac{(k-0.5)(b-a)}{N},
+\label{midpointS}
 \ee
 for $k=1\dots N$. Second derivatives are evaluated by finite differences in the usual manner:
 \be
@@ -603,19 +604,18 @@ So we may then express $S$ as:
 \be
 S=\tr{D_x}D_x + \tr{D_{xy}}D_{xy} + \tr{D_y}D_y.
 \ee
-Where the partial derivatives are to be evaluated ($x_k$ and $y_k$) now form a grid for the integration to be calculated over. First defining $x^\dagger_k$ and $y^\dagger_k$ as:
+Where the partial derivatives are to be evaluated ($x_k$ and $y_k$) now form a grid for the integration to be calculated over. First defining $x^\dagger_k$ and $y^\dagger_k$ analogously to \ref{midpointS}, we have:
 \be
 x^\dagger_k=a_x+\frac{(k-0.5)(b_x-a_x)}{N},\\
 y^\dagger_k=a_y+\frac{(k-0.5)(b_y-a_y)}{N},
 \ee
-then
+then constructing the grid as:
 \be
 \{x_k : k=1\dots N\} = \{x^\dagger_1,x^\dagger_1,x^\dagger_1,\dots, x^\dagger_2, x^\dagger_2, x^\dagger_2,\dots, x^\dagger_N, x^\dagger_N, x^\dagger_N\},
 \ee
 \be
 \{y_k : k=1\dots N\} = \{y^\dagger_1,y^\dagger_2, y^\dagger_3,\dots, y^\dagger_N,y^\dagger_1,y^\dagger_2, y^\dagger_3,\dots, y^\dagger_N,\dots\}.
 \ee
-
 Finally, those $(x_k,y_k)$ that are not inside the boundary in MDS space are removed leaving only those points that lie inside.
 
 Calculating $\mathsf{K}(x,y)$ in two dimensions is a little more tricky than in the 1-D case. Since the two-dimensional case is to be used in practise, the method for finding $\mathsf{K}(x,y)$ must depend on the MDS configuration, as the stretch factors will not be known \emph{a priori}.
@@ -635,6 +635,7 @@ The next section puts the adjusted penalty approach to the test on a number of d
 \section{Wider simulations and real data}
 
 \subsection{Peninsulae domain}
+\label{wt2bigsim}
 
 Using the same setup as in \secref{mds-wt2-sim}, for each error levels (0.35, 0.9 and 1.55), 200 realisations were generated. From these 250 samples were drawn to fit the model, predictions were over a grid of 1253 points with mean squared error recorded per model for each simulation. 
 
@@ -719,7 +720,18 @@ The models were then used to predict over a grid of 496 points to create the hea
 
 \subsubsection{Aral sea simulation}
 
-In order to further test \mdsap, a simulation was setup. 
+In order to further test \mdsap, a simulation was setup. The models were as in \secref{wt2bigsim}
+
+The models that were fitted were:
+\begin{enumerate}
+\item \emph{Thin plate spline}:  with basis size 140.
+\item \emph{\mdsap}: using a \tprs with basis size 140.
+\item \emph{\mdsap}: using a tensor product (see \secref{GAMtensor}) of cubic splines, each dimension of which had a basis size of 12.
+\item \emph{\mdsap}: using a 3-dimensional \tprs with basis size 140. Here MDS was used to project the data into three dimensions rather than two.
+\item \emph{\mdsap}: using a \tprs with basis size 140, with penalty adjustments.
+\item \emph{Soap film smoother}: using 109 internal knots evenly spaced on a grid over the domain, with 60 boundary knots.
+\end{enumerate}
+
 
 
 \section{\mdsap in practice}

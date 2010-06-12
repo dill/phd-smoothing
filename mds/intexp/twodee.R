@@ -1,6 +1,7 @@
 # 2d testing of the integration
 
-source("smooth2NA.c.R")
+source("mds.R")
+source("intexp/smooth2NA.c.R")
 
 # from the example in gam()
 library(mgcv)
@@ -26,3 +27,22 @@ b2<-gam(z~s(x,y,bs="mdstp",xt=list(bnd.mds=bnd.mds,
 
 vis.gam(b2,plot.type="contour")
 
+
+
+source("intexp/smooth2.c.R")
+source("makesoapgrid.R")
+
+sg<-make_soap_grid(bnd.mds,c(10,10))
+D.grid<-create_distance_matrix(sg$x,sg$y,bnd.mds,faster=0)
+
+grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
+
+
+
+b3<-gam(z~s(x,y,bs="mdstp",xt=list(bnd.mds=bnd.mds,
+                                     bnd=bnd.mds,
+                                     op=sg,
+                                     mds.obj=grid.mds
+         )),data=dat)
+
+vis.gam(b3,plot.type="contour")
