@@ -96,7 +96,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    bnd.mds<-insert.mds(int.bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0)#,debug=1)
    bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])
-   #bnd.mds<-object$xt$bnd.mds
    #plot(bnd.mds,type="l")
 
    # set the integration limits
@@ -263,27 +262,31 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       pts.y<-c(pts.y,c(t(ys)))
    }
 
-   dpoints<-list(x=pts.x,y=pts.y)
+   # there are lots of duplicates here at the corners and edges, so remove them
+   dunip<-unique(matrix(c(pts.x,pts.y),length(pts.x),2),MARGIN=1)
+   dpoints<-list(x=dunip[,1],y=dunip[,2])
 
-   if(dia.densmap){
-      # check that the interpolation worked...
-      #X11()
-      plot(dpoints,pch=19,cex=0.3,col="green",xlab="x*",ylab="y*",asp=1,xlim=xlims,ylim=ylims)
-      lines(bnd.mds,lwd=2)
-      #X11()
-   }
+   #dpoints<-list(x=pts.x,y=pts.y)
+
+#   if(dia.densmap){
+#      # check that the interpolation worked...
+#      #X11()
+#      plot(dpoints,pch=19,cex=0.3,col="green",xlab="x*",ylab="y*",asp=1,xlim=xlims,ylim=ylims)
+#      lines(bnd.mds,lwd=2)
+#      #X11()
+#   }
    # work out the density at resolution dres
    # at the moment ths is just the same as doing this for the
    # integration grid, so we can replace that eventually...
-   dres<-N*1.5
+   dres<-N*0.75
    dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
 
    # find the grid cells they lie in
    xstart<-min(dgrid$X[,1]); ystart<-min(dgrid$X[,2])
    xdel<-diff(unique(dgrid$X[,1]))[1]
    ydel<-diff(unique(dgrid$X[,2]))[1]
-   dxi<-abs(floor((dpoints$x-xstart)/xdel))
-   dyj<-abs(floor((dpoints$y-ystart)/ydel))
+   dxi<-abs(floor((dpoints$x-xstart)/xdel))+1
+   dyj<-abs(floor((dpoints$y-ystart)/ydel))+1
 
    # find the grid cells the integration points lie in
    # these points are where we will evaluate K
@@ -320,6 +323,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
             y=sort(unique(dgrid$X[,2])),
             col=heat.colors(1000),asp=1,xlab="x*",ylab="y*")
       lines(bnd.mds,lwd=2)
+      hist(K)
+      cat("max=",max(K),"min=",min(K),"\n")
       dev.off()
       #X11()
    }
