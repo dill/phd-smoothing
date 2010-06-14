@@ -19,7 +19,7 @@ source("intexp/smooth2.c.R")
 
 ######################################################
 # OPTIONS
-sim.size<-200
+sim.size<-20#0
 samp.size<-250
 # noise levels = 0.35,0.9,1.55
 # snr = 0.95,0.75,0.50

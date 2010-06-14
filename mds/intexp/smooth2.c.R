@@ -307,7 +307,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    ### Evaluate K!
    # make sure that K>0 everywhere, so we don't kill any elements
    # this is fine since it should get absorbed into lambda
-   dens.est<-K[mxi*dres+myj]
+   dens.est<-K[mxi+dres*myj]
 
    # thesis diagam - density map
    if(dia.densmap){
@@ -332,10 +332,11 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #################################################
    # do the squashing
    sq<-sqrt((dens.est)^3)
+   sq1<-sqrt((dens.est))
    #sq<-1
    Dx<-sq*Dx
    Dy<-sq*Dy
-   Dxy<-sq*Dxy
+   Dxy<-sq1*Dxy
 
    # actually do the integration
    S<-t(Dx)%*%Dx + t(Dxy)%*%Dxy + t(Dy)%*%Dy
