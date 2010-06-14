@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   dia.densmap<-TRUE
+   #dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -99,7 +99,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #plot(bnd.mds,type="l")
 
    # set the integration limits
-   # just make an overly big bounding box
+   # just make an overly big bounding square
    a<-min(c(bnd.mds$x,bnd.mds$y))
    b<-max(c(bnd.mds$x,bnd.mds$y))
    # take a grid in the mds space
@@ -278,7 +278,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # work out the density at resolution dres
    # at the moment ths is just the same as doing this for the
    # integration grid, so we can replace that eventually...
-   dres<-N*0.75
+   dres<-N#*0.75
    dgrid<-mesh(a+(1:dres-.5)/dres*(b-a),2,rep(2/dres,dres))
 
    # find the grid cells they lie in
@@ -290,7 +290,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # find the grid cells the integration points lie in
    # these points are where we will evaluate K
-   mxi<-abs(floor((ep$X[,1]-xstart)/xdel))
+   mxi<-abs(floor((ep$X[,1]-xstart)/xdel))+1
    myj<-abs(floor((ep$X[,2]-ystart)/ydel))
 
    # so now we have our function K(x,y)
@@ -302,7 +302,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    y.names<-as.numeric(attr(K,"dimnames")$dyj)
    Kt<-matrix(0,dres,dres)
    Kt[x.names,y.names]<-K
-   K<-Kt
+   K<-Kt/max(Kt)
    
    ### Evaluate K!
    # make sure that K>0 everywhere, so we don't kill any elements
@@ -315,23 +315,24 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
       # image plot of the density function
       denf<-K
-      onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
-      denf[!onoff]<-NA
+      denf[-c(mxi+dres*myj)]<-NA
+      #onoff<-inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])
+      #denf[!onoff]<-NA
       image(z=denf,
-            xlim=xlims,ylim=ylims,
             x=sort(unique(dgrid$X[,1])),
             y=sort(unique(dgrid$X[,2])),
             col=heat.colors(1000),asp=1,xlab="x*",ylab="y*")
       lines(bnd.mds,lwd=2)
-      hist(K)
-      cat("max=",max(K),"min=",min(K),"\n")
-      dev.off()
+      hist(denf)
+      #cat("max=",max(K),"min=",min(K),"\n")
+   #   dev.off()
       #X11()
    }
 
    #################################################
    # do the squashing
    sq<-sqrt((dens.est)^3)
+   #sq<-1
    Dx<-sq*Dx
    Dy<-sq*Dy
    Dxy<-sq*Dxy

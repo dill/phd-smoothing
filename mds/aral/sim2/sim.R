@@ -22,6 +22,10 @@ for(i in 1:sim.size){
    samp<-data.frame(x=pred.points$x[samp.ind],
                     y=pred.points$y[samp.ind],
                     chl=as.numeric(new.truth[samp.ind]+noise))
+
+   samp.mds<-insert.mds(samp,mds.grid,grid.mds,bnd)
+   samp.mds<-list(x=samp.mds[,1],y=samp.mds[,2],chl=samp$chl)
+
   
    # MDS (adj)
    mdsadj.fit<-gam(chl~s(x,y,k=70,bs="mdstp",
