@@ -95,7 +95,7 @@ for(i.s in 1:3){
    for(i.n in 1:3){
 
    # actually run the sim
-   source("aral/sim.R")
+   source("aral/sim2/sim.R")
 
    }
 
