@@ -307,7 +307,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    ### Evaluate K!
    # make sure that K>0 everywhere, so we don't kill any elements
    # this is fine since it should get absorbed into lambda
-   dens.est<-K[mxi+dres*myj]
+   dens.est<-K[mxi*dres+myj]
 
    # thesis diagam - density map
    if(dia.densmap){
