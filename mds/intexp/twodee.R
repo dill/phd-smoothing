@@ -3,7 +3,7 @@
 library(mgcv)
 library(soap)
 source("mds.R")
-source("inSide.R")
+#source("inSide.R")
 #source("intexp/smooth2NA.c.R")
 
 # from the example in gam()

@@ -1,13 +1,15 @@
 # Multidimensional scaling approach...
 
 # let's see what happens
+library(mgcv)
+library(soap)
 source("mds-wrap.R")
 source("insert.mds.R")
 source("pe.R")
 source("vecseq.R")
 source("makesoapgrid.R")
 source("createrefgrid.R")
-library(soap)
+#source("inSide.R")
 
 # create the distance matrix
 create_distance_matrix<-function(xpoints,ypoints,bnd,start=NA,faster=0,debug=0){
