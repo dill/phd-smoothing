@@ -1,11 +1,12 @@
 # 2d testing of the integration
 
+library(mgcv)
+library(soap)
 source("mds.R")
+source("inSide.R")
 #source("intexp/smooth2NA.c.R")
 
 # from the example in gam()
-library(mgcv)
-library(soap)
 set.seed(0) ## simulate some data... 
 dat <- gamSim(1,n=400,dist="normal",scale=2)
 
