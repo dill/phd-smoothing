@@ -85,8 +85,7 @@ library(ks)
    #this.dat<-eval(parse(text=paste("data$",object$term,sep="")))
    this.dat<-matrix(c(data$x,data$y),length(data$x),2)
    dens.est<-kde(this.dat,H=Hpi(this.dat),eval.points=ep$X)
-   sq<-sqrt(dens.est$estimate^3)
-
+   sq<-sqrt(((1/dens.est$estimate)^3)/sum((1/dens.est$estimate)^3))
 
 
    #################################################

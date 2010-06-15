@@ -49,13 +49,13 @@ b3<-gam(z~s(x,y,bs="mdstp",xt=list(bnd.mds=bnd.mds,
 
 vis.gam(b3,plot.type="contour")
 
-source("intexp/smoothKDE.R")
-
-b4<-gam(z~s(x,y,bs="mdstp",xt=list(bnd.mds=bnd.mds,
-                                     bnd=bnd.mds,
-                                     op=sg,
-                                     b.grid=c(50,50),
-                                     mds.obj=grid.mds
-         )),data=dat)
-
-vis.gam(b4,plot.type="contour")
+#source("intexp/smoothKDE.R")
+#
+#b4<-gam(z~s(x,y,bs="mdstp",xt=list(bnd.mds=bnd.mds,
+#                                     bnd=bnd.mds,
+#                                     op=sg,
+#                                     b.grid=c(50,50),
+#                                     mds.obj=grid.mds
+#         )),data=dat)
+#
+#vis.gam(b4,plot.type="contour")
