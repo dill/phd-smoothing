@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   #dia.densmap<-TRUE
+   dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -291,7 +291,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # find the grid cells the integration points lie in
    # these points are where we will evaluate K
    mxi<-abs(floor((ep$X[,1]-xstart)/xdel))+1
-   myj<-abs(floor((ep$X[,2]-ystart)/ydel))
+   myj<-abs(floor((ep$X[,2]-ystart)/ydel))+1
 
    # so now we have our function K(x,y)
    K<-table(dxi,dyj)
@@ -325,7 +325,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       lines(bnd.mds,lwd=2)
       hist(denf)
       #cat("max=",max(K),"min=",min(K),"\n")
-   #   dev.off()
+      dev.off()
       #X11()
    }
 
