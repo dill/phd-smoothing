@@ -1,28 +1,43 @@
 # MVB's inSide
 #"in.poly" <-function( xy, poly) {
-inSide<-function( poly, x,y) {
-  xy<-cbind(x,y)
-  poly<-matrix(c(poly$x[-(length(poly$x))],poly$y[-(length(poly$x))]),length(poly$x)-1,2)
+#inSide<-function( poly, x,y) {
+#  xy<-cbind(x,y)
+#  poly<-matrix(c(poly$x[-(length(poly$x))],poly$y[-(length(poly$x))]),length(poly$x)-1,2)
+#  if( ncol( poly)==2)
+#    poly <- poly.for.testing( poly)
+#  n <- nrow( xy); np <- nrow( poly); nnp <- rep( n,np)
+#  #check1 <- xor( xy[,1]>=rep( poly[,1], nnp), xy[,1]>rep( poly[,3], nnp))
+#  #check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] > xy[,2]
+#  #a<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
+#  #check1 <- xor( xy[,1]>rep( poly[,1], nnp), xy[,1]>rep( poly[,3], nnp))
+#  #check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] >= xy[,2]
+#  #a<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
+#  #check1 <- xor( xy[,1]>=rep( poly[,1], nnp), xy[,1]>=rep( poly[,3], nnp))
+#  #check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] > xy[,2]
+#  #b<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
+#  #a|b
+#  check1 <- xor( xy[,1]>=rep( poly[,1], nnp), xy[,1]>rep( poly[,3], nnp))
+#  check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] >= xy[,2]
+#  a<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
+#  check1 <- xor( xy[,1]>rep( poly[,1], nnp), xy[,1]>rep( poly[,3], nnp))
+#  check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] > xy[,2]
+#  b<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
+#  a|b
+#}
+in.poly1<-function( poly, x,y){
   if( ncol( poly)==2)
     poly <- poly.for.testing( poly)
   n <- nrow( xy); np <- nrow( poly); nnp <- rep( n,np)
-  #check1 <- xor( xy[,1]>=rep( poly[,1], nnp), xy[,1]>rep( poly[,3], nnp))
-  #check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] > xy[,2]
-  #a<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
-  #check1 <- xor( xy[,1]>rep( poly[,1], nnp), xy[,1]>rep( poly[,3], nnp))
-  #check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] >= xy[,2]
-  #a<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
-  #check1 <- xor( xy[,1]>=rep( poly[,1], nnp), xy[,1]>=rep( poly[,3], nnp))
-  #check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] > xy[,2]
-  #b<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
-  #a|b
-  check1 <- xor( xy[,1]>=rep( poly[,1], nnp), xy[,1]>rep( poly[,3], nnp))
-  check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] >= xy[,2]
-  a<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
-  check1 <- xor( xy[,1]>rep( poly[,1], nnp), xy[,1]>rep( poly[,3], nnp))
+  check1 <- xor( xy[,1]>=rep( poly[,1], nnp), xy[,1]>=rep( poly[,3], nnp))
   check2 <- rep( poly[,2], nnp) + rep( poly[,4], nnp) * xy[,1] > xy[,2]
-  b<-as.vector( rowSums( matrix( check1 & check2, n, np)) %% 2 > 0)
-  a|b
+  as.vector( matrix( check1 & check2, n, np) %*% rep.int( 1, np) %% 2 > 0)
+}
+
+in.poly<-function( poly, x,y){
+   ind1<-in.poly1(poly,x,y)
+   ind2<-in.poly1(list(x=-bnd$x,y=-bnd$y),-x,-y)
+
+   ind1|ind2
 }
 
 "poly.for.testing" <-function( xy) {
