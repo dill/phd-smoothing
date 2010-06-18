@@ -2,6 +2,7 @@
 # Copyright David Lawrence Miller 2009-2010.
 source("mds.R")
 source("intexp/smooth2.c.R")
+source("inSide.R")
 
 set.seed(1)
  

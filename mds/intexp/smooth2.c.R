@@ -291,7 +291,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # find the grid cells the integration points lie in
    # these points are where we will evaluate K
    mxi<-abs(floor((ep$X[,1]-xstart)/xdel))+1
-   myj<-abs(floor((ep$X[,2]-ystart)/ydel))
+   myj<-abs(floor((ep$X[,2]-ystart)/ydel))+1
 
    # so now we have our function K(x,y)
    K<-table(dxi,dyj)
@@ -302,11 +302,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    y.names<-as.numeric(attr(K,"dimnames")$dyj)
    Kt<-matrix(0,dres,dres)
    Kt[x.names,y.names]<-K
-   K<-Kt/max(Kt)
+   K<-Kt#/max(Kt)
    
    ### Evaluate K!
-   # make sure that K>0 everywhere, so we don't kill any elements
-   # this is fine since it should get absorbed into lambda
    dens.est<-K[mxi+dres*myj]
 
    # thesis diagam - density map
@@ -332,8 +330,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    #################################################
    # do the squashing
    sq<-sqrt((dens.est)^3)
-   #sq1<-sqrt((dens.est))
-   #sq<-1
    Dx<-sq*Dx
    Dy<-sq*Dy
    Dxy<-sq*Dxy
