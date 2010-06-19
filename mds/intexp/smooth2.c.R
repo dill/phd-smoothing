@@ -304,9 +304,6 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    Kt[x.names,y.names]<-K
    K<-Kt#/max(Kt)
    
-cat("x=",x.names,"\n")
-cat("y=",y.names,"\n")
-
    ### Evaluate K!
    dens.est<-K[mxi+dres*myj]
 
