@@ -4,7 +4,7 @@
 
 \section{Introduction}
 
-Following the work of the previous chapter, the objective is now to find a mapping into a space which causes minimum distortion to the density of space, whilst also effectively separating those parts of the domain which are subject to leakage. Dictating the final, transformed, domain from the outset will not be a flexible enough approach to work in general, therefore the transformation should be to a domain that adapts itself to the domain in which the data lies.
+Following the work of the previous chapter, the objective is now to find a mapping into a new space which causes minimum distortion to the points in that new space. At the same time the mapping must also effectively separate those parts of the original domain which are subject to leakage. This balance between making sure the model overcomes leakage whilst at the same time does not cause artefacts in the smooth is essential to the success of the approach. The previous approach of dictating the transformed domain from the outset is clearly not flexible enough for general use, however a method that depends on the shape of original domain may have more promise.
 
 \subsection{Proposition}
 
@@ -16,7 +16,7 @@ When MDS is performed on some categorised set of dissimilarities (as is often th
 
 Multidimensional scaling offers a framework for finite area smoothing over a region with a complex boundary. Given the set of distances between points in a domain, we can project those points into a configuration such that the distances between those points are approximately preserved. Now, if the Euclidean metric were to be used to calculate the distances between the points then the result from the projection would be identical to the starting point configuration (provided that we projected back into the same number of dimensions). However, if it were possible to use a metric that took into account the distance within the boundary (a within-area distance) then the resulting configuration of points would (approximately) respect the boundary of the domain.
 
-Justification for this approach is as follows. In many applications within-area distances is meaningful, given that there is some reasoning behind why certain parts of the domain should not affect one another. This is usually due to diffusion (in some sense) as a result of distance. Biological populations respect the intrinsic structure of these domains and in general do not respect Euclidean geometry in their movement patterns. When within-area distances are meaningful, it makes sense to use information about the structure of the domain rather than discard it and use the somewhat arbitrary choice of Euclidean geometry. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
+Justification for this approach is as follows. In many applications within-area distances is meaningful, given that there is some reasoning behind why certain parts of the domain should not affect one another. Biological populations respect the intrinsic structure of these domains and in general do not respect Euclidean geometry in their movement patterns (for example, they move around obstacles, .) When within-area distances are meaningful, it makes sense to use information about the structure of the domain rather than discard it and use the somewhat arbitrary choice of Euclidean geometry. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
 
 \subsection{Procedure}
 \label{mdsproc}
@@ -371,10 +371,6 @@ Table \ref{wt2resultstable} gives the MSE and EDF for the models above averaged 
 % generated using phd-smoothing/mds/sim/wt2-boxplots.R
 \end{figure}
 
-%The final model, above, was chosen after it appeared that the MDS with a bivariate thin plate spline did not adequately model the peak in the right corner of the domain (\fig{wt2-fit-0.5}, top left panel.) After using a tensor product of thin plate splines a better fit to the right peak was found (\fig{wt2-fit-0.5}, top right panel), although this is not reflected particularly well in terms of mean squared error (see table \ref{wt2resultstable}.) The visual improvement in fit can be explained by thin plate splines in two dimensions being an isotropic smooth and since space has not been transformed in a uniform way in both dimensions.
-
-%Table \ref{wt2resultstable} shows that when there is low error, both the soap film and thin plate splines outperform the MDS approach, but once the errors are increased the MDS does much better. The MDS approach also benefits from having a smaller EDF than all the other approaches in all of the noise scenarios, the tensor MDS doing better at lower noise levels. This is encouraging and shows that perhaps there is a place for this technique alongside the soap film smoother if the method can be improved for low noise situations.
-
 \begin{table}[ht]
 \centering
 \begin{tabular}{c c c c c}
@@ -404,20 +400,20 @@ This high point density in the right side of the MDS space could be the reason f
 % how the points are projected for wt2
 \begin{figure}
 \centering
-\includegraphics[width=4.5in]{mds/figs/wt2-2d-proj.pdf} \\
+\includegraphics[width=6in]{mds/figs/wt2-2d-proj.pdf} \\
 \caption{A regular grid over the peninulae domain (left) and its projection into MDS space (right.)}
 \label{wt2-2d-proj}
 % generated using thesis/mds/figs/wt2-mds.R
 \end{figure}
 
 % how the points are projected for wt2 in 3D!
-\begin{figure}
+\begin{sidewaysfigure}
 \centering
-\includegraphics[width=6in]{mds/figs/wt2-3d-proj.pdf} \\
+\includegraphics[width=9in]{mds/figs/wt2-3d-proj.pdf} \\
 \caption{The peninsula domain projected into 3-dimensional MDS space. The plots show combinations of axes, note that the $x^*,y^*$ combination is the same as the 2-dimensional projection in \fig{wt2-2d-proj}.}
 \label{wt2-3d-proj}
 % generated using thesis/mds/figs/wt2-mds.R
-\end{figure}
+\end{sidewaysfigure}
 
 \subsection{Areas for improvement}
 
@@ -742,4 +738,11 @@ Choosing a suitable boundary is also essential to making sure that a model can b
 
 
 \section{Conclusion}
+
+This chapter has investigated the utility of using a combination of multidimensional scaling and penalised regression splines to combat the phenomenon of leakage in spatial smoothing. This was with a view to \mdsap being a less complex, faster, alternative to soap film smoothing, with an equally interesting motivating physical model.
+
+
+
+
+
 

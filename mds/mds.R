@@ -9,7 +9,7 @@ source("pe.R")
 source("vecseq.R")
 source("makesoapgrid.R")
 source("createrefgrid.R")
-#source("inSide.R")
+source("inSide.R")
 
 # create the distance matrix
 create_distance_matrix<-function(xpoints,ypoints,bnd,start=NA,faster=0,debug=0){
