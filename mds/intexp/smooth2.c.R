@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   dia.densmap<-TRUE
+   #dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -290,7 +290,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # find the grid cells the integration points lie in
    # these points are where we will evaluate K
-   mxi<-abs(floor((ep$X[,1]-xstart)/xdel))+2
+   mxi<-abs(floor((ep$X[,1]-xstart)/xdel))+1
    myj<-abs(floor((ep$X[,2]-ystart)/ydel))+1
 
    # so now we have our function K(x,y)
@@ -305,7 +305,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    K<-Kt/max(Kt)
    
    ### Evaluate K!
-   dens.est<-K[mxi+dres*myj]
+#   dens.est<-K[mxi+dres*myj]
+   dens.est<-K[cbind(mxi,myj)]
 
    # thesis diagam - density map
    if(dia.densmap){
@@ -313,14 +314,16 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
       # image plot of the density function
       denf<-K
-      denf[-c(mxi+dres*myj)]<-NA
+#      denf[-c(mxi+dres*myj)]<-NA
+      denf[!inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])]<-NA
       image(z=denf,
             x=sort(unique(dgrid$X[,1])),
             y=sort(unique(dgrid$X[,2])),
             col=heat.colors(1000),asp=1,xlab="x*",ylab="y*")
       lines(bnd.mds,lwd=1)
 points(ep$X,pch=".")
-      hist(denf[c(mxi+dres*myj)])
+#      hist(denf[c(mxi+dres*myj)])
+      hist(denf[cbind(mxi,myj)])
       #cat("max=",max(K),"min=",min(K),"\n")
       dev.off()
       #X11()
