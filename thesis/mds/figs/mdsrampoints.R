@@ -27,7 +27,7 @@ grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
 pdf(file="../thesis/mds/figs/mdsrampoints.pdf",6,2.5)
 par(mfrow=c(1,2))
-plot(my.grid,asp=1,xlab="",ylab="",pch=19,cex=0.2,cex.axis=0.5)
-plot(grid.mds$points,asp=1,xlab="",ylab="",pch=19,cex=0.2,cex.axis=0.5)
+plot(my.grid,asp=1,xlab="",ylab="",pch=".",cex.axis=0.5)
+plot(grid.mds$points,asp=1,xlab="",ylab="",pch=".",cex.axis=0.5)
 dev.off()
 

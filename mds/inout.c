@@ -59,13 +59,6 @@ void in_out1(double *bx, double *by, double *break_code, double *x,double *y,int
 }
 
 void in_out2(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
-/* finds out whether points in arrays x,y are inside boundary or outside, by counting boundary 
-   crossings. The boundaries nodes are defined by bx, by.  bx[i] and by[i] less than or equal to 
-   break_code signals a break in the boundary (e.g. between island and external boundary.) Each 
-   section of boundary is assumed to be a closed loop. nb is dimenion of bx and by; n is dimension 
-   of x and y. `in' will contain a 1 for an interior point and a 0 otherwise, on exit. 
-   Both bx[i] and by[i] or neither must be less than the break_code.
-*/ 
 { double xx,yy,dum,x0,x1,y0,y1;
   int i,j,count,start,swap;
   for (i=0;i<*n;i++) { /* loop through all test points */
