@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   dia.densmap<-TRUE
+   #dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -304,6 +304,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    Kt[x.names,y.names]<-K
    K<-Kt#/max(Kt)
    
+cat("x=",x.names,"\n")
+cat("y=",y.names,"\n")
+
    ### Evaluate K!
    dens.est<-K[mxi+dres*myj]
 
