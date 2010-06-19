@@ -47,5 +47,7 @@ void create_refpaths(double*, double*, int, double, double, double, double, int*
 
 // for in_out in separate file
 void in_out(double *, double *, double *,double *,double *,int *, int *, int * );
+void in_out1(double *, double *, double *,double *,double *,int *, int *, int * );
+void in_out2(double *, double *, double *,double *,double *,int *, int *, int * );
 
 
