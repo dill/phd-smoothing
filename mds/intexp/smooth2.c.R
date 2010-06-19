@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   #dia.densmap<-TRUE
+   dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -139,7 +139,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # create base MDS grid
    if(is.null(object$xt$b.grid)){
-      m<-50;n<-50 # need to set these somewhere
+      m<-30;n<-30 # need to set these somewhere
    }else{
       m<-object$xt$b.grid[1]
       n<-object$xt$b.grid[2]
@@ -302,7 +302,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    y.names<-as.numeric(attr(K,"dimnames")$dyj)
    Kt<-matrix(0,dres,dres)
    Kt[x.names,y.names]<-K
-   K<-Kt#/max(Kt)
+   K<-Kt/max(Kt)
    
    ### Evaluate K!
    dens.est<-K[mxi+dres*myj]
@@ -320,7 +320,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
             col=heat.colors(1000),asp=1,xlab="x*",ylab="y*")
       lines(bnd.mds,lwd=1)
 points(ep$X,pch=".")
-      hist(denf)
+      hist(denf[c(mxi+dres*myj)])
       #cat("max=",max(K),"min=",min(K),"\n")
       dev.off()
       #X11()
