@@ -732,7 +732,7 @@ The models that were fitted were:
 
 \section{\mdsap in practice}
 
-Although perhaps not as mathematically complex as the soap film smoother, \mdsap does still have potential pitfalls for the practitioner. Key to the whole method is that the starting grid, which is used to insert all of the data into MDS space, be dense enough so that the features of the domain which cause leakage are captured. This is a somewhat aesthetic judgement and as such is not suited to automation. If \mdsap is to be applied, a practitioner's best option would be to create a sparse grid over the boundary and gradually make more dense grids until there is not a large change in the plot of the points in MDS space.
+Although perhaps not as mathematically complex as the soap film smoother, \mdsap does still have potential pitfalls for the practitioner. Key to the whole method is that the starting grid, which is used to insert all of the data into MDS space, be dense enough so that the features of the domain which cause leakage are captured. The choice of what is ``dense enough'' is somewhat aesthetic and as such is not suited to automation. If \mdsap is to be applied, a good option would be to create a sparse grid over the boundary and gradually make more dense grids until there is not a large change in the plot of the points in MDS space.
 
 Choosing a suitable boundary is also essential to making sure that a model can be fitted in reasonable time. The more complex the boundary, the longer the shortest paths will take to calculate. Simplifying the boundary to only include those boundary vertices that are essential will improve the speed of the fit, provided the vertices a picked sensibly.
 
@@ -743,6 +743,8 @@ This chapter has investigated the utility of using a combination of multidimensi
 
 
 
+
+As we have seen over the last two chapters, although domain transformation methods are appealing from a mathematical and physical point of view, in practise they do not appear to be useful.
 
 
 

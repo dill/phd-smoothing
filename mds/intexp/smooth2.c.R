@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   #dia.densmap<-TRUE
+   dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -187,10 +187,10 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       xlims<-c(min(tlg$x,trg$x,brg$x,blg$x),max(tlg$x,trg$x,brg$x,blg$x))
       ylims<-c(min(tlg$y,trg$y,brg$y,blg$y),max(tlg$y,trg$y,brg$y,blg$y))
       plot(bnd,lwd=2,type="l",asp=1,xlab="x",ylab="y",xlim=xlims,ylim=ylims)
-      points(tlg,pch=19,cex=0.2,col="red")
-      points(trg,pch=19,cex=0.2,col="red")
-      points(brg,pch=19,cex=0.2,col="red")
-      points(blg,pch=19,cex=0.2,col="red")
+      points(tlg,pch=".",col="red")
+      points(trg,pch=".",col="red")
+      points(brg,pch=".",col="red")
+      points(blg,pch=".",col="red")
    }
 
    # check that this was okay...
@@ -217,7 +217,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    if(dia.densmap){
       xlims<-c(min(bnd.mds[,1]),max(bnd.mds[,1]))
       ylims<-c(min(bnd.mds[,2]),max(bnd.mds[,2]))
-      plot(mtlg,pch=19,asp=1,cex=0.2,las=1,xlab="x*",ylab="y*",xlim=xlims,ylim=ylims,col="red")
+      plot(mtlg,pch=".",asp=1,las=1,xlab="x*",ylab="y*",
+           xlim=xlims,ylim=ylims,col="red")
       lines(bnd.mds,lwd=2)
       points(mtrg,pch=19,cex=0.2,col="red")
       points(mbrg,pch=19,cex=0.2,col="red")
@@ -268,13 +269,14 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    #dpoints<-list(x=pts.x,y=pts.y)
 
-#   if(dia.densmap){
-#      # check that the interpolation worked...
-#      #X11()
-#      plot(dpoints,pch=19,cex=0.3,col="green",xlab="x*",ylab="y*",asp=1,xlim=xlims,ylim=ylims)
-#      lines(bnd.mds,lwd=2)
-#      #X11()
-#   }
+   if(dia.densmap){
+      # check that the interpolation worked...
+      #X11()
+      plot(dpoints,pch=".",col="green",xlab="x*",ylab="y*",
+            asp=1,xlim=xlims,ylim=ylims)
+      lines(bnd.mds,lwd=2)
+      #X11()
+   }
    # work out the density at resolution dres
    # at the moment ths is just the same as doing this for the
    # integration grid, so we can replace that eventually...
@@ -302,7 +304,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    y.names<-as.numeric(attr(K,"dimnames")$dyj)
    Kt<-matrix(0,dres,dres)
    Kt[x.names,y.names]<-K
-   K<-Kt/max(Kt)
+   K<-Kt#/max(Kt)
    
    ### Evaluate K!
 #   dens.est<-K[mxi+dres*myj]
@@ -310,20 +312,18 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    # thesis diagam - density map
    if(dia.densmap){
-      points(ep$X,cex=0.1,pch=19)
+      points(ep$X,pch=".")
 
       # image plot of the density function
       denf<-K
-#      denf[-c(mxi+dres*myj)]<-NA
       denf[!inSide(bnd.mds,dgrid$X[,1],dgrid$X[,2])]<-NA
       image(z=denf,
             x=sort(unique(dgrid$X[,1])),
             y=sort(unique(dgrid$X[,2])),
             col=heat.colors(1000),asp=1,xlab="x*",ylab="y*")
       lines(bnd.mds,lwd=1)
-points(ep$X,pch=".")
-#      hist(denf[c(mxi+dres*myj)])
-      hist(denf[cbind(mxi,myj)])
+      #points(ep$X,pch=".")
+      #hist(denf[cbind(mxi,myj)])
       #cat("max=",max(K),"min=",min(K),"\n")
       dev.off()
       #X11()
@@ -331,10 +331,11 @@ points(ep$X,pch=".")
 
    #################################################
    # do the squashing
-   sq<-sqrt((dens.est))#^3)
+   sq<-sqrt((dens.est)^3)
    Dx<-sq*Dx
    Dy<-sq*Dy
    Dxy<-sq*Dxy
+   #Dxy<-sqrt(dens.est)*Dxy
 
    # actually do the integration
    S<-t(Dx)%*%Dx + t(Dxy)%*%Dxy + t(Dy)%*%Dy
