@@ -16,7 +16,7 @@ aral.mds<-data.frame(x=aral.mds[,1],
                      chl=aral.dat$chl)
 
 # fit the model
-mds.fit<-gam(chl~s(x,y,z,k=70),data=aral.mds,family=Gamma(link="log"))
+mds.fit<-gam(chl~s(x,y,z,k=140),data=aral.mds,family=Gamma(link="log"))
 
 # mds prediction grid
 pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd,faster=1)
@@ -27,12 +27,21 @@ pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
 # do the prediction
 mds.pred<-predict(mds.fit,newdata=pred.grid.mds,type="response")
 
-# plot
+zlims<-c(1.905461, 19.275249)
+
+
+pdf(file="../thesis/mds/figs/aral-3d.pdf",width=2.5,height=3)
+par(las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
+
+
 pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-mds.pred
-image(pred.mat,x=unique(gxx),y=unique(gyy),main="mds",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
+image(pred.mat,x=unique(gxx),y=unique(gyy),
+      xlab="km (East)",ylab="km (North)",
+      xlim=xlims,ylim=ylims,asp=1,zlim=zlims)
+contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
 lines(bnd,lwd=2)
 
 
 
-#dev.off()
+dev.off()
