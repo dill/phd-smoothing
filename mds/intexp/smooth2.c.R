@@ -304,10 +304,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    y.names<-as.numeric(attr(K,"dimnames")$dyj)
    Kt<-matrix(0,dres,dres)
    Kt[x.names,y.names]<-K
-   K<-Kt#/max(Kt)
+   K<-Kt
    
    ### Evaluate K!
-#   dens.est<-K[mxi+dres*myj]
    dens.est<-K[cbind(mxi,myj)]
 
    # thesis diagam - density map
@@ -331,14 +330,14 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    #################################################
    # do the squashing
-   sq<-sqrt((dens.est))#^3)
+   sq<-sqrt((dens.est)^3)
    Dx<-sq*Dx
    Dy<-sq*Dy
    Dxy<-sq*Dxy
    #Dxy<-sqrt(dens.est)*Dxy
 
    # actually do the integration
-   S<-t(Dx)%*%Dx + t(Dxy)%*%Dxy + t(Dy)%*%Dy
+   S<-t(Dx)%*%Dx + 2*t(Dxy)%*%Dxy + t(Dy)%*%Dy
 
    # enforce symmetry (from smooth.construct.tp...)
    S <- (S + t(S))/2
