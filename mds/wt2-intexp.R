@@ -114,9 +114,11 @@ pred.data$x[samp.ind]<-samp.mds[,1]
 pred.data$y[samp.ind]<-samp.mds[,2]
  
 
+k<-140
+
 ### Now do some fitting and prediction
 ### tprs (tp+mds)on transformed data
-b.tp<-gam(z~s(x,y,k=140),data=samp.data)
+b.tp<-gam(z~s(x,y,k=k),data=samp.data)
 fv.tp<-predict(b.tp,newdata=pred.data)
 
 #library(debug)
@@ -124,7 +126,7 @@ fv.tp<-predict(b.tp,newdata=pred.data)
 
 # clever tprs 
 source("intexp/smooth2.c.R")
-b.mdstp<-gam(z~s(x,y,k=60,bs="mdstp",
+b.mdstp<-gam(z~s(x,y,k=k,bs="mdstp",
                  xt=list(bnd=bnd,
                          op=my.grid,
 #                         b.grid=c(15,15),
@@ -134,7 +136,7 @@ fv.mdstp<-predict(b.mdstp,newdata=pred.data)
 
 
 ### just thin plate (no mds, no adjustments)
-b.utp<-gam(z~s(x,y,k=140),data=nsamp.data)
+b.utp<-gam(z~s(x,y,k=k),data=nsamp.data)
 fv.utp<-predict(b.utp,newdata=npred.data)
 
 
