@@ -437,13 +437,13 @@ In order to make \mdsap\ worthwhile for a practitioner to use the method, it wou
 \section{Improvements}
 \label{MDSimprov}
 
-This section focuses on strategies to improve the above method in terms of speed and accuracy. The first part looks at the speed part, the latter on accuracy.
+This section focuses on strategies to improve the above method in terms of speed and accuracy. The first part looks at the speed of \mdsap, the latter on the accuracy. 
 
 \subsection{Making \mdsap\ faster}
 
 \subsubsection{Calculating MDS by Lanczos iteration}
 
-The \textsf{R} command used to perform the multidimensional scaling, \texttt{cmdscale}, uses the routine \texttt{eigen} in order to perform the requisite matrix eigen-decomposition. This routine will calculate a full eigen-decomposition of the matrix, even if only the first $k$ eigenvalues and/or eigenvectors are required. The Lanczos iteration will only calculate the first $k$ eigenvalues (in numeric or algebraic size order).
+The \textsf{R} command used to perform the multidimensional scaling, \texttt{cmdscale}, uses the routine \texttt{eigen} in order to perform the requisite matrix eigen-decomposition. This routine will calculate a full eigen-decomposition of the matrix, even if only the first $k$ eigenvalues and/or eigenvectors are required. Using Lanczos iteration, only the first $k$ eigenvalues (in numeric or algebraic size order) will be calculated.
 
 The  Lanczos procedure works by iteratively building a symmetric $i\cross i$ tridiagonal matrix (at the $i^{\text{th}}$ iteration) which has eigenvalues approximately the same as the $i$ largest eigenvalues of the original matrix. Further detail is given in \cite{simonbook}, pp. 335-337.
 
@@ -455,22 +455,24 @@ A quick benchmark shows that \texttt{ARPACK++} can compute the first two eigenva
 
 \subsubsection{Partial path calculation}
 
-Many of the distances stored in $D$ are calculated by simply using the Euclidean metric since for the corresponding point pairs, there is no part of the path between them that lies outside of the domain. It is also worth noting that given that often we wish to calculate the paths of points on a grid (for example, when doing prediciton). This leads us to believe that there are many sets of paths that are rather similar. These paths may perhaps only differ in their final vertex. Given that, in this case, there is a lot of wasted computational time spent calculating the same parts of paths repetitively, it would be useful to exploit this problem, and increase the speed of the path calculation.
+Many of the distances stored in $D$ are calculated by simply using the Euclidean metric since for the corresponding point pairs, there is no part of the path between them that lies outside of the domain. It is often the case that the paths that need to be calculated are on a grid (for example, when doing prediction). This leads us to believe that there are many sets of paths that are rather similar. These paths may perhaps only differ in their final vertex. Given that, in this case, there is a lot of wasted computational time spent calculating similar paths, it would be useful to exploit this problem, and use it to increase the speed of the path calculation.
 
-The idea here is to use a sparse grid to first calculate a set of paths that are saved. These saved paths are then used as the starting points for the paths that need to be calculated. Finally, these paths are optimised in the same manner as the algorithm given in \secref{mdsdist}. This removes the expensive calculation in the middle of the path, where there are interactions with the boundary.
+The idea here is to use a sparse grid to first calculate a set of paths that are then saved. These saved paths are then form the base of the other paths that need to be calculated. Finally, these paths are optimised in the same manner as the algorithm given in \secref{mdsdist}. This removes the expensive calculation in the middle of the path, where perhaps the bulk of the interactions with the boundary take place.
 
-The algorithm is as follows, with notation as well as the routines INIT, DELETE, ALTER and ITER identical to those in \secref{mdsdist}. Taking points $p_i$ and $p_j$ in the set of points in the domain that we wish to find the shortest paths for and drawing a path between them, finding within-area distance with respect to the boundary of $\Gamma$.
+The algorithm is as follows, with notation and routines (INIT, DELETE, ALTER and ITER) identical to those in \secref{mdsdist}. 
+
+Again, taking points $p_i$ and $p_j$ in the set of points in the domain that we wish to find the shortest paths for and drawing a path between them, finding within-area distance with respect to the boundary of $\Gamma$.
 
 \begin{enumerate}
- \item Begin by creating a sparse grid within $\Gamma$ and calculate the non-Euclidean within-area paths between all pairs of points exactly as in algorithm 1. Store these paths as they are calculated as $\mathcal{P}_1,\ldots, \mathcal{P}_M$.
-\item For each unique pairing of $p_i$ and $p_j$ in the full data set, calculate the path use one of the following:
+ \item Begin by creating a sparse grid of within $\Gamma$ and calculate the ($M$, say) non-Euclidean within-area paths between all pairs of points exactly as in \secref{mdsdist}. Store these paths as $\mathcal{P}_1,\ldots, \mathcal{P}_M$.
+\item For each unique pairing of $p_i$ and $p_j$ in the full data set, calculate the path using one of the following:
 	\begin{enumerate}
-	\item Find a $\mathcal{P}_k$ such that the path between $p_i$ and one end of $\mathcal{P}_k$ and $p_j$ and the other end of $\mathcal{P}_k$ is Euclidean within $\Gamma$. Join $p_i$ and $p_j$ onto the appropriate ends of $\mathcal{P}_k$ and run ITER until convergence.
-	\item If there is no Euclidean path between $p_i$ and $p_j$, and no Euclidean path between $p_i$ or $p_j$ and any of the ends of $\mathcal{P}_k$, then use the algorithm 1 to calculate the path between $p_i$ and $p_j$. 
+	\item Find a $\mathcal{P}_k$ such that the path between $p_i$ and one end of $\mathcal{P}_k$ and $p_j$ and the other end of $\mathcal{P}_k$ is Euclidean within $\Gamma$. Join $p_i$ and $p_j$ onto the appropriate ends of $\mathcal{P}_k$ and run ITER (ie. alternate between DELETE and ALTER) until convergence.
+	\item If there is no Euclidean path between $p_i$ and $p_j$, and no $\mathcal{P}_k$ can be found, then calculate the path between $p_i$ and $p_j$ as in \secref{mdsdist}. 
 	\end{enumerate}
 \end{enumerate}
 
-Note that those paths in the sparse grid which are Euclidean are not stored since it is always at least as expensive to store, add and optimise those paths then calculating them from scratch. An argument towards why is this is true is as follows: if the path we want to calculate is Euclidean anyway, then retrieving a Euclidean path and then iterating over ALTER and DELETE steps to make it both the shortest and a Euclidean path will take longer than just creating a Euclidean path to begin with. If the path we wish to calculate is non-Euclidean then it must cross the boundary outside the stored path (by definition) and therefore will take the same number of operations to find the boundary crossing points and calculate the shortest path around the feature locally as it will to calculating the whole path from scratch.
+Note that those paths between points in the sparse grid which are Euclidean are not stored since it is always at least as expensive to store, add and optimise those paths then calculating them from scratch. An argument towards why is this is true is as follows: if the path we want to calculate is Euclidean anyway, then retrieving a Euclidean path, adding in $p_i$ and $p_j$, and then iterating over ALTER and DELETE steps to make it both the shortest and a Euclidean path will take longer than just creating a Euclidean path to begin with. If the path between $p_i$ and $p_j$ is non-Euclidean then the non-Euclidean part of the path must lie outside $\mathcal{P}_k$ (by definition) and therefore will take the same number of operations to find the boundary crossing points and calculate the shortest path around the feature locally as it will to calculating the whole path from scratch.
 
 
 \subsubsection{Simulation - Lanczos and partial path calculation improvements}
@@ -478,7 +480,6 @@ Note that those paths in the sparse grid which are Euclidean are not stored sinc
 Taking both the Lanczos procedure and the partial path calculation together, a simulation was run to find the improvements in terms of computational time for the double peninsulae domain. Average time for both model fitting and prediction are given in \tabref{wt2itime} for 100 realisations. 
 
 The differences between the first two columns are striking. The partial path calculation has dramatically reduced the computational time for the calculation of the entries of the distance matrix, making it faster than the soap film smoother for the model fitting, and reducing the prediction time to a third of its previous value. The \tprs\ times are shown to give a comparison for the time actually taken to fit the model, the remaining time for \mdsap\ is taken up by calculating the distances and performing the MDS.
-
 
 \begin{table}[ht]
 \centering
@@ -507,9 +508,9 @@ from the usual \tprs\ penalty (see \secref{GAMtprspenalty}).
 
 This approach will only handle a linear rescaling in one dimension; in the case of the MDS distortions, non-linear re-scalings in two dimensions must be addressed. Moving into two dimensions is trivial for the linear case since only one rescaling needs to be calculated. To generalise this to the non-linear two-dimensional case a function must be found, $\mathsf{K}(x,y)$ say, which evaluates to the change in density for each point in the domain. 
 
-Such a function should effectively allow the smoothness to be adapted according to the degree to which space has been squashed, thus getting around the spatial heterogeneity which appears to be affecting the model. The calculation of $\mathsf{K}(x,y)$ is elaborated on below.
+Such a function should allow the smoothness to be adapted according to the degree to which space has been squashed, thus getting around the spatial heterogeneity which appears to be affecting the model. The calculation of $\mathsf{K}(x,y)$ is elaborated on below.
 
-Given we have a function of the change in density of the points from the data space to the MDS space \eqn{adjustedintegral} can be written as:
+Given we have a function of the change in density of the points from the data space to the MDS space \eqn{adjustedintegral} is adapted to,
 \begin{equation}
 \int\int_\Omega \mathsf{K}(x,y) \Big( \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial x \partial y}\Big)^2 + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2\Big) \text{d}x\text{d}y.
 \label{kdeadjust}
@@ -523,7 +524,7 @@ Before implementing this approach in full a a test was run in 1 dimension to mak
 g(x)=0.2x^{11}(10(1-x))^6+10(10x)^3(1-x)^{10},
 \label{hardfcn}
 \ee
-was used and contracted by factors of $20,1,0.05,1$ over the regions $[0,0.4], (0.4,0.6],(0.6,0.8],(0.8,1]$, respectively. The function and it's squashed form are shown in the top panels of \fig{1dadjust}. Evaluating 100, equally spaced, points over the interval $[0,1]$ using a \tprs\ and then predicting back onto the same points yielded the blue lines in the lower two plots. The left of these shows the prediction in the transformed space and the right in the original space. The green line was produced using a \tprs\ with the adjusted penalty matrix elements calculated as follows.
+was used and contracted by factors of $20,1,0.05,1$ over the regions $[0,0.4], (0.4,0.6],(0.6,0.8],(0.8,1]$, respectively. The function and its squashed form are shown in the top panels of \fig{1dadjust}. Evaluating 100, equally spaced, points over the interval $[0,1]$ using a \tprs\ and then predicting back onto the same points yielded the blue lines in the lower two plots. The left of these shows the prediction in the transformed space and the right in the original space. The green line was produced using a \tprs\ with the adjusted penalty matrix.
 
 % 1d adjustment 2x2 diagram
 \begin{figure}
@@ -536,11 +537,11 @@ was used and contracted by factors of $20,1,0.05,1$ over the regions $[0,0.4], (
 
 \subsubsection{Penalty adjustment calculation}
 
-For the moment let us take $\hat{f}$ to be a one dimensional smooth function. It may be decomposed into its basis function in the usual way:
+For the moment let us take $\hat{f}$ to be a one dimensional smooth function. It may be decomposed into its basis functions and coefficients in the usual way:
 \be
 \hat{f}(x)=\sum_{\forall j} \beta_j b_j(x) = \tr{\mathbf{\beta}}\mathbf{b}(x).
 \ee
-In this case, \eqn{kdeadjust} may be written as:
+The $ij^\text{th}$ element of the penalty matrix is given as:
 \be
 S_{ij}= \int_a^b \mathsf{K}(x) \frac{\partial^2 b_i(x)}{\partial x^2}\frac{\partial^2 b_j(x)}{\partial x^2} \text{d}x = \int_a^b \mathsf{K}(x) b^{\prime\prime}_i(x) b^{\prime\prime}_j(x) \text{d}x,
 \ee
@@ -567,7 +568,7 @@ Here $\mathsf{K}(x)$ was simply calculated using the inverse of the cube of the 
 
 \subsubsection{Checking that the adjustment works}
 
-\Fig{1dadjust} shows that the adjustment does well in a zero error case, fitting a much more sensible model than the standard \tprs\ does. To check that this is true more generally, $\lambda$ was specified (rather than being automatically selected) so that the models with modified and unmodified penalties would have the same EDF. \Fig{1dedfdia} shows such an experiment. Using \eqn{hardfcn} with Normal(0, 0.4) noise added the smoothing parameter was set so that the EDF would be 71, 19 and 42 (working down the diagram). The plots show that the adjustment deviates from truth most as badly as the vanilla \tprs\ but overall corrects some of the departures from the truth, even in presence of error.
+\Fig{1dadjust} shows that the adjustment does well in a zero error case, fitting a much more sensible model than the standard \tprs\ does. To check that this is true more generally, $\lambda$ was specified (rather than being automatically selected) so that the models with modified and unmodified penalties would have the same EDF. \Fig{1dedfdia} shows such an experiment. Using \eqn{hardfcn} with Normal(0, 0.4) noise added the smoothing parameter was set so that the EDF would be 71, 19 and 42 (working down the diagram). The plots show that the adjustment deviates from truth at most as badly as the vanilla \tprs\ but overall corrects some of the departures from the truth, even in presence of error.
 
 % 1d adjustment EDF comparison diagram
 \begin{figure}
@@ -581,7 +582,7 @@ Here $\mathsf{K}(x)$ was simply calculated using the inverse of the cube of the 
 
 \subsection{Penalty adjustments in two dimensions}
 
-Using a similar procedures as for 1 dimension, the two dimensional case can be addressed. Again looking at the $ij^\text{th}$ element of $S$:
+Using a similar procedures as for one dimension, the two dimensional case can be addressed. Again looking at the $ij^\text{th}$ element of $S$, for the two dimensional case we have:
 \begin{equation}
 S_{ij}=\int\int_\Omega \mathsf{K}(x,y) \Big( \frac{\partial^2 b_i(x,y)}{\partial x^2}\frac{\partial^2 b_j(x,y)}{\partial x^2}+2\frac{\partial^2 b_i(x,y)}{\partial x \partial y}\frac{\partial^2 b_j(x,y)}{\partial x \partial y}+\frac{\partial^2 b_i(x,y)}{\partial y^2}\frac{\partial^2 b_j(x,y)}{\partial y^2} \Big) \text{d}x\text{d}y, 
 \end{equation}
@@ -615,11 +616,22 @@ then constructing the grid as:
 \be
 \{y_k : k=1\dots N\} = \{y^\dagger_1,y^\dagger_2, y^\dagger_3,\dots, y^\dagger_N,y^\dagger_1,y^\dagger_2, y^\dagger_3,\dots, y^\dagger_N,\dots\}.
 \ee
-Finally, those $(x_k,y_k)$ that are not inside the boundary in MDS space are removed leaving only those points that lie inside.
+Finally, those $(x_k,y_k)$ that do not lie inside the boundary in MDS space are removed leaving only those points that lie inside.
 
-Calculating $\mathsf{K}(x,y)$ in two dimensions is a little more tricky than in the 1-D case. Since the two-dimensional case is to be used in practise, the method for finding $\mathsf{K}(x,y)$ must depend on the MDS configuration, as the stretch factors will not be known \emph{a priori}.
+Calculating $\mathsf{K}(x,y)$ in two dimensions is a little more tricky than in the one dimensional case. Since the two-dimensional case is to be used in practise, the method for finding $\mathsf{K}(x,y)$ must depend on the MDS configuration, as the stretch factors will not be known \emph{a priori}.
 
-In order to find $\mathsf{K}(x,y)$ a grid in the original space is mapped into the MDS space. The mapped points were then used to estimate the overall point density in MDS space by simply counting the number of points there were in each of a set of squares made from the integration grid. This is shown in \fig{densgrid} for the double peninsulae domain. In order to make sure that there were enough points in each square to calculate the density, while not incurring a huge computational burden by calculating many within-domain paths, the grid made by the points in the MDS space was interpolated. This consisted of taking 10 equally spaced points on each side of the square and drawing lines between points on opposing sides. Where the lines crossed were the extra points (along with those points lying on the boundary of the square itself). The cube of the number of points from this, interpolated, set that lie within each square of the integration grid gives the value of $\mathsf{K}(x,y)$ for that grid square. The fact that $\mathsf{K}(x,y)$ is then a piecewise function should not be too worrying since the aim here is to address the broader problems with the change in spatial density, not the fine-gained details.
+The general idea is to make $\mathsf{K}(x,y)$ a function of the change in density of points between the two spaces. However, if we assume that the density in the untransformed space is $1$, we merely need to calculate the density in MDS space.
+
+In order to find calculate the point density in MDS space, the following steps are performed:
+
+A grid in the original space is mapped into the MDS space. Ideally, this grid would be dense enough for it to be possible to just count the number transformed points in each square of a regular mesh. However, it would be computationally demanding to project a dense grid into MDS space, so instead a sparse grid is used and then interpolated. This consisted of taking 10 equally spaced points on each side of the square and drawing lines between points on opposing sides. Where the lines crossed were the extra points (along with those points lying on the boundary of the square itself).
+
+The interpolated points are then used to estimate the overall point density in MDS space by simply counting the number of points there were in each of a set of squares made from the integration grid. This is shown in \fig{densgrid} for the double peninsulae domain. 
+
+
+ The cube of the number of points from this, interpolated, set that lie within each square of the integration grid gives the value of $\mathsf{K}(x,y)$ for that grid square. The fact that $\mathsf{K}(x,y)$ is then a piecewise function should not be too worrying since the aim here is to address the broader problems with the change in spatial density, not the fine-gained details.
+\end{enumerate}
+
 
 \begin{figure}
 \centering
