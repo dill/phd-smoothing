@@ -307,7 +307,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    K<-Kt
    
    ### Evaluate K!
-   dens.est<-K[cbind(mxi,myj)]
+   dens.est<-1/(1+K[cbind(mxi,myj)])
 
    # thesis diagam - density map
    if(dia.densmap){
