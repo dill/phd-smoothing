@@ -124,7 +124,7 @@ fv.tp<-predict(b.tp,newdata=pred.data)
 
 # clever tprs 
 source("intexp/smooth2.c.R")
-b.mdstp<-gam(z~s(x,y,k=60,bs="mdstp",
+b.mdstp<-gam(z~s(x,y,k=140,bs="mdstp",
                  xt=list(bnd=bnd,
                          op=my.grid,
 #                         b.grid=c(15,15),
