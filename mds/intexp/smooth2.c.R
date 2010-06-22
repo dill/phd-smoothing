@@ -330,7 +330,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    #################################################
    # do the squashing
-   sq<-sqrt((dens.est)^3)
+   sq<-sqrt((dens.est))#^3)
    Dx<-sq*Dx
    Dy<-sq*Dy
    Dxy<-sq*Dxy
