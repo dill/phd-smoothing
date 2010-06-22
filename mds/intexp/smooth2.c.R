@@ -220,9 +220,9 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
       plot(mtlg,pch=".",asp=1,las=1,xlab="x*",ylab="y*",
            xlim=xlims,ylim=ylims,col="red")
       lines(bnd.mds,lwd=2)
-      points(mtrg,pch=19,cex=0.2,col="red")
-      points(mbrg,pch=19,cex=0.2,col="red")
-      points(mblg,pch=19,cex=0.2,col="red")
+      points(mtrg,pch=".",col="red")
+      points(mbrg,pch=".",col="red")
+      points(mblg,pch=".",col="red")
    }
 
    # again, check that worked!
