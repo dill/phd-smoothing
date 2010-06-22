@@ -30,8 +30,8 @@ R<-qr.R(Xd.qr)
 
 # pull the smoother matrix
 S<-mod$smooth[[1]]$S[[1]]
-S<-cbind(S,rep(0,139))
-S<-rbind(S,rep(0,140))
+S<-cbind(S,rep(0,dim(S)[1]))
+S<-rbind(S,rep(0,dim(S)[1]+1))
 
 # 
 ei<-eigen(t(solve(R))%*%S%*%solve(R))
