@@ -630,7 +630,6 @@ The interpolated points are then used to estimate the overall point density in M
 
 
  The cube of the number of points from this, interpolated, set that lie within each square of the integration grid gives the value of $\mathsf{K}(x,y)$ for that grid square. The fact that $\mathsf{K}(x,y)$ is then a piecewise function should not be too worrying since the aim here is to address the broader problems with the change in spatial density, not the fine-gained details.
-\end{enumerate}
 
 
 \begin{figure}
@@ -692,7 +691,7 @@ $\sigma$  & tprs & mds+tp & mds+cr & mds+tp 3D & mds+tp+adj & soap\\
 \begin{sidewaysfigure}
 \centering
 \includegraphics[width=9.5in]{mds/figs/big-mds-wt2-boxplot.pdf} \\
-\caption{Logarithm of per realisation average mean squared error for the double peninsulae domain. Models are in groups of six for each error level (0.35,0.9,1.55).}
+\caption{Logarithm of per realisation average mean squared error for the double peninsulae domain. Models are in groups of six for each error level (0.35,0.9,1.55). In all cases, a Wilcoxon signed rank test showed that MSEs for all models were significantly different from the soap film smoother ($\text{p-value} < 10^{-6}$).}
 \label{big-wt2-mses}
 % generate /phd-smoothing/mds/sim/boxplot-wt2.R
 \end{sidewaysfigure}
