@@ -14,7 +14,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    # set true to create thesis diagram
    # REMOVE in production version :)
    dia.densmap<-FALSE
-   dia.densmap<-TRUE
+   #dia.densmap<-TRUE
 
    #first do the MDS stuff
    # NOT TESTED YET!!
@@ -307,7 +307,7 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
    K<-Kt
    
    ### Evaluate K!
-   dens.est<-K[cbind(mxi,myj)]
+   dens.est<-1/(1+K[cbind(mxi,myj)])
 
    # thesis diagam - density map
    if(dia.densmap){
