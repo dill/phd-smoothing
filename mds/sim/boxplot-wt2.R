@@ -16,6 +16,12 @@ for(err.lev in c("0.35","0.9","1.55")){
 
 }
 
+
+# 3 spurious soap results, remove them
+spurious<-c(111,135,157)
+mses<-mses[-spurious,]
+
+
 # log the results
 mses<-log(mses)
 
