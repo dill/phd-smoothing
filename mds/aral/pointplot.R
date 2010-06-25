@@ -3,7 +3,7 @@
 
 load("aral/aralfit.RData")
 
-pdf(file="../thesis/mds/figs/aral-pp.pdf",width=5,height=2)
+pdf(file="../thesis/mds/figs/aral-pp.pdf",width=6,height=3)
 par(mfrow=c(1,2),las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 
 
