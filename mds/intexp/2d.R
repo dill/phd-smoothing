@@ -37,7 +37,7 @@ box4<-c(0,0,1,1,0,-1,-1,0)
 lims<-rbind(box1,box2,box3,box4)
 
 # squash factors, (x,y),(x,y),...
-sq<-t(matrix(c(4,0.1,2,0.1,4,3,2,3),2,4))
+sq<-t(matrix(c(3,0.5,2,0.5,3,3,2,3),2,4))
 
 
 dat<-make_soap_grid(bigbnd,50)
@@ -103,17 +103,25 @@ b4<-gam(z~s(x,y,bs="mdstp",xt=list(bnd=bigbnd,
 #vis.gam(b3,plot.type="contour",asp=1)
 
 
-pdat<-make_soap_grid(bigbnd,60)
-pres<-squash2(pdat,lims,sq)
+pdat<-make_soap_grid(bigbnd,60,mat=TRUE,delta=TRUE)
+pres<-squash2(list(x=pdat$x,y=pdat$y),lims,sq)
 
+xx<-seq(min(bigbnd$x),max(bigbnd$x),pdat$deltax)
+yy<-seq(min(bigbnd$y),max(bigbnd$y),pdat$deltay)
 
 pred3<-predict(b3,pres)
-image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred3,length(unique(pdat$y)),length(unique(pdat$y))),xlab="x",ylab="y")
+m<-pdat$mat
+m[!is.na(m)]<-pred3
+image(x=xx,y=yy,z=m,xlab="x",ylab="y")
 
 
 pred1<-predict(b1,pres)
-image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred1,length(unique(pdat$y)),length(unique(pdat$y))),xlab="x*",ylab="y*")
+m<-pdat$mat
+m[!is.na(m)]<-pred1
+image(x=xx,y=yy,z=m,xlab="x*",ylab="y*")
 
 pred4<-predict(b4,pres)
-image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred4,length(unique(pdat$y)),length(unique(pdat$y))),xlab="x*",ylab="y*")
+m<-pdat$mat
+m[!is.na(m)]<-pred4
+image(x=xx,y=yy,z=m,xlab="x*",ylab="y*")
 
