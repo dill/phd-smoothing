@@ -25,15 +25,15 @@ dec<-t(matrix(c(1,1,1,0.75,1,0.75,1,1),2,4))
 #bnd<-rbind(start,patt+add,patt+2*add,end+3*add)
 
 bnd<-start
-n<-12
+n<-8
 for(i in 1:n){
-   bnd<-rbind(bnd,patt+i*add)
+   bnd<-rbind(bnd,(patt+i*add)*dec^(0.5*i))
 }
-bnd<-rbind(bnd,end+(i+1)*add,bnd[1,])
+bnd<-rbind(bnd,(end+(i+1)*add)*dec^(0.5*(i+1)),bnd[1,])
 
 
 # make grid and plot
-par(mfrow=c(4,4))
+par(mfrow=c(3,3))
 source("makesoapgrid.R")
 bnd<-list(x=bnd[,1],y=bnd[,2])
 plot(bnd,type="l",asp=1)
@@ -41,7 +41,6 @@ gr<-make_soap_grid(bnd,c(30,10))
 points(gr,pch=19,cex=0.3)
 
 # make some space
-plot(0:10,0:10)
 plot(0:10,0:10)
 plot(0:10,0:10)
 
@@ -53,9 +52,6 @@ D<-create_distance_matrix(gr$x,gr$y,bnd)
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
 plot(grid.mds$points,pch=19,cex=0.3)
 
-plot(0:10,0:10)
-plot(0:10,0:10)
-plot(0:10,0:10)
 
 grid.mds<-cmdscale(D,eig=TRUE,k=3,x.ret=TRUE)
 plot(grid.mds$points[,1],grid.mds$points[,2],pch=19,cex=0.3)
