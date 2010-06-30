@@ -1,16 +1,6 @@
 # make a comb
 
 
-bnd<-matrix
-
-0,0
-0,5
-1,5
-1,1
-2,1
-
-
-
 # start bit
 start<-t(matrix(c(0,0,0,5,1,5,1,1),2,4))
 # middle pattern
@@ -31,8 +21,15 @@ dec<-t(matrix(c(1,1,1,0.75,1,0.75,1,1),2,4))
 #lines((end+3*add)*dec^3,lwd=2,col="blue")
 
 # make the bnd
-bnd<-rbind(start,(patt+add)*dec,(patt+2*add)*dec^2,(end+3*add)*dec^3)
-bnd<-rbind(bnd,bnd[1,])
+#bnd<-rbind(start,(patt+add)*dec,(patt+2*add)*dec^2,(end+3*add)*dec^3)
+#bnd<-rbind(start,patt+add,patt+2*add,end+3*add)
+
+bnd<-start
+n<-12
+for(i in 1:n){
+   bnd<-rbind(bnd,patt+i*add)
+}
+bnd<-rbind(bnd,end+(i+1)*add,bnd[1,])
 
 
 # make grid and plot
@@ -40,7 +37,7 @@ par(mfrow=c(4,4))
 source("makesoapgrid.R")
 bnd<-list(x=bnd[,1],y=bnd[,2])
 plot(bnd,type="l",asp=1)
-gr<-make_soap_grid(bnd,30)
+gr<-make_soap_grid(bnd,c(30,10))
 points(gr,pch=19,cex=0.3)
 
 # make some space
