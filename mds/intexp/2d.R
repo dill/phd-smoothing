@@ -1,5 +1,7 @@
 # do a 2D example...
 
+set.seed(1)
+
 library(soap)
 library(MASS)
 
@@ -16,7 +18,6 @@ lims<-rbind(box1,box2,box3,box4)
 
 sq<-t(matrix(c(1,0.5,2,0.5,1,3,2,3),2,4))
 
-
 # squash in 2D...
 squash2<-function(dat,lims,sq){
    # squash the points in dat in the square lims[i,1:4],lims[i,5:8]
@@ -25,19 +26,13 @@ squash2<-function(dat,lims,sq){
    # result
    res<-dat
 
-
    for(i in 1:length(lims[,1])){
-   
       # make the boundary
       bnd<-list(x=lims[i,c(1:4,1)],y=lims[i,c(5:8,5)])
-
       ind<-inSide(bnd,dat$x,dat$y)
-      
       res$x[ind]<-res$x[ind]/sq[i,1]
       res$y[ind]<-res$y[ind]/sq[i,2]
-
    }
-
    return(res)
 }
 
@@ -46,10 +41,10 @@ res<-squash2(dat,lims,sq)
 
 par(mfrow=c(3,2),pch=".")
 
-plot(bigbnd,type="l",asp=1,xlab="x",ylab="y")
-points(dat)
-
-plot(res,asp=1,xlab="x*",ylab="y*")
+#plot(bigbnd,type="l",asp=1,xlab="x",ylab="y")
+#points(dat)
+#
+#plot(res,asp=1,xlab="x*",ylab="y*")
 
 # make the function on top
 # MV Normal, centred at 0,0
@@ -89,12 +84,26 @@ b3<-gam(z~s(x,y,bs="mdstp",xt=list(bnd=bigbnd,
                                    sq=sq
          )),data=res)
 
+source("intexp/smooth2.c.R")
+b4<-gam(z~s(x,y,bs="mdstp",xt=list(bnd=bigbnd,
+                                   op=sg,
+                                   b.grid=c(20,20),
+                                   mds.obj=grid.mds
+         )),data=res)
 #vis.gam(b3,plot.type="contour",asp=1)
 
-pred3<-predict(b3,res)
-image(x=sort(unique(dat$x)),y=sort(unique(dat$y)),z=matrix(pred3,length(unique(dat$y)),length(unique(dat$y))),asp=1,xlab="x",ylab="y")
+
+pdat<-make_soap_grid(bigbnd,60)
+pres<-squash2(pdat,lims,sq)
 
 
-pred1<-predict(b1,res)
-image(x=sort(unique(dat$x)),y=sort(unique(dat$y)),z=matrix(pred1,length(unique(dat$y)),length(unique(dat$y))),asp=1,xlab="x*",ylab="y*")
+pred3<-predict(b3,pres)
+image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred3,length(unique(pdat$y)),length(unique(pdat$y))),asp=1,xlab="x",ylab="y")
+
+
+pred1<-predict(b1,pres)
+image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred1,length(unique(pdat$y)),length(unique(pdat$y))),asp=1,xlab="x*",ylab="y*")
+
+pred4<-predict(b4,pres)
+image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred4,length(unique(pdat$y)),length(unique(pdat$y))),asp=1,xlab="x*",ylab="y*")
 

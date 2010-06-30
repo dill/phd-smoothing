@@ -30,6 +30,7 @@ General GAM setup. The is will mostly be taken from \cite{simonbook}, \cite{rwc}
 \item penalties
 \label{GAMpenalties}
 \item bases - TPRS (and maybe P-splines?)
+\label{GAMtprs}
 \label{GAMtprspenalty}
 \item tensor products
 \label{GAMtensor}
@@ -91,7 +92,7 @@ The distribution of the population may be smooth, just not necessarily over $\ma
 \label{orig-fs}
 \end{figure}
 
-The test function highlights leakage well. As mentioned above, when the smoothing problem is specified in Euclidean distance, the model takes the distance between the points in the two arms of the horseshoe as the distance over the gap in-between them, rather than the distance along the major axis of the shape. This causes the high function values from one side to contaminate the other side (and the low to contaminate the high.) It is easy to see that this causes the smooth to be an inappropriate model.
+The test function highlights leakage well. As mentioned above, when the smoothing problem is specified in terms of Euclidean distance, the model takes the distance between the points in the two arms of the horseshoe as the distance over the gap in-between them, rather than the distance along the major axis of the shape. This causes the high function values from one side to contaminate the other side (and the low to contaminate the high.) It is easy to see that this causes the smooth to be an inappropriate model.
 		
 \subsection{Previous approaches to leakage}
 
@@ -114,7 +115,7 @@ Since the triangulation and hence the penalty of the FELSPLINE is only calculate
 
 FELSPLINE does not offer a realistic physical model and is therefore not a viable solution to the finite area smoothing problem in general.
 
-\item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. They take the geodesic distance between two points, that being the shortest path within the domain. This gives a definition of how near objects are in the domain. 
+\item \cite{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. They choose to use the geodesic distance between two points, that being the shortest path within the domain. This gives a definition of how near objects are in the domain. This is then used as the distance in the radial basis functions of a \tprs, rather than using the usual Euclidean distance (see \secref{GAMtprs}).
 
 Wang and Ranalli first create a weighted, undirected graph ($G$, say) with a data point at each vertex and the distance between each pair of vertices as the weights on the edges. They then take the restricted graph of $G$, $G_k$, in which each vertex is only connected to its $k$ nearest neighbours. With this new, restricted graph the geodesic distances between each pair of vertices can be calculated using Floyd's algorithm (\cite{Floyd}).
 
@@ -122,7 +123,7 @@ As the authors point out, the quality of the approximation is dependent on the s
 
 Taking these points into account, Wang and Ranalli's approach appears cumbersome, slow and dependent on dense data.
 
-\item The soap film smoother (\cite{soap}) uses a rather simple physical model to prevent leakage from occurring. First, consider the domain boundary to be made of wire, then dip this wire into a bucket of soapy water, you will then have (provided it doesn't pop(!)) a soap film in the same of your boundary. Now consider the wire to lie in the $x-y$ plane and the height of the soap film at a given point to be the functional value of the model. This film is then distorted smoothly by moving it toward the data, while minimising the surface tension in the film. The domain ($\Omega$) is bounded by some polygon with boundary conditions that are either known or estimated by a cyclic spline.
+\item The soap film smoother (\cite{soap}) uses a rather simple physical model to prevent leakage from occurring. First, consider the domain boundary to be made of wire, then dip this wire into a bucket of soapy water, you will then have (provided it doesn't pop(!)) a soap film in the shape of your boundary. Now consider the wire to lie in the $x-y$ plane and the height of the soap film at a given point to be the functional value of the model. This film is then distorted smoothly by moving it toward the data, while minimising the surface tension in the film. The domain ($\Omega$) is bounded by some polygon with boundary conditions that are either known or estimated by a cyclic spline.
 
 Mathematically, the soap film smoother is constructed by first specifying a set of functions $\rho_k(x,y)$, which are each solutions to the Laplace equation in two dimensions:
 \be

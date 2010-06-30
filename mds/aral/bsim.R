@@ -65,21 +65,45 @@ s.grid<-pe(s.grid,-2)
 
 
 ## using np to create the "truth"
-npmodbw<-npregbw(formula=chl~x+y,regtype = "ll",bwmethod = "cv.aic",data =aral.dat,bwtype="adaptive_nn")
-npmod<-npreg(npmodbw)
-new.truth<-predict(npmod,data=aral.dat,newdata=pred.points)
+#npmodbw<-npregbw(formula=chl~x+y,regtype = "ll",bwmethod = "cv.aic",data =aral.dat,bwtype="adaptive_nn")
+#npmod<-npreg(npmodbw)
+
+
+#npmod<-npreg(txdat=cbind(aral.dat$x,aral.dat$y),tydat=aral.dat$chl,regtype = "ll",bwmethod = "cv.aic",bws=c(12,2),bwtype="adaptive_nn",exdat=cbind(pred.points$x,pred.points$y))
+#npmod<-npreg(txdat=cbind(aral.dat$x,aral.dat$y),tydat=aral.dat$chl,regtype = "ll",bwmethod = "cv.aic",bwtype="adaptive_nn",exdat=cbind(pred.points$x,pred.points$y))
+#npmod<-npreg(npmodbw)
+
+# two halves
+ind<-aral.dat$x>-45
+ind2<-pred.points$x>-45
+npmod1<-npreg(txdat=cbind(aral.dat$x[ind],aral.dat$y[ind]),tydat=aral.dat$chl[ind],regtype = "ll",bwmethod = "cv.aic",bwtype="adaptive_nn",exdat=cbind(pred.points$x[ind2],pred.points$y[ind2]))
+
+npmod2<-npreg(txdat=cbind(aral.dat$x[!ind],aral.dat$y[!ind]),tydat=aral.dat$chl[!ind],regtype = "ll",bwmethod = "cv.aic",bwtype="adaptive_nn",exdat=cbind(pred.points$x[!ind2],pred.points$y[!ind2]))
+
+new.truth<-rep(0,length(pred.points$x))
+new.truth[ind2]<-npmod1$mean
+new.truth[!ind2]<-npmod2$mean
+
+
+#new.truth<-predict(npmod,data=aral.dat,newdata=pred.points)
+#new.truth<-predict(npmod,pred.points)
+#new.truth<-npmod$mean
 ## taking a summary() of this...
 #> summary(new.truth)
 #   Min. 1st Qu.  Median    Mean 3rd Qu.    M
 # 2.423   4.790   7.032   7.074   8.678  13.980 
 
-if(plot.it==TRUE){ 
-   par(mfrow=c(2,2)) 
+#if(plot.it==TRUE){ 
+#   par(mfrow=c(2,2)) 
    pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat 
    pred.mat[!is.na(pred.mat)]<-new.truth 
-   image(pred.mat,main="fit from np",zlim=c(0,20)) 
-   contour(pred.mat,add=TRUE,zlim=c(0,20)) 
-} 
+   image(z=pred.mat,x=seq(min(pred.points$x),max(pred.points$x),len=50),
+                    y=seq(min(pred.points$x),max(pred.points$x),len=50),
+         main="fit from np",zlim=c(0,20)) 
+   contour(z=pred.mat,add=TRUE,zlim=c(0,20),
+           x=seq(min(pred.points$x),max(pred.points$x),len=50),
+           y=seq(min(pred.points$x),max(pred.points$x),len=50))
+#} 
 
 
 # pre-calculate the MDS base configuration
