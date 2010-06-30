@@ -48,9 +48,15 @@ par(mfrow=c(3,2),pch=".")
 
 # make the function on top
 # MV Normal, centred at 0,0
-bivn<-mvrnorm(1000, mu = c(0,0), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
-bivn<-kde2d(bivn[,1], bivn[,2], n=sqrt(length(dat$x)), lims=c(-1,1,-1,1))
+#bivn<-mvrnorm(1000, mu = c(0,0), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
+#bivn<-kde2d(bivn[,1], bivn[,2], n=sqrt(length(dat$x)), lims=c(-1,1,-1,1))
 
+bivn1<-mvrnorm(1000, mu = c(0.5,-0.5), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
+bivn2<-mvrnorm(1000, mu = c(0.5,0.5), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
+bivn3<-mvrnorm(1000, mu = c(-0.5,0.5), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
+bivn4<-mvrnorm(1000, mu = c(-0.5,-0.5), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
+biv<-rbind(bivn1,bivn2,bivn3,bivn4)
+bivn<-kde2d(biv[,1],biv[,2], n=sqrt(length(dat$x)), lims=c(-1,1,-1,1))
 
 dat<-data.frame(x=dat$x,y=dat$y,z=as.vector(bivn$z))
 res<-data.frame(x=res$x,y=res$y,z=as.vector(bivn$z))
