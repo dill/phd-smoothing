@@ -7,16 +7,6 @@ library(MASS)
 
 source("makesoapgrid.R")
 
-bigbnd<-list(x=c(-1,-1,1,1,-1),y=c(-1,1,1,-1,-1))
-
-box1<-c(-1,-1,0,0,1,0,0,1)
-box2<-c(0,0,1,1,0,1,1,0)
-box3<-c(-1,-1,0,0,0,-1,-1,0)
-box4<-c(0,0,1,1,0,-1,-1,0)
-
-lims<-rbind(box1,box2,box3,box4)
-
-sq<-t(matrix(c(1,0.5,2,0.5,1,3,2,3),2,4))
 
 # squash in 2D...
 squash2<-function(dat,lims,sq){
@@ -36,6 +26,20 @@ squash2<-function(dat,lims,sq){
    return(res)
 }
 
+# boundary, just a square
+bigbnd<-list(x=c(-1,-1,1,1,-1),y=c(-1,1,1,-1,-1))
+
+# four sub-squares, for squashing
+box1<-c(-1,-1,0,0,1,0,0,1)
+box2<-c(0,0,1,1,0,1,1,0)
+box3<-c(-1,-1,0,0,0,-1,-1,0)
+box4<-c(0,0,1,1,0,-1,-1,0)
+lims<-rbind(box1,box2,box3,box4)
+
+# squash factors, (x,y),(x,y),...
+sq<-t(matrix(c(4,0.1,2,0.1,4,3,2,3),2,4))
+
+
 dat<-make_soap_grid(bigbnd,50)
 res<-squash2(dat,lims,sq)
 
@@ -51,10 +55,10 @@ par(mfrow=c(3,2),pch=".")
 #bivn<-mvrnorm(1000, mu = c(0,0), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
 #bivn<-kde2d(bivn[,1], bivn[,2], n=sqrt(length(dat$x)), lims=c(-1,1,-1,1))
 
-bivn1<-mvrnorm(1000, mu = c(0.5,-0.5), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
-bivn2<-mvrnorm(1000, mu = c(0.5,0.5), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
-bivn3<-mvrnorm(1000, mu = c(-0.5,0.5), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
-bivn4<-mvrnorm(1000, mu = c(-0.5,-0.5), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
+bivn1<-mvrnorm(1000, mu = c(0.5,-0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
+bivn2<-mvrnorm(1000, mu = c(0.5,0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
+bivn3<-mvrnorm(1000, mu = c(-0.5,0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
+bivn4<-mvrnorm(1000, mu = c(-0.5,-0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
 biv<-rbind(bivn1,bivn2,bivn3,bivn4)
 bivn<-kde2d(biv[,1],biv[,2], n=sqrt(length(dat$x)), lims=c(-1,1,-1,1))
 
@@ -64,7 +68,7 @@ res<-data.frame(x=res$x,y=res$y,z=as.vector(bivn$z))
 image(x=sort(unique(dat$x)),y=sort(unique(dat$y)),z=matrix(dat$z,length(unique(dat$y)),length(unique(dat$y))),asp=1,xlab="x",ylab="y")
 contour(x=sort(unique(dat$x)),y=sort(unique(dat$y)),z=matrix(dat$z,length(unique(dat$y)),length(unique(dat$y))),add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
 
-image(x=sort(unique(res$x)),y=sort(unique(res$y)),z=matrix(res$z,length(unique(res$y)),length(unique(res$y))),asp=1,xlab="x*",ylab="y*")
+image(x=sort(unique(res$x)),y=sort(unique(res$y)),z=matrix(res$z,length(unique(res$y)),length(unique(res$y))),xlab="x*",ylab="y*")
 contour(x=sort(unique(res$x)),y=sort(unique(res$y)),z=matrix(res$z,length(unique(res$y)),length(unique(res$y))),add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
 
 # fit model to the right data
@@ -104,12 +108,12 @@ pres<-squash2(pdat,lims,sq)
 
 
 pred3<-predict(b3,pres)
-image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred3,length(unique(pdat$y)),length(unique(pdat$y))),asp=1,xlab="x",ylab="y")
+image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred3,length(unique(pdat$y)),length(unique(pdat$y))),xlab="x",ylab="y")
 
 
 pred1<-predict(b1,pres)
-image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred1,length(unique(pdat$y)),length(unique(pdat$y))),asp=1,xlab="x*",ylab="y*")
+image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred1,length(unique(pdat$y)),length(unique(pdat$y))),xlab="x*",ylab="y*")
 
 pred4<-predict(b4,pres)
-image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred4,length(unique(pdat$y)),length(unique(pdat$y))),asp=1,xlab="x*",ylab="y*")
+image(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=matrix(pred4,length(unique(pdat$y)),length(unique(pdat$y))),xlab="x*",ylab="y*")
 
