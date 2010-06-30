@@ -74,15 +74,15 @@ s.grid<-pe(s.grid,-2)
 #npmod<-npreg(npmodbw)
 
 # two halves
-ind<-aral.dat$x>-45
-ind2<-pred.points$x>-45
+ind<-aral.dat$x< -45
+ind2<-pred.points$x< -45
 npmod1<-npreg(txdat=cbind(aral.dat$x[ind],aral.dat$y[ind]),tydat=aral.dat$chl[ind],regtype = "ll",bwmethod = "cv.aic",bwtype="adaptive_nn",exdat=cbind(pred.points$x[ind2],pred.points$y[ind2]))
 
-npmod2<-npreg(txdat=cbind(aral.dat$x[!ind],aral.dat$y[!ind]),tydat=aral.dat$chl[!ind],regtype = "ll",bwmethod = "cv.aic",bwtype="adaptive_nn",exdat=cbind(pred.points$x[!ind2],pred.points$y[!ind2]))
+npmod2<-npreg(txdat=cbind(aral.dat$x,aral.dat$y),tydat=aral.dat$chl,regtype = "ll",bwmethod = "cv.aic",bwtype="adaptive_nn",exdat=cbind(pred.points$x,pred.points$y))
 
 new.truth<-rep(0,length(pred.points$x))
+new.truth<-npmod2$mean
 new.truth[ind2]<-npmod1$mean
-new.truth[!ind2]<-npmod2$mean
 
 
 #new.truth<-predict(npmod,data=aral.dat,newdata=pred.points)
