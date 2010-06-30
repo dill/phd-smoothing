@@ -68,7 +68,7 @@ for(i in 1:sim.size){
    mds.pred<-predict(mds.fit,newdata=pred.mds,type="response")
    mdscr.pred<-predict(mdscr.fit,newdata=pred.mds,type="response")
    mds3.pred<-predict(mds3.fit,newdata=pred.mds3,type="response")
-#   mdsadj.pred<-predict(mdsadj.fit,newdata=pred.mds,type="response")
+   mdsadj.pred<-predict(mdsadj.fit,newdata=pred.mds,type="response")
    soap.pred<-predict(soap.fit,newdata=pred.points,type="response")
 
 
@@ -78,7 +78,7 @@ for(i in 1:sim.size){
                mean((mds.pred-new.truth)^2,na.rm=T),
                mean((mdscr.pred-new.truth)^2,na.rm=T),
                mean((mds3.pred-new.truth)^2,na.rm=T),
- #              mean((mdsadj.pred-new.truth)^2,na.rm=T),
+               mean((mdsadj.pred-new.truth)^2,na.rm=T),
                mean((soap.pred-new.truth)^2,na.rm=T))
 
    # calculate the EDFs
@@ -86,7 +86,7 @@ for(i in 1:sim.size){
                sum(mds.fit$edf),
                sum(mdscr.fit$edf),
                sum(mds3.fit$edf),
-#               sum(mdsadj.fit$edf),
+               sum(mdsadj.fit$edf),
                sum(soap.fit$edf))
 }
 

@@ -34,7 +34,8 @@ samp.size<-c(100,250,500)
 #noise.level<-1.55
 
 # model names
-modnames<-c("tprs","mdstp","mdscr","mdstp3d","soap")#,"mdstpadj","soap")
+#modnames<-c("tprs","mdstp","mdscr","mdstp3d","soap")#,"mdstpadj","soap")
+modnames<-c("tprs","mdstp","mdscr","mdstp3d","mdstpadj","soap")
 ######################################################
 # PREAMBLE
 # load the data and boundary
@@ -95,14 +96,14 @@ new.truth[ind2]<-npmod1$mean
 
 #if(plot.it==TRUE){ 
 #   par(mfrow=c(2,2)) 
-   pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat 
-   pred.mat[!is.na(pred.mat)]<-new.truth 
-   image(z=pred.mat,x=seq(min(pred.points$x),max(pred.points$x),len=50),
-                    y=seq(min(pred.points$x),max(pred.points$x),len=50),
-         main="fit from np",zlim=c(0,20)) 
-   contour(z=pred.mat,add=TRUE,zlim=c(0,20),
-           x=seq(min(pred.points$x),max(pred.points$x),len=50),
-           y=seq(min(pred.points$x),max(pred.points$x),len=50))
+#   pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat 
+#   pred.mat[!is.na(pred.mat)]<-new.truth 
+#   image(z=pred.mat,x=seq(min(pred.points$x),max(pred.points$x),len=50),
+#                    y=seq(min(pred.points$x),max(pred.points$x),len=50),
+#         main="fit from np",zlim=c(0,20)) 
+#   contour(z=pred.mat,add=TRUE,zlim=c(0,20),
+#           x=seq(min(pred.points$x),max(pred.points$x),len=50),
+#           y=seq(min(pred.points$x),max(pred.points$x),len=50))
 #} 
 
 
@@ -124,21 +125,8 @@ eta<-c(1,1.15,1.7)
 
 for(i.s in 1:3){
    for(i.n in 1:3){
-
    # actually run the sim
    source("aral/sim.R")
-
    }
-
 }
-
-
-
-
-
-
-
-
-
-
 
