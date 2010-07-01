@@ -34,9 +34,9 @@ box4<-c(0,0,1,1,0,-1,-1,0)
 lims<-rbind(box1,box2,box3,box4)
 
 # squash factors, (x,y),(x,y),...
-sq<-t(matrix(c(3,0.05,16,0.05,3,3,16,3),2,4))
+sq<-t(matrix(c(3,0.5,16,0.5,3,3,16,3),2,4))
 
-dat<-make_soap_grid(bigbnd,50)
+dat<-make_soap_grid(bigbnd,25)
 res<-squash2(dat,lims,sq)
 
 par(mfrow=c(3,2),pch=".")
@@ -57,8 +57,8 @@ par(mfrow=c(3,2),pch=".")
 #biv<-rbind(bivn1,bivn2,bivn3,bivn4)
 
 
-bivn1<-mvrnorm(1000, mu = c(0,-0.5), Sigma = matrix(c(0.2, 0, 0, 0.1), 2))
-bivn2<-mvrnorm(1000, mu = c(0,0.5), Sigma = matrix(c(0.2, 0, 0, 0.1), 2))
+bivn1<-mvrnorm(100, mu = c(0,-0.5), Sigma = matrix(c(0.2, 0, 0, 0.1), 2))
+bivn2<-mvrnorm(100, mu = c(0,0.5), Sigma = matrix(c(0.2, 0, 0, 0.1), 2))
 biv<-rbind(bivn1,bivn2)
 
 bivn<-kde2d(biv[,1],biv[,2], n=sqrt(length(dat$x)), lims=c(-1,1,-1,1))
@@ -79,9 +79,9 @@ contour(x=sort(unique(res$x)),y=sort(unique(res$y)),z=matrix(res$z,length(unique
 #vis.gam(b,plot.type="contour",asp=1)
 
 #res$z<-res$z+rnorm(length(res$z),0,0.05)
-ind<-sample(1:length(dat$x),600)
-dat<-data.frame(x=dat$x[ind],y=dat$y[ind],z=as.vector(bivn$z)[ind])
-res<-data.frame(x=res$x[ind],y=res$y[ind],z=as.vector(bivn$z)[ind])
+#ind<-sample(1:length(dat$x),300)
+#dat<-data.frame(x=dat$x[ind],y=dat$y[ind],z=as.vector(bivn$z)[ind])
+#res<-data.frame(x=res$x[ind],y=res$y[ind],z=as.vector(bivn$z)[ind])
 
 # fit to the squashed data
 b1<-gam(z~s(x,y,k=200),data=res)
@@ -121,12 +121,12 @@ pred1<-predict(b1,pres)
 #m<-pdat$mat
 #m[!is.na(m)]<-pred1
 m<-matrix(pred1,length(unique(pres$x)),length(unique(pres$y)))
-# transformed space
-image(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,xlab="x*",ylab="y*",asp=1)
-contour(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
 # untransformed space
 image(x=xx,y=yy,z=m,xlab="x*",ylab="y*",asp=1)
 contour(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
+# transformed space
+image(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,xlab="x*",ylab="y*",asp=1)
+contour(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
 
 
 
@@ -134,12 +134,12 @@ pred3<-predict(b3,pres)
 #m<-pdat$mat
 #m[!is.na(m)]<-pred3
 m<-matrix(pred3,length(unique(pres$x)),length(unique(pres$y)))
-# transformed space
-image(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,xlab="x*",ylab="y*",asp=1)
-contour(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
 # untransformed space
 image(x=xx,y=yy,z=m,xlab="x*",ylab="y*",asp=1)
 contour(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
+# transformed space
+image(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,xlab="x*",ylab="y*",asp=1)
+contour(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
 
 
 

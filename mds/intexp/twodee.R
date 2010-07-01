@@ -11,7 +11,7 @@ set.seed(0) ## simulate some data...
 dat <- gamSim(1,n=400,dist="normal",scale=2)
 
 dat<-data.frame(x=dat$x0,y=dat$x1,z=dat$y)
-
+dat1<-dat
 
 b1<-gam(z~s(x,y),data=dat)
 par(mfrow=c(2,2))
@@ -28,34 +28,97 @@ bnd.mds<-list(x=c(1,1,0,0,1),y=c(1,0,0,1,1))
 #
 #vis.gam(b2,plot.type="contour")
 
-
-
-source("makesoapgrid.R")
-
-sg<-make_soap_grid(bnd.mds,c(10,10))
-D.grid<-create_distance_matrix(sg$x,sg$y,bnd.mds,faster=0)
-
-grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
-
-
-source("intexp/smooth2.c.R")
-
-b3<-gam(z~s(x,y,bs="mdstp",xt=list(bnd.mds=bnd.mds,
-                                     bnd=bnd.mds,
-                                     op=sg,
-                                     b.grid=c(50,50),
-                                     mds.obj=grid.mds
-         )),data=dat)
-
-vis.gam(b3,plot.type="contour")
-
-#source("intexp/smoothKDE.R")
+#sg<-make_soap_grid(bnd.mds,c(10,10))
+#D.grid<-create_distance_matrix(sg$x,sg$y,bnd.mds,faster=0)
 #
-#b4<-gam(z~s(x,y,bs="mdstp",xt=list(bnd.mds=bnd.mds,
-#                                     bnd=bnd.mds,
-#                                     op=sg,
-#                                     b.grid=c(50,50),
-#                                     mds.obj=grid.mds
+#grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
+
+
+source("intexp/smooth2s.c.R")
+
+#b3<-gam(z~s(x,y,bs="mdstps",xt=list(bnd.mds=bnd.mds,
+#                                    sq=matrix(rep(1,4),2,2),
+#                                    lims=matrix(c(bnd.mds$x,bnd.mds$y),1,10),
+#                                    bnd=bnd.mds,
+#                                    op=sg,
+#                                    b.grid=c(50,50),
+#                                    mds.obj=grid.mds
 #         )),data=dat)
 #
+#vis.gam(b3,plot.type="contour")
+
+squash2<-function(dat,lims,sq){
+   # squash the points in dat in the square lims[i,1:4],lims[i,5:8]
+   # by a factor of sq[1] and sq[2] in x and y directions resp.
+
+   # result
+   res<-dat
+
+   j<-1
+
+   for(i in seq(1,length(lims[,1]),5) ){
+      # make the boundary
+      bnd<-list(x=lims[i:(i+4),1],y=lims[i:(i+4),2])
+      ind<-inSide(bnd,dat$x,dat$y)
+      res$x[ind]<-res$x[ind]/sq[j,1]
+      res$y[ind]<-(res$y[ind]-min(bnd$y))/sq[j,2] +min(bnd$y)
+      j<-j+1
+   }
+   return(res)
+}
+
+bnd<-bnd.mds
+
+box1<-t(matrix(c(0,0,0,0.5,1,0.5,1,0,0,0),2,5))
+box2<-t(matrix(c(0,0.5,0,1,1,1,1,0.5,0,0.5),2,5))
+lims<-rbind(box1,box2)
+
+#plot(bnd,type="l")
+#lines(box1,lwd=2,col="red")
+#lines(box2,lwd=2,col="green")
+
+sq<-matrix(c(1,1,1,0.5),2,2)
+
+#dat<-make_soap_grid(bnd,25)
+res<-squash2(dat,lims,sq)
+
+dat<-data.frame(x=dat$x,y=dat$y,z=dat1$z)
+res<-data.frame(x=res$x,y=res$y,z=dat1$z)
+
+
+
+b2<-gam(z~s(x,y),data=res)
+#vis.gam(b2,plot.type="contour")
+
+#plot(res,asp=1)
+
+b4<-gam(z~s(x,y,bs="mdstps",xt=list(bnd.mds=bnd,
+                                    sq=sq,
+                                    lims=lims,
+                                    bnd=bnd
+#                                    op=sg,
+#                                    b.grid=c(50,50),
+#                                    mds.obj=grid.mds
+         )),data=res)
+
 #vis.gam(b4,plot.type="contour")
+
+pdat<-make_soap_grid(bnd,50,mat=TRUE)
+pred<-data.frame(x=pdat$x,y=pdat$y)
+pres<-squash2(pred,lims,sq)
+
+predp<-predict(b4,pres)
+
+xx<-seq(min(bnd$x),max(bnd$x),len=49)
+yy<-seq(min(bnd$y),max(bnd$y),len=49)
+
+image(z=matrix(predp,49,49),x=xx,y=yy,main="fix")
+contour(z=matrix(predp,49,49),x=xx,y=yy,add=TRUE,col="green")
+
+
+
+predp<-predict(b2,pres)
+image(z=matrix(predp,49,49),x=xx,y=yy,main="unfix")
+contour(z=matrix(predp,49,49),x=xx,y=yy,add=TRUE,col="green")
+
+
