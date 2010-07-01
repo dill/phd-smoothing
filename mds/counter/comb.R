@@ -42,34 +42,39 @@ bnd<-rbind(bnd,(patt+add*(big+1))*dec)
 #bnd<-rbind(bnd,(end+(i+1)*add)*dec^(0.5*(i+1)),bnd[1,])
 bnd<-rbind(bnd,(end+(big+2)*add)*dec,bnd[1,])
 
+par(pch=".",las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 
 # make grid and plot
 par(mfrow=c(3,3))
 source("makesoapgrid.R")
 bnd<-list(x=bnd[,1],y=bnd[,2])
-plot(bnd,type="l",asp=1)
-gr<-make_soap_grid(bnd,100)
-points(gr,pch=19,cex=0.3)
+plot(bnd,type="l",asp=1,xlab="x",ylab="y")
+gr<-make_soap_grid(bnd,50)
+points(gr)
 
 # make some space
-plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
-plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
+#plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
+#plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
 
-
+quartz()
+par(pch=".",las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 D<-create_distance_matrix(gr$x,gr$y,bnd)
 
 # 2d mds plot
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
-plot(grid.mds$points,pch=19,cex=0.3)
+plot(grid.mds$points,xlab="x*",ylab="y*")
 
-plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
-plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
+#plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
+#plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
+
+quartz()
+par(pch=".",las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 
 # 3d mds plot
 grid.mds3<-cmdscale(D,eig=TRUE,k=3,x.ret=TRUE)
-plot(grid.mds3$points[,1],grid.mds3$points[,2],pch=19,cex=0.3)
-plot(grid.mds3$points[,1],grid.mds3$points[,3],pch=19,cex=0.3)
-plot(grid.mds3$points[,2],grid.mds3$points[,3],pch=19,cex=0.3)
+plot(grid.mds3$points[,1],grid.mds3$points[,2],xlab="x*",ylab="y*")
+plot(grid.mds3$points[,1],grid.mds3$points[,3],xlab="x*",ylab="z*")
+plot(grid.mds3$points[,2],grid.mds3$points[,3],xlab="y*",ylab="z*")
 
 #library(rgl)
 #plot3d(grid.mds3$points[,1],grid.mds3$points[,2],grid.mds3$points[,3])
@@ -77,11 +82,12 @@ plot(grid.mds3$points[,2],grid.mds3$points[,3],pch=19,cex=0.3)
 # 4d mds plot
 quartz()
 par(mfrow=c(2,3))
+par(pch=".",las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 grid.mds4<-cmdscale(D,eig=TRUE,k=4,x.ret=TRUE)
-plot(grid.mds4$points[,1],grid.mds4$points[,2],pch=19,cex=0.3)
-plot(grid.mds4$points[,2],grid.mds4$points[,3],pch=19,cex=0.3)
-plot(grid.mds4$points[,1],grid.mds4$points[,3],pch=19,cex=0.3)
-plot(grid.mds4$points[,3],grid.mds4$points[,4],pch=19,cex=0.3)
-plot(grid.mds4$points[,4],grid.mds4$points[,1],pch=19,cex=0.3)
-plot(grid.mds4$points[,2],grid.mds4$points[,4],pch=19,cex=0.3)
+plot(grid.mds4$points[,1],grid.mds4$points[,2],xlab="x*",ylab="y*")
+plot(grid.mds4$points[,2],grid.mds4$points[,3],xlab="y*",ylab="z*")
+plot(grid.mds4$points[,1],grid.mds4$points[,3],xlab="x*",ylab="z*")
+plot(grid.mds4$points[,3],grid.mds4$points[,4],xlab="z*",ylab="w*")
+plot(grid.mds4$points[,4],grid.mds4$points[,1],xlab="w*",ylab="x*")
+plot(grid.mds4$points[,2],grid.mds4$points[,4],xlab="y*",ylab="w*")
 
