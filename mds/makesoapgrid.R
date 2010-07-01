@@ -1,8 +1,6 @@
 # function to create a grid for soap
 make_soap_grid<-function(bnd,n.grid,mat=FALSE,log=FALSE,delta=FALSE){
 
-   require(soap)
-
    # set the grid size, if the input is a 2-vec then it is m and n
    if(length(n.grid)==2){
       m<-n.grid[1]

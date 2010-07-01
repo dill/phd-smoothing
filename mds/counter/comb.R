@@ -25,11 +25,13 @@ dec<-t(matrix(c(1,1,1,0.75,1,0.75,1,1),2,4))
 #bnd<-rbind(start,patt+add,patt+2*add,end+3*add)
 
 bnd<-start
-n<-8
+n<-5
 for(i in 1:n){
-   bnd<-rbind(bnd,(patt+i*add)*dec^(0.5*i))
+#   bnd<-rbind(bnd,(patt+i*add)*dec^(0.5*i))
+   bnd<-rbind(bnd,(patt+i*add))
 }
-bnd<-rbind(bnd,(end+(i+1)*add)*dec^(0.5*(i+1)),bnd[1,])
+#bnd<-rbind(bnd,(end+(i+1)*add)*dec^(0.5*(i+1)),bnd[1,])
+bnd<-rbind(bnd,(end+(i+1)*add),bnd[1,])
 
 
 # make grid and plot
@@ -41,18 +43,23 @@ gr<-make_soap_grid(bnd,c(30,10))
 points(gr,pch=19,cex=0.3)
 
 # make some space
-plot(0:10,0:10)
-plot(0:10,0:10)
+plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
+plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
+
 
 
 source("mds.R")
 
 D<-create_distance_matrix(gr$x,gr$y,bnd)
 
+# 2d mds plot
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
 plot(grid.mds$points,pch=19,cex=0.3)
 
+plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
+plot(0:10,0:10,axes=FALSE,type="n",xlab="",ylab="")
 
+# 3d mds plot
 grid.mds<-cmdscale(D,eig=TRUE,k=3,x.ret=TRUE)
 plot(grid.mds$points[,1],grid.mds$points[,2],pch=19,cex=0.3)
 plot(grid.mds$points[,1],grid.mds$points[,3],pch=19,cex=0.3)

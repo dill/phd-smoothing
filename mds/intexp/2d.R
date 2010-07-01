@@ -71,52 +71,70 @@ contour(x=sort(unique(res$x)),y=sort(unique(res$y)),z=matrix(res$z,length(unique
 #b<-gam(z~s(x,y),data=dat)
 #vis.gam(b,plot.type="contour",asp=1)
 
+#res$z<-res$z+rnorm(length(res$z),0,0.05)
 
 # fit to the squashed data
 b1<-gam(z~s(x,y,k=150),data=res)
 #vis.gam(b1,plot.type="contour",asp=1)
 
 
-sg<-make_soap_grid(bigbnd,c(20,20))
-D.grid<-create_distance_matrix(sg$x,sg$y,bigbnd,faster=0)
-grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
+#sg<-make_soap_grid(bigbnd,c(50))
+#D.grid<-create_distance_matrix(sg$x,sg$y,bigbnd,faster=0)
+#grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 source("intexp/smooth2s.c.R")
-b3<-gam(z~s(x,y,k=100,bs="mdstps",xt=list(bnd=bigbnd,
-                                   op=sg,
-                                   b.grid=c(20,20),
-                                   mds.obj=grid.mds,
+b3<-gam(z~s(x,y,k=150,bs="mdstps",xt=list(bnd=bigbnd,
+#                                   op=sg,
+#                                   b.grid=c(20,20),
+#                                   mds.obj=grid.mds,
                                    lims=lims,
                                    sq=sq
          )),data=res)
 
-source("intexp/smooth2.c.R")
-b4<-gam(z~s(x,y,k=100,bs="mdstp",xt=list(bnd=bigbnd,
-                                   op=sg,
-                                   b.grid=c(20,20),
-                                   mds.obj=grid.mds
-         )),data=res)
+#source("intexp/smooth2.c.R")
+#b4<-gam(z~s(x,y,k=100,bs="mdstp",xt=list(bnd=bigbnd,
+#                                   op=sg,
+#                                   b.grid=c(20,20),
+#                                   mds.obj=grid.mds
+#         )),data=res)
 #vis.gam(b3,plot.type="contour",asp=1)
 
 
-pdat<-make_soap_grid(bigbnd,60,mat=TRUE,delta=TRUE)
+pdat<-make_soap_grid(bigbnd,50,mat=TRUE,delta=TRUE)
 pres<-squash2(list(x=pdat$x,y=pdat$y),lims,sq)
 
 xx<-seq(min(bigbnd$x),max(bigbnd$x),pdat$deltax)
 yy<-seq(min(bigbnd$y),max(bigbnd$y),pdat$deltay)
 
-pred3<-predict(b3,pres)
-m<-pdat$mat
-m[!is.na(m)]<-pred3
-image(x=xx,y=yy,z=m,xlab="x",ylab="y",asp=1)
 
-
+# tprs no adjust
 pred1<-predict(b1,pres)
-m<-pdat$mat
-m[!is.na(m)]<-pred1
+#m<-pdat$mat
+#m[!is.na(m)]<-pred1
+m<-matrix(pred1,length(unique(pres$x)),length(unique(pres$y)))
+# transformed space
+image(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,xlab="x*",ylab="y*",asp=1)
+contour(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
+# untransformed space
 image(x=xx,y=yy,z=m,xlab="x*",ylab="y*",asp=1)
+contour(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
 
-pred4<-predict(b4,pres)
-m<-pdat$mat
-m[!is.na(m)]<-pred4
+
+
+pred3<-predict(b3,pres)
+#m<-pdat$mat
+#m[!is.na(m)]<-pred3
+m<-matrix(pred3,length(unique(pres$x)),length(unique(pres$y)))
+# transformed space
+image(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,xlab="x*",ylab="y*",asp=1)
+contour(x=sort(unique(pres$x)),y=sort(unique(pres$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
+# untransformed space
 image(x=xx,y=yy,z=m,xlab="x*",ylab="y*",asp=1)
+contour(x=sort(unique(pdat$x)),y=sort(unique(pdat$y)),z=m,add=TRUE,levels = pretty(c(min(dat$z),max(dat$z)),10),col="green")
+
+
+
+#pred4<-predict(b4,pres)
+#m<-pdat$mat
+#m[!is.na(m)]<-pred4
+#image(x=xx,y=yy,z=m,xlab="x*",ylab="y*",asp=1)
 
