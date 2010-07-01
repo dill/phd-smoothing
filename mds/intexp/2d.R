@@ -34,7 +34,7 @@ box4<-c(0,0,1,1,0,-1,-1,0)
 lims<-rbind(box1,box2,box3,box4)
 
 # squash factors, (x,y),(x,y),...
-sq<-t(matrix(c(3,0.5,6,0.5,3,3,6,3),2,4))
+sq<-t(matrix(c(3,0.05,16,0.05,3,3,16,3),2,4))
 
 dat<-make_soap_grid(bigbnd,50)
 res<-squash2(dat,lims,sq)
@@ -49,14 +49,21 @@ par(mfrow=c(3,2),pch=".")
 # make the function on top
 # MV Normal, centred at 0,0
 #bivn<-mvrnorm(1000, mu = c(0,0), Sigma = matrix(c(0.2, 0, 0, 0.2), 2))
-#bivn<-kde2d(bivn[,1], bivn[,2], n=sqrt(length(dat$x)), lims=c(-1,1,-1,1))
 
-bivn1<-mvrnorm(1000, mu = c(0.5,-0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
-bivn2<-mvrnorm(1000, mu = c(0.5,0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
-bivn3<-mvrnorm(1000, mu = c(-0.5,0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
-bivn4<-mvrnorm(1000, mu = c(-0.5,-0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
-biv<-rbind(bivn1,bivn2,bivn3,bivn4)
+#bivn1<-mvrnorm(1000, mu = c(0.5,-0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
+#bivn2<-mvrnorm(1000, mu = c(0.5,0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
+#bivn3<-mvrnorm(1000, mu = c(-0.5,0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
+#bivn4<-mvrnorm(1000, mu = c(-0.5,-0.5), Sigma = matrix(c(0.1, 0, 0, 0.1), 2))
+#biv<-rbind(bivn1,bivn2,bivn3,bivn4)
+
+
+bivn1<-mvrnorm(1000, mu = c(0,-0.5), Sigma = matrix(c(0.2, 0, 0, 0.1), 2))
+bivn2<-mvrnorm(1000, mu = c(0,0.5), Sigma = matrix(c(0.2, 0, 0, 0.1), 2))
+biv<-rbind(bivn1,bivn2)
+
 bivn<-kde2d(biv[,1],biv[,2], n=sqrt(length(dat$x)), lims=c(-1,1,-1,1))
+
+
 
 dat<-data.frame(x=dat$x,y=dat$y,z=as.vector(bivn$z))
 res<-data.frame(x=res$x,y=res$y,z=as.vector(bivn$z))
@@ -72,9 +79,12 @@ contour(x=sort(unique(res$x)),y=sort(unique(res$y)),z=matrix(res$z,length(unique
 #vis.gam(b,plot.type="contour",asp=1)
 
 #res$z<-res$z+rnorm(length(res$z),0,0.05)
+ind<-sample(1:length(dat$x),600)
+dat<-data.frame(x=dat$x[ind],y=dat$y[ind],z=as.vector(bivn$z)[ind])
+res<-data.frame(x=res$x[ind],y=res$y[ind],z=as.vector(bivn$z)[ind])
 
 # fit to the squashed data
-b1<-gam(z~s(x,y,k=150),data=res)
+b1<-gam(z~s(x,y,k=200),data=res)
 #vis.gam(b1,plot.type="contour",asp=1)
 
 
@@ -82,7 +92,7 @@ b1<-gam(z~s(x,y,k=150),data=res)
 #D.grid<-create_distance_matrix(sg$x,sg$y,bigbnd,faster=0)
 #grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 source("intexp/smooth2s.c.R")
-b3<-gam(z~s(x,y,k=150,bs="mdstps",xt=list(bnd=bigbnd,
+b3<-gam(z~s(x,y,k=200,bs="mdstps",xt=list(bnd=bigbnd,
 #                                   op=sg,
 #                                   b.grid=c(20,20),
 #                                   mds.obj=grid.mds,
