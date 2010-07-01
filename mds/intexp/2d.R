@@ -2,11 +2,8 @@
 
 set.seed(1)
 
-library(soap)
 library(MASS)
-
-source("makesoapgrid.R")
-
+source("mds.R")
 
 # squash in 2D...
 squash2<-function(dat,lims,sq){
@@ -37,8 +34,7 @@ box4<-c(0,0,1,1,0,-1,-1,0)
 lims<-rbind(box1,box2,box3,box4)
 
 # squash factors, (x,y),(x,y),...
-sq<-t(matrix(c(3,0.5,2,0.5,3,3,2,3),2,4))
-
+sq<-t(matrix(c(3,0.5,6,0.5,3,3,6,3),2,4))
 
 dat<-make_soap_grid(bigbnd,50)
 res<-squash2(dat,lims,sq)
@@ -77,16 +73,15 @@ contour(x=sort(unique(res$x)),y=sort(unique(res$y)),z=matrix(res$z,length(unique
 
 
 # fit to the squashed data
-b1<-gam(z~s(x,y),data=res)
+b1<-gam(z~s(x,y,k=150),data=res)
 #vis.gam(b1,plot.type="contour",asp=1)
 
 
-source("mds.R")
-sg<-make_soap_grid(bigbnd,c(10,10))
+sg<-make_soap_grid(bigbnd,c(20,20))
 D.grid<-create_distance_matrix(sg$x,sg$y,bigbnd,faster=0)
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 source("intexp/smooth2s.c.R")
-b3<-gam(z~s(x,y,bs="mdstp",xt=list(bnd=bigbnd,
+b3<-gam(z~s(x,y,k=100,bs="mdstps",xt=list(bnd=bigbnd,
                                    op=sg,
                                    b.grid=c(20,20),
                                    mds.obj=grid.mds,
@@ -95,7 +90,7 @@ b3<-gam(z~s(x,y,bs="mdstp",xt=list(bnd=bigbnd,
          )),data=res)
 
 source("intexp/smooth2.c.R")
-b4<-gam(z~s(x,y,bs="mdstp",xt=list(bnd=bigbnd,
+b4<-gam(z~s(x,y,k=100,bs="mdstp",xt=list(bnd=bigbnd,
                                    op=sg,
                                    b.grid=c(20,20),
                                    mds.obj=grid.mds
@@ -112,16 +107,16 @@ yy<-seq(min(bigbnd$y),max(bigbnd$y),pdat$deltay)
 pred3<-predict(b3,pres)
 m<-pdat$mat
 m[!is.na(m)]<-pred3
-image(x=xx,y=yy,z=m,xlab="x",ylab="y")
+image(x=xx,y=yy,z=m,xlab="x",ylab="y",asp=1)
 
 
 pred1<-predict(b1,pres)
 m<-pdat$mat
 m[!is.na(m)]<-pred1
-image(x=xx,y=yy,z=m,xlab="x*",ylab="y*")
+image(x=xx,y=yy,z=m,xlab="x*",ylab="y*",asp=1)
 
 pred4<-predict(b4,pres)
 m<-pdat$mat
 m[!is.na(m)]<-pred4
-image(x=xx,y=yy,z=m,xlab="x*",ylab="y*")
+image(x=xx,y=yy,z=m,xlab="x*",ylab="y*",asp=1)
 
