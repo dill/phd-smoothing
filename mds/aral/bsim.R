@@ -94,17 +94,29 @@ new.truth[ind2]<-npmod1$mean
 #   Min. 1st Qu.  Median    Mean 3rd Qu.    M
 # 2.423   4.790   7.032   7.074   8.678  13.980 
 
-#if(plot.it==TRUE){ 
+if(plot.it==TRUE){ 
 #   par(mfrow=c(2,2)) 
-#   pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat 
-#   pred.mat[!is.na(pred.mat)]<-new.truth 
-#   image(z=pred.mat,x=seq(min(pred.points$x),max(pred.points$x),len=50),
-#                    y=seq(min(pred.points$x),max(pred.points$x),len=50),
-#         main="fit from np",zlim=c(0,20)) 
-#   contour(z=pred.mat,add=TRUE,zlim=c(0,20),
-#           x=seq(min(pred.points$x),max(pred.points$x),len=50),
-#           y=seq(min(pred.points$x),max(pred.points$x),len=50))
-#} 
+   pdf("aral-np.pdf",width=2.5,height=3)
+   par(las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
+
+   pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat 
+   pred.mat[!is.na(pred.mat)]<-new.truth 
+#   pind<-inSide(bnd,pred.points$x,pred.points$y)
+#   pred.mat<-matrix(NA,50,50)
+#   pred.mat[pind]<-new.truth
+   zlims<-c(1.905461, 19.275249)
+
+   image(z=pred.mat,x=seq(min(bnd$x),max(bnd$x),len=50),
+                    y=seq(min(bnd$y),max(bnd$y),len=50),
+         xlab="km (East)",ylab="km (North)",
+         main="",asp=1,zlim=zlims) 
+   contour(z=pred.mat,add=TRUE,zlim=c(0,20),
+           x=seq(min(bnd$x),max(bnd$x),len=50),
+           y=seq(min(bnd$y),max(bnd$y),len=50),asp=1,
+           levels=pretty(zlims,15))
+   lines(bnd,lwd=2)
+   dev.off()
+} 
 
 
 # pre-calculate the MDS base configuration

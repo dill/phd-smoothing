@@ -118,7 +118,7 @@ contour(z=matrix(predp,49,49),x=xx,y=yy,add=TRUE,col="green")
 
 
 predp<-predict(b2,pres)
-image(z=matrix(predp,49,49),x=xx,y=yy,main="unfix")
-contour(z=matrix(predp,49,49),x=xx,y=yy,add=TRUE,col="green")
+image(z=matrix(predp,49,49),main="unfix")
+contour(z=matrix(predp,49,49),add=TRUE,col="green")
 
 
