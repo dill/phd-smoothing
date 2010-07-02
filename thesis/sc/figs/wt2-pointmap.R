@@ -19,9 +19,9 @@ wtu<-data.frame(x=xx,y=yy,inside=inside)
 wtm<-read.csv(file="wt2truemapped.csv",header=F)
 names(wtm)<-c("x","y","z")
 
-pdf(file="wt2-points.pdf",width=4,height=2)
+pdf(file="wt2-points.pdf",width=5,height=2.5)
 
-par(mfrow=c(1,2),mar=c(4,4,2,2),pch=19,las=1,cex.lab=2,cex.axis=1,cex=0.3)
+par(mfrow=c(1,2),mar=c(4,4,2,2),pch=".",las=1,cex.lab=0.9,cex.axis=0.5)
 
 plot(wtu$x[wtu$inside],wtu$y[wtu$inside],asp=1,xlab="x",ylab="y")
 lines(bnd,lwd=2)
@@ -31,3 +31,13 @@ lines(x=c(max(wtm$x),min(wtm$x),min(wtm$x),max(wtm$x),max(wtm$x)),
       y=c(max(wtm$y),max(wtm$y),min(wtm$y),min(wtm$y),max(wtm$y)),lwd=2)
 
 dev.off()
+
+plot(wtm$x,wtm$y,asp=1,xlab="x*",ylab="y*",type="n")
+
+for(i in 1:51){
+   x<-wtm$x[i:(i+50)]
+   y<-wtm$y[i:(i+50)]
+   ind<-inside[i:(i+50)]
+   lines(x[ind],y[ind])
+}
+
