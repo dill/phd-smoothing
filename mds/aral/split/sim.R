@@ -36,14 +36,14 @@ for(i in 1:sim.size){
    mds.fit<-gam(chl~s(x,y,k=70),data=samp.mds,family=Gamma(link="log"))
 
    # MDS (3D)
-   samp.mds3<-insert.mds(samp,mds.grid,grid.mds3,bnd)
-   samp.mds3<-list(x=samp.mds3[,1],y=samp.mds3[,2],z=samp.mds3[,3],chl=samp$chl)
-   mds3.fit<-gam(chl~s(x,y,z,k=70),data=samp.mds3,family=Gamma(link="log"))
+   #samp.mds3<-insert.mds(samp,mds.grid,grid.mds3,bnd)
+   #samp.mds3<-list(x=samp.mds3[,1],y=samp.mds3[,2],z=samp.mds3[,3],chl=samp$chl)
+   #mds3.fit<-gam(chl~s(x,y,z,k=70),data=samp.mds3,family=Gamma(link="log"))
 
    ### do some prediction
    tp.pred<-predict(tp.fit,newdata=pred.points,type="response")
    mds.pred<-predict(mds.fit,newdata=pred.mds,type="response")
-   mds3.pred<-predict(mds3.fit,newdata=pred.mds3,type="response")
+   #mds3.pred<-predict(mds3.fit,newdata=pred.mds3,type="response")
    soap.pred<-predict(soap.fit,newdata=pred.points,type="response")
 
    # calculate the MSE
@@ -51,8 +51,8 @@ for(i in 1:sim.size){
                mean((  tp.pred[ind2]  -new.truth[ind2])^2,na.rm=T),
                mean(( mds.pred[!ind2] -new.truth[!ind2])^2,na.rm=T),
                mean(( mds.pred[ind2] -new.truth[ind2])^2,na.rm=T),
-               mean((mds3.pred[!ind2]-new.truth[!ind2])^2,na.rm=T),
-               mean((mds3.pred[ind2]-new.truth[ind2])^2,na.rm=T),
+    #           mean((mds3.pred[!ind2]-new.truth[!ind2])^2,na.rm=T),
+    #           mean((mds3.pred[ind2]-new.truth[ind2])^2,na.rm=T),
                mean((soap.pred[!ind2]-new.truth[!ind2])^2,na.rm=T),
                mean((soap.pred[ind2]-new.truth[ind2])^2,na.rm=T))
 

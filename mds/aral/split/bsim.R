@@ -27,7 +27,7 @@ source("makesoapgrid.R")
 ######################################################
 # OPTIONS
 plot.it<-FALSE
-sim.size<-1
+sim.size<-100
 # noise levels = 0.35,0.9,1.55
 # snr = 0.95,0.75,0.50
 snrs<-c(0.95,0.75,0.50)
@@ -35,7 +35,7 @@ samp.size<-c(100,250,500)
 #noise.level<-1.55
 
 # model names
-modnames<-c("tprs","tprsin","mdstp","mdstpin","mdstp3d","mdstp3din","soap","soapin")
+modnames<-c("tprs","tprsin","mdstp","mdstpin","soap","soapin")
 ######################################################
 # PREAMBLE
 # load the data and boundary
@@ -83,12 +83,12 @@ new.truth[ind2]<-npmod1$mean
 mds.grid<-make_soap_grid(bnd,15)
 D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd,faster=1)
 grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
-grid.mds3<-cmdscale(D,eig=TRUE,k=3,x.ret=TRUE)
+#grid.mds3<-cmdscale(D,eig=TRUE,k=3,x.ret=TRUE)
 # prediction data for mds
 pred.mds<-insert.mds(pred.points,mds.grid,grid.mds,bnd)
 pred.mds<-list(x=pred.mds[,1],y=pred.mds[,2],chl=new.truth)
-pred.mds3<-insert.mds(pred.points,mds.grid,grid.mds3,bnd)
-pred.mds3<-list(x=pred.mds3[,1],y=pred.mds3[,2],z=pred.mds3[,3],chl=new.truth)
+#pred.mds3<-insert.mds(pred.points,mds.grid,grid.mds3,bnd)
+#pred.mds3<-list(x=pred.mds3[,1],y=pred.mds3[,2],z=pred.mds3[,3],chl=new.truth)
 
 
 # SNR = 0.95, 0.75, 0.5
