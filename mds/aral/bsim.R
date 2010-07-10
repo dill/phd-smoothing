@@ -95,8 +95,8 @@ new.truth[ind2]<-npmod1$mean
 # 2.423   4.790   7.032   7.074   8.678  13.980 
 
 if(plot.it==TRUE){ 
-#   par(mfrow=c(2,2)) 
-   pdf("aral-np.pdf",width=2.5,height=3)
+   par(mfrow=c(2,2)) 
+#   pdf("aral-np.pdf",width=2.5,height=3)
    par(las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 
    pred.mat<-make_soap_grid(bnd,pred.n,mat=T)$mat 
@@ -115,7 +115,7 @@ if(plot.it==TRUE){
            y=seq(min(bnd$y),max(bnd$y),len=50),asp=1,
            levels=pretty(zlims,15))
    lines(bnd,lwd=2)
-   dev.off()
+#   dev.off()
 } 
 
 

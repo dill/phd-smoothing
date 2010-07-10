@@ -1,6 +1,6 @@
 # make some boxplots
 
-#pdf(file="big-aral-boxplot.pdf",width=6.5,height=8.25)
+pdf(file="big-aral-boxplot.pdf",width=6.5,height=8.25)
 
 # make the text look better for printout
 par(mfrow=c(3,1),cex.axis=0.65,las=1,mgp=c(2,0.75,0),mar=c(2,3,1,1))
@@ -46,4 +46,4 @@ for(sampsize in c(100,250,500)){
 
 
 
-#dev.off()
+dev.off()

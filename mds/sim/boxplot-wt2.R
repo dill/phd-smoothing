@@ -6,20 +6,21 @@ pdf(file="big-mds-wt2-boxplot.pdf",width=13.3,height=7.88)
 par(cex.axis=0.75,las=1,mgp=c(2,0.75,0),mar=c(2,3,1,1))
 
 # stick all of the results into one matrix
-mses<-matrix(NA,200,0)
+mses<-matrix(NA,100,0)
 
 for(err.lev in c("0.35","0.9","1.55")){
 
    mse<-read.csv(paste("wt2-mse-250-",err.lev,".csv",sep=""))
    mse<-mse[,-1]
+   mse<-mse[1:100,]
    mses<-cbind(mses,mse)
 
 }
 
 
 # 3 spurious soap results, remove them
-spurious<-c(111,135,157)
-mses<-mses[-spurious,]
+#spurious<-c(111,135,157)
+#mses<-mses[-spurious,]
 
 
 # log the results
