@@ -16,7 +16,6 @@ err.lev<-0.75
    
       mse<-read.csv(paste("sim-mse-",samp.size,"-",err.lev,".csv",sep=""))
       mse<-mse[,-1]
-      mse<-
       #mse<-mse[,1:5]-mse[,6]
       #mses<-cbind(mses,mse)
    
