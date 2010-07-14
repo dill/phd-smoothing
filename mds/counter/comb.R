@@ -51,7 +51,7 @@ par(pch=19,cex=0.3,las=1,mgp=c(1.9,0.75,0),mar=c(3,3,2,2),cex.axis=1.2,cex.lab=1
 #par(mfrow=c(3,3))
 source("makesoapgrid.R")
 bnd<-list(x=bnd[,1],y=bnd[,2])
-plot(bnd,type="l",asp=1,xlab="x",ylab="y",asp=1)
+plot(bnd,type="l",asp=1,xlab="x",ylab="y")
 gr<-make_soap_grid(bnd,c(71,50))
 
 # create some colors
