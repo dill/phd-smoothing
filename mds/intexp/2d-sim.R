@@ -38,7 +38,9 @@ lims<-rbind(box1,box2,box3,box4)
 
 # squash factors, (x,y),(x,y),...
 #sq<-t(matrix(c(3,0.5,16,0.5,3,3,16,3),2,4))
-sq<-t(matrix(c(0.9,5,1,5,0.9,1,1,1),2,4))
+#sq<-t(matrix(c(0.9,5,1,5,0.9,1,1,1),2,4))
+sq<-t(matrix(c(0.3,5,1,5,0.3,1,1,1),2,4))
+
 
 dat1<-make_soap_grid(bigbnd,50)
 res1<-squash2(dat1,lims,sq)
@@ -120,5 +122,5 @@ for(i in 1:50){
    
 }
 
-
+cat("means=",colMeans(mses),"\n")
    
