@@ -22,12 +22,16 @@ for(sampsize in c(100,250,500)){
    
       # extra Wilcoxon test stuff
       for(i in 2:6){
-         if(wilcox.test(mse[,1],mse[,i],paired=TRUE)$p.value<0.01){
-            cols<-c(cols,"grey")
+         pv<-wilcox.test(mse[,1],mse[,i],paired=TRUE)$p.value
+         med<-median(mse[,i]-mse[,1])
+         if(pv<0.01 & med>0){
+            cols<-c(cols,"red")
+         }else if(pv<0.01 & med<0){
+            cols<-c(cols,"green")
          }else{
             cols<-c(cols,"white")
          }
-         cat("tprs vs. ",mod.names[i],wilcox.test(mse[,1],mse[,i],paired=TRUE)$p.value,"\n")
+         cat("tprs vs. ",mod.names[i],pv,"\n")
       }
    }
    
