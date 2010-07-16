@@ -677,9 +677,9 @@ The models that were fitted were:
 \item \emph{Soap film smoother}: using 109 internal knots evenly spaced on a grid over the domain, with boundary basis size 60.
 \end{enumerate}
 
-As can be seen in \tabref{bigwt2resultstable}, the results from \mdsap\ with the adjustments are actually worse than those from just \mdsap. In all cases the \mdsap\ with adjusted penalty has a worse MSE than any of the other models; even the \tprs\ has a lower MSE in the two higher noise cases. \Fig{big-wt2-mses} shows box plots of these results.
+As can be seen in \tabref{bigwt2resultstable}, the results from \mdsap\ with the adjustments are actually worse than those from just \mdsap in all but the lowest noise case. \Fig{big-wt2-mses} shows box plots of these results.
 
-However, all is not lost, the models using \mdsap\ with either 3-dimensional projection or the cubic regression spline are competitive across the board. In the case of the cubic regression spline, this is probably due to the tensor setup of the spline. Having a different smoothing parameter for each direction will allow the model to take care of the anisotropic space into which the data has been projected. In the high noise case the \tprs\ basis coupled with \mdsap\ has a lower and less variable MSE than the cubic regression spline, this may well be due to the \tprs\ enforcing the isotopy in a high-noise case and this constraint has lead to a less variable model being fitted, which happens to be closer to the truth in this case. As for the 3-D projection, the plots in \fig{wt2-3d-proj} show that the additional dimension allows for further separation of both a large and small peninsulae, which should help with the spatial heterogeneity as well as leakage.
+However, all is not lost, the models using \mdsap\ with either 3-dimensional projection or the cubic regression spline are competitive across the board, beating the soap film smoother in some cases. For the cubic regression spline, this is probably due to the tensor setup of the spline. Having a different smoothing parameter for each direction will allow the model to take care of the anisotropic space into which the data has been projected. In the high noise case the \tprs\ basis coupled with \mdsap\ has a lower and less variable MSE than the cubic regression spline, this may well be due to the \tprs\ enforcing the isotopy in a high-noise case and this constraint has lead to a less variable model being fitted, which happens to be closer to the truth in this case. As for the 3-D projection, the plots in \fig{wt2-3d-proj} show that the additional dimension allows for further separation of both a large and small peninsulae, which should help with the spatial heterogeneity as well as leakage.
 
 A Wilcoxon signed rank test, matching pairs between realisations showed that there was a significant difference between the MSE each model and the soap film smoother. As can be seen from \fig{big-wt2-mses}, soap outperforms all of the other methods on this domain, with \mdsap\ (with 3-D projection) coming in second. 
 
@@ -691,17 +691,17 @@ Finally, note that there were three realisations omitted (for all models) in \ta
  & &  & MSE  & & &\\ 
 $\sigma$  & tprs & mds+tp & mds+cr & mds+tp 3D & mds+tp+adj & soap\\ 
 \hline
-0.35  & 0.0832 (1e-04) & 0.0713 (5e-05) & 0.0633 (8e-05) & 0.058 (5e-05) & 0.0759 (6e-05) & 0.0598 (0.00032)\\ 
-0.9  & 0.1957 (0.00017) & 0.1788 (0.00013) & 0.1652 (0.00025) & 0.1479 (0.00014) & 0.2413 (0.00022) & 0.1616 (0.00201)\\ 
-1.55  & 0.3576 (0.00035) & 0.285 (0.00027) & 0.3198 (0.00063) & 0.2765 (0.00032) & 0.4778 (0.00048) & 0.245 (0.00034)\\ 
+0.35  & 0.0832 (1e-04) & 0.0713 (5e-05) & 0.0633 (8e-05) & 0.0579 (5e-05) & 0.0697 (5e-05) & 0.0598 (0.00032) \\ 
+0.9  & 0.1957 (0.00017) & 0.1788 (0.00013) & 0.1651 (0.00025) & 0.1478 (0.00014) & 0.1875 (0.00017) & 0.1616 (0.00201) \\ 
+1.55  & 0.3576 (0.00035) & 0.285 (0.00027) & 0.3196 (0.00063) & 0.2765 (0.00032) & 0.3509 (4e-04) & 0.245 (0.00034) \\
 \end{tabular}
 \begin{tabular}{c c c c c c c}
  & &  & EDF  & & &\\ 
 $\sigma$  & tprs & mds+tp & mds+cr & mds+tp 3D & mds+tp+adj & soap\\ 
 \hline
-0.35  & 77.8675 (0.03803) & 80.5571 (0.04098) & 53.9331 (0.03577) & 61.3881 (0.05365) & 84.1456 (0.04092) & 55.2464 (0.04684)\\ 
-0.9  & 47.0214 (0.0378) & 34.3451 (0.05633) & 31.9288 (0.03523) & 30.5663 (0.04034) & 50.6702 (0.04171) & 29.6874 (0.04514)\\ 
-1.55  & 31.8803 (0.03843) & 18.3473 (0.03846) & 20.5101 (0.04256) & 19.7879 (0.03128) & 31.1969 (0.05291) & 20.3529 (0.03171)\\ 
+0.35  & 77.8675 (0.03803) & 80.5454 (0.04111) & 53.9125 (0.03577) & 61.3458 (0.05324) & 73.3275 (0.03707) & 55.2464 (0.04684)\\ 
+0.9  & 47.0214 (0.0378) & 34.357 (0.05645) & 31.9157 (0.03525) & 30.5807 (0.04027) & 40.409 (0.03805) & 29.6874 (0.04514) \\
+1.55  & 31.8803 (0.03843) & 18.3575 (0.03865) & 20.4563 (0.04242) & 19.7871 (0.03128) & 26.6778 (0.03572) & 20.3529 (0.03171)\\ 
 \end{tabular}
 \caption{Mean MSE and EDF for the six models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
 \label{bigwt2resultstable}
@@ -853,7 +853,7 @@ Looking at the plots of the prediction points in MDS space for the peninsulae do
 
 As a simple, unidimensional example, take three points, $a, b, \text{and}\ c$ in the top line of \fig{linedia}. The projection could squash them in the way shown on the second line, in this case the penalty adjustments as described in \cite{wood2000} could be used to correct the model. However, with MDS we can have a situation occurring which is similar to that shown in the bottom line of \fig{linedia}, changing the order of $a, b, \text{and}\ c$. 
 
-In the MDS projection we can see this happening in the peninsula described above. The projection takes a side-on view of the peninsula, making the points lose their ordering. In this case, the penalty adjustment can't save the model. If even the ordering of the points is not guaranteed, then the smoother's job is potentially impossible, especially once these ideas are put into two-dimensions.
+In the MDS projection we can see this happening in the peninsula described above. The projection takes a side-on view of the peninsula, making the points lose their ordering. In this case, the penalty adjustment can't save the model. If even the ordering of the points is not guaranteed, then the smoother's job is potentially impossible, especially when one thinks of the 2-dimensional extension of \fig{linedia}.
 
 \begin{figure}
 \centering
@@ -866,9 +866,9 @@ In the MDS projection we can see this happening in the peninsula described above
 \subsection{Why higher dimensions are not the solution}
 \label{nohigherdim}
 
-In the two cases above, moving into three dimensions allowed \mdsap\ more accurately reproduce the true function. Counteracting the phenomenon above (where the ordering of the points is lost), the extra dimension allows us to see the ``width'' of part of the domain that we take a side view of the in the 2-dimensional projection.
+In the two cases above, moving into three dimensions allowed \mdsap\ more accurately reproduce the true function. Counteracting the phenomenon above (where the ordering of the points is lost), the extra dimension allows us to see the ``width'' of parts of the domain that we take a side view of the in the 2-dimensional projection.
 
-It seems then that there is some milage to take a 3-dimensional projection to solve this problem without the need for penalty adjustments. However, unfortunately, this is not the case. \Fig{mds-comb} shows a long domain with three peninsulae at each end. The MDS projection of the domain in two dimensions gives the points in \fig{mds-comb-2d}. There are only four peninsulae in this figure, not the six which were in the original. Using the colours in \fig{mds-comb} and \fig{mds-comb-2d}, we can see that the larger peninsulae are separated but not the smaller ones. Assuming that there is some information in the smaller peninsulae and there is reason to believe that leakage would be undesirable, this looks rather bad from a smoothing perspective.
+It seems then that there is some milage in taking a 3-dimensional projection to solve this problem without the need for penalty adjustments. However, unfortunately, this is not the case in general. \Fig{mds-comb} shows a long domain with three peninsulae at each end. The MDS projection of the domain in two dimensions gives the points in \fig{mds-comb-2d}. There are only four peninsulae in this figure, not the six which were in the original. Using the colours in \fig{mds-comb} and \fig{mds-comb-2d}, it is clear that the larger peninsulae are separated but not the smaller ones. Assuming that there are some features in the smaller peninsulae and there is reason to believe that leakage would be undesirable, this looks rather bad from a smoothing perspective.
 
 \begin{figure}
 \centering
@@ -886,7 +886,7 @@ It seems then that there is some milage to take a 3-dimensional projection to so
 % generated by thesis/mds/figs/comb.R
 \end{figure}
 
-So, in this case it is not unreasonable to think that an extra dimension could help. Taking a 3-dimensional projection, \fig{mds-comb-3d} is produced, however there is still no separation of the smaller peninsulae. Moving into four dimensions (\fig{mds-comb-4d}) we begin to see separation in the smaller peninsulae. However, the separation is not particularly large and leakage could still happen.
+So, in this case it is not unreasonable to think that an extra dimension could help. Taking a 3-dimensional projection, \fig{mds-comb-3d} is produced, however there is still no separation of the smaller peninsulae. Moving into four dimensions (\fig{mds-comb-4d}) we begin to see separation in the smaller peninsulae. However, even in four dimensions the separation is not particularly large and leakage could still happen.
 
 \begin{figure}
 \centering
@@ -904,10 +904,12 @@ So, in this case it is not unreasonable to think that an extra dimension could h
 % generated by thesis/mds/figs/comb.R
 \end{figure}
 
-To get a better handle on how well adding dimensions separates the peninsulae, we can use a simple quantitative measure. By comparing the mean square difference between the matrix of within-area distances and matrix of Euclidean distances in the MDS space, we can assess the amount of variation in the within-area distance being accounted for by moving into further dimensions. The criterion is calculated by taking the element-wise difference between the two matrices, squaring them and then taking the mean.
+Although these plots are illustrative, a quantitative measure of how well the within-area distances are being approximated by the MDS projection is desirable. By comparing the mean square difference between the matrix of within-area distances and matrix of Euclidean distances in the MDS space, we can assess the amount of variation in the within-area distance being accounted for by moving into further dimensions. The criterion is calculated by taking the element-wise difference between the two matrices, squaring them and then taking the mean.
 
 % Results here are in mds/counter/run-DRcomp.R
-Looking at this measure for the domain considered in this section (the ``comb''), the Ramsay horseshoe, peninsulae domain and the Aral sea as dimension of projection is increased yields some interesting results. These are summarised in \tabref{increasek}. The table indicates that there is an optimum number of dimensions ($k$) to project into, such that adding a further dimension causes the mean squared difference between the two sets of distances to increase. However, the value of $k$ is not common to all of the domains. Indeed, the Ramsay horseshoe appears to only require two dimensions, where as the peninsulae domain appears to need five. However, we can see that this is by no means definitive, given that for the ``comb'' domain, four dimensions appears to be optimal but \fig{mds-comb-3d} shows that this doesn't offer much separation in the peninsulae.
+Looking at this measure for the domain considered in this section (the ``comb''), the Ramsay horseshoe, peninsulae domain (from \secref{mds-wt2-sim}) and the Aral sea as dimension of projection is increased yields some interesting results. These are summarised in \tabref{increasek}. The table indicates that there is an optimum number of dimensions ($k$) to project into, such that adding a further dimension causes the mean squared difference between the two sets of distances to increase. However, the optimal $k$ is not common to all of the domains. Indeed, the Ramsay horseshoe appears to only require two dimensions, where as the peninsulae domain appears to need five. However, we can see that this is by no means definitive, given that for the ``comb'' domain, four dimensions appears to be optimal but \fig{mds-comb-3d} shows that this doesn't offer much separation in the peninsulae.
+
+Since there appears to be no particular limit on the number of dimensions to project into in order to get a set of points that avoid both leakage and the ordering problem, it is hard to believe that simply extending to higher dimensions is a sustainable solution.
 
 \begin{table}[htb]
 \centering
