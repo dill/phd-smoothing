@@ -665,23 +665,23 @@ The next section puts the adjusted penalty approach to the test on a number of d
 \subsection{Peninsulae domain}
 \label{wt2bigsim}
 
-Using the same setup as in \secref{mds-wt2-sim}, for each error level (0.35, 0.9 and 1.55), 200 realisations were generated. From these 250 samples were drawn to fit the model, predictions were over a grid of 1253 points with MSE and EDF recorded per model for each simulation. 
+Using the same setup as in \secref{mds-wt2-sim}, for each error level ($\sigma=0.35, 0.9, \text{ and } 1.55$), 200 realisations were generated. From these 250 samples were drawn to fit the model, predictions were made over a grid of 1253 points with MSE and EDF recorded per model for each simulation. 
 
 The models that were fitted were:
 \begin{enumerate}
-\item \emph{Thin plate spline}:  with basis size 140.
-\item \emph{\mdsap}: using a \tprs\ with basis size 140.
-\item \emph{\mdsap}: using a tensor product (see \secref{GAMtensor}) of cubic splines, each dimension of which had a basis size of 12.
-\item \emph{\mdsap}: using a 3-dimensional \tprs\ with basis size 140. Here MDS was used to project the data into three dimensions rather than two.
-\item \emph{\mdsap}: using a \tprs\ with basis size 140, with penalty adjustments.
+\item \emph{TPRS}: \tprs\ with basis size 140.
+\item \emph{MDS+TP}: \mdsap\ using a \tprs\ with basis size 140.
+\item \emph{MDS+CR}: \mdsap\ using a tensor product (see \secref{GAMtensor}) of two cubic regression splines, each dimension of which had a basis size of 12.
+\item \emph{MDS+3D}: \mdsap\ using a 3-dimensional \tprs\ with basis size 140. Here MDS was used to project the data into three dimensions rather than two.
+\item \emph{MDS+ADJ}: \mdsap\ using a \tprs\ with basis size 140, with penalty adjustments.
 \item \emph{Soap film smoother}: using 109 internal knots evenly spaced on a grid over the domain, with boundary basis size 60.
 \end{enumerate}
 
-As can be seen in \tabref{bigwt2resultstable}, the results from \mdsap\ with the adjustments are actually worse than those from just \mdsap in all but the lowest noise case. \Fig{big-wt2-mses} shows box plots of these results.
+As can be seen in \tabref{bigwt2resultstable}, the results from MDS+ADJ are actually worse than those from just MDS+TP in all but the lowest noise case. \Fig{big-wt2-mses} shows box plots of these results.
 
-However, all is not lost, the models using \mdsap\ with either 3-dimensional projection or the cubic regression spline are competitive across the board, beating the soap film smoother in some cases. For the cubic regression spline, this is probably due to the tensor setup of the spline. Having a different smoothing parameter for each direction will allow the model to take care of the anisotropic space into which the data has been projected. In the high noise case the \tprs\ basis coupled with \mdsap\ has a lower and less variable MSE than the cubic regression spline, this may well be due to the \tprs\ enforcing the isotopy in a high-noise case and this constraint has lead to a less variable model being fitted, which happens to be closer to the truth in this case. As for the 3-D projection, the plots in \fig{wt2-3d-proj} show that the additional dimension allows for further separation of both a large and small peninsulae, which should help with the spatial heterogeneity as well as leakage.
+However, all is not lost, MDS+3D and MDS+CR are competitive across the board, beating the soap film smoother in some cases. For the cubic regression spline, this is probably due to the tensor setup of the spline. Having a different smoothing parameter for each direction will allow the model to take care of the anisotropic space into which the data has been projected. In the high noise case the MDS+TP has a lower and less variable MSE than MDS+CR, this may well be due to the \tprs\ enforcing the isotopy in a high-noise case and this constraint has lead to a less wiggly model being fitted, which happens to be closer to the truth in this case. As for the 3-D projection, the plots in \fig{wt2-3d-proj} show that the additional dimension allows for further separation of both a large and small peninsulae, which should help with the anisotropy as well as leakage.
 
-A Wilcoxon signed rank test, matching pairs between realisations showed that there was a significant difference between the MSE each model and the soap film smoother. As can be seen from \fig{big-wt2-mses}, soap outperforms all of the other methods on this domain, with \mdsap\ (with 3-D projection) coming in second. 
+A Wilcoxon signed rank test, matching pairs between realisations showed that there was a significant difference between the MSE of each model and the soap film smoother. As can be seen from \fig{big-wt2-mses}, soap outperforms all of the other methods on this domain, with MDS+3D coming in second. 
 
 Finally, note that there were three realisations omitted (for all models) in \tabref{bigwt2resultstable} and \fig{big-wt2-mses}. In these realisations the soap film smoother failed to fit the model due to knot placement. These can be safely removed as, in practise, the computer would inform the user that the knot placement was not appropriate and the knot layout could be altered.
 
@@ -703,7 +703,7 @@ $\sigma$  & tprs & mds+tp & mds+cr & mds+tp 3D & mds+tp+adj & soap\\
 0.9  & 47.0214 (0.0378) & 34.357 (0.05645) & 31.9157 (0.03525) & 30.5807 (0.04027) & 40.409 (0.03805) & 29.6874 (0.04514) \\
 1.55  & 31.8803 (0.03843) & 18.3575 (0.03865) & 20.4563 (0.04242) & 19.7871 (0.03128) & 26.6778 (0.03572) & 20.3529 (0.03171)\\ 
 \end{tabular}
-\caption{Mean MSE and EDF for the six models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
+\caption{Mean MSE and EDF for the six models fitted to the peninsula domain with standard errors (in brackets) over 197 realisations.}
 \label{bigwt2resultstable}
 \end{sidewaystable}
 
@@ -711,7 +711,7 @@ $\sigma$  & tprs & mds+tp & mds+cr & mds+tp 3D & mds+tp+adj & soap\\
 \begin{sidewaysfigure}
 \centering
 \includegraphics[width=9.5in]{mds/figs/big-mds-wt2-boxplot.pdf} \\
-\caption{Logarithm of per realisation average mean squared error for the double peninsulae domain. Models are in groups of six for each error level (0.35,0.9,1.55). In all cases, a Wilcoxon signed rank test showed that MSEs for all models were significantly different from the soap film smoother ($\text{p-value} < 10^{-6}$).}
+\caption{Logarithm of per realisation average mean squared error for the double peninsulae domain. Models are in groups of six for each error level ($\sigma=0.35,0.9,1.55$). In all cases, a Wilcoxon signed rank test showed that MSEs for all models were significantly different from the soap film smoother ($\text{p-value} < 10^{-6}$).}
 \label{big-wt2-mses}
 % generate /phd-smoothing/mds/sim/boxplot-wt2.R
 \end{sidewaysfigure}
@@ -719,14 +719,14 @@ $\sigma$  & tprs & mds+tp & mds+cr & mds+tp 3D & mds+tp+adj & soap\\
 
 \subsection{Aral sea}
 
-The Aral sea is located between Kazakhstan and Uzbekistan. It has been steadily shrinking since the Soviet government diverted the sea's two tributaries in order to irrigate the surrounding desert in the 1960s. The NASA SeaWifs satellite collected data on chlorophyll levels in the Aral sea (\cite{soap}). The 496 data are averages of the $38^\text{th}$ 8 day observation period over the years 1998 to 2002. Smooths were fitted to the spatial coordinates with the logarithm of chlorophyll concentration (with Gamma errors) as the response.
+The Aral sea is located between Kazakhstan and Uzbekistan. It has been steadily shrinking since the Soviet government diverted the sea's two tributaries in order to irrigate the surrounding desert during the 1960s. The NASA SeaWifs satellite collected data on chlorophyll levels in the Aral sea (\cite{soap}). The 496 data are averages of the $38^\text{th}$ 8 day observation period over the years 1998 to 2002. Smooths were fitted to the spatial coordinates (Northings and Easting projected from latitude and longitude) with the logarithm of chlorophyll concentration (with Gamma errors) as the response.
 
 A \tprs, \mdsap\ and soap film were all fitted to the data. In summary the setup for each model was:
 
 \begin{enumerate}
 \item \emph{Thin plate spline}:  with basis size 70.
 \item \emph{Soap film smoother}: using a 12 by 12 grid of knots (74 were inside) and a boundary smooth with basis size 49.
-\item \emph{\mdsap}: with basis size 70.
+\item \emph{\mdsap}: \tprs\ with basis size 70.
 \end{enumerate}
 
 \begin{figure}
@@ -739,7 +739,7 @@ A \tprs, \mdsap\ and soap film were all fitted to the data. In summary the setup
 
 The models were then used to predict over a grid of 496 points to create the heat maps shown in \fig{aral-fit}. The fits are broadly similar, with the \tprs\ showing some signs of leakage around (-50,-50). Both \mdsap\ and the soap film smoother combat this problem. The contour lines for all of the models look roughly the same in the main part of the sea, but in the smaller lobe, \mdsap\ is rather different from both the soap film and \tprs. 
 
-Although the leakage is avoided, there appear to be some strange artefacts in the smooth. Ovals of higher chlorophyll appear in the smaller lobe when the \mdsap\ is fitted to the data, along with contours close to the far left of the smaller lobe. Looking at a point plot in MDS space (\fig{aral-pp}) reveals why this might be happening. As can be seen from the figure, the smaller lobe has been squashed to a line which clearly has an adverse effect on the smoother.
+Although the leakage is avoided, there appear to be some strange artefacts in the smooth. Ovals of higher chlorophyll appear in the smaller lobe when the \mdsap\ is fit to the data, along with contours close to the far left of the smaller lobe. Looking at a point plot in MDS space (\fig{aral-pp}) reveals why this might be happening. As can be seen from the figure, the smaller lobe has been severely squashed which will clearly have an adverse effect on the smoother.
 
 \begin{figure}
 \centering
@@ -749,7 +749,7 @@ Although the leakage is avoided, there appear to be some strange artefacts in th
 % generated by phd-smoothing/mds/aral/pointplot.R
 \end{figure}
 
-The \mdsap\ with adjusted penalty was also used to fit the model, using the same settings as above. The predicted surface given by the model is shown in \fig{aral-adj-fit}. Again, the same artefacts are clearly visible in the smaller lobe of the region.
+The \mdsap\ with adjusted penalty was also used to fit the model, using the same basis as above. The predicted surface given by the model is shown in \fig{aral-adj-fit}. Again, the same artefacts are clearly visible in the smaller lobe of the region.
 
 \begin{figure}[t]
 \centering
@@ -779,7 +779,7 @@ Taking this kernel estimate as truth (see \fig{aral-np}), samples of size 100, 2
 \begin{figure}
 \centering
 \includegraphics[width=3in]{mds/figs/aral-np.pdf} \\
-\caption{The fit given by the kernel regression for the Aral sea, used as truth for simulations}
+\caption{The fit given by the kernel regression for the Aral sea, used as truth for simulations in \secref{mds-aral-sea-sim}.}
 \label{aral-np}
 % generated by thesis/mds/figs/aral-np.R
 \end{figure}
@@ -787,24 +787,24 @@ Taking this kernel estimate as truth (see \fig{aral-np}), samples of size 100, 2
 The models fitted were as in \secref{wt2bigsim} (but with different basis sizes):
 
 \begin{enumerate}
-\item \emph{Thin plate spline}:  with basis size 70.
-\item \emph{\mdsap}: using a \tprs\ with basis size 70.
-\item \emph{\mdsap}: using a tensor product (see \secref{GAMtensor}) of cubic splines, each dimension of which had a basis size of 9.
-\item \emph{\mdsap}: using a 3-dimensional \tprs\ with basis size 70. Here MDS was used to project the data into three dimensions rather than two.
-\item \emph{\mdsap}: using a \tprs\ with basis size 70, with penalty adjustments.
+\item \emph{TPRS}: \tprs\ with basis size 70.
+\item \emph{MDS+TP}: \mdsap\ using a \tprs\ with basis size 70.
+\item \emph{MDS+CR}: \mdsap\ using a tensor product (see \secref{GAMtensor}) of cubic splines, each dimension of which had a basis size of 9.
+\item \emph{MDS+3D}: \mdsap\  using a 3-dimensional \tprs\ with basis size 70. Here MDS was used to project the data into three dimensions rather than two.
+\item \emph{MDS+ADJ}:  \mdsap\ using a \tprs\ with basis size 70, with penalty adjustments.
 \item \emph{Soap film smoother}: using 74 internal knots evenly spaced on a grid over the domain, and a cyclic spline on the boundary of basis size 25.
 \end{enumerate}
 
 % big aral sim MSEs
 \begin{figure}
 \centering
-\includegraphics{mds/figs/big-aral-boxplot.pdf} \\
-\caption{Box plots of the logarithm of per realisation average mean squared error for the Aral sea simulation. Top to bottom sample sizes: 100, 250, 500. Models are in groups of six for each signal-to-noise ratio (0.95,0.0.75,0.5). The shaded boxes indicate that a Wilcoxon signed rank test showed that there was a significant difference between the model and the \tprs\ MSEs ($\text{p-value} < 10^{-2}$). Red indicates that the model was significantly different and worse, green that it was significantly different and better.}
+\includegraphics[width=6in]{mds/figs/big-aral-boxplot.pdf} \\
+\caption{Box plots of the logarithm of per realisation average mean squared error for the Aral sea simulation. Top to bottom sample sizes: 100, 250, 500. Models are in groups of six for each signal-to-noise ratio (0.95,0.0.75,0.5). The shaded boxes indicate that a Wilcoxon signed rank test showed that there was a significant difference between the model and the \tprs\ MSEs ($\text{p-value} < 10^{-2}$). Red indicates that the model was significantly different and worse (ie. significantly higher MSE than the \tprs), green that it was significantly different and better (ie. significantly lower MSE than the \tprs).}
 \label{big-aral-mses}
 % generate /phd-smoothing/mds/aral/boxplots.R
 \end{figure}
 
-\Fig{big-aral-mses} and \tabref{bigaralresultstable} show the results of the simulations. Looking at these, there does not appear to be a clear reason to choose one of the \mdsap\ methods over the others on MSE grounds alone. Perhaps surprisingly, the \tprs\ does rather well in MSE terms, having slightly lower MSE than other models in almost all situations. This is perhaps to be expected given the leakage was rather slight and localised, this combined with the \tprs\ also fitting a consistently more complex model (see EDFs, \tabref{bigaralresultstable}) may account for the superior MSE. However, we still must prefer the soap film smoother, since it does not allow any leakage. Given the evidence, above, of possible artefacts in \mdsap\ models, the soap film is looking like the best option for smoothing over regions with complex boundaries.
+\Fig{big-aral-mses} and \tabref{bigaralresultstable} show the results of the simulations. Looking at these, there does not appear to be a clear reason to choose one of the \mdsap\ methods over the others on MSE grounds alone. Perhaps surprisingly, the \tprs\ does rather well in MSE terms, having slightly lower MSE than other models in almost all situations. This is perhaps to be expected given the leakage was rather slight and localised, this combined with the \tprs\ also fitting a consistently more complex model (see EDFs, \tabref{bigaralresultstable}) may account for the superior MSE. However, we still must prefer the soap film smoother, since it does not allow any leakage. Given the evidence, above, of possible artefacts in \mdsap\ models, the soap film appears to be the best option for smoothing over regions with complex boundaries.
 
 \begin{sidewaystable}[p]
 \centering
@@ -850,11 +850,11 @@ The simulations show that there is no big advantage of using the adjusted penalt
 
 An explanation for why the penalty adjustment doesn't offer much improvement can be found by investigating the good performance of the 3-D projection model. 
 
-Looking at the plots of the prediction points in MDS space for the peninsulae domain (\fig{wt2-2d-proj} and \fig{wt2-3d-proj}) it is easy to see that in two dimensions, the first peninsula has been squashed to a line. This is a result of the truncation performed in the MDS procedure; when we look at the 3-D projection, the peninsula clearly has width, just not in the two dimensional projection. The adjusted penalty attempts to account for this squashing of the points by allowing a more flexible model to be fit in that area. However, what is not taken into account is that some of the points in the peninsula are projected on top of each other or on the wrong side of one another. In other words, the MDS projection makes the points lose their ordering. 
+Looking at the plots of the prediction points in MDS space for the peninsulae domain (\fig{wt2-2d-proj} and \fig{wt2-3d-proj}) it is easy to see that in two dimensions, the first peninsula has been squashed to a line. This is a result of the truncation performed to $\tilde{X}^*$ in the MDS procedure (see \secref{MDStechdet}); when we look at the 3-D projection, the peninsula clearly has width, just not in the two dimensional projection. The adjusted penalty attempts to account for this squashing of the points by allowing a more flexible model to be fit in that area. However, what is not taken into account is that some of the points in the peninsula are projected on top of each other or on the wrong side of one another. In other words, the MDS projection makes the points lose their ordering. 
 
 As a simple, unidimensional example, take three points, $a, b, \text{and}\ c$ in the top line of \fig{linedia}. The projection could squash them in the way shown on the second line, in this case the penalty adjustments as described in \cite{wood2000} could be used to correct the model. However, with MDS we can have a situation occurring which is similar to that shown in the bottom line of \fig{linedia}, changing the order of $a, b, \text{and}\ c$. 
 
-In the MDS projection we can see this happening in the peninsula described above. The projection takes a side-on view of the peninsula, making the points lose their ordering. In this case, the penalty adjustment can't save the model. If even the ordering of the points is not guaranteed, then the smoother's job is potentially impossible, especially when one thinks of the 2-dimensional extension of \fig{linedia}.
+In the MDS projection we can see this happening in the peninsula described above. The projection takes a side-on view of the peninsula, making the points lose their ordering. In this case, the penalty adjustment can't save the model. If the ordering of the points is not guaranteed, then the smoother's job is potentially impossible, especially when one thinks of the 2-dimensional extension of \fig{linedia}.
 
 \begin{figure}
 \centering
@@ -864,19 +864,19 @@ In the MDS projection we can see this happening in the peninsula described above
 % generated by thesis/mds/figs/linedia.R
 \end{figure}
 
-In order to test this hypothesis in practise a simulation was run using the Aral sea simulation data set from \secref{mds-aral-sea-sim}. \mdsap\ was fitted to 100 realisations of the domain. However, in order to see if the distortion to the smaller peninsula is problematic, the model was fit in two halves. One half consisted of the smaller peninsula on the left, the other the rest of the domain (this is simply done by splitting on the 45 kilometre East line). Models were fitted to each half and predictions made for the halves individually. If there were no problems with the squashing in the left peninsulae then we should find that the MSEs are not significantly different between the two areas (there is no reason that their MSEs should be different, since we add the same amount of error, sample the same number of points and control for leakage by separating the two parts). Using a Wilcoxon signed rank test on paired MSEs, the difference was significant ($\text{p-value} < 10^{-3}$). It therefore seems safe to conclude that this phenomenon causes problems for \mdsap\ when parts of the domain are squashed.
+In order to test this hypothesis in practise, a simulation was run using the Aral sea (simulation) data set from \secref{mds-aral-sea-sim}. \mdsap\ was fitted to 100 realisations of the domain. However, in order to see if the distortion to the smaller peninsula is problematic, the model was fit in two halves. One half consisted of the smaller peninsula on the left; the other the rest of the domain (splitting on the $-45$ kilometre East line). Models were fitted to each half and predictions made for the halves individually. If there were no problems with the squashing in the left peninsulae then we should find that the MSEs are not significantly different between the two areas (there is no reason that their MSEs should be different, since we add the same amount of error, sample the same number of points and control for leakage by separating the two parts). Using a Wilcoxon signed rank test on paired MSEs, the difference was significant ($\text{p-value} < 10^{-3}$). It therefore seems safe to conclude that this phenomenon causes problems for \mdsap\ when parts of the domain are squashed.
 
-\subsection{Why higher dimensions are not the solution}
+\subsection{Why moving to higher dimensions are not the solution}
 \label{nohigherdim}
 
-In the two cases above, moving into three dimensions allowed \mdsap\ more accurately reproduce the true function. Counteracting the phenomenon above (where the ordering of the points is lost), the extra dimension allows us to see the ``width'' of parts of the domain that we take a side view of the in the 2-dimensional projection.
+In the two cases above, moving into three dimensions allowed \mdsap\ to more accurately reproduce the true function. Counteracting the phenomenon above (where the ordering of the points is lost), the extra dimension allows us to see the ``width'' of parts of the domain that we take a side view of in the 2-dimensional projection.
 
 It seems then that there is some milage in taking a 3-dimensional projection to solve this problem without the need for penalty adjustments. However, unfortunately, this is not the case in general. \Fig{mds-comb} shows a long domain with three peninsulae at each end. The MDS projection of the domain in two dimensions gives the points in \fig{mds-comb-2d}. There are only four peninsulae in this figure, not the six which were in the original. Using the colours in \fig{mds-comb} and \fig{mds-comb-2d}, it is clear that the larger peninsulae are separated but not the smaller ones. Assuming that there are some features in the smaller peninsulae and there is reason to believe that leakage would be undesirable, this looks rather bad from a smoothing perspective.
 
 \begin{figure}
 \centering
 \includegraphics[width=3in]{mds/figs/comb.pdf} \\
-\caption{A domain with multiple peninsulae.}
+\caption{The ``comb'' domain from \secref{nohigherdim}.}
 \label{mds-comb}
 % generated by thesis/mds/figs/comb.R
 \end{figure}
@@ -889,7 +889,7 @@ It seems then that there is some milage in taking a 3-dimensional projection to 
 % generated by thesis/mds/figs/comb.R
 \end{figure}
 
-So, in this case it is not unreasonable to think that an extra dimension could help. Taking a 3-dimensional projection, \fig{mds-comb-3d} is produced, however there is still no separation of the smaller peninsulae. Moving into four dimensions (\fig{mds-comb-4d}) we begin to see separation in the smaller peninsulae. However, even in four dimensions the separation is not particularly large and leakage could still happen.
+So, in this case it is not unreasonable to think that an extra dimension could help. Taking a 3-dimensional projection, \fig{mds-comb-3d} is produced; however there is still no separation of the smaller peninsulae. Moving into four dimensions (\fig{mds-comb-4d}) we begin to see separation in the smaller peninsulae. However, even in four dimensions the separation is not particularly large and leakage could still occur.
 
 \begin{figure}
 \centering
@@ -929,7 +929,7 @@ $k$ & Comb & Ramsay & Peninsulae & Aral\\
 \label{increasek}
 \end{table}
 
-Moving into continually higher dimensions seems appealing, but practically it is rather more taxing. As the dimension of the problem is increased, the order of the penalty in the GAM increases too(see \secref{GAMpenalties}). As this happens, the dimension of the nullspace of the penalty increases, meaning that more functions are unpenalised in the model. This will not lead to a simple model being fitted to the data, the real aim of \mdsap.
+Moving into continually higher dimensions seems appealing, but practically it is rather more taxing. As the dimension of the problem is increased, the order of the penalty in the GAM increases too(see \secref{GAMpenalties}). As this happens, the dimension of the nullspace of the penalty increases, meaning that more functions are unpenalised in the model. This will not lead to a simple model being fitted to the data: the real aim of \mdsap.
 
 \section{\mdsap\ in practise}
 \label{mds-prac}
