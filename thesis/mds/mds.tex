@@ -910,29 +910,27 @@ So, in this case it is not unreasonable to think that an extra dimension could h
 Although these plots are illustrative, a quantitative measure of how well the within-area distances are being approximated by the MDS projection is desirable. Given the eigen-decomposition attempts to minimise the spectral norm, this is the logical metric to use. If we label the matrix of within-area distances $D$ (as above) and the matrix of Euclidean distances in MDS space as $D_E$, then we may calculate the spectral norm as the largest eigenvalue of $D-D_E$.
 
 % Results here are in mds/counter/run-DRcomp.R
-Looking at this measure for the domain considered in this section (the ``comb''), the Ramsay horseshoe, peninsulae domain (from \secref{mds-wt2-sim}) and the Aral sea as dimension of projection is increased yields some interesting results. These are summarised in \tabref{increasek}. 
+Looking at this measure for the domain considered in this section (the ``comb''), peninsulae domain (from \secref{mds-wt2-sim}) and the Aral sea as dimension of projection is increased yields some interesting results. These are summarised in \tabref{increasek}. The table indicates that there is some optimum number of dimensions ($k$) to project into, such that adding a further dimension gives only a negligible decrease in the spectral norm. 
 
-
-
-The table indicates that there is an optimum number of dimensions ($k$) to project into, such that adding a further dimension causes the mean squared difference between the two sets of distances to increase. However, the optimal $k$ is not common to all of the domains. Indeed, the Ramsay horseshoe appears to only require two dimensions, where as the peninsulae domain appears to need five. However, we can see that this is by no means definitive, given that for the ``comb'' domain, four dimensions appears to be optimal but \fig{mds-comb-3d} shows that this doesn't offer much separation in the peninsulae.
+However, the optimal $k$ is not common to all of the domains. For the peninsulae domain there is a large decrease (roughly halving each time) up to four dimensions, but the Aral sea appears to settle down after three. However, we can see that this is by no means definitive, given that for the ``comb'' domain, four dimensions appears to be optimal but \fig{mds-comb-3d} shows that this doesn't offer much separation in the peninsulae.
 
 Since there appears to be no particular limit on the number of dimensions to project into in order to get a set of points that avoid both leakage and the ordering problem, it is hard to believe that simply extending to higher dimensions is a sustainable solution.
 
 \begin{table}[htb]
 \centering
 \begin{tabular}{c c c c c}
-$k$ & Comb & Ramsay & Peninsulae & Aral\\ 
+$k$ & Comb  & Peninsulae & Aral\\ 
 \hline
-1  &  3610.210  &  104.6669  &  109.1344  &  1519.736 \\ 
-2  &  1280.189  &  64.18895  &  54.60339  &  347.2212 \\ 
-3  &  459.9464  &  76.94155  &  22.06782  &  128.2021 \\ 
-4  &  457.1626  &  82.28453  &  12.16595  &  119.5486 \\ 
-5  &  456.0698  &  84.76566  &  10.23667  &  117.6430 \\ 
-6  &  452.4361  &  87.179  &  9.95791  &  116.6678 \\ 
-7  &  450.9335  &  91.20586  &  9.873292  &  116.1673 \\ 
-8  &  450.5587  &  95.8095  &  9.853141  &  115.5955 \\ 
-9  &  449.8825  &  95.61322  &  9.789696  &  115.3094 \\ 
-10  &  449.4629  &  98.49566  &  9.746579  &  115.1879 \\ 
+1  &  3610.210  &  109.1344  &  1519.736 \\ 
+2  &  1280.189  &  54.60339  &  347.2212 \\ 
+3  &  459.9464  &  22.06782  &  128.2021 \\ 
+4  &  457.1626  &  12.16595  &  119.5486 \\ 
+5  &  456.0698  &  10.23667  &  117.6430 \\ 
+6  &  452.4361  &  9.95791  &  116.6678 \\ 
+7  &  450.9335  &  9.873292  &  116.1673 \\ 
+8  &  450.5587  &  9.853141  &  115.5955 \\ 
+9  &  449.8825  &  9.789696  &  115.3094 \\ 
+10  &  449.4629 &  9.746579  &  115.1879 \\ 
 \end{tabular}
 \caption{Mean squared difference between the matrix of within-area distances and Euclidean distance in a $k$-dimensional MDS projection of the points for each of the domains detailed in \secref{nohigherdim}.}
 \label{increasek}
@@ -965,7 +963,7 @@ Drawing together what has been learnt from the previous chapters, one can at lea
 \begin{enumerate}
 \item The mapping of points must be smooth, there should be no sudden jumps or gaps. Points that are near one-another in the original space must be near one-another in the transformed space. See (\secref{mds-smoothness}).
 \item The transformation must not squash space too much. Squashing points so they are numerically indistinguishable (crowding) must be absolutely avoided, but less severe compressions of space can also cause problems. See (\secref{sch-crowding}) and (\secref{mds-penadjust}).
-\item Ordering of points must be maintained. If one thinks of the points in the original space as lying on a grid, the lines joining the points may change length and orientation under the mapping, but must not cross (\secref{pensuck}).
+\item Ordering of points must be maintained. If the response values are mis-ordered then the recovering of the truth becomes impossible (\secref{pensuck}).
 \item A function to map one space into the other must be found. To make the method competitive in terms of computational time, the method must be able to quickly map points from the data space into the smoothing space. This, realistically, can only be achieved by using some kind of functional mapping (\secref{mds-faster}).
 \end{enumerate}
 
