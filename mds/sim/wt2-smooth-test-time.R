@@ -18,10 +18,12 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
                   z=gendata$z[-samp.ind])
 
    # sample points insertion
-   ins.time.samp<-system.time(samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=faster))[3]
+   ins.time.samp<-system.time(samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=0))[3]
+   ins.time.samp.pp<-system.time(samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=1))[3]
 
    # prediction points insertion
-   ins.time.pred<-system.time(pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd,faster=faster))[3]
+   ins.time.pred<-system.time(pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd,faster=0))[3]
+   ins.time.pred.pp<-system.time(pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd,faster=1))[3]
 
    # add noise
    noise<-noise.level*rnorm(length(samp.ind))
@@ -64,10 +66,6 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    mds.gam<-system.time(b.mapped<-gam(z~s(x,y,k=100),data=samp.data))[3]
    mds.pred<-system.time(fv <- predict(b.mapped,newdata=pred.data))[3]
 
-   # tensor product of thin plate
-   mdstp.gam<-system.time(b.mapped.tp<-gam(z~te(x,y,k=12),data=samp.data))[3]
-   mdstp.pred<-system.time(fv.tp <- predict(b.mapped.tp,newdata=pred.data))[3]
-   
    ### normal tprs
    tprs.gam<-system.time(b.tprs<-gam(z~s(x,y,k=100),data=nsamp.data))[3]
    tprs.pred<-system.time(fv.tprs <- predict(b.tprs,newdata=npred.data))[3]
@@ -84,7 +82,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
 
    ### calculate MSEs
    times<-list(mds=c(mds.gam+ins.time.samp,mds.pred+ins.time.pred),
-               mdstp=c(mdstp.gam+ins.time.samp,mdstp.pred+ins.time.pred),
+               mdspp=c(mds.gam+ins.time.samp.pp,mds.pred+ins.time.pred.pp),
                tprs=c(tprs.gam,tprs.pred) ,
                soap=c(soap.gam,soap.pred) )
  

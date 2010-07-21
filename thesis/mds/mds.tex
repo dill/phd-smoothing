@@ -391,7 +391,7 @@ $\sigma$ & \mdsap & Soap film & Thin plate\\
 0.9 &35.0185 (0.76449) & 29.7171 (0.57477) & 48.0508 (0.47636)\\ 
 1.55 &19.4625 (0.57265) & 20.2918 (0.36634) & 32.2715 (0.47961)\\ 
 \end{tabular}
-\caption{Mean MSE and EDF for the four models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
+\caption{Mean MSE and EDF for the three models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
 \label{wt2resultstable}
 \end{table}
 
@@ -430,7 +430,7 @@ Fit & 84.85242 & 24.6783 & 0.4022\\
 Prediction &  53.5105 & 29.3946 & 0.1249\\
 \end{tabular}
 \label{wt2time}
-\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted.}
+\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the three models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted.}
 \end{table}
 
 In order to make \mdsap\ worthwhile for a practitioner to use the method, it would be preferable for it not only to have a sensible physical model, but also outperform the soap film smoother in either (or both) of accuracy and speed.
@@ -493,7 +493,7 @@ Fit & 84.85242 & 18.6526 & 24.6783 & 0.4022\\
 Prediction & 155.4004 & 53.5105 & 29.3946 & 0.1249\\
 \end{tabular}
 \label{wt2itime}
-\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the four models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted. For the \mdsap\ columns \textit{pp} indicates the cases where the partial paths were pre-calculated, those not marked use the algorithm given in \secref{mdsdist}.}
+\caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the three models considered above. Times are averaged over 100 realisations and were found using the elapsed time provided by \textsf{R}'s built-in \texttt{system.time} function. For each realisation a sample of size 250 was taken, then a 1253 values were predicted. For the \mdsap\ columns \textit{pp} indicates the cases where the partial paths were pre-calculated, those not marked use the algorithm given in \secref{mdsdist}.}
 \end{table}
 
 
@@ -866,7 +866,7 @@ In the MDS projection we can see this happening in the peninsula described above
 
 In order to test this hypothesis in practise, a simulation was run using the Aral sea (simulation) data set from \secref{mds-aral-sea-sim}. \mdsap\ was fitted to 100 realisations of the domain. However, in order to see if the distortion to the smaller peninsula is problematic, the model was fit in two halves. One half consisted of the smaller peninsula on the left; the other the rest of the domain (splitting on the $-45$ kilometre East line). Models were fitted to each half and predictions made for the halves individually. If there were no problems with the squashing in the left peninsulae then we should find that the MSEs are not significantly different between the two areas (there is no reason that their MSEs should be different, since we add the same amount of error, sample the same number of points and control for leakage by separating the two parts). Using a Wilcoxon signed rank test on paired MSEs, the difference was significant ($\text{p-value} < 10^{-3}$). It therefore seems safe to conclude that this phenomenon causes problems for \mdsap\ when parts of the domain are squashed.
 
-\subsection{Why moving to higher dimensions are not the solution}
+\subsection{Why moving to higher dimensions is not the solution}
 \label{nohigherdim}
 
 In the two cases above, moving into three dimensions allowed \mdsap\ to more accurately reproduce the true function. Counteracting the phenomenon above (where the ordering of the points is lost), the extra dimension allows us to see the ``width'' of parts of the domain that we take a side view of in the 2-dimensional projection.
