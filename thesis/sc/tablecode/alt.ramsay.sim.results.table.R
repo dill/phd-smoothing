@@ -8,21 +8,24 @@
 
 sqrtn<-sqrt(1000)
 
+rounded<-5
+
+
 ## First the default settings from soap-package help file
 this.file<-read.csv(paste("altramsay/pspline.results.txt",sep=""))
-mapped.mse<-round(mean(this.file$mapped),5)
-mapped.se<-round(sd(this.file$mapped)/sqrtn,5)
+mapped.mse<-round(mean(this.file$mapped),rounded)
+mapped.se<-round(sd(this.file$mapped)/sqrtn,rounded)
 
-soap.mse<-round(mean(this.file$soap),5)
-soap.se<-round(sd(this.file$soap)/sqrtn,5)
+soap.mse<-round(mean(this.file$soap),rounded)
+soap.se<-round(sd(this.file$soap)/sqrtn,rounded)
 
 this.file<-read.csv(paste("altramsay/tp-noisey-0.5.results.txt",sep=""))
-tp.mse<-round(mean(this.file$tpmapped),5)
-tp.se<-round(sd(this.file$tpmapped)/sqrtn,5)
+tp.mse<-round(mean(this.file$tpmapped),rounded)
+tp.se<-round(sd(this.file$tpmapped)/sqrtn,rounded)
 
 this.file<-read.csv(paste("altramsay/alttp-0.3-1000.results.txt",sep=""))
-tprs.mse<-round(mean(this.file$tp),5)
-tprs.se<-round(sd(this.file$tp)/sqrtn,5)
+tprs.mse<-round(mean(this.file$tp),rounded)
+tprs.se<-round(sd(this.file$tp)/sqrtn,rounded)
 
 
 # cat it out
@@ -45,21 +48,21 @@ for(my.size in sample.sizes){
    this.file<-read.csv(paste("altramsay/sample.size.",my.size,".results.txt",sep=""))
 
    # calculate the mses
-   soap.mse<-round(mean(this.file$soap),5)
-   mapped.mse<-round(mean(this.file$mapped),5)
+   soap.mse<-round(mean(this.file$soap),rounded)
+   mapped.mse<-round(mean(this.file$mapped),rounded)
    
    # calculate the se(mse)
-   soap.se<-round(sd(this.file$soap)/sqrtn,5)
-   mapped.se<-round(sd(this.file$mapped)/sqrtn,5)
+   soap.se<-round(sd(this.file$soap)/sqrtn,rounded)
+   mapped.se<-round(sd(this.file$mapped)/sqrtn,rounded)
 
    # read in the tp stuff    
    this.file<-read.csv(paste("altramsay/tp-sample.size.",my.size,".results.txt",sep=""))
-   tp.mse<-round(mean(this.file$tpmapped),5)
-   tp.se<-round(sd(this.file$tpmapped)/sqrtn,5)
+   tp.mse<-round(mean(this.file$tpmapped),rounded)
+   tp.se<-round(sd(this.file$tpmapped)/sqrtn,rounded)
 
    this.file<-read.csv(paste("altramsay/alttp-0.3-",my.size,".results.txt",sep=""))
-   tprs.mse<-round(mean(this.file$tp),5)
-   tprs.se<-round(sd(this.file$tp)/sqrtn,5)
+   tprs.mse<-round(mean(this.file$tp),rounded)
+   tprs.se<-round(sd(this.file$tp)/sqrtn,rounded)
 
    # cat it out
    cat(my.size," & 0.3 & ",
@@ -81,21 +84,21 @@ for(my.error in error.levels){
    this.file<-read.csv(paste("altramsay/noisey-",my.error,".results.txt",sep=""))
 
    # calculate the mses
-   soap.mse<-round(mean(this.file$soap),5)
-   mapped.mse<-round(mean(this.file$mapped),5)
+   soap.mse<-round(mean(this.file$soap),rounded)
+   mapped.mse<-round(mean(this.file$mapped),rounded)
    
    # calculate the se(mse)
-   soap.se<-round(sd(this.file$soap)/sqrtn,5)
-   mapped.se<-round(sd(this.file$mapped)/sqrtn,5)
+   soap.se<-round(sd(this.file$soap)/sqrtn,rounded)
+   mapped.se<-round(sd(this.file$mapped)/sqrtn,rounded)
 
    # read in the tp stuff    
    this.file<-read.csv(paste("altramsay/tp-noisey-",my.error,".results.txt",sep=""))
-   tp.mse<-round(mean(this.file$tpmapped),5)
-   tp.se<-round(sd(this.file$tpmapped)/sqrtn,5)
+   tp.mse<-round(mean(this.file$tpmapped),rounded)
+   tp.se<-round(sd(this.file$tpmapped)/sqrtn,rounded)
 
    this.file<-read.csv(paste("altramsay/alttp-",my.error,"-1000.results.txt",sep=""))
-   tprs.mse<-round(mean(this.file$tp),5)
-   tprs.se<-round(sd(this.file$tp)/sqrtn,5)
+   tprs.mse<-round(mean(this.file$tp),rounded)
+   tprs.se<-round(sd(this.file$tp)/sqrtn,rounded)
 
    # cat it out
    cat("1000 & ",my.error," & ",

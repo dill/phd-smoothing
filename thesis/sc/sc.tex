@@ -288,6 +288,7 @@ A sample of 1000 points was then taken from the horseshoe and noise added to the
 \Fig{compsmooth} shows the true function and typical realisations of: the fit given by a \tprs\ on the transformed domain, a P-spline fit on the transformed domain and the fit given by the soap film smoother. Looking at the heat maps one can see that the general shape of the horseshoe function is clearly being reproduced by all methods (especially in comparison to that in \fig{leakage}). However, on the transformed domains the curvature across the minor axis is not being captured.
 
 \begin{table}[tb]
+\centering
 \begin{tabular}{c c}\\
 Sample size & Noise level \\
 \hline
@@ -321,13 +322,6 @@ Sample size & Noise level \\
 Sample size & Noise level & TPRS & SC + P-spline& SC + TPRS & Soap film\\
 \hline
 \hline
-%1000 & 0.3 & 0.00412 (0.00112) & 0.00811 (0.00243) & 0.00517 (0.00114) \\ 
-%500 & 0.3 & 0.00505 (0.00144) & 0.00478 (0.000955) & 0.00628 (0.00146) \\ 
-%250 & 0.3 & 0.00875 (0.00392) & 0.00684 (0.00183) & 0.0107 (0.00305) \\ 
-%100 & 0.3 & 0.0225 (0.035) & 0.0118 (0.00461) & 0.0219 (0.0117) \\ 
-%1000 & 0.5 & 0.0105 (0.00353) & 0.00811 (0.00243) & 0.0127 (0.0034) \\ 
-%1000 & 1 & 0.0242 (0.0108) & 0.0161 (0.0069) & 0.0275 (0.00958) \\ 
-%1000 & 2 & 0.066 (0.0481) & 0.0388 (0.0229) & 0.0686 (0.0333) \\ 
 1000 & 0.3 & 0.26611 (0.00029) & 0.00412 (4x10$^{-5}$) & 0.00811 (8x10$^{-5}$) & 0.00517 (4x10$^{-5}$) \\ 
 500 & 0.3 & 0.28276 (0.00083) & 0.00505 (6x10$^{-5}$) & 0.00478 (4x10$^{-5}$) & 0.00628 (7x10$^{-5}$) \\ 
 250 & 0.3 & 0.32274 (0.00268) & 0.00875 (0.00025) & 0.00684 (0.00012) & 0.01073 (0.00019) \\ 

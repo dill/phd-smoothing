@@ -118,7 +118,7 @@ cat('$k$ & Comb & Ramsay & Peninsulae & Aral\\\\ \n')
 cat('\\hline\n')
 
 for(k in 1:10){
-   cat(k," & ",comb[k]," & ",ram[k]," & ",wt2[k]," & ",aral[k],"\\\\ \n")
+   cat(k," & ",round(comb[k],2)," & ",round(ram[k],2)," & ",round(wt2[k],2)," & ",round(aral[k],2),"\\\\ \n")
 }
 
 
