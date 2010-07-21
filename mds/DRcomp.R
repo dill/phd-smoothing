@@ -19,8 +19,12 @@ DRcomp<-function(D,k){
 
    De<-as.matrix(dist(X,upper=T,diag=T))
 
-   RMSE<-mean((D-De)^2)
+# this was calculating the Frobenius norm, which was the wrong thing!
+#   RMSE<-mean((D-De)^2)
+#   RMSE
 
-   RMSE
+   # want to calculate the spectral norm, 1st eigenvalue of D-De
+
+   eigen(D-De)$value[1]
 
 }
