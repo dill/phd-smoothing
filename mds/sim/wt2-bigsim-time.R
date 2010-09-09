@@ -36,12 +36,12 @@ gendata<-list(x=gendata$x[onoff],
                z=gendata$z[onoff])
 
 # create the grid
-grid.time<-system.time(my.grid<-create_refgrid(bnd,120))[3]
+grid.time1<-system.time(my.grid<-create_refgrid(bnd,120))[3]
 
 ## do the MDS on the grid 
 # create D
-grid.time<-grid.time+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0))[3]
-grid.time.pp<-grid.time+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0))[3]
+grid.time<-grid.time1+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0))[3]
+grid.time.pp<-grid.time1+system.time(D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=1))[3]
 
 # perform mds on D
 grid.time<-grid.time+system.time(grid.mds<-cmdscale(D.grid,
@@ -72,7 +72,7 @@ predd<-gendata.ind$z[ind]
 
 #################################
 
-sim.size<-100
+sim.size<-1
 samp.size<-500
 noise.level<-1.55
 

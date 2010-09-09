@@ -1,3 +1,15 @@
+test1<-function(x,z,sx=0.3,sz=0.4){
+   1.2*exp(-(x-0.2)^2/sx^2-(z-0.3)^2/sz^2)+
+   0.8*exp(-(x-0.7)^2/sx^2-(z-0.8)^2/sz^2)
+}
+n<-200
+x<-matrix(runif(2*n),n,2)
+f<-test1(x[,1],x[,2]) 
+y<-f+rnorm(n)*.1
+
+
+
+
 eta <- function(r) { 
    # thin plate spline basis functions
    ind <- r<=0 
@@ -43,7 +55,7 @@ fit.tps <- function(y,x,xk=x,lambda=0) {
    rS <- ev$vectors%*%(ev$values^.5*t(ev$vectors)) 
    X <- rbind(tp$X,rS*sqrt(lambda)) # augmented model matrix 
    z <- c(y,rep(0,ncol(rS)))	# augmented data 
-   beta <- coef(lm(z ̃X-1))	# fit model
+   beta <- coef(lm(z~X-1))	# fit model
    beta <- qr.qy(tp$qrc,c(0,0,0,beta)) # backtransform beta
 }
 
@@ -57,6 +69,7 @@ eval.tps <- function(x,beta,xk) {
    } 
    f <- f + beta[k+2]*x[,1] + beta[k+3]*x[,2]
 }
+
 
 ## select some ‘knots’, xk ... 
 ind <- sample(1:n,100,replace=FALSE) 

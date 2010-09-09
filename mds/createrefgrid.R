@@ -1,4 +1,4 @@
-create_refgrid<-function(bnd,dens=20){
+create_refgrid<-function(bnd,dens=25){
    # create reference grid for the path finding
 
    # starting value
