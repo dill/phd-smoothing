@@ -1,14 +1,4 @@
-test1<-function(x,z,sx=0.3,sz=0.4){
-   1.2*exp(-(x-0.2)^2/sx^2-(z-0.3)^2/sz^2)+
-   0.8*exp(-(x-0.7)^2/sx^2-(z-0.8)^2/sz^2)
-}
-n<-200
-x<-matrix(runif(2*n),n,2)
-f<-test1(x[,1],x[,2]) 
-y<-f+rnorm(n)*.1
-
-
-
+# thin plate spline functions
 
 eta <- function(r) { 
    # thin plate spline basis functions
@@ -23,13 +13,16 @@ XSC <- function(x,xk=x) {
    # set up t.p.s., given covariates, x, and knots, xk
    n <- nrow(x);k <- nrow(xk) 
    X <- matrix(1,n,k+3) # tps model matrix 
+
    for (j in 1:k) {
       r <- sqrt((x[,1]-xk[j,1])^2+(x[,2]-xk[j,2])^2) 
       X[,j] <- eta(r)
    } 
+
    X[,j+2] <- x[,1];X[,j+3] <- x[,2] 
    C <- matrix(0,3,k+3) # tps constraint matrix 
    S <- matrix(0,k+3,k+3)# tps penalty matrix 
+
    for (i in 1:k) {
       C[1,i]<-1;C[2,i] <- xk[i,1];C[3,i] <- xk[i,2] 
       for (j in i:k) 
@@ -70,23 +63,5 @@ eval.tps <- function(x,beta,xk) {
    f <- f + beta[k+2]*x[,1] + beta[k+3]*x[,2]
 }
 
-
-## select some ‘knots’, xk ... 
-ind <- sample(1:n,100,replace=FALSE) 
-xk <- x[ind,] 
-## fit model ... 
-beta <- fit.tps(y,x,xk=xk,lambda=.01)
-
-
-## contour truth and fit 
-par(mfrow=c(1,2)) 
-xp <- matrix(0,900,2) 
-x1<-seq(0,1,length=30);x2<-seq(0,1,length=30) 
-xp[,1]<-rep(x1,30);xp[,2]<-rep(x2,rep(30,30)) 
-truth<-matrix(test1(xp[,1],xp[,2]),30,30) 
-contour(x1,x2,truth)
-fit <- matrix(eval.tps(xp,beta,xk),30,30) 
-contour(x1,x2,fit)
-
-
+d.euc<-function(
 
