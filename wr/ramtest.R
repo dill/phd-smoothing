@@ -4,11 +4,11 @@ source("mds.R")
 source("tps.R")
 
 
-set.seed(12)
+#set.seed(12)
 
 samp.size<-50
 noise.level<-0.05
-n.knots<-10
+n.knots<-20
 
 
 ## create a boundary...
