@@ -3,9 +3,14 @@
 source("mds.R")
 source("tps.R")
 
-samp.size<-250
+
+set.seed(12)
+
+samp.size<-50
 noise.level<-0.05
-plot.it<-FALSE
+n.knots<-10
+
+
 ## create a boundary...
 bnd <- fs.boundary()
 bnd<-pe(bnd,seq(1,length(bnd$x),8))
@@ -37,16 +42,9 @@ x<-cbind(samp.data$x,samp.data$y)
 
 # first find some knots (at random)
 nn<-length(y)
-ind <- sample(1:nn,100,replace=FALSE)
+ind <- sample(1:nn,n.knots,replace=FALSE)
 xk <- x[ind,]
 
-# need to find the distance matrix
-D<-create_distance_matrix(c(x[,1],xk[,1]),
-                          c(x[,2],xk[,2]),bnd)
-# distances from data to knots
-D.xxk<-D[1:length(x[,1]),(length(x[,1])+1):dim(D)[2]]
-# distances between knots
-D.xkxk<-D[(length(x[,1])+1):dim(D)[2],(length(x[,1])+1):dim(D)[2]]
 
 # do the fitting
 beta <- fit.tps(y,x,xk=xk,lambda=.01)
@@ -64,7 +62,7 @@ fsb <- fs.boundary()
 z.truth<-matrix(NA,m,n)
 z.truth[onoff]<-fs.test(xx,yy)
 
-par(mfrow=c(1,2))
+par(mfrow=c(1,3))
 
 
 # truth
@@ -75,15 +73,34 @@ lines(fsb,lwd=2)
 xp<-cbind(xx,yy)
 pred.mat<-matrix(NA,m,n)
 pred.mat[onoff]<-eval.tps(xp,beta,xk)
-image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="MDS",las=1,asp=1)
+image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tps",las=1,asp=1)
 contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
 lines(fsb,lwd=2)
 
 
+########################################
+# now with the distances
 
+# need to find the distance matrix
+D<-create_distance_matrix(c(x[,1],xk[,1]),
+                          c(x[,2],xk[,2]),bnd)
+# distances from data to knots
+D.xxk<-D[1:length(x[,1]),(length(x[,1])+1):dim(D)[2]]
+# distances between knots
+D.xkxk<-D[(length(x[,1])+1):dim(D)[2],(length(x[,1])+1):dim(D)[2]]
 
+# for the prediction points
+D.p<-create_distance_matrix(c(xp[,1],xk[,1]),
+                          c(xp[,2],xk[,2]),bnd)
+# distances from prediction points to knots
+D.xpxk<-D.p[1:length(xp[,1]),(length(xp[,1])+1):dim(D.p)[2]]
 
-
+beta <- fit.tps(y,x,xk=xk,lambda=.1,D.xkxk=D.xkxk,D.xxk=D.xxk)
+pred.mat<-matrix(NA,m,n)
+pred.mat[onoff]<-eval.tps(xp,beta,xk,D.xpxk=D.xpxk)
+image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tps+dists",las=1,asp=1)
+contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
+lines(fsb,lwd=2)
 
 
 

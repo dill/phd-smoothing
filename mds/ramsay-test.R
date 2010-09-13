@@ -15,7 +15,8 @@ bnd<-list(x=c(bnd$x,bnd$x[1]),y=c(bnd$y,bnd$y[1]))
 #x<-x[ind];y <- y[ind]
 
 # fitting grid 
-m<-45;n<-25
+#m<-45;n<-25
+m<-n<-10;
 xm <- seq(-1,3.5,length=m);yn<-seq(-1,1,length=n)
 xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 onoff<-inSide(bnd,xx,yy)
