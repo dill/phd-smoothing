@@ -1,7 +1,6 @@
 # function to run simulations on the wigglytop 2 domain
 # Copyright David Lawrence Miller 2009.
-source("mds.R")
-source("tps.R")
+source("wr-wrapper.R")
  
 samp.size=250
 noise.level=0.9
@@ -30,7 +29,6 @@ samp.ind<-sample(1:length(gendata$x),samp.size)
 gendata.samp<- list(x=gendata$x[samp.ind],
                     y=gendata$y[samp.ind],
                     z=gendata$z[samp.ind])
-
 
 
 # add noise
@@ -76,11 +74,6 @@ image(xscale,yscale,pred.mat,main="tprs",asp=1,xlab="",ylab="",col=heat.colors(1
 contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
 
 
-
-
-
-
-
 ###########################################################################
 # W+R
 
@@ -90,41 +83,10 @@ nn<-length(gendata.samp$y)
 ind <- sample(1:nn,n.knots,replace=FALSE)
 xk<-pe(gendata.samp,ind)
 
-
-
-# sample points
-D.samp<-create_distance_matrix(c(gendata.samp$x,xk$x),
-                               c(gendata.samp$y,xk$y),bnd,faster=1)
-# distances from data to knots
-D.xxk<-D.samp[1:length(gendata.samp$x),(length(gendata.samp$x)+1):dim(D.samp)[2]]
-# distances between knots
-D.xkxk<-D.samp[(length(gendata.samp$x)+1):dim(D.samp)[2],
-          (length(gendata.samp$x)+1):dim(D.samp)[2]]
-
-# prediction points 
-D.pred<-create_distance_matrix(c(gendata$x,xk$x),
-                               c(gendata$y,xk$y),bnd,faster=1)
-# distances from prediction points to knots
-D.xpxk<-D.pred[1:length(gendata$x),(length(gendata$x)+1):dim(D.pred)[2]]
-
-
-# put the locations into a matrix
-xdat<-matrix(c(gendata.samp$x,gendata.samp$y),length(gendata.samp$x),2)
-xpred<-matrix(c(gendata$x,gendata$y),length(gendata$x),2)
-xknots<-matrix(c(xk$x,xk$y),length(xk$x),2)
-
-
-# actually fit the model
-beta <- fit.tps(gendata.samp$z,xdat,xk=xknots,lambda=.1,D.xkxk=D.xkxk,D.xxk=D.xxk)
+beta<-wr(gendata.samp,xk,bnd,lambda=0.5)
 
 pred.mat<-matrix(NA,length(xscale),length(yscale))
-pred.mat[plot.ind]<-eval.tps(xpred,beta,xknots,D.xpxk=D.xpxk)
+pred.mat[plot.ind]<-wr.pred(pred.data,xk,beta)
 image(xscale,yscale,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tps+dists",las=1,asp=1)
 contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
-lines(fsb,lwd=2)
-
-
-
-
-###########################################################################
 
