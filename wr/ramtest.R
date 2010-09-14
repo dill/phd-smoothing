@@ -7,9 +7,9 @@ source("wr-wrapper.R")
 
 #set.seed(12)
 
-samp.size<-50
+samp.size<-250
 noise.level<-0.05
-n.knots<-20
+n.knots<-30
 
 
 ## create a boundary...
