@@ -1,8 +1,9 @@
 # function to do the smoothing on the Ramsay horseshoe 
 # Copyright David Lawrence Miller 2009
-source("mds.R")
-source("tps.R")
+#source("mds.R")
+#source("tps.R")
 
+source("wr-wrapper.R")
 
 #set.seed(12)
 
@@ -45,12 +46,8 @@ nn<-length(y)
 ind <- sample(1:nn,n.knots,replace=FALSE)
 xk <- x[ind,]
 
-
 # do the fitting
 beta <- fit.tps(y,x,xk=xk,lambda=.01)
-
-
-
 
 #######################################
 # ploting...
@@ -81,51 +78,12 @@ lines(fsb,lwd=2)
 ########################################
 # now with the distances
 
-# need to find the distance matrix
-D<-create_distance_matrix(c(x[,1],xk[,1]),
-                          c(x[,2],xk[,2]),bnd)
-# distances from data to knots
-D.xxk<-D[1:length(x[,1]),(length(x[,1])+1):dim(D)[2]]
-# distances between knots
-D.xkxk<-D[(length(x[,1])+1):dim(D)[2],(length(x[,1])+1):dim(D)[2]]
+beta<-wr(samp.data,list(x=xk[,1],y=xk[,2]),bnd,lambda=0.1)
 
-# for the prediction points
-D.p<-create_distance_matrix(c(xp[,1],xk[,1]),
-                          c(xp[,2],xk[,2]),bnd)
-# distances from prediction points to knots
-D.xpxk<-D.p[1:length(xp[,1]),(length(xp[,1])+1):dim(D.p)[2]]
-
-beta <- fit.tps(y,x,xk=xk,lambda=.1,D.xkxk=D.xkxk,D.xxk=D.xxk)
 pred.mat<-matrix(NA,m,n)
-pred.mat[onoff]<-eval.tps(xp,beta,xk,D.xpxk=D.xpxk)
+pred.mat[onoff]<-wr.pred(list(x=xp[,1],y=xp[,2]),list(x=xk[,1],y=xk[,2]),beta)
 image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tps+dists",las=1,asp=1)
 contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
 lines(fsb,lwd=2)
 
-
-
-
-
-
-
-#### create prediction data
-## non-mapped prediction data
-#pred.data<-data.frame(x=xx[-samp.ind],y=yy[-samp.ind],
-#                      z=fs.test(xx[-samp.ind],yy[-samp.ind]))
-#
-## new MDS coords for the prediction points
-#pred.mds<-insert.mds(pred.data,my.grid,grid.mds,bnd)
-#
-## put this in the correct format 
-#pred.size<-dim(pred.data)[1]+dim(samp.data)[1]
-#pred.data.mds<-list(x=rep(0,pred.size),y=rep(0,pred.size))
-#pred.data.mds$x[samp.ind]<-samp.data.mds$x  # need to add in the sample points too
-#pred.data.mds$x[-samp.ind]<-pred.mds[,1]
-#pred.data.mds$y[samp.ind]<-samp.data.mds$y  # need to add in the sample points too
-#pred.data.mds$y[-samp.ind]<-pred.mds[,2]
-#
-## prediction data for non mds'd
-#pred.data<-list(x=xx,y=yy,z=fs.test(xx,yy))
-#
-#
 
