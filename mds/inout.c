@@ -12,7 +12,7 @@
 void in_out(double *bx, double *by, double *break_code, double *x,double *y,int *in, int *nb, int *n)
 {
    in_out1(bx,by,break_code,x,y,in,nb,n);
-   in_out2(bx,by,break_code,x,y,in,nb,n);
+//   in_out2(bx,by,break_code,x,y,in,nb,n);
 
 
 }

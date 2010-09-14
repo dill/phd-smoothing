@@ -412,7 +412,7 @@ int first_ips(double p1[], double p2[], int nbnd, double **bnd,
 
          retint[i]=!in[0];
          if(i==0){
-            retint[nbnd-1]=!in[0];
+            retint[nbnd-2]=!in[0];
          }else{
             retint[i-1]=!in[0];
          }

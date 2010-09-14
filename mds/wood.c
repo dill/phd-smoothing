@@ -215,7 +215,7 @@ void get_euc_path(double x[], double y[], int nbnd, double **bnd, int npathlen,
          sp_do_intersect(p1, p2, nbnd, bnd, retint);
    
          //                           vvv just hypot when we touch only 1 vertex 
-         if(iarrsum((nbnd-1), retint)>0){
+         if(iarrsum((nbnd-1),retint) > 0){
             pathlen[k] = (-1);
          }else{
             pathlen[k]=hypot(p2[0]-p1[0],p2[1]-p1[1]);
@@ -625,7 +625,7 @@ void delete_step(node** path, int nbnd, double **bnd){
             xmp[0]=(mytrip[2][0]+mytrip[0][0])/2;
             ymp[0]=(mytrip[2][1]+mytrip[0][1])/2;
 
-            in[0]=1;
+            in[0]=0;
             in_out(bx,by,&break_code,xmp,ymp,in, &nbnd,&inout_n);
             // if deleting point i makes the resulting line cross the
             // the boundary then keep it in the path, else get rid of it 
