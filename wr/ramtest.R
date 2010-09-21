@@ -59,20 +59,20 @@ fsb <- fs.boundary()
 z.truth<-matrix(NA,m,n)
 z.truth[onoff]<-fs.test(xx,yy)
 
-par(mfrow=c(1,3))
+#par(mfrow=c(1,3))
 
 
 # truth
-image(xm,yn,z.truth,col=heat.colors(100),xlab="x",ylab="y",main="truth",las=1,asp=1)
-contour(xm,yn,z.truth,levels=seq(-5,5,by=.25),add=TRUE)
-lines(fsb,lwd=2)
+#image(xm,yn,z.truth,col=heat.colors(100),xlab="x",ylab="y",main="truth",las=1,asp=1)
+#contour(xm,yn,z.truth,levels=seq(-5,5,by=.25),add=TRUE)
+#lines(fsb,lwd=2)
 
-xp<-cbind(xx,yy)
-pred.mat<-matrix(NA,m,n)
-pred.mat[onoff]<-eval.tps(xp,beta,xk)
-image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tps",las=1,asp=1)
-contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
-lines(fsb,lwd=2)
+#xp<-cbind(xx,yy)
+#pred.mat<-matrix(NA,m,n)
+#pred.mat[onoff]<-eval.tps(xp,beta,xk)
+#image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tps",las=1,asp=1)
+#contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
+#lines(fsb,lwd=2)
 
 
 ########################################
@@ -80,10 +80,10 @@ lines(fsb,lwd=2)
 
 beta<-wr(samp.data,list(x=xk[,1],y=xk[,2]),bnd)
 
-pred.mat<-matrix(NA,m,n)
-pred.mat[onoff]<-wr.pred(list(x=xp[,1],y=xp[,2]),list(x=xk[,1],y=xk[,2]),beta)
-image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tps+dists",las=1,asp=1)
-contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
-lines(fsb,lwd=2)
+#pred.mat<-matrix(NA,m,n)
+#pred.mat[onoff]<-wr.pred(list(x=xp[,1],y=xp[,2]),list(x=xk[,1],y=xk[,2]),beta)
+#image(xm,yn,pred.mat,col=heat.colors(100),xlab="x",ylab="y",main="tps+dists",las=1,asp=1)
+#contour(xm,yn,pred.mat,levels=seq(-5,5,by=.25),add=TRUE)
+#lines(fsb,lwd=2)
 
 

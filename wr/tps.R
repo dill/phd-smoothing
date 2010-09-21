@@ -94,8 +94,21 @@ fit.tps <- function(y,x,xk=x,lambda=NULL,D.xxk=NULL,D.xkxk=NULL) {
       }
 
       # do the optimisation
-      opt<-optimize(gcv.objfcn,tp=tp,y=y,rS=rS,lower=0,upper=log(10^6))
-   
+      opt<-optimize(gcv.objfcn,tp=tp,y=y,rS=rS,lower=0,upper=log(10^9))
+
+      # plot method
+      #V<-rep(0,600)
+      #olam<-c()
+      #lambda<- 1e-8
+      #for(i in 1:600){
+      #   V[i]<-gcv.objfcn(lambda,tp=tp,y=y,rS=rS)
+      #   olam<-c(olam,lambda)
+      #   lambda<-lambda*1.5
+      #}
+      #X11()
+      #plot(olam,V,type="l")  
+      #lambda<-V[which.min(V)]
+
       # grab the max
       lambda<-exp(opt$minimum)
 

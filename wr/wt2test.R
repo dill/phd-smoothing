@@ -83,7 +83,7 @@ nn<-length(gendata.samp$y)
 ind <- sample(1:nn,n.knots,replace=FALSE)
 xk<-pe(gendata.samp,ind)
 
-beta<-wr(gendata.samp,xk,bnd,lambda=b.tprs$sp)
+beta<-wr(gendata.samp,xk,bnd)
 
 pred.mat<-matrix(NA,length(xscale),length(yscale))
 pred.mat[plot.ind]<-wr.pred(pred.data,xk,beta)
