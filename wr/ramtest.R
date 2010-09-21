@@ -8,7 +8,7 @@ source("wr-wrapper.R")
 #set.seed(12)
 
 samp.size<-250
-noise.level<-0.05
+noise.level<-0.5
 n.knots<-30
 
 
@@ -47,7 +47,7 @@ ind <- sample(1:nn,n.knots,replace=FALSE)
 xk <- x[ind,]
 
 # do the fitting
-beta <- fit.tps(y,x,xk=xk,lambda=.01)
+beta <- fit.tps(y,x,xk=xk)
 
 #######################################
 # ploting...
@@ -78,7 +78,7 @@ lines(fsb,lwd=2)
 ########################################
 # now with the distances
 
-beta<-wr(samp.data,list(x=xk[,1],y=xk[,2]),bnd,lambda=0.1)
+beta<-wr(samp.data,list(x=xk[,1],y=xk[,2]),bnd)
 
 pred.mat<-matrix(NA,m,n)
 pred.mat[onoff]<-wr.pred(list(x=xp[,1],y=xp[,2]),list(x=xk[,1],y=xk[,2]),beta)
