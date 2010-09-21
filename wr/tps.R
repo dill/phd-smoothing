@@ -66,23 +66,24 @@ fit.tps <- function(y,x,xk=x,lambda=NULL,D.xxk=NULL,D.xkxk=NULL) {
    ev <- eigen(tp$S,symmetric=TRUE) # get sqrt penalty, rS 
    rS <- ev$vectors%*%(ev$values^.5*t(ev$vectors)) 
 
-   # if lambda was supplied, just do that
-   if(lambda){
-      X <- rbind(tp$X,rS*sqrt(lambda)) # augmented model matrix 
-      z <- c(y,rep(0,ncol(rS)))	# augmented data 
-      beta <- coef(lm(z~X-1))	# fit model
-      beta <- qr.qy(tp$qrc,c(0,0,0,beta)) # backtransform beta
-   # else find optimal lambda
-   }else{
+#   # if lambda was supplied, just do that
+#   if(!is.null(lambda)){
+#      X <- rbind(tp$X,rS*sqrt(lambda)) # augmented model matrix 
+#      z <- c(y,rep(0,ncol(rS)))	# augmented data 
+#      beta <- coef(lm(z~X-1))	# fit model
+#      beta <- qr.qy(tp$qrc,c(0,0,0,beta)) # backtransform beta
+#   # else find optimal lambda
+#   }else{
 
       # objective function for optim to use
       gcv.objfcn<-function(lambda,tp,y,rS){
+
+         lambda<-exp(lambda)
+
          # as above...
          X <- rbind(tp$X,rS*sqrt(lambda)) 
          z <- c(y,rep(0,ncol(rS)))
          mod<-lm(z~X-1)
-         beta <- coef(mod)	
-         beta <- qr.qy(tp$qrc,c(0,0,0,beta))
 
          # adapted from p132 red book
          n<-length(y)
@@ -93,18 +94,19 @@ fit.tps <- function(y,x,xk=x,lambda=NULL,D.xxk=NULL,D.xkxk=NULL) {
       }
 
       # do the optimisation
-      opt<-optimize(gcv.objfcn,tp=tp,y=y,rS=rS,lower=0,
-                     upper=Inf,maximum=TRUE)
+      opt<-optimize(gcv.objfcn,tp=tp,y=y,rS=rS,lower=0,upper=log(10^6))
    
       # grab the max
-      lambda<-opt$maximum
+      lambda<-exp(opt$minimum)
+
+      cat("lambda=",lambda,"log(lambda)=",opt$minimum," GCV score=",opt$objective,"\n")
       
       # return the fit with the max
       X <- rbind(tp$X,rS*sqrt(lambda)) # augmented model matrix 
       z <- c(y,rep(0,ncol(rS)))	# augmented data 
       beta <- coef(lm(z~X-1))	# fit model
       beta <- qr.qy(tp$qrc,c(0,0,0,beta)) # backtransform beta
-   }
+#   }
 
 
 }
