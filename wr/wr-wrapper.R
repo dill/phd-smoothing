@@ -41,9 +41,12 @@ wr.pred<-function(pred,knots,beta){
 
    # for the prediction points
    D.p<-create_distance_matrix(c(pred$x,knots$x),
-                               c(pred$y,knots$y),bnd)
+                               c(pred$y,knots$y),bnd,
+                               start=length(pred$x))
+
    # distances from prediction points to knots
-   D.xpxk<-D.p[1:npred,(npred+1):dim(D.p)[2]]
+   #D.xpxk<-D.p[1:npred,(npred+1):dim(D.p)[2]]
+   D.xpxk<-D.p
 
    res<-eval.tps(matrix(c(pred$x,pred$y),npred,2),beta,
                  matrix(c(knots$x,knots$y),length(knots$x),2),D.xpxk=D.xpxk)

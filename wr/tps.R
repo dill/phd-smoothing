@@ -112,7 +112,7 @@ fit.tps <- function(y,x,xk=x,lambda=NULL,D.xxk=NULL,D.xkxk=NULL) {
       # grab the max
       lambda<-exp(opt$minimum)
 
-      cat("lambda=",lambda,"log(lambda)=",opt$minimum," GCV score=",opt$objective,"\n")
+      #cat("lambda=",lambda,"log(lambda)=",opt$minimum," GCV score=",opt$objective,"\n")
       
       # return the fit with the max
       X <- rbind(tp$X,rS*sqrt(lambda)) # augmented model matrix 
