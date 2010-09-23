@@ -68,7 +68,7 @@ for(i in 1:replicates){
    ### fit with wr
    
    beta.wr<-wr(samp.data,list(x=xk[,1],y=xk[,2]),bnd)
-   pred.wr<-wr.pred(list(x=xp[,1],y=xp[,2]),list(x=xk[,1],y=xk[,2]),beta)
+   pred.wr<-wr.pred(list(x=xp[,1],y=xp[,2]),list(x=xk[,1],y=xk[,2]),beta.wr)
 
 
    res$tps[i,]<-pred.tps
