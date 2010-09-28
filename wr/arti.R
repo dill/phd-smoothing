@@ -12,7 +12,7 @@ arti<-function(fit.obj,true.func,bnd){
       k<-length(fit.obj)
    }
 
-   N<-100
+   N<-99
 
    ### first need to create the mesh we want to integrate over
    # mesh function
@@ -36,7 +36,9 @@ arti<-function(fit.obj,true.func,bnd){
    # take a grid in the mds space
    ip <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
    # knock out those points outside the boundary
-   onoff<-inSide(bnd,ip$X[,1],ip$X[,2])
+#   onoff<-inSide(bnd,ip$X[,1],ip$X[,2])
+   source("inSide.R")
+   onoff<-in.poly(bnd,ip$X[,1],ip$X[,2])
    ep<-list()
    ep$X<-ip$X[onoff,]
    ep$w<-ip$w[onoff]

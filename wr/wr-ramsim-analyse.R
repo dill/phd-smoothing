@@ -32,6 +32,21 @@ for(i in 1:replicates){
 mse<-mse[-1,]
 mse$mse<-as.numeric(mse$mse)
 
+# load the MDS and soap results
+load("MDSram-mse-comp.RData")
+# calculate MSE
+for(i in 1:replicates){
+   mse<-rbind(mse,
+              c(mean((z.truth-res$mdstps[i,])^2),"mdstps"),
+              c(mean((z.truth-res$mdstprs[i,])^2),"mdstprs"),
+              c(mean((z.truth-res$soap[i,])^2),"soap"))
+}
+
+mse$mse<-as.numeric(mse$mse)
+
+
+
+
 library(ggplot2)
 
 p<-ggplot(mse,aes(factor(model),log(mse)))+xlab("Fitting method")+ylab("log(MSE)")
