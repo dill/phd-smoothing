@@ -27,6 +27,10 @@ wr<-function(samp,knots,bnd,lambda){
                   matrix(c(knots$x,knots$y),length(knots$x),2),
                   lambda=lambda,D.xkxk=D.xkxk,D.xxk=D.xxk)
 
+   # give it some class
+   class(beta)<-"wrtps"
+   attr(beta,"knots")<-knots
+
    # return the parameters
    return(beta)
 }
@@ -53,3 +57,9 @@ wr.pred<-function(pred,knots,beta){
 
    return(res)
 }
+
+# wrapper so I can use predict syntax
+predict.wrtps<-function(beta,data){
+   return(wr.pred(data,attr(beta,"knots"),beta))
+}
+

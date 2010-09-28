@@ -121,6 +121,11 @@ fit.tps <- function(y,x,xk=x,lambda=NULL,D.xxk=NULL,D.xkxk=NULL) {
       beta <- qr.qy(tp$qrc,c(0,0,0,beta)) # backtransform beta
 #   }
 
+   # give beta a bit of class
+   class(beta)<-"mytps"
+   attr(beta,"knots")<-list(x=xk[,1],y=xk[,2])
+
+   return(beta)
 
 }
 
@@ -142,4 +147,54 @@ eval.tps <- function(xp,beta,xk,D.xpxk=NULL) {
    f <- f + beta[k+2]*xp[,1] + beta[k+3]*xp[,2]
 }
 
+# wrapper so I can use predict syntax
+predict.mytps<-function(beta,data){
 
+   if(is.list(data)){
+      data<-matrix(c(pp$x,pp$y),length(pp$x),2)
+   }
+
+   knots<-attr(beta,"knots")
+   knots<-matrix(c(knots$x,knots$y),length(knots$x),2)
+
+   return(eval.tps(data,beta,knots))
+}  
+
+Predict.matrix.tps <- function(beta,xp,D.xpxk=NULL) { 
+   # evaluate tps at xp, given parameters, beta, and knots, xk.
+   # but return evaluations of basis functions
+   # see Predict.matrix() from mgcv
+   k <- nrow(xk);n <- nrow(xp) 
+
+
+   # deal with the knots
+   xk<-attr(beta,"knots")
+   xk<-matrix(c(xk$x,xk$y),length(xk$x),2)
+
+   if(is.list(xp)){
+      xp<-matrix(c(xp$x,xp$y),length(xp$x),2)
+   }
+
+   # matrix to hold results
+   f<-matrix(NA,n,k+3)
+
+   if(!is.null(D.xpxk)){
+      for (i in 1:k) { 
+         r<-D.xpxk[,i]
+         f[,i] <- beta[i]*eta(r)
+      } 
+   }else{
+      for (i in 1:k) { 
+         r <- sqrt((xp[,1]-xk[i,1])^2+(xp[,2]-xk[i,2])^2) 
+         f[,i]<-beta[i]*eta(r)
+      } 
+   }
+
+   # unpenalised part
+   f[,k+1]<-rep(beta[k+1],n)
+   f[,k+2]<-beta[k+2]*xp[,1]
+   f[,k+3]<-beta[k+3]*xp[,2]
+
+   return(f)
+
+}
