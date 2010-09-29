@@ -6,14 +6,16 @@ source("mds.R")
 source("tps.R")
 
 
-wr<-function(samp,knots,bnd,lambda){
+wr<-function(samp,knots,bnd,lambda=NULL){
 
    # expect samp to be a list with elements x,y,z 
    # where z is response
    
    # need to find the distance matrix
    D<-create_distance_matrix(c(samp$x,knots$x),
-                             c(samp$y,knots$y),bnd)
+                             c(samp$y,knots$y),
+                             bnd,
+                             faster=1)
 
    nsamp<-length(samp$x)
 

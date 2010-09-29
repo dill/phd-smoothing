@@ -168,7 +168,33 @@ What do I want to say here?
 	\item Why and when use it? (and who/how many do)
 	\item The detection function - assumptions, current issues
 	\item Why mixtures are better.
+	\item Death of CDS/MCDS
 \end{itemize}
 
 Distance sampling is the name given to a collection of analysis and field study methods which, when put together allow practitioners to assess the density and abundance of biological populations. Distance sampling is an extension of normal quadrat sampling, where an observer counts all of the animals (or plants) in a certain pre-determined area. The difference being that in quadrat sampling the probability of detection within the study area is assumed to be one however, in distance sampling, the probability of detection decreases with distance from the observer. Observations are made from a series of lines which the observer walks down (line transects) or from points dotted around the survey area (point transects) where the observer remains stationary and observes the plants or animals around him/her. The observer records the distance of those individuals seen (or heard) sometimes along with other information (such as size of the individual, sex, weather conditions or habitat type).
+
+\subsection{From density to distance sampling}
+
+Given we wish to estimate the density $\hat{D}$ of some biological population, in general we can write
+\begin{equation}
+\hat{D} = \frac{n}{a},
+\end{equation}
+where $n$ is the number of individuals we observe and $a$ is the area in which we observe them. This follows from the definition of density. Say that we use a strip transect survey, in this case we survey $k$ strips, counting all the observed individuals. If each strip is of length $l_i$ such that $\sum_{i=1}^k l_i =L$, the total length and that each strip has some fixed width $2w$, we can then write
+\begin{equation}
+\hat{D} = \frac{n}{2wL}.
+\end{equation}
+Now consider the case in which we are not certain that we observe everything in our strips. Then, what we might do is replace the fixed width $w$ with an estimated \textit{effective strip width}, $\hat{\mu}$. The effective strip width is the point at which we miss as many individuals within a distance of $\hat{\mu}$ from the line, as are observed beyond $\hat{\mu}$. Density can then be expressed as:
+\begin{equation}
+\hat{D} = \frac{n}{2\hat{\mu}L}.
+\end{equation}
+Now, how is $\hat{\mu}$ to be estimated? 
+
+
+
+In this case we must not only record how many individuals were spotted, but also their distance from the line that we walk.
+
+
+
+
+
 
