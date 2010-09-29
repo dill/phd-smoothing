@@ -32,10 +32,11 @@ XSC <- function(x,xk=x,D.xxk=NULL,D.xkxk=NULL) {
 
    if(!is.null(D.xxk) & !is.null(D.xkxk)){
       for (i in 1:k) {
-         C[1,i]<-1;C[2,i] <- xk[i,1];C[3,i] <- xk[i,2] 
+         C[1,i]<-1
+         C[2,i] <- xk[i,1]
+         C[3,i] <- xk[i,2] 
          for (j in i:k){ 
-            S[j,i]<-eta(D.xkxk[j,i])
-            S[i,j]<-eta(D.xkxk[i,j])
+            S[j,i]<-S[i,j]<-eta(D.xkxk[i,j])
          }
       }
    }else{
@@ -84,21 +85,21 @@ fit.tps <- function(y,x,xk=x,lambda=NULL,D.xxk=NULL,D.xkxk=NULL) {
    }
 
    # do the optimisation
-   opt<-optimize(gcv.objfcn,tp=tp,y=y,rS=rS,lower=0,upper=log(10^9))
+   opt<-optimize(gcv.objfcn,tp=tp,y=y,rS=rS,lower=log(10^-9),upper=log(10^9))
 
-   # plot method
-   V<-rep(0,60)
-   olam<-c()
-   lambda<- 1e-8
-   for(i in 1:60){
-      V[i]<-gcv.objfcn(lambda,tp=tp,y=y,rS=rS)
-      olam<-c(olam,log(lambda))
-      lambda<-lambda*1.5
-   }
-   X11()
-   plot(olam,V,type="l")  
-   lambda<-V[which.min(V)]
-   X11()
+#   # plot method
+#   V<-rep(0,60)
+#   olam<-c()
+#   lambda<- 1e-8
+#   for(i in 1:60){
+#      V[i]<-gcv.objfcn(log(lambda),tp=tp,y=y,rS=rS)
+#      olam<-c(olam,log(lambda))
+#      lambda<-lambda*1.5
+#   }
+#   X11()
+#   plot(olam,V,type="l",xlab="log(lambda)",ylab="GCV")  
+#   lambda<-V[which.min(V)]
+#   X11()
 
    # grab the max
    lambda<-exp(opt$minimum)
