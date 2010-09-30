@@ -11,7 +11,7 @@ source("arti.R")
 library(fields)
 
 
-#set.seed(12)
+set.seed(12)
 
 # as in the paper
 samp.size<-100
