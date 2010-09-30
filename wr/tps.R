@@ -89,11 +89,11 @@ fit.tps <- function(y,x,xk=x,lambda=NULL,D.xxk=NULL,D.xkxk=NULL) {
    # do the optimisation
    opt<-optimize(gcv.objfcn,tp=tp,y=y,rS=rS,lower=log(10^-9),upper=log(10^9))
 
-#   # plot method
-#   V<-rep(0,60)
+#   # plot
+#   V<-rep(0,100)
 #   olam<-c()
-#   lambda<- 1e-8
-#   for(i in 1:60){
+#   lambda<- 10^-9
+#   for(i in 1:100){
 #      V[i]<-gcv.objfcn(log(lambda),tp=tp,y=y,rS=rS)
 #      olam<-c(olam,log(lambda))
 #      lambda<-lambda*1.5
@@ -159,7 +159,6 @@ Predict.matrix.tps <- function(beta,xp,D.xpxk=NULL) {
    # see Predict.matrix() from mgcv
    k <- nrow(xk);n <- nrow(xp) 
 
-
    # deal with the knots
    xk<-attr(beta,"knots")
    xk<-matrix(c(xk$x,xk$y),length(xk$x),2)
@@ -189,5 +188,4 @@ Predict.matrix.tps <- function(beta,xp,D.xpxk=NULL) {
    f[,k+3]<-beta[k+3]*xp[,2]
 
    return(f)
-
 }
