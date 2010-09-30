@@ -63,8 +63,10 @@ absorb.con <- function(X,S,C) {
 fit.tps <- function(y,x,xk=x,lambda=NULL,D.xxk=NULL,D.xkxk=NULL) { 
    tp <- XSC(x,xk,D.xxk,D.xkxk)	# get tps matrices
    tp <- absorb.con(tp$X,tp$S,tp$C) # make unconstrained 
-   ev <- eigen(tp$S,symmetric=TRUE) # get sqrt penalty, rS 
-   rS <- ev$vectors%*%(ev$values^.5*t(ev$vectors)) 
+#   ev <- eigen(tp$S,symmetric=TRUE) # get sqrt penalty, rS 
+#   rS <- ev$vectors%*%(ev$values^.5*t(ev$vectors)) 
+   rS<-sqrt(diag(nrow(xk)))
+   rS[(nrow(xk)-2):nrow(xk),(nrow(xk)-2):nrow(xk)]<-0
 
    # objective function for optim to use
    gcv.objfcn<-function(lambda,tp,y,rS){
