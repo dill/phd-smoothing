@@ -1,0 +1,113 @@
+\documentclass[10pt]{article}
+%\documentclass[referee]{biom} 
+%\usepackage{epsf}
+%\usepackage{graphics}
+%\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{makeidx}
+\usepackage{latexsym}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{setspace}
+ 
+\onehalfspacing
+%\doublespacing
+\setlength{\textheight}{22.5cm}
+\setlength{\textwidth}{6.47in}
+\setlength{\oddsidemargin}{-1mm}
+\setlength{\topmargin}{0.1cm}
+\setlength{\evensidemargin}{-5mm}
+\makeindex
+
+\newcommand{\captionfonts}{\footnotesize}
+\makeatletter  
+\long\def\@makecaption#1#2{
+  \vskip\abovecaptionskip
+  \sbox\@tempboxa{{\captionfonts #1: #2}}
+  \ifdim \wd\@tempboxa >\hsize
+    {\captionfonts #1: #2\par}
+  \else
+    \hbox to\hsize{\hfil\box\@tempboxa\hfil}
+  \fi
+  \vskip\belowcaptionskip}
+\makeatother
+
+
+\newcommand {\hide}[1] {\typeout{ #1 }}
+\newcommand{\beq}{\begin{equation}}
+\newcommand{\eeq}{\end{equation}}
+\newcommand{\dif}[2]{\frac{{\rm d} #1}{{\rm d} #2}}
+\newcommand{\ildif}[2]{{\rm d} #1/{{\rm d} #2 }}
+\newcommand{\ilpdif}[2]{\partial #1/{\partial #2 }}
+\newcommand{\pdif}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pddif}[3]{\frac{\partial^2 #1}{\partial #2 \partial #3}}
+\newcommand{\ilpddif}[3]{\partial^2 #1/{\partial #2 \partial #3}}
+\newcommand{\comb}[2]{\left (\begin{array}{c}{#1}\\{#2}\end{array}\right )}
+\newcommand{\perm}[2]{^{#1}{\rm P}_{#2}}
+\newcommand{\gfrac}[2]{\mbox{$ { \textstyle{ \frac{#1}{#2} }\displaystyle}$}}
+\newcommand{\defn}{\begin{quote}{\bf Definition. }}
+\newcommand{\edefn}{\end{quote}}
+\newcommand{\thm}{\begin{theorem}}
+\newcommand{\ethm}{\end{theorem}}
+\newcommand{\R}{{\sf R}}
+\newcommand{\s}{{\sf S}}
+\newcommand{\fnzero}{\setcounter{footnote}{0}}
+\newcommand{\bmat}[1]{\left ( \begin{array}{#1}}
+\newcommand{\emat}{\end{array}\right )}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\ts}{^{\sf T}} 
+\newcommand{\its}{^{\sf -T}}
+\newcommand{\fv}{\hat{\bm{\mu}}}
+\newcommand{\X}{{\bf X}}
+\newcommand{\Xt}{\X\ts}
+\newcommand{\y}{{\bf y}}
+\newcommand{\A}{{\bf A}}
+\newcommand{\Qf}{{\bf Q}_{\rm f}}
+\newcommand{\bp}{{\bm \beta}}
+\newcommand{\rsd}{\hat {\bm \epsilon}}
+\newcommand{\grad}{\nabla_\beta}
+\newcommand{\tr}[1]{{\rm tr}\left ( {#1} \right )}
+\theoremstyle{definition}
+\newtheorem*{defin}{Definition}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newcommand{\rss}{{\cal S}}
+\newcommand{\eps}[3]
+{{\begin{center}
+\rotatebox{#1}{\scalebox{#2}{\includegraphics{#3}}}
+\end{center}}
+}
+\newcommand{\smsz}{\small}
+
+
+\begin{document}
+
+
+\title{within area distance paper...}
+
+\author{David L. Miller and Simon N. Wood
+%, \\ xxxxxxxxxxxxxxxxxxxxxxx \\ E-mail: 
+}
+%\footnote{Address for correspondence: }
+
+\maketitle
+
+
+%\begin{abstract}
+
+
+
+%\vspace{0.4cm}
+%\noindent \textbf{Keywords:} 
+
+%\noindent \textbf{JEL Classification numbers:} C14, C25, D1.
+
+%\end{abstract}
+
+\end{document}
+
+
+

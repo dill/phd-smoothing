@@ -6,7 +6,7 @@ arti<-function(fit.obj,true.func,bnd){
    # use finite difference to find the second derivatives
    eps<-(1e-15)^(1/4)
 
-   if(class(fit.obj)=="gam"){
+   if(any(class(fit.obj)=="gam")){
       k<-length(fit.obj$coef)
    }else{
       k<-length(fit.obj)
@@ -49,7 +49,7 @@ arti<-function(fit.obj,true.func,bnd){
    # let's create some matrices
    # finite second differences wrt x and y
    
-   if(class(fit.obj)=="wrtps"){
+   if(any(class(fit.obj)=="wrtps")){
 
       # deriv evaluation points, this is corny storage, but saves me time...
       devalp<-list()
@@ -75,14 +75,14 @@ arti<-function(fit.obj,true.func,bnd){
    }
 
 
-   if(class(fit.obj)=="gam"){
+   if(any(class(fit.obj)=="gam")){
       # use mgcv's Predict.Matrix if we have a gam object
-      dxee<-Predict.matrix(fit.obj,data.frame(x=ep$X[,1]+2*eps,y=ep$X[,2]))
-      dxe <-Predict.matrix(fit.obj,data.frame(x=ep$X[,1]+eps,y=ep$X[,2]))
-      dyee<-Predict.matrix(fit.obj,data.frame(x=ep$X[,1],y=ep$X[,2]+2*eps))
-      dye <-Predict.matrix(fit.obj,data.frame(x=ep$X[,1],y=ep$X[,2]+eps))
-      dxy <-Predict.matrix(fit.obj,data.frame(x=ep$X[,1],y=ep$X[,2]))
-      dxye<-Predict.matrix(fit.obj,data.frame(x=ep$X[,1]+eps,y=ep$X[,2]+eps))
+      dxee<-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1]+2*eps,y=ep$X[,2]))
+      dxe <-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1]+eps,y=ep$X[,2]))
+      dyee<-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1],y=ep$X[,2]+2*eps))
+      dye <-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1],y=ep$X[,2]+eps))
+      dxy <-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1],y=ep$X[,2]))
+      dxye<-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1]+eps,y=ep$X[,2]+eps))
    }else{
       # if we're using the hacked tps, do something similar
       dxee<-Predict.matrix.tps(fit.obj,data.frame(x=ep$X[,1]+2*eps,y=ep$X[,2]),D.devalp[[1]])
@@ -127,8 +127,7 @@ arti<-function(fit.obj,true.func,bnd){
    S[,(k-2):k]<-rep(0,k*3)
 
    # calculate beta^T S beta
-
-   if(class(fit.obj)=="gam"){
+   if(any(class(fit.obj)=="gam")){
       beta<-fit.obj$coef
    }else{
       beta<-fit.obj

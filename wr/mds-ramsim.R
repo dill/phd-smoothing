@@ -16,7 +16,7 @@ library(fields)
 samp.size<-100
 noise.level<-0.05
 n.knots<-40
-replicates<-200
+replicates<-2
 
 
 ## create a boundary...
