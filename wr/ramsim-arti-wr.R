@@ -61,11 +61,11 @@ for(i in 1:replicates){
    beta.wr<-wr(samp.data,list(x=xk[,1],y=xk[,2]),bnd)
 
    # calculate artifactiness
-   res$tps[i,]<-arti(beta.tps,fs.test,bnd)
-   res$wr[i,]<-arti(beta.tps,fs.test,bnd)
+   res$tps[i]<-arti(beta.tps,fs.test,bnd)
+   res$wr[i]<-arti(beta.tps,fs.test,bnd)
 
 }
 
 # save this
-save.image(file="ram-wr-arti.RData")
+save.image(file="wr-ram-arti.RData")
 
