@@ -1,25 +1,11 @@
 # attempt to duplicate the simulation settings in 
 # Wang and Ranalli (2007)
 # Copyright David Lawrence Miller 2010
-#source("mds.R")
-#source("tps.R")
-
 source("wr-wrapper.R")
 
-# import fields for the cover.design() function
-library(fields)
-
-
-#set.seed(12)
-
-# as in the paper
-samp.size<-100
-noise.level<-0.05
-n.knots<-40
 replicates<-200
 
 load("ram-wr-comp.RData")
-
 
 # calculate MSE
 mse<-data.frame(mse=NA,model=NA)
