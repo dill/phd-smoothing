@@ -1,14 +1,11 @@
 # attempt to duplicate the simulation settings in 
 # Wang and Ranalli (2007)
 # Copyright David Lawrence Miller 2010
-#source("mds.R")
-#source("tps.R")
 
 source("wr-wrapper.R")
 
 # import fields for the cover.design() function
 library(fields)
-
 
 set.seed(12)
 
@@ -16,8 +13,7 @@ set.seed(12)
 samp.size<-100
 noise.level<-0.05
 n.knots<-40
-replicates<-2
-
+replicates<-200
 
 ## create a boundary...
 bnd <- fs.boundary()

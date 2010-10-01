@@ -9,7 +9,6 @@ source("wr-wrapper.R")
 # import fields for the cover.design() function
 library(fields)
 
-
 set.seed(12)
 
 # as in the paper
