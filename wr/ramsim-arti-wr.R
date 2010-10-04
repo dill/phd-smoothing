@@ -62,7 +62,7 @@ for(i in 1:replicates){
 
    # calculate artifactiness
    res$tps[i]<-arti(beta.tps,fs.test,bnd)
-   res$wr[i]<-arti(beta.tps,fs.test,bnd)
+   res$wr[i]<-arti(beta.wr,fs.test,bnd)
 
 }
 
