@@ -131,8 +131,24 @@
 \section{Our approach}
 
 
-\section{Simulation results}
+\section{Simulation experiment}
 
+Simulation settings same as W+R paper. 200 realisations, 100 samples, noise=0.05, 40 knots selected using the \texttt{cover.design()} function in \texttt{fields}. Use a simplified boundary for speed: take every 5th vertex on the curved parts of the boundary. Predicated back over 
+
+Compare the following models:
+
+\begin{itemize}
+	\item MDS+tprs
+	\item MDS+tps
+	\item soap film smoother
+	\item WR+tps
+\end{itemize}
+
+Calculated MSE, also ``artefactiness'':
+\begin{equation}
+A= \int\int_\Omega  \Big( \frac{\partial^2 (f_m(x,y)-f_t(x,y))}{\partial x^2}\Big)^2 + \Big(\frac{\partial^2 (f_m(x,y)-f_t(x,y))}{\partial x \partial y}\Big)^2 + \Big(\frac{\partial^2 (f_m(x,y)-f_t(x,y))}{\partial y^2}\Big)^2 \text{d}x\text{d}y.
+\end{equation}
+where $f_m(x,y)$ is the model and  $f_t(x,y)$ is the truth. This is supposed to measure the wigglyness in the difference between the two, giving an idea of whether there are artefacts in the smooth.
 
 
 \section{Conclusions}

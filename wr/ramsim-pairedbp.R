@@ -1,9 +1,5 @@
 # piared boxplots for Ramsay sim results 
 # David Lawrence Miller 2010
-source("wr-wrapper.R")
-
-# import fields for the cover.design() function
-library(fields)
 
 replicates<-200
 
@@ -32,12 +28,34 @@ for(i in 1:replicates){
 
 mse$mse<-as.numeric(mse$mse)
 
+# now we have the MSEs, calculate the pairs by subtracting
+# the soap MSEs...
 
+# storage
+pairmse<-data.frame(mse=NA,model=NA)
+
+# soap results
+soapmse<-mse$mse[mse$model=="soap"]
+
+
+# comment out mdstps and tps to see the different between mdstprs and wr
+
+for(i in 1:replicates){
+   pairmse<-rbind(pairmse,
+#                  c(mse$mse[mse$model=="tps"][i]-soapmse[i],"tps"),
+                  c(mse$mse[mse$model=="wr"][i]-soapmse[i],"wr"),
+#                  c(mse$mse[mse$model=="mdstps"][i]-soapmse[i],"mdstps"),
+                  c(mse$mse[mse$model=="mdstprs"][i]-soapmse[i],"mdstprs"))
+}
+
+
+pairmse<-pairmse[-1,]
+pairmse$mse<-as.numeric(pairmse$mse)
 
 
 library(ggplot2)
 
-p<-ggplot(mse,aes(factor(model),log(mse)))+xlab("Fitting method")+ylab("log(MSE)")
+p<-ggplot(pairmse,aes(factor(model),mse))+xlab("Model")+ylab("log(MSE)")
 p+geom_boxplot(outlier.size=1)
 
 

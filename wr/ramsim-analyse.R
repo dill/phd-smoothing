@@ -35,7 +35,7 @@ mse$mse<-as.numeric(mse$mse)
 
 library(ggplot2)
 
-p<-ggplot(mse,aes(factor(model),log(mse)))+xlab("Fitting method")+ylab("log(MSE)")
+p<-ggplot(mse,aes(factor(model),log(mse)))+xlab("Model")+ylab("log(MSE)")
 p+geom_boxplot(outlier.size=1)
 
 
