@@ -157,15 +157,14 @@ Predict.matrix.tps <- function(beta,xp,D.xpxk=NULL) {
    # evaluate tps at xp, given parameters, beta, and knots, xk.
    # but return evaluations of basis functions
    # see Predict.matrix() from mgcv
+   if(is.list(xp)|is.data.frame(xp)){
+      xp<-matrix(c(xp$x,xp$y),length(xp$x),2)
+   }
    k <- nrow(xk);n <- nrow(xp) 
 
    # deal with the knots
    xk<-attr(beta,"knots")
    xk<-matrix(c(xk$x,xk$y),length(xk$x),2)
-
-   if(is.list(xp)){
-      xp<-matrix(c(xp$x,xp$y),length(xp$x),2)
-   }
 
    # matrix to hold results
    f<-matrix(NA,n,k+3)

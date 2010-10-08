@@ -1,7 +1,5 @@
 # calculate the artifactiness of a smooth...
-
 arti<-function(fit.obj,true.func,bnd){
-
    ## recreate the S matrix
    # use finite difference to find the second derivatives
    eps<-(1e-15)^(1/4)
@@ -12,7 +10,8 @@ arti<-function(fit.obj,true.func,bnd){
       k<-length(fit.obj)
    }
 
-   N<-99
+   N<-55
+   N<-66
 
    ### first need to create the mesh we want to integrate over
    # mesh function
@@ -28,15 +27,12 @@ arti<-function(fit.obj,true.func,bnd){
       list(X=X,w=w) ## each row of X gives co-ordinates of a node
    }
 
-
    # set the integration limits
    # make an overly big bounding square
    a<-min(c(bnd$x,bnd$y))
    b<-max(c(bnd$x,bnd$y))
    # take a grid in the mds space
    ip <- mesh(a+(1:N-.5)/N*(b-a),2,rep(2/N,N))
-   # knock out those points outside the boundary
-#   onoff<-inSide(bnd,ip$X[,1],ip$X[,2])
    source("inSide.R")
    onoff<-in.poly(bnd,ip$X[,1],ip$X[,2])
    ep<-list()
@@ -48,49 +44,54 @@ arti<-function(fit.obj,true.func,bnd){
 
    # let's create some matrices
    # finite second differences wrt x and y
+
+   xee<-list(x=ep$X[,1]+2*eps,y=ep$X[,2])
+   xe <-list(x=ep$X[,1]+eps,y=ep$X[,2])
+   yee<-list(x=ep$X[,1],y=ep$X[,2]+2*eps)
+   ye <-list(x=ep$X[,1],y=ep$X[,2]+eps)
+   xy <-list(x=ep$X[,1],y=ep$X[,2])
+   xye<-list(x=ep$X[,1]+eps,y=ep$X[,2]+eps)
    
    if(any(class(fit.obj)=="wrtps")){
-
       # deriv evaluation points, this is corny storage, but saves me time...
       devalp<-list()
-      devalp[[1]]<-list(x=ep$X[,1]+2*eps,y=ep$X[,2])
-      devalp[[2]]<-list(x=ep$X[,1]+eps,y=ep$X[,2])
-      devalp[[3]]<-list(x=ep$X[,1],y=ep$X[,2]+2*eps)
-      devalp[[4]]<-list(x=ep$X[,1],y=ep$X[,2]+eps)
-      devalp[[5]]<-list(x=ep$X[,1],y=ep$X[,2])
-      devalp[[6]]<-list(x=ep$X[,1]+eps,y=ep$X[,2]+eps)
+      devalp[[1]]<-xee
+      devalp[[2]]<-xe 
+      devalp[[3]]<-yee
+      devalp[[4]]<-ye 
+      devalp[[5]]<-xy 
+      devalp[[6]]<-xye
       
       D.devalp<-list()
       
       knots<-attr(fit.obj,"knots")
    
       for(i in 1:6){
-         D.devalp[[i]]<-create_distance_matrix(c(devalp[[i]]$x,knots$x),
-                                  c(devalp[[i]]$y,knots$y),bnd,
-                                  start=length(devalp[[i]]$x))
+         D.devalp[[i]]<-create_distance_matrix(
+                               c(devalp[[i]]$x,knots$x),
+                               c(devalp[[i]]$y,knots$y),bnd,
+                               start=length(devalp[[i]]$x))
       }
-   
    }else{
       D.devalp<-NULL
    }
 
-
    if(any(class(fit.obj)=="gam")){
       # use mgcv's Predict.Matrix if we have a gam object
-      dxee<-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1]+2*eps,y=ep$X[,2]))
-      dxe <-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1]+eps,y=ep$X[,2]))
-      dyee<-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1],y=ep$X[,2]+2*eps))
-      dye <-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1],y=ep$X[,2]+eps))
-      dxy <-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1],y=ep$X[,2]))
-      dxye<-Predict.matrix(fit.obj$smooth[[1]],data.frame(x=ep$X[,1]+eps,y=ep$X[,2]+eps))
+      dxee<-Predict.matrix(fit.obj$smooth[[1]],xee)
+      dxe <-Predict.matrix(fit.obj$smooth[[1]],xe)
+      dyee<-Predict.matrix(fit.obj$smooth[[1]],yee)
+      dye <-Predict.matrix(fit.obj$smooth[[1]],ye)
+      dxy <-Predict.matrix(fit.obj$smooth[[1]],xy)
+      dxye<-Predict.matrix(fit.obj$smooth[[1]],xye)
    }else{
       # if we're using the hacked tps, do something similar
-      dxee<-Predict.matrix.tps(fit.obj,data.frame(x=ep$X[,1]+2*eps,y=ep$X[,2]),D.devalp[[1]])
-      dxe <-Predict.matrix.tps(fit.obj,data.frame(x=ep$X[,1]+eps,y=ep$X[,2]),D.devalp[[2]])
-      dyee<-Predict.matrix.tps(fit.obj,data.frame(x=ep$X[,1],y=ep$X[,2]+2*eps),D.devalp[[3]])
-      dye <-Predict.matrix.tps(fit.obj,data.frame(x=ep$X[,1],y=ep$X[,2]+eps),D.devalp[[4]])
-      dxy <-Predict.matrix.tps(fit.obj,data.frame(x=ep$X[,1],y=ep$X[,2]),D.devalp[[5]])
-      dxye<-Predict.matrix.tps(fit.obj,data.frame(x=ep$X[,1]+eps,y=ep$X[,2]+eps),D.devalp[[6]])
+      dxee<-Predict.matrix.tps(fit.obj,xee,D.devalp[[1]])
+      dxe <-Predict.matrix.tps(fit.obj,xe, D.devalp[[2]])
+      dyee<-Predict.matrix.tps(fit.obj,yee,D.devalp[[3]])
+      dye <-Predict.matrix.tps(fit.obj,ye, D.devalp[[4]])
+      dxy <-Predict.matrix.tps(fit.obj,xy, D.devalp[[5]])
+      dxye<-Predict.matrix.tps(fit.obj,xye,D.devalp[[6]])
    }
 
    # take truth-deriv...
