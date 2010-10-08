@@ -11,7 +11,6 @@ arti<-function(fit.obj,true.func,bnd){
    }
 
    N<-55
-   N<-66
 
    ### first need to create the mesh we want to integrate over
    # mesh function
