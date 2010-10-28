@@ -117,5 +117,5 @@ for(i in 1:replicates){
 }
 
 # save this
-#save.image(file=paste("ramsim-",noise.level,"-",samp.size,"-results.RData",sep=""))
+save.image(file=paste("ramsim-",noise.level,"-",samp.size,"-results.RData",sep=""))
 
