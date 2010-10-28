@@ -112,15 +112,19 @@ fit.tps <- function(y,x,xk=x,lambda=NULL,D.xxk=NULL,D.xkxk=NULL) {
    # return the fit with the max
    X <- rbind(tp$X,rS*sqrt(lambda)) # augmented model matrix 
    z <- c(y,rep(0,ncol(rS)))	# augmented data 
-   beta <- coef(lm(z~X-1))	# fit model
-   beta <- qr.qy(tp$qrc,c(0,0,0,beta)) # backtransform beta
+   mod<-lm(z~X-1)
+   beta<-coef(mod)	# fit model
+   trA<-sum(influence(mod)$hat[1:n])
+   beta<-qr.qy(tp$qrc,c(0,0,0,beta)) # backtransform beta
+
+   # useful attributes
+   attr(beta,"knots")<-list(x=xk[,1],y=xk[,2])
+   attr(beta,"edf")<-trA
 
    # give beta a bit of class
    class(beta)<-"mytps"
-   attr(beta,"knots")<-list(x=xk[,1],y=xk[,2])
 
    return(beta)
-
 }
 
 eval.tps <- function(xp,beta,xk,D.xpxk=NULL) { 

@@ -9,7 +9,7 @@ set.seed(12)
 
 # as in the paper
 samp.size<-100
-noise.level<-5 #0.05, 0.5
+noise.level<-5 #0.05, 0.5, 5
 n.knots<-40
 replicates<-200
 
@@ -40,12 +40,19 @@ D.grid<-create_distance_matrix(xx,yy,bnd)
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 pred.mds<-list(x=grid.mds$points[,1],y=grid.mds$points[,2])
 
-# results storage
+# results storage - predictions
 res<-list(tps=matrix(NA,replicates,length(xx)),
           wr=matrix(NA,replicates,length(xx)),
           mdstps=matrix(NA,replicates,length(xx)),
           mdstprs=matrix(NA,replicates,length(xx)),
           soap=matrix(NA,replicates,length(xx)))
+
+# results storage - edf
+edf.res<-list(tps=c(),
+          wr=c(),
+          mdstps=c(),
+          mdstprs=c(),
+          soap=c())
 
 # actually do the simulations
 for(i in 1:replicates){
@@ -64,11 +71,9 @@ for(i in 1:replicates){
    samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd)
    samp.mds<-data.frame(x=samp.mds[,1],y=samp.mds[,2],z=samp.data$z)
 
-
    # knot selection
    xk<-cover.design(matrix(c(samp.data$x,samp.data$y),length(samp.data$x),2),n.knots)
    xk<-matrix(c(xk[,1],xk[,2]),length(xk[,1]),2)
-
 
    #################################
    # actual model fitting below here
@@ -81,8 +86,8 @@ for(i in 1:replicates){
    pred.wr<-wr.pred(list(x=xp[,1],y=xp[,2]),list(x=xk[,1],y=xk[,2]),beta.wr)
 
    ### fit with tps
-   beta.tps<-fit.tps(samp.mds$z,cbind(samp.mds$x,samp.mds$y),xk)
-   pred.tps<-eval.tps(xp,beta.tps,xk)
+   beta.mdstps<-fit.tps(samp.mds$z,cbind(samp.mds$x,samp.mds$y),xk)
+   pred.mdstps<-eval.tps(xp,beta.mdstps,xk)
 
    ### fit with tprs
    b.mapped<-gam(z~s(x,y,k=100),data=samp.mds)
@@ -96,13 +101,21 @@ for(i in 1:replicates){
    b.soap<-gam(z~s(x,y,k=39,bs="so",xt=list(bnd=list(bnd))),knots=knots,data=samp.data)
    pred.soap<-predict(b.soap,newdata=pred.data,block.size=-1)
 
+   # store predictions
    res$tps[i,]<-pred.tps
    res$wr[i,]<-pred.wr
-   res$mdstps[i,]<-pred.tps
+   res$mdstps[i,]<-pred.mdstps
    res$mdstprs[i,]<-pred.tprs
    res$soap[i,]<-pred.soap
+
+   # store edfs
+   edf.res$tps<-c(edf.res$tps,attr(beta.tps,"edf"))
+   edf.res$wr<-c(edf.res$wr,attr(beta.wr,"edf"))
+   edf.res$mdstps <-c(edf.res$mdstps,attr(beta.mdstps,"edf"))
+   edf.res$mdstprs<-c(edf.res$mdstprs,sum(b.mapped$edf))
+   edf.res$soap   <-c(edf.res$soap,sum(b.soap$edf))
 }
 
 # save this
-save.image(file=paste("ramsim-",noise.level,"-",samp.size,"-results.RData",sep=""))
+#save.image(file=paste("ramsim-",noise.level,"-",samp.size,"-results.RData",sep=""))
 
