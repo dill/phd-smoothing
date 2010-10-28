@@ -9,7 +9,7 @@ set.seed(12)
 
 # as in the paper
 samp.size<-100
-noise.level<-0.05
+noise.level<-5 #0.05, 0.5
 n.knots<-40
 replicates<-200
 
