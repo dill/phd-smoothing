@@ -163,37 +163,70 @@ Chapters \ref{chap-sc} and \ref{chap-mds} expand on the ideas in the last method
 
 \section{Distance sampling}
 
-What do I want to say here?
+Humans rely on the natural world in order to survive. As the human population expands, strain is being exerted on the plant and animal populations of Earth in order to support this reliance. Accordingly, wide and large-scale monitoring of the biological populations of the planet have been set up to ensure that continued growth does not irreparably damage populations and habitats essential to survival.
+
+The general problem being that one wishes to know the abundance of some biological population in a finite area. Census-type methods are extremely expensive and inefficient, so some kind of sampling must be used. 
+
+Distance sampling is probably the most popular method for assessing the abundance of biological populations. It has been used by researchers all over the world to assess the abundance of everything from elephants to plant diseases and from marine mammals to mines. Its popularity is in part due to the software Distance (\cite{distance-software}) which makes it easy to record and analyse distance sampling data.
+
+
+
+One can think of distance sampling as the logical extension of quadrat and then strip transect sampling (see figure [FIG!!!]). In quadrat sampling a series of squares (quadrats) are laid out at random over the area in question and the number of objects of interest within each is counted. It is assumed that within each quadrat a census is performed. From the per quadrat abundance the overall density can be calculated and multiplied-up to find the total abundance. For the sampling to be efficient the quadrats need to be large and hence it is almost impossible to ensure that all objects in the quadrat are seen, this can be further hindered by animals moving between the quadrats during the survey (\cite{IDS}, p. 2).
+
+[[ Figure here illustrating the evolution to DS from quadrat and strip]]
+
+To make the task of counting the objects within the quadrat easier, one could modify the square design to be a long strip, so that the observer could walk down the centreline of the strip, observing those objects within the strip. Mathematically, if we let the each strip be of width $2w$ and the total length of all strips be $L$, and $n$ objects are observed we have an estimator of the density, $D$:
+\begin{equation}
+\hat{D}=\frac{n}{2wL}.
+\label{ds-simpleD}
+\end{equation}
+The problem with this approach is that there may well be many objects just outside of the quadrat. Clearly this is a waste of survey effort. It would be preferable to include as many observations as possible and leverage the maximum amount of data we can collect to assess the abundance of the population.
+
+Distance sampling is based on this principle, that if the objects of interest are there then their presence should be recorded. Instead of using fixed-area sampling units, distance sampling requires that only centrelines are specified. The observers should walk (or swim, ride, drive etc) down these observing objects as they go; the distances ($x_i$) to these objects are recorded. Once the survey is complete, the distances are used to estimated the effective area that was sampled. In equation \ref{ds-simpleD} we replace $w$ with an estimate of $\mu$, the \textit{effective strip (half-)width}. So we then have:
+\begin{equation}
+\hat{D}=\frac{n}{2\hat{\mu}L}.
+\end{equation}
+We could also consider that a certain proportion ($\hat{P}_a$) of the objects in a fixed-area ($2wL$) were sampled, so the above can also be expressed as:
+\begin{equation}
+\hat{D}=\frac{n}{2wL\hat{P}_a}.
+\end{equation}
+The relationship between these quantities and their calculation is covered below, but before going into detail, some other practical matters are discussed.
+
+\subsection{Point transects}
+First note that line transects are not the only way of collecting data to put into a distance sampling analysis; point transects may also be used. When using point transects the observer stands at one of a series of points ($m$, say) and observes the objects surrounding him/her. Again, distances to the objects ($r_i$) are recorded. An effective radius ($\rho$) is then calculated, analogously to $\mu$ and then object density can be written as:
+\begin{equation}
+\hat{D}=\frac{n}{m \pi \hat{\rho}^2}=\frac{n}{m\pi w^2\hat{P}_a}.
+\end{equation}
+again, the relation between these quantities will be explained below.
+
+\subsection{Line and point placement}
+The placement of the lines and points above is said to be ``random'', in practise randomly placing and orientating lines can be expensive and time-consuming (in particular in shipboard surveys where one wishes to minimise off-effort time). The solution to this is simply randomly placing and orientating a grid of lines or points. For shipboard surveys ``zigzag'' designs can be used to minimise off-effort time (CITE STRINDBERG paper). It is also important to ensure that transects to not run parallel to geographical features to avoid bias. For example using roads as transects (as was done in the US breeding birds survey) leads to bias since animals may be compelled to move away from the road and toward neighbouring hedgerows (\cite{IDS}, p. 18).
+
+\subsection{Clusters}
+If animals are observed in clusters (for example pods for whales or packs for wolves) then it might be more convenient to estimate the abundance of clusters and use them as the fundamental unit to estimate. The cluster size can also be estimated and the abundance of clusters ``multiplied up'' to give the overall abundance (\cite{IDS}, p. 13).
+
+\subsection{Assumptions}
+In order to ensure that estimation is unbiased several assumptions are made. These are summarised below, more information (especially with regard to field procedure) may be found in \cite{IDS}, chapter 2.
 
 \begin{itemize}
-	\item What is DS?
-	\item Why and when use it? (and who/how many do)
-	\item The detection function - assumptions, current issues
-	\item Why mixtures are better.
-	\item Death of CDS/MCDS
+	\item The survey must be performed and designed properly and field procedure followed. No amount of analysis can correct for this.
+	\item Objects are distributed according to some stochastic process throughout the area of interest.
+	\item Lines and points are randomly placed and a sample of $n$ objects are detected, measured and recorded.
+	\item Objects on the line (or point) are detected with probability 1.
+	\item Objects are observed in their initial location, not after movement in response to the observer.
+	\item Distances are accurate.
+	\item Objects are correctly identified.
 \end{itemize}
 
-Distance sampling is the name given to a collection of analysis and field study methods which, when put together allow practitioners to assess the density and abundance of biological populations. Distance sampling is an extension of normal quadrat sampling, where an observer counts all of the animals (or plants) in a certain pre-determined area. The difference being that in quadrat sampling the probability of detection within the study area is assumed to be one however, in distance sampling, the probability of detection decreases with distance from the observer. Observations are made from a series of lines which the observer walks down (line transects) or from points dotted around the survey area (point transects) where the observer remains stationary and observes the plants or animals around him/her. The observer records the distance of those individuals seen (or heard) sometimes along with other information (such as size of the individual, sex, weather conditions or habitat type).
-
-\subsection{From density to distance sampling}
-
-Given we wish to estimate the density $\hat{D}$ of some biological population, in general we can write
-\begin{equation}
-\hat{D} = \frac{n}{a},
-\end{equation}
-where $n$ is the number of individuals we observe and $a$ is the area in which we observe them. This follows from the definition of density. Say that we use a strip transect survey, in this case we survey $k$ strips, counting all the observed individuals. If each strip is of length $l_i$ such that $\sum_{i=1}^k l_i =L$, the total length and that each strip has some fixed width $2w$, we can then write
-\begin{equation}
-\hat{D} = \frac{n}{2wL}.
-\end{equation}
-Now consider the case in which we are not certain that we observe everything in our strips. Then, what we might do is replace the fixed width $w$ with an estimated \textit{effective strip (half)-width}, $\hat{\mu}$. The effective strip width is the point at which we miss as many individuals within a distance of $\hat{\mu}$ from the line, as are observed beyond $\hat{\mu}$. Density can then be expressed as:
-\begin{equation}
-\hat{D} = \frac{n}{2\hat{\mu}L}.
-\end{equation}
-Now, how is $\hat{\mu}$ to be estimated? 
 
 
+estimating mu from g
 
-In this case we must not only record how many individuals were spotted, but also their distance from the line that we walk.
+covariates
+
+problems
+
+fix using mixtures
 
 
 
