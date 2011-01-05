@@ -252,7 +252,7 @@ such that
 \begin{equation}
 \hat{D}=n/2L\hat{\mu}
 \end{equation}
-as in \cite{IDS} p. 38.
+as in \cite{IDS} p. 38. So the relation between $\mu$ and $P_a$ is $P_a=\mu/w$.
 
 Now let us assume that $g(x)$ has some fixed functional form and that we wish to estimate its parameter(s) (which for now will be referred to as $\bm{\theta}$). This can be done via standard maximum likelihood methods. First we must find a probability density function. Note that the expected number of objects at a distance $x$ from the transect line (including those not observed) is independent of $x$. This then implies that the shape of the density functions is the same as that of the detection function and can therefore be obtained by rescaling (\cite{IDS}, p. 38). So, the pdf of the perpendicular distance data, conditional on the object being observed is then:
 \begin{equation}
@@ -264,11 +264,39 @@ f(0;\bm{\theta}) = \frac{g(0;\bm{\theta})}{\int_0^w g(x;\bm{\theta}) \text{d}x} 
 \end{equation}
 Now we have obtained an expression for the pdf, we can form a likelihood:
 \begin{align}
-\mathcal{L}(;\bm{\theta}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\theta}),\\
+\mathcal{L}(\bm{\theta}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\theta}),\\
 &= \prod_{i=1}^n \frac{g(x;\bm{\theta})}{\mu}.
 \end{align}
 
 \subsection{Estimating $P_a$ - point transects} 
+The same results can be derived for point transects. First note that the relationship between $f(r)$ and $g(r)$ is different to that between $f(x)$ and $g(x)$ above. The increase in area due to an increase in radius of $\text{d}r$ is proportional to $r$ so $f(r)$ is proportional to $rg(r)$:
+\begin{equation}
+f(r) = \frac{r g(r)}{\int_0^w r g(r) \text{d}r},
+\end{equation}
+a more rigorous proof of this is given in \cite{IDS} p. 54.
+
+Letting 
+\begin{equation}
+\nu = 2 \pi \int_0^w r g(r) \text{d}r
+\end{equation}
+we can write
+\begin{equation}
+f(r) = \frac{2 \pi r g(r)}{\nu}.
+\end{equation}
+By analogy to the line transect case the relation between $\nu$ and $P_a$ in the point transect case is
+\begin{equation}
+P_a=\frac{\nu}{\pi w^2}
+\end{equation}
+so
+\begin{equation}
+f(r) = \frac{2 \pi r g(r)}{\pi w^2 P_a}.
+\end{equation}
+So again, a likelihood can be formed:
+\begin{align}
+\mathcal{L}(\bm{\theta}; \bm{r}) &= \prod_{i=1}^n f(r_i;\bm{\theta}),\\
+&= \prod_{i=1}^n \frac{2 \pi r g(r;\bm{\theta})}{\nu}.
+\end{align}
+
 
 
 \subsection{Detection functions}
@@ -279,6 +307,25 @@ We now must specify the functional form for $g$. The literature gives some optio
 This formulation leads to a class of highly flexible models and a normal analysis may consist of running models made up of various combinations of key functions and adjustment terms. Model selection is usually performed using AIC.
 
 \subsection{Covariates}
+One can very easily think of the case in which one or more factors effect the detectability of objects in a survey. A typical example might be sex or size of the object or weather conditions during when the object was observed. When available this information can be very useful in handling heterogeneity in the data (\cite{IDS}, p. 88). Covariates are included in detection function models by using a link function. One (or more) of the parameters of the detection function is considered to be a linear combination of the covariates.
+
+Considering a detection function modelled by a half-Normal, we can write that:
+\begin{equation}
+g(x; \sigma) = \exp\Big(\frac{-x^2}{2\sigma^2}\Big)
+\end{equation}
+
+
+now, say that two covariates have been collected, $z_{i,\text{sex}}$ and $z_{i,\text{Beau}}$ indicating the sex of the animal and the Beaufort sea state when the animal was observed. Also recorded are the distances $x_i$. The covariates can be included in the analysis by considering $\sigma$ as a linear combination of these covariates, so
+\begin{equation}
+\sigma_i = \beta_0 + \beta_1 z_{i,\text{sex}} + \beta_2 z_{i,\text{Beau}}
+\end{equation}
+
+
+
+
+separate this?
+
+flow diagram?
 
 
 

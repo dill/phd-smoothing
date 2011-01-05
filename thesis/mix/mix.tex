@@ -1,1 +1,52 @@
-mixture models for distance sampling detection functions!
+\section{Introduction}
+
+Repeat what was in the intro a bit
+
+Why do this?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{General formulation}
+
+The general principle here is to replace the ``key function plus adjustment terms'' model for the detection function with a mixture model. The simplest example would be to define $g$ as some finite weighted sum of half-Normal distributions:
+\begin{equation*}
+g(x;\bm{\sigma},\bm{\pi}) = \sum_{j=1}^J \pi_j \exp \Big( \frac{-x^2}{2 \sigma_j^2}\Big).
+\end{equation*}
+Where the mixture proportions, $\pi_j$, have the property $\sum_{\forall j}\pi_j=1$ ($\bigcup_{\forall j} \pi_j=\bm{\pi}$). The (scale) parameters $\bm{\sigma}=(\sigma_1,\sigma_2,\dots,\sigma_J)$
+
+
+\subsection{Line transects}
+
+\subsection{Point transects}
+
+\subsection{Covariate models}
+
+
+\subsection{Detection probability}
+
+$P_a$, per observation $p$, Var and CV.
+
+\subsection{GoF}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Implementation}
+
+\subsection{Parametrisation}
+
+\subsection{Fitting}
+
+\subsection{Starting values}
+
+\subsection{Derivatives}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Testing}
+
+\subsection{Simulations}
+
+\subsection{Real data}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
