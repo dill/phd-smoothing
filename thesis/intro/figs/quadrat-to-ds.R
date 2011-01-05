@@ -1,7 +1,12 @@
 # draw a pretty picture illustrating the progression from 
 # quadrat sampling to strip sampling to distance sampling
 
-par(mfrow=c(1,3),mgp=c(1,1,1))
+# use soap for inSide
+library(soap)
+
+pdf(file="quadrat-to-ds.pdf",width=6,height=2)
+par(mfrow=c(1,3),mgp=c(2,1,0),mar=c(2,2,2,2))
+
 
 #set.seed(124)
 
@@ -59,13 +64,16 @@ this.line[,1]<-c((1/3)/2,(1/3)/2)
 this.line[,2]<-c(0,1)
 
 for(i in 0:2){
-   lines(this.line)
-   lines(x=this.line[,1]-(1/3)/3,y=this.line[,2],lty=2,col="grey")
-   lines(x=this.line[,1]+(1/3)/3,y=this.line[,2],lty=2,col="grey")
+   
+   width<-0.1
 
-   this.box<-list(x=c(rep(this.line[1,1]-(1/3)/3,2),
-                      rep(this.line[1,1]+(1/3)/3,2),
-                      this.line[1,1]-(1/3)/3),
+   lines(this.line)
+   lines(x=this.line[,1]-width,y=this.line[,2],lty=2,col="grey")
+   lines(x=this.line[,1]+width,y=this.line[,2],lty=2,col="grey")
+
+   this.box<-list(x=c(rep(this.line[1,1]-width,2),
+                      rep(this.line[1,1]+width,2),
+                      this.line[1,1]-width),
                   y=c(0,1,1,0,0))
 
    inout<-inSide(this.box,x,y)
@@ -74,13 +82,12 @@ for(i in 0:2){
    ylines<-y[inout]
    xlines<-x[inout]
 
-
    for(j in 1:length(ylines)){
       lines(x=c(xlines[j],this.line[1,1]),y=rep(ylines[j],2))   
    }
-
 
    this.line[,1]<-this.line[,1]+1/3
 }
 
 
+dev.off()

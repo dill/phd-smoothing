@@ -173,7 +173,14 @@ Distance sampling is probably the most popular method for assessing the abundanc
 
 One can think of distance sampling as the logical extension of quadrat and then strip transect sampling (see figure [FIG!!!]). In quadrat sampling a series of squares (quadrats) are laid out at random over the area in question and the number of objects of interest within each is counted. It is assumed that within each quadrat a census is performed. From the per quadrat abundance the overall density can be calculated and multiplied-up to find the total abundance. For the sampling to be efficient the quadrats need to be large and hence it is almost impossible to ensure that all objects in the quadrat are seen, this can be further hindered by animals moving between the quadrats during the survey (\cite{IDS}, p. 2).
 
-[[ Figure here illustrating the evolution to DS from quadrat and strip]]
+% evolution to DS from quadrat and strip
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics{intro/figs/quadrat-to-ds.pdf}\\
+\caption{Given a population (the dots), an example of the performance of quadrat sampling (left), strip transect sampling (middle), and distance sampling (right). In the first two cases, the grey boxes represent the sampling units. Note that there are many observations just outside of the boxes, which cannot be recorded by survey staff. In the distance sampling case, the solid vertical lines represent the transects and the dashed line gives an (arbitrary) cutoff of the distance to which the observer can see. Distances are shown by the solid horizontal lines.}
+\label{quad-to-ds}
+\end{figure}
 
 To make the task of counting the objects within the quadrat easier, one could modify the square design to be a long strip, so that the observer could walk down the centreline of the strip, observing those objects within the strip. Mathematically, if we let the each strip be of width $2w$ and the total length of all strips be $L$, and $n$ objects are observed we have an estimator of the density, $D$:
 \begin{equation}
@@ -186,10 +193,13 @@ Distance sampling is based on this principle, that if the objects of interest ar
 \begin{equation}
 \hat{D}=\frac{n}{2\hat{\mu}L}.
 \end{equation}
-We could also consider that a certain proportion ($\hat{P}_a$) of the objects in a fixed-area ($2wL$) were sampled, so the above can also be expressed as:
+We could also consider that a certain proportion ($\hat{P}_a$, the probability of detection) of the objects in a fixed-area ($2wL$) were sampled, so the above can also be expressed as:
 \begin{equation}
 \hat{D}=\frac{n}{2wL\hat{P}_a}.
+\label{ds-D}
 \end{equation}
+Here $w$ is the point after which observations are discarded and is referred to as the \textit{truncation distance}. Truncation is used to discard outliers that make the estimation process tricky.
+
 The relationship between these quantities and their calculation is covered below, but before going into detail, some other practical matters are discussed.
 
 \subsection{Point transects}
@@ -211,16 +221,68 @@ In order to ensure that estimation is unbiased several assumptions are made. The
 \begin{itemize}
 	\item The survey must be performed and designed properly and field procedure followed. No amount of analysis can correct for this.
 	\item Objects are distributed according to some stochastic process throughout the area of interest.
-	\item Lines and points are randomly placed and a sample of $n$ objects are detected, measured and recorded.
+	\item Lines and points are randomly placed (with respect to the population) and a sample of $n$ objects are detected, measured and recorded.
 	\item Objects on the line (or point) are detected with probability 1.
 	\item Objects are observed in their initial location, not after movement in response to the observer.
 	\item Distances are accurate.
 	\item Objects are correctly identified.
 \end{itemize}
 
+\subsection{Estimating $P_a$ - line transects} 
+Equation \ref{ds-D}, above shows that the central quantity to be estimated is $P_a$, the unconditional probability of detecting an object (referred to from here on simple as the detection probability). In order to define this we must first define the \textit{detection function}, $g(x)$, which is simply (\cite{IDS}, p. 10):
+\begin{equation}
+g(x)=\prob{\text{object detected} | \text{object was at distance } x}.
+\end{equation}
+Ignoring the functional form of $g(x)$ for now, we can define $P_a$ as:
+\begin{equation}
+P_a = \frac{\int_0^w g(x) \text{d}x}{w},
+\end{equation}
+where $w$ is again the truncation distance. So we are now concerned with estimating $g(x)$.
+
+Substituting this expression into (\ref{ds-D}), we obtain:
+\begin{align}
+\hat{D}&=\frac{n}{2wL \frac{\int_0^w \hat{g}(x) \text{d}x}{w}},
+&=\frac{n}{2L\int_0^w \hat{g}(x) \text{d}x}.
+\end{align}
+and define
+\begin{equation}
+\mu = int_0^w g(x) \text{d}x,
+\end{equation}
+such that
+\begin{equation}
+\hat{D}=n/2L\hat{\mu}
+\end{equation}
+as in \cite{IDS} p. 38.
+
+Now let us assume that $g(x)$ has some fixed functional form and that we wish to estimate its parameter(s) (which for now will be referred to as $\bm{\theta}$). This can be done via standard maximum likelihood methods. First we must find a probability density function. Note that the expected number of objects at a distance $x$ from the transect line (including those not observed) is independent of $x$. This then implies that the shape of the density functions is the same as that of the detection function and can therefore be obtained by rescaling (\cite{IDS}, p. 38). So, the pdf of the perpendicular distance data, conditional on the object being observed is then:
+\begin{equation}
+f(x;\bm{\theta}) = \frac{g(x;\bm{\theta})}{int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{g(x;\bm{\theta})}{\mu}.
+\end{equation}
+As an aside, note that by the assumption, above, $g(0;\bm{\theta})=1$, so:
+\begin{equation}
+f(0;\bm{\theta}) = \frac{g(0;\bm{\theta})}{int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{1}{\mu}.
+\end{equation}
+Now we have obtained an expression for the pdf, we can form a likelihood:
+\begin{align}
+\mathcal{L}(;\bm{\theta}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\theta}),
+&= \prod_{i=1}^n \frac{g(x;\bm{\theta})}{\mu}.
+\end{align}
+
+now for point transects
 
 
-estimating mu from g
+\subsection{Detection functions}
+We now must specify the functional form for $g$. The literature gives some options for this based on the various properties that are desirable. First off, as stated in the assumptions above, objects on the line are detected with certainty, so $g(0)=1$. Actually, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a ``shoulder''. This is physically realistic since the observer should see most things close to him/her. It is also desirable that the model for the detection function is robust, in the sense that it is flexible and can take many plausible shapes. Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
+
+\cite{buckland92} gives a ``key function plus adjustment term'' formulation for the detection function...
+
+
+
+
+truncation
+
+detection functions
+
 
 covariates
 
