@@ -213,7 +213,7 @@ again, the relation between these quantities will be explained below.
 The placement of the lines and points above is said to be ``random'', in practise randomly placing and orientating lines can be expensive and time-consuming (in particular in shipboard surveys where one wishes to minimise off-effort time). The solution to this is simply randomly placing and orientating a grid of lines or points. For shipboard surveys ``zigzag'' designs can be used to minimise off-effort time (CITE STRINDBERG paper). It is also important to ensure that transects to not run parallel to geographical features to avoid bias. For example using roads as transects (as was done in the US breeding birds survey) leads to bias since animals may be compelled to move away from the road and toward neighbouring hedgerows (\cite{IDS}, p. 18).
 
 \subsection{Clusters}
-If animals are observed in clusters (for example pods for whales or packs for wolves) then it might be more convenient to estimate the abundance of clusters and use them as the fundamental unit to estimate. The cluster size can also be estimated and the abundance of clusters ``multiplied up'' to give the overall abundance (\cite{IDS}, p. 13).
+If animals are observed in clusters (for example pods for whales or packs for wolves) then it might be more convenient to estimate the abundance of clusters and use them as the fundamental unit to estimate. The cluster size can also be estimated and the abundance of clusters ``multiplied up'' to give the overall abundance (\cite{IDS}, p. 13). It is assumed throughout that the analysis is dealing with individuals rather than clusters.
 
 \subsection{Assumptions}
 In order to ensure that estimation is unbiased several assumptions are made. These are summarised below, more information (especially with regard to field procedure) may be found in \cite{IDS}, chapter 2.
@@ -241,12 +241,12 @@ where $w$ is again the truncation distance. So we are now concerned with estimat
 
 Substituting this expression into (\ref{ds-D}), we obtain:
 \begin{align}
-\hat{D}&=\frac{n}{2wL \frac{\int_0^w \hat{g}(x) \text{d}x}{w}},
+\hat{D}&=\frac{n}{2wL \frac{\int_0^w \hat{g}(x) \text{d}x}{w}},\\
 &=\frac{n}{2L\int_0^w \hat{g}(x) \text{d}x}.
 \end{align}
 and define
 \begin{equation}
-\mu = int_0^w g(x) \text{d}x,
+\mu = \int_0^w g(x) \text{d}x,
 \end{equation}
 such that
 \begin{equation}
@@ -256,41 +256,40 @@ as in \cite{IDS} p. 38.
 
 Now let us assume that $g(x)$ has some fixed functional form and that we wish to estimate its parameter(s) (which for now will be referred to as $\bm{\theta}$). This can be done via standard maximum likelihood methods. First we must find a probability density function. Note that the expected number of objects at a distance $x$ from the transect line (including those not observed) is independent of $x$. This then implies that the shape of the density functions is the same as that of the detection function and can therefore be obtained by rescaling (\cite{IDS}, p. 38). So, the pdf of the perpendicular distance data, conditional on the object being observed is then:
 \begin{equation}
-f(x;\bm{\theta}) = \frac{g(x;\bm{\theta})}{int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{g(x;\bm{\theta})}{\mu}.
+f(x;\bm{\theta}) = \frac{g(x;\bm{\theta})}{\int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{g(x;\bm{\theta})}{\mu}.
 \end{equation}
 As an aside, note that by the assumption, above, $g(0;\bm{\theta})=1$, so:
 \begin{equation}
-f(0;\bm{\theta}) = \frac{g(0;\bm{\theta})}{int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{1}{\mu}.
+f(0;\bm{\theta}) = \frac{g(0;\bm{\theta})}{\int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{1}{\mu}.
 \end{equation}
 Now we have obtained an expression for the pdf, we can form a likelihood:
 \begin{align}
-\mathcal{L}(;\bm{\theta}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\theta}),
+\mathcal{L}(;\bm{\theta}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\theta}),\\
 &= \prod_{i=1}^n \frac{g(x;\bm{\theta})}{\mu}.
 \end{align}
 
-now for point transects
+\subsection{Estimating $P_a$ - point transects} 
 
 
 \subsection{Detection functions}
 We now must specify the functional form for $g$. The literature gives some options for this based on the various properties that are desirable. First off, as stated in the assumptions above, objects on the line are detected with certainty, so $g(0)=1$. Actually, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a ``shoulder''. This is physically realistic since the observer should see most things close to him/her. It is also desirable that the model for the detection function is robust, in the sense that it is flexible and can take many plausible shapes. Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
 
-\cite{buckland92} gives a ``key function plus adjustment term'' formulation for the detection function...
+\cite{buckland92} gives a ``key function plus adjustment terms'' formulation for the detection function. The idea is that the key function is used as a starting point for the basic shape of the detection function. The adjustment terms consist of a series expansion that improve the fit of the model. The adjustment terms may not be necessary, in which case they may be left out of the model. The key function is usually selected as one of a uniform, half-Normal or hazard-rate (\cite{buckland85}) function. The adjustment terms are typically either even simple polynomials, Hermite polynomials or cosine functions. Further information can be found in \cite{IDS} p.47.
+
+This formulation leads to a class of highly flexible models and a normal analysis may consist of running models made up of various combinations of key functions and adjustment terms. Model selection is usually performed using AIC.
+
+\subsection{Covariates}
 
 
 
+\subsection{Monotonicity}
+One potential pitfall with this approach is that  it is possible to formulate models which are not physically realistic. In particular it is possible to create models which are non-monotonic functions of distance. Data with a mode away from zero distance may occur when there has been heaping, when objects move prior to observation or just by chance; fitting models to such ``bumps'' can cause bias in abundance estimates (\cite{IDS}, p. 132). To get around this problem \cite{distance-software} constrains the detection function to be monotonic. This is done by taking 10 equally spaced distances from $0$ to $w$ and checking that when the detection function is evaluated at each of these points they are less than the last (mathematically, $g(x_i)\geq g(x_{i+1})$ for distances $x_1 \dots x_10$ where $x_1=0$). This is referred to as \textit{strong monotonicity}. Alternatively users may opt for \textit{weak monotonicity} where each point is checked only against the value of $g$ at the origin (mathematically, $g(0)\geq g(x_i)$) or, to turn this off completely.
 
-truncation
-
-detection functions
-
-
-covariates
-
-problems
-
-fix using mixtures
+Constraining the likelihood is appealing here, however it is obviously always preferable to perform unconstrained optimisation if possible. Using a class of functions to model the detection function which were both flexible and did not exhibit the undesirable property of non-monotonicity could offer a more physically realistic and convincing alternative to the conventional way of performing distance analyses.
 
 
+\subsection{Mixture models}
+Recently developments, particularly in mark-recapture (D+R, Pledger, Byron) have shown that mixture models can be an extremely useful and flexible method of modelling...
 
 
 
