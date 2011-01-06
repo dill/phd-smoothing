@@ -210,7 +210,7 @@ First note that line transects are not the only way of collecting data to put in
 again, the relation between these quantities will be explained below.
 
 \subsection{Line and point placement}
-The placement of the lines and points above is said to be ``random'', in practise randomly placing and orientating lines can be expensive and time-consuming (in particular in shipboard surveys where one wishes to minimise off-effort time). The solution to this is simply randomly placing and orientating a grid of lines or points. For shipboard surveys ``zigzag'' designs can be used to minimise off-effort time (CITE STRINDBERG paper). It is also important to ensure that transects to not run parallel to geographical features to avoid bias. For example using roads as transects (as was done in the US breeding birds survey) leads to bias since animals may be compelled to move away from the road and toward neighbouring hedgerows (\cite{IDS}, p. 18).
+The placement of the lines and points above is said to be ``random'', in practise randomly placing and orientating lines can be expensive and time-consuming (in particular in shipboard surveys where one wishes to minimise off-effort time). The solution to this is simply randomly placing and orientating a grid of lines or points. For shipboard surveys ``zigzag'' designs can be used to minimise off-effort time (\cite{strindberg04}). It is also important to ensure that transects to not run parallel to geographical features to avoid bias. For example using roads as transects (as was done in the US breeding birds survey) leads to bias since animals may be compelled to move away from the road and toward neighbouring hedgerows (\cite{IDS}, p. 18).
 
 \subsection{Clusters}
 If animals are observed in clusters (for example pods for whales or packs for wolves) then it might be more convenient to estimate the abundance of clusters and use them as the fundamental unit to estimate. The cluster size can also be estimated and the abundance of clusters ``multiplied up'' to give the overall abundance (\cite{IDS}, p. 13). It is assumed throughout that the analysis is dealing with individuals rather than clusters.
@@ -266,7 +266,9 @@ Now we have obtained an expression for the pdf, we can form a likelihood:
 \begin{align}
 \mathcal{L}(\bm{\theta}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\theta}),\\
 &= \prod_{i=1}^n \frac{g(x;\bm{\theta})}{\mu}.
+\label{ds-lt-likelihood}
 \end{align}
+The log of this quantity can then be used as an objective function in an optimisation procedure in order to find the maximum likelihood estimators of the parameters, $\bm{\theta}$.
 
 \subsection{Estimating $P_a$ - point transects} 
 The same results can be derived for point transects. First note that the relationship between $f(r)$ and $g(r)$ is different to that between $f(x)$ and $g(x)$ above. The increase in area due to an increase in radius of $\text{d}r$ is proportional to $r$ so $f(r)$ is proportional to $rg(r)$:
@@ -296,8 +298,7 @@ So again, a likelihood can be formed:
 \mathcal{L}(\bm{\theta}; \bm{r}) &= \prod_{i=1}^n f(r_i;\bm{\theta}),\\
 &= \prod_{i=1}^n \frac{2 \pi r g(r;\bm{\theta})}{\nu}.
 \end{align}
-
-
+As above, the log of this expression can then be used in an optimisation procedure to find the MLEs of the parameters.
 
 \subsection{Detection functions}
 We now must specify the functional form for $g$. The literature gives some options for this based on the various properties that are desirable. First off, as stated in the assumptions above, objects on the line are detected with certainty, so $g(0)=1$. Actually, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a ``shoulder''. This is physically realistic since the observer should see most things close to him/her. It is also desirable that the model for the detection function is robust, in the sense that it is flexible and can take many plausible shapes. Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
@@ -309,24 +310,53 @@ This formulation leads to a class of highly flexible models and a normal analysi
 \subsection{Covariates}
 One can very easily think of the case in which one or more factors effect the detectability of objects in a survey. A typical example might be sex or size of the object or weather conditions during when the object was observed. When available this information can be very useful in handling heterogeneity in the data (\cite{IDS}, p. 88). Covariates are included in detection function models by using a link function. One (or more) of the parameters of the detection function is considered to be a linear combination of the covariates.
 
+[[ FIG FROM AUK PAPER?]]
+
 Considering a detection function modelled by a half-Normal, we can write that:
 \begin{equation}
 g(x; \sigma) = \exp\Big(\frac{-x^2}{2\sigma^2}\Big)
 \end{equation}
-
-
-now, say that two covariates have been collected, $z_{i,\text{sex}}$ and $z_{i,\text{Beau}}$ indicating the sex of the animal and the Beaufort sea state when the animal was observed. Also recorded are the distances $x_i$. The covariates can be included in the analysis by considering $\sigma$ as a linear combination of these covariates, so
+now, say that two covariates have been collected, $z_{i,\text{sex}}$ and $z_{i,\text{Beau}}$ indicating the sex of the animal and the Beaufort sea state when the animal was observed. Also recorded are the distances $x_i$. The covariates can be included in the analysis by considering $\sigma$ as a linear combination of these covariates, so we can either consider their to be one $\sigma$ per unique covariate combination:
 \begin{equation}
-\sigma_i = \beta_0 + \beta_1 z_{i,\text{sex}} + \beta_2 z_{i,\text{Beau}}
+\sigma_i = \exp( \beta_0 + \beta_1 z_{i,\text{sex}} + \beta_2 z_{i,\text{Beau}}),
+\end{equation}
+or that $\sigma$ is a function of the covariates and corresponding parameters:
+\begin{equation}
+\sigma(z_{i,\text{sex}}, z_{i,\text{Beau}}; \beta_1, \beta_2) = exp(\beta_0 + \beta_1 z_{i,\text{sex}} + \beta_2 z_{i,\text{Beau}})).
+\end{equation}
+Of course, these expressions are equivalent, the latter will be used throughout for clarity. We are now interested in obtaining estimates of $(\beta_0, \beta_1, \beta_2)$.
+
+More generally the notation for the detection function is $g(x ; \sigma(\bm{z}; \bm{\beta}))$ where $\bm{z}$ is the $K$-vector of the covariates $z_1, \dots, z_K$ related to the observation $x$. The complete set of covariates for all observations is stored in $Z$, an $n \cross K$ matrix. The scale function is referred to as $\sigma(\bm{z}; \bm{\beta})$ to clarify when covariates are used.
+
+This covariate formulation can be thought of as a generalisation of the non-covariate model, the latter simply being the case where there is only an intercept term. This is equivalent to log-transforming the scale parameter.
+
+DO SOMETHING WITH THIS SENTENCE! Note that $\bm{z}$ is always a $K$-vector, those observations with no value of covariate take the value zero and thus have no effect on the model.
+
+This formulation fits nicely into the likelihood expressions above, the evaluations of the detection function are as above, but the calculation of $\mu$ (and therefore $P_a$) changes. It is now the case that we think of both of these quantities as functions of the covariates, as we did for $\sigma$.
+
+The effective strip width, $\mu$ is now expressed as:
+\begin{equation}
+\mu(\bm{z}_i) = \int_0^w g(x ; \sigma(\bm{z}; \bm{\beta})) \text{d}x,
+\end{equation}
+and following from the relation between $\mu$ and $P_a$, above we define:
+\begin{equation}
+P_a(\bm{z}_i) = \frac{\int_0^w g(x ; \sigma(\bm{z}; \bm{\beta})) \text{d}x}{w}.
+\end{equation}
+Similarly for point transects, the probability of detection and $\nu$ are given as:
+\begin{equation}
+P_a(\bm{z}_i) =\frac{2}{w^2}\int_0^w r g(r; \sigma(\bm{z}; \bm{\beta})) \text{d}r, \qquad \nu(\bm{z}_i) = \int_0^w r g(r; \sigma(\bm{z}; \bm{\beta})) \text{d}r
 \end{equation}
 
+With this formulation, abundance can be estimated by a Horvitz-Thomspon-like estimator (CITE Sampling book, THOMPSON, \cite{ADS}, p.23):
+\begin{equation}
+\hat{N} = \sum_{i=1}^n \frac{1}{P_a(\bm{z}_i)}.
+\end{equation}
 
-
-
-separate this?
+\subsection{Summary}
 
 flow diagram?
 
+define CDS and MCDS here!!!
 
 
 \subsection{Monotonicity}
@@ -337,6 +367,11 @@ Constraining the likelihood is appealing here, however it is obviously always pr
 
 \subsection{Mixture models}
 Recently developments, particularly in mark-recapture (D+R, Pledger, Byron) have shown that mixture models can be an extremely useful and flexible method of modelling...
+
+no monotonicity problems
+
+also just interesting
+
 
 
 
