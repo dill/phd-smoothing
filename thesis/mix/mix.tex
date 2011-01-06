@@ -79,19 +79,57 @@ NOT CURRENTLY IMPLEMENTED
 
 $P_a$, per observation $p$, Var and CV.
 
-\subsection{GoF}
+\subsection{Goodness of fit testing}
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Implementation}
+This section gives detail on the implementation of MMDS, particularly those used in the \textsf{R} package \texttt{mmds}.
 
-\subsection{Parametrisation}
+
+\subsection{Parametrisation of the mixture proportions}
+When using 2-point mixtures, the constraint that the $\pi_j$s sum to unity is enforced by definition (since $\pi_2=1-\pi_1$). However, in $J$-point mixtures when $J>2$, ensuring that the proportions sum to 1 is not guaranteed. The obvious way to get around this would be to penalise the likelihood, should the optimisation procedure propose values for the $\pi_j$s that do no comply with this condition. This is, of course, inefficient and ugly. Instead, a parametrisation is used for the mixture proportions.
+
+Rather than estimating the $\pi_j$s, estimate $\alpha_k$s, where the relationship between the two is:
+\begin{equation*}
+\pi_j = F(\sum_{k=1}^j e^{\alpha_k}) - F(\sum_{k=1}^{j-1} e^{\alpha_k}) \qquad \text{for } 1\leq k \leq J-1
+\end{equation*}
+and
+\begin{equation*}
+\pi_J = 1-\sum_{j=1}^{J-1} \pi_j
+\end{equation*}
+where $F$ is any continuous CDF on $(0,\infty]$. Exponentiation ensures that $e^{\alpha_j}\geq0$ (so $\alpha_j$ may lie anywhere on $\mathbb{R}$ allowing unconstrained optimisation). Summing these orders the $\pi_j$s, since only offsets are estimated. Finally, using the cumulative density function ensures that the $\pi_j$s sum to $1$. In practise the $\text{Gamma}(3,2)$ CDF is (somewhat arbitrarily) used. Figure \ref{dlbpi} shows a diagram illustrating the relationship.
+
+\begin{figure}
+\centering
+\includegraphics[width=4in]{mix/figs/pidia.pdf}
+\caption{Illustration of the parameterisation of the $\pi_j$s. The black curve is a Gamma CDF (with shape parameter 3 and scale parameter 1/2). Here $\bm{\pi}=c(0.1,0.2,0.3,0.4)$. The differences in the ``heights'' of the evaluations of the CDF give the values of $\pi_j$.}
+\label{dlbpi}
+\end{figure}
+
+\subsubsection{Inverse transform}
+To transform from the $\pi_j$s back to the $\alpha_j$s we simply re-arrange the above expression.
+\begin{align*}
+\pi_j &= F(\sum_{k=1}^j e^{\alpha_k}) - F(\sum_{k=1}^{j-1} e^{\alpha_k})\\
+F(\sum_{k=1}^j e^{\alpha_k}) &= \pi_j + F(\sum_{k=1}^{j-1} e^{\alpha_k})\\
+\sum_{k=1}^j e^{\alpha_k} &= F^{-1}(\pi_j + F(\sum_{k=1}^{j-1} e^{\alpha_k}))\\
+e^{\alpha_j} &= F^{-1}\Big(\pi_j + F(\sum_{k=1}^{j-1} e^{\alpha_k})\Big) - \sum_{k=1}^{j-1} e^{\alpha_k}\\
+\alpha_j &= \log_e \Big(F^{-1}\Big(\pi_j + F(\sum_{k=1}^{j-1} e^{\alpha_k})\Big) - \sum_{k=1}^{j-1} e^{\alpha_k}\Big)
+\end{align*}
+Thus, it is possible to move between the two parametrisations easily.
 
 \subsection{Fitting}
+
+
+
 
 \subsection{Starting values}
 
 \subsection{Derivatives}
-
+[[Maybe this is better as an appendix?]]
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,3 +142,13 @@ $P_a$, per observation $p$, Var and CV.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+
+
+\section{Acknowledgements}
+DLB - pi parametrisation
+JLL - general comments
+Marc - interesting chat
+
+
+
+
