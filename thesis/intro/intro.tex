@@ -363,18 +363,34 @@ With this formulation, abundance can be estimated by a Horvitz-Thomspon-like est
 \end{equation}
 
 \subsection{Summary}
+Distance sampling is unlike most methods in statistics, in that the quantity which we wish to find, abundance, is not given explicitly in the likelihood we wish to optimise. Instead we wish to find the parameters for the detection function, in order to obtain an estimate of $P_a$ (or equivalently $\mu$) in order to then find the density (and hence the abundance). Contrasting this with mark recapture, where the abundance is obtained directly from finding the MLE of the parameters, it seems rather complex and esoteric. However, distance sampling benefits from the simplicity and relative easy of the survey method.
+
+The 
+
+Non-covariate distance sampling, as described above, is commonly referred to as CDS (conventional CHECK !!!!distance sampling) and covariate distance sampling as MCDS (multiple covariate distance sampling. Other variants exist, for example MRDS (mark-recapture distance sampling) and spatial... CITE Sharon ADS BOOK.
+
 
 flow diagram?
 
-define CDS and MCDS here!!!
 
 
 \subsection{Monotonicity}
-One potential pitfall with this approach is that  it is possible to formulate models which are not physically realistic. In particular it is possible to create models which are non-monotonic functions of distance. Data with a mode away from zero distance may occur when there has been heaping, when objects move prior to observation or just by chance; fitting models to such ``bumps'' can cause bias in abundance estimates (\cite{IDS}, p. 132). To get around this problem \cite{distance-software} constrains the detection function to be monotonic. This is done by taking 10 equally spaced distances from $0$ to $w$ and checking that when the detection function is evaluated at each of these points they are less than the last (mathematically, $g(x_i)\geq g(x_{i+1})$ for distances $x_1 \dots x_10$ where $x_1=0$). This is referred to as \textit{strong monotonicity}. Alternatively users may opt for \textit{weak monotonicity} where each point is checked only against the value of $g$ at the origin (mathematically, $g(0)\geq g(x_i)$) or, to turn this off completely.
-
-[[FIG non-monotonic detection function -- humpack?]]
+One potential pitfall of both CDS and MCDS is that  it is possible to formulate models which are not physically realistic. In particular it is possible to create models which are non-monotonic functions of distance. Data with a mode away from zero distance may occur when there has been heaping, when objects move prior to observation or just by chance; fitting models to such ``bumps'' can cause bias in abundance estimates (\cite{IDS}, p. 132). To get around this problem \cite{distance-software} constrains the detection function to be monotonic. This is done by taking 10 equally spaced distances from $0$ to $w$ and checking that when the detection function is evaluated at each of these points they are less than the last (mathematically, $g(x_i)\geq g(x_{i+1})$ for distances $x_1 \dots x_10$ where $x_1=0$). This is referred to as \textit{strong monotonicity}. Alternatively users may opt for \textit{weak monotonicity} where each point is checked only against the value of $g$ at the origin (mathematically, $g(0)\geq g(x_i)$) or, to turn this off completely.
 
 Constraining the likelihood is appealing here, however it is obviously always preferable to perform unconstrained optimisation if possible. Using a class of functions to model the detection function which were both flexible and did not exhibit the undesirable property of non-monotonicity could offer a more physically realistic and convincing alternative to the conventional way of performing distance analyses.
+
+Finally, note that although constraining the shape of the detection function is possible, it does not necessarily lead to monotonic detection functions. Figure \ref{humpback-nonmono} shows a detection function fitted to humpback whale data (taken from \cite{williams}). Here a half-Normal key function with a cosine adjustment term was fitted to the data and, although constraints were used, the function is still monotonic.
+
+% example of non-monotonic detection function - humpback
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics{intro/figs/humpback-nonmono.pdf}\\
+\caption{Humpback whale data from \cite{williams} with a half-Normal key function with a cosine adjustment overlaid. Constraints have failed to ensure that the function is monotonic.}
+\label{humpback-nonmono}
+\end{figure}
+
+
 
 
 \subsection{Mixture models}

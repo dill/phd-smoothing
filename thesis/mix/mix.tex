@@ -31,22 +31,21 @@ For line transects, we can simply substitute equation (\ref{mmds-simplemix}) int
 \end{align*}
 So, the likelihood becomes:
 \begin{align}
-\mathcal{L}(\bm{\sigma}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\sigma}),\\
-&= \prod_{i=1}^n \frac{g(x;\bm{\sigma})}{\mu},\\
-&= \prod_{i=1}^n \frac{\sum_{j=1}^J \pi_j \exp \Big( \frac{-x^2}{2 \sigma_j^2}\Big)}{\sum_{j=1}^J \pi_j \int_0^w  g_j(x;\sigma_j) \text{d}x}.
+\mathcal{L}(\bm{\sigma}, \bm{\pi}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\sigma}, \bm{\pi}),\\
+&= \prod_{i=1}^n \frac{g(x_i;\bm{\sigma}, \bm{\pi})}{\mu},\\
+&= \prod_{i=1}^n \frac{\sum_{j=1}^J \pi_j \exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)}{\sum_{j=1}^J \pi_j \int_0^w  g_j(x;\sigma_j) \text{d}x}.
 \label{mmds-lt-likelihood}
 \end{align}
 which we can obviously think of alternatively as:
 \begin{align}
-\mathcal{L}(\bm{\sigma}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\sigma}),\\
-&= \prod_{i=1}^n \sum_{j=1}^J \pi_j f_j(x_i;\bm{\sigma}),\\
-&= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{\exp \Big( \frac{-x^2}{2 \sigma_j^2}\Big)}{\int_0^w  g_j(x;\sigma_j) \text{d}x}.
-\label{mmds-lt-likelihood}
+\mathcal{L}(\bm{\sigma}, \bm{\pi}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\sigma}, \bm{\pi}),\\
+&= \prod_{i=1}^n \sum_{j=1}^J \pi_j f_j(x_i;\bm{\sigma}, \bm{\pi}),\\
+&= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{\exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)}{\int_0^w  g_j(x;\sigma_j) \text{d}x}.
+\label{mmds-lt-likelihood-pdf}
 \end{align}
 
 
 
-\subsection{Point transects}
 
 \subsection{Covariate models}
 The above models show that the differences between the CDS and mixture model DS (MMDS) are fairly minimal. For the covariate case things are a little more tricky. There are many possible model formulations and the notation is therefore more complicated.
@@ -61,7 +60,7 @@ defining $\sigma_j(\bm{z};\bm{\beta}_j)$ to be,
 \end{equation*}
 where $\bm{z}$ is the $K$-vector of all covariates. $K_j$ is the set of covariates to be used with mixture $j$. The vector of per mixture coefficients is $\bm{\beta}_j=(\beta_{0j},\{ \beta_{kj} : k \in K_j\})$. Finally $\bm{\beta}=(\bm{\beta}_1,\dots,\bm{\beta}_J)$ is the vector of all coefficients ordered by mixture part then covariate.
 
-When we have multiple observations we store the distances in $\bm{x}$ (an $n$-vector) and $\bm{z}$ is then replaced by $Z$, an $n \cross K$ matrix of the covariates for each observation. So then $z_{ik}$ would be the $i^\text{th}$ observation's covariate $k$.
+When we have multiple observations we store the distances in $\bm{x}$ (an $n$-vector). Then, for each observation we have a $\bm{z}_i$ and $Z$ is an $n \cross K$ matrix of the covariates for each observation (ie. the $\bm{z}_i$s stacked on top of each other. So then $z_{ik}$ would be the $i^\text{th}$ observation's covariate $k$ (and the $ik^\text{th}$ element of $Z$).
 
 \subsubsection{Covariates - intercept model}
 
@@ -73,7 +72,24 @@ so the $\beta_{0j}$s are estimated in each mixture but the $\beta_{k}$s are comm
 
 NOT CURRENTLY IMPLEMENTED
 
+\subsection{Generalised likelihood}
+Considering the non-covariate case as a special case of the covariate model, the likelihood can then be written as:
+\begin{align}
+\mathcal{L}(\bm{\beta}, \bm{\pi} ; \bm{x}, Z) &= \prod_{i=1}^n f(x_i;\bm{\sigma}(\bm{\beta},Z)),\\
+&= \prod_{i=1}^n \frac{g(x_i;\bm{\sigma}(\bm{\beta},Z))}{\mu(Z)},\\
+&= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{g_j(x_i; \sigma_j(\bm{z}_i;\bm{\beta}_j))}{ \mu_j(\bm{z}_i)}.
+\label{mmds-lt-likelihood}
+\end{align}
 
+\subsection{Point transects}
+The detection function is, of course, the same for point transects as for line transects. What changes is the PDF and hence likelihood. The likelihood 
+
+
+
+
+lt
+
+pt
 
 
 
