@@ -1,4 +1,4 @@
-Although this is called the intro, I've also but in bits that I want to put in that are general for more than one chapter. These are just bullet pointed \emph{aide memoirs} at the moment but will obviously be fleshed out in time.
+This introduction is split into three parts, corresponding to the three major themes of the thesis. This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled in the thesis proper.
 
 \section{Statistical Ecology}
 
@@ -17,7 +17,7 @@ Some general remarks about stat ecol perhaps.
 
 
 \section{Some notational conventions}
-
+If necessary!
 
 \section{Generalized Additive Models}
 
@@ -171,14 +171,14 @@ Distance sampling is probably the most popular method for assessing the abundanc
 
 
 
-One can think of distance sampling as the logical extension of quadrat and then strip transect sampling (see figure [FIG!!!]). In quadrat sampling a series of squares (quadrats) are laid out at random over the area in question and the number of objects of interest within each is counted. It is assumed that within each quadrat a census is performed. From the per quadrat abundance the overall density can be calculated and multiplied-up to find the total abundance. For the sampling to be efficient the quadrats need to be large and hence it is almost impossible to ensure that all objects in the quadrat are seen, this can be further hindered by animals moving between the quadrats during the survey (\cite{IDS}, p. 2).
+One can think of distance sampling as the logical extension of quadrat and then strip transect sampling. In quadrat sampling a series of squares (quadrats) are laid out at random over the area in question and the number of objects of interest within each is counted. It is assumed that within each quadrat a census is performed. From the per quadrat abundance the overall density can be calculated and multiplied-up to find the total abundance. For the sampling to be efficient the quadrats need to be large and hence it is almost impossible to ensure that all objects in the quadrat are seen, this can be further hindered by animals moving between the quadrats during the survey (\cite{IDS}, p. 2).
 
 % evolution to DS from quadrat and strip
 \begin{figure}
 \centering
 % trim order l b r t
 \includegraphics{intro/figs/quadrat-to-ds.pdf}\\
-\caption{Given a population (the dots), an example of the performance of quadrat sampling (left), strip transect sampling (middle), and distance sampling (right). In the first two cases, the grey boxes represent the sampling units. Note that there are many observations just outside of the boxes, which cannot be recorded by survey staff. In the distance sampling case, the solid vertical lines represent the transects and the dashed line gives an (arbitrary) cutoff of the distance to which the observer can see. Distances are shown by the solid horizontal lines.}
+\caption{An example of the performance of quadrat sampling (left), strip transect sampling (middle), and distance sampling (right). Dots indicate individuals, red dots are those in the sample, black those missed. In the first two cases, the grey boxes represent the sampling units. Note that there are many observations just outside of the boxes, which cannot be recorded by survey staff. In the distance sampling case, the solid vertical lines represent the transects and the dashed line gives the effective strip width. Distances are shown by the solid horizontal lines.}
 \label{quad-to-ds}
 \end{figure}
 
@@ -189,7 +189,11 @@ To make the task of counting the objects within the quadrat easier, one could mo
 \end{equation}
 The problem with this approach is that there may well be many objects just outside of the quadrat. Clearly this is a waste of survey effort. It would be preferable to include as many observations as possible and leverage the maximum amount of data we can collect to assess the abundance of the population.
 
-Distance sampling is based on this principle, that if the objects of interest are there then their presence should be recorded. Instead of using fixed-area sampling units, distance sampling requires that only centrelines are specified. The observers should walk (or swim, ride, drive etc) down these observing objects as they go; the distances ($x_i$) to these objects are recorded. Once the survey is complete, the distances are used to estimated the effective area that was sampled. In equation \ref{ds-simpleD} we replace $w$ with an estimate of $\mu$, the \textit{effective strip (half-)width}. So we then have:
+Distance sampling is based on this principle, that if the objects of interest are there then their presence should be recorded. Instead of using fixed-area sampling units, distance sampling requires that only centrelines are specified. The observers should walk (or swim, ride, drive etc) down these observing objects as they go; the distances ($x_i$) to these objects are recorded. Once the survey is complete, the distances are used to estimated the effective area that was sampled. Figure \ref{quad-to-ds} shows the evolution from quadrat to strip to distance sampling.
+
+In equation \ref{ds-simpleD} we replace $w$ with an estimate of $\mu$, the \textit{effective strip (half-)width}. $\mu$ is defined to be the distance from the lines for which as many objects are detected beyond $\mu$ as are missed within $\mu$ (\cite{eenviron}). 
+
+Mathematically, we then have:
 \begin{equation}
 \hat{D}=\frac{n}{2\hat{\mu}L}.
 \end{equation}
@@ -198,9 +202,12 @@ We could also consider that a certain proportion ($\hat{P}_a$, the probability o
 \hat{D}=\frac{n}{2wL\hat{P}_a}.
 \label{ds-D}
 \end{equation}
-Here $w$ is the point after which observations are discarded and is referred to as the \textit{truncation distance}. Truncation is used to discard outliers that make the estimation process tricky.
+Here $w$ is the point after which observations are discarded and is referred to as the \textit{truncation distance}. Truncation is used to discard outliers that make the estimation process tricky. The relationship between these quantities and their calculation is covered below.
 
-The relationship between these quantities and their calculation is covered below, but before going into detail, some other practical matters are discussed.
+A typical example of line transect data is shown in figure \ref{ds-lt-example}. The figure shows a histogram of perpendicular distances.. FINISH
+
+[[ FIG: example of DS data! ]]
+
 
 \subsection{Point transects}
 First note that line transects are not the only way of collecting data to put into a distance sampling analysis; point transects may also be used. When using point transects the observer stands at one of a series of points ($m$, say) and observes the objects surrounding him/her. Again, distances to the objects ($r_i$) are recorded. An effective radius ($\rho$) is then calculated, analogously to $\mu$ and then object density can be written as:
@@ -208,6 +215,9 @@ First note that line transects are not the only way of collecting data to put in
 \hat{D}=\frac{n}{m \pi \hat{\rho}^2}=\frac{n}{m\pi w^2\hat{P}_a}.
 \end{equation}
 again, the relation between these quantities will be explained below.
+
+[[FIG: point transect data!]]
+
 
 \subsection{Line and point placement}
 The placement of the lines and points above is said to be ``random'', in practise randomly placing and orientating lines can be expensive and time-consuming (in particular in shipboard surveys where one wishes to minimise off-effort time). The solution to this is simply randomly placing and orientating a grid of lines or points. For shipboard surveys ``zigzag'' designs can be used to minimise off-effort time (\cite{strindberg04}). It is also important to ensure that transects to not run parallel to geographical features to avoid bias. For example using roads as transects (as was done in the US breeding birds survey) leads to bias since animals may be compelled to move away from the road and toward neighbouring hedgerows (\cite{IDS}, p. 18).
@@ -307,10 +317,12 @@ We now must specify the functional form for $g$. The literature gives some optio
 
 This formulation leads to a class of highly flexible models and a normal analysis may consist of running models made up of various combinations of key functions and adjustment terms. Model selection is usually performed using AIC.
 
+[[FIG detection function on top of histogram]]
+
 \subsection{Covariates}
 One can very easily think of the case in which one or more factors effect the detectability of objects in a survey. A typical example might be sex or size of the object or weather conditions during when the object was observed. When available this information can be very useful in handling heterogeneity in the data (\cite{IDS}, p. 88). Covariates are included in detection function models by using a link function. One (or more) of the parameters of the detection function is considered to be a linear combination of the covariates.
 
-[[ FIG FROM AUK PAPER?]]
+[[ FIG FROM AUK PAPER? or something demonstrating covariates at work]]
 
 Considering a detection function modelled by a half-Normal, we can write that:
 \begin{equation}
@@ -329,8 +341,6 @@ Of course, these expressions are equivalent, the latter will be used throughout 
 More generally the notation for the detection function is $g(x ; \sigma(\bm{z}; \bm{\beta}))$ where $\bm{z}$ is the $K$-vector of the covariates $z_1, \dots, z_K$ related to the observation $x$. The complete set of covariates for all observations is stored in $Z$, an $n \cross K$ matrix. The scale function is referred to as $\sigma(\bm{z}; \bm{\beta})$ to clarify when covariates are used.
 
 This covariate formulation can be thought of as a generalisation of the non-covariate model, the latter simply being the case where there is only an intercept term. This is equivalent to log-transforming the scale parameter.
-
-DO SOMETHING WITH THIS SENTENCE! Note that $\bm{z}$ is always a $K$-vector, those observations with no value of covariate take the value zero and thus have no effect on the model.
 
 This formulation fits nicely into the likelihood expressions above, the evaluations of the detection function are as above, but the calculation of $\mu$ (and therefore $P_a$) changes. It is now the case that we think of both of these quantities as functions of the covariates, as we did for $\sigma$.
 
@@ -362,15 +372,28 @@ define CDS and MCDS here!!!
 \subsection{Monotonicity}
 One potential pitfall with this approach is that  it is possible to formulate models which are not physically realistic. In particular it is possible to create models which are non-monotonic functions of distance. Data with a mode away from zero distance may occur when there has been heaping, when objects move prior to observation or just by chance; fitting models to such ``bumps'' can cause bias in abundance estimates (\cite{IDS}, p. 132). To get around this problem \cite{distance-software} constrains the detection function to be monotonic. This is done by taking 10 equally spaced distances from $0$ to $w$ and checking that when the detection function is evaluated at each of these points they are less than the last (mathematically, $g(x_i)\geq g(x_{i+1})$ for distances $x_1 \dots x_10$ where $x_1=0$). This is referred to as \textit{strong monotonicity}. Alternatively users may opt for \textit{weak monotonicity} where each point is checked only against the value of $g$ at the origin (mathematically, $g(0)\geq g(x_i)$) or, to turn this off completely.
 
+[[FIG non-monotonic detection function -- humpack?]]
+
 Constraining the likelihood is appealing here, however it is obviously always preferable to perform unconstrained optimisation if possible. Using a class of functions to model the detection function which were both flexible and did not exhibit the undesirable property of non-monotonicity could offer a more physically realistic and convincing alternative to the conventional way of performing distance analyses.
 
 
 \subsection{Mixture models}
-Recently developments, particularly in mark-recapture (\cite{pledger2000}, \cite{dorazio03}, \cite{pledger2005} and \cite{morgan08}, ) have shown that mixture models can be an extremely useful and flexible method of modelling heterogeneity in biological populations.
+Recently developments, particularly in mark-recapture (\cite{pledger2000}, \cite{dorazio03}, \cite{pledger2005} and \cite{morgan08}) have shown that mixture models can be an extremely useful and flexible method of modelling heterogeneity in biological populations.
 
-no monotonicity problems
+Covariates provide some information on those factors which may effect the detectability of individuals, modelling some of the heterogeneity in the detection process. Adjustment terms attempt to perform a similar task (though in an admittedly blunter fashion) by smoothing the function of distance in a semi-parametric way. A combination of the two approaches is possible although some have philosophical opposition to it (Jeff Laake, personal communication). Aside from this, the practical issue of monotonicity is problematic; one would like to both handle heterogeneity with both the data at hand (in the form of covariates) whilst also ``smoothing away'' residual effects of unobserved states in the population.
 
-also just interesting
+Mixture models provide models that can handle these situations in a parsimonious way. Consider the following example: it is known that for a particular species the female is much easier to observe than the male (for example, in a song bird the female might be more vocal) however the two sexes are indistinguishable to an observer so no covariate can be recorded. The two sexes form two distinct classes in the sample but are unobserved. Since the female is easier to observe than the male, the two classes will have different detection functions. A distance sampling analysis using adjustment terms will attempt to model the average of the two detection functions. Instead one could use a mixture model for the detection function. A weighted combination of two functions could then be used to describe the two different classes and their proportions in the sample. 
+
+The logical extension of this approach is to include covariates in the mixture model too. Say, for example, that it is possible to identify the age of the animal but not the sex, the age can be included as a covariate and the ages classes can again be modelling using the mixture. Note that there is no classification going on here: there is no decision over whether observations are, say, male or female. Rather the proportions of each are being estimated along with the parameters of their respective detection functions.
+
+If only monotonic functions are used in the mixture then a monotonic detection function will result as any sum of monotonic functions is, itself, monotonic. This avoids the problems of constrained optimisation inherent in the ``key function plus adjustment terms'' formulation currently used.
+
+Finally, the approach is also interesting for its own sake. There is no current literature on the use of mixture models as detection functions for distance sampling. Many detection function forms have been proposed (CITE SOME PAPERS ABOUT DETECTION FUNCTIONS!!! gamma, hazard rate, skoug paper etc), each having their own merits and pitfalls. there may be other advantages of using mixture models aside from those listed above.
+
+Figure FIG shows a mixture model made up of two parts (a \textit{2-point mixture}). Here the scale parameters are SCALE1 and SCALE2, the proportions are PROPORTION.
+
+[[example of mixture detection function]]
+
 
 
 

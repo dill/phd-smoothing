@@ -5,6 +5,8 @@ Repeat what was in the intro a bit
 Why do this?
 
 
+Do I need to say something about Len here?
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{General formulation}
@@ -20,7 +22,7 @@ Where the mixture proportions, $\pi_j$, have the property $\sum_{\forall j}\pi_j
 
 [[figure of 2-point mixture]]
 
-Clearly one can think of more complex versions of this: different functions, continuous mixtures or a finite mixture of continuous and finite mixtures (\textit{a la} Byron CITE). However, here only the finite mixture case with half-Normal key functions is considered.
+Clearly one can think of more complex versions of this: different functions, continuous mixtures or a finite mixture of continuous and finite mixtures (\textit{a la} \cite{morgan08}). However, here only the finite mixture case with half-Normal key functions is considered.
 
 \subsection{Line transects}
 For line transects, we can simply substitute equation (\ref{mmds-simplemix}) into the line transect likelihood in equation (\ref{ds-lt-likelihood}). Before doing this we first note that the definition of $\mu$ has not changed, merely the definition of $g$:
@@ -89,6 +91,9 @@ $P_a$, per observation $p$, Var and CV.
 \section{Implementation}
 This section gives detail on the implementation of MMDS, particularly those used in the \textsf{R} package \texttt{mmds}.
 
+\subsection{Parametrisation of the scale parameters}
+sigma=exp(beta) approach
+
 
 \subsection{Parametrisation of the mixture proportions}
 When using 2-point mixtures, the constraint that the $\pi_j$s sum to unity is enforced by definition (since $\pi_2=1-\pi_1$). However, in $J$-point mixtures when $J>2$, ensuring that the proportions sum to 1 is not guaranteed. The obvious way to get around this would be to penalise the likelihood, should the optimisation procedure propose values for the $\pi_j$s that do no comply with this condition. This is, of course, inefficient and ugly. Instead, a parametrisation is used for the mixture proportions.
@@ -121,12 +126,26 @@ e^{\alpha_j} &= F^{-1}\Big(\pi_j + F(\sum_{k=1}^{j-1} e^{\alpha_k})\Big) - \sum_
 \end{align*}
 Thus, it is possible to move between the two parametrisations easily.
 
+\subsection{parametrisation of likelihood}
+general form
+
 \subsection{Fitting}
 
+BFGS
+BFGS+SANN
+EM
 
+cite EM/CEM/SEM paper
+
+gelman multimodality
+
+maybe show why other parametrisation doesn't work??
 
 
 \subsection{Starting values}
+
+
+
 
 \subsection{Derivatives}
 [[Maybe this is better as an appendix?]]
@@ -137,7 +156,21 @@ Thus, it is possible to move between the two parametrisations easily.
 
 \subsection{Simulations}
 
+WHY are we doing each of these.
+
+DISCUSSION OF (in particular)
+
+nocovar sim 5
+
+covar with 3pt - what's going on?
+
+3pt with 2pt - what's going on
+
 \subsection{Real data}
+
+Just source in the .tex from the vignette?
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -146,9 +179,9 @@ Thus, it is possible to move between the two parametrisations easily.
 
 \section{Acknowledgements}
 DLB - pi parametrisation
-JLL - general comments
+JLL/Steve/Eric - general comments
 Marc - interesting chat
-
+Len - obviously
 
 
 
