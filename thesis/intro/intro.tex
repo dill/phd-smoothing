@@ -206,19 +206,17 @@ We could also consider that a certain proportion ($\hat{P}_a$, the probability o
 \begin{equation*}
 \hat{D}=\frac{n}{2wL\hat{P}_a}.
 \end{equation*}
-Here $w$ is the point after which observations are discarded and is referred to as the \textit{truncation distance}. Truncation is used to discard outliers that make the estimation process tricky. The relationship between these quantities and their calculation is covered below.
+Here $w$ is the point after which observations are discarded and is referred to as the \textit{truncation distance}. Truncation is used to discard outliers that make the estimation process tricky. From these two expressions we can see that the relationship between $P_a$ and $\mu$ is $P_a=\mu/w$, these quantities will be investigated further below.
 
-A typical example of line transect data is shown in figure \ref{ds-lt-example}. The figure shows a histogram of perpendicular distances.. FINISH
+A typical example of line transect data is shown in figure \ref{ds-lt-example}. The figure shows a histogram of perpendicular distances. Note how, as distance increases the number of detections decreases. This characteristic will be exploited later.
 
-% example of distance sampling data
+% example of line transect data
 \begin{figure}
 \centering
 \includegraphics{intro/figs/ds-golftee.pdf}\\
-\caption{A histogram of line transect data. In this case from an experiment conducted at the University of St Andrews. Golf tees were uniformly randomly distributed over a field... FILL IN REST, CITE zucchini!}
+\caption{A histogram of line transect data. In this case from an experiment conducted at the University of St Andrews. 760 golf tees were randomly distributed over a $1680$m$^2$ area, then observed in 11 transects by 8 independent surveys. Further detail may be found in \cite{ADS} p. 140 and \cite{yellowbook}.}
 \label{ds-lt-example}
 \end{figure}
-
-
 
 \subsection{Point transects}
 First note that line transects are not the only way of collecting data to put into a distance sampling analysis; point transects may also be used. When using point transects the observer stands at one of a series of points ($m$, say) and observes the objects surrounding him/her. Again, distances to the objects ($r_i$) are recorded. An effective radius ($\rho$) is then calculated, analogously to $\mu$ and then object density can be written as:
@@ -227,14 +225,16 @@ First note that line transects are not the only way of collecting data to put in
 \end{equation}
 again, the relation between these quantities will be explained below.
 
-[[FIG: point transect data!]]
+An example of point transect data is given in figure \ref{ds-pt-example}. In contrast to the line transect case, there are very few observations near 0, they increase to a point and then fall off beyond that. Note that as the distance, $r$, from the point increases the area surveyed increases as $r^2$. Rescaling this histogram by the areas corresponding to the centre points of the bars will give a histogram that looks like figure \ref{ds-lt-example}.
 
+% example of point transect data
+\begin{figure}
+\centering
+\includegraphics{intro/figs/pt-data-example.pdf}\\
+\caption{A histogram of point transect data of Hawaiian amakihi (\textit{Hemignathus virens}) taken from \cite{amakihi}.}
+\label{ds-pt-example}
+\end{figure}
 
-\subsection{Line and point placement}
-The placement of the lines and points above is said to be ``random'', in practise randomly placing and orientating lines can be expensive and time-consuming (in particular in shipboard surveys where one wishes to minimise off-effort time). The solution to this is simply randomly placing and orientating a grid of lines or points. For shipboard surveys ``zigzag'' designs can be used to minimise off-effort time (\cite{strindberg04}). It is also important to ensure that transects to not run parallel to geographical features to avoid bias. For example using roads as transects (as was done in the US breeding birds survey) leads to bias since animals may be compelled to move away from the road and toward neighbouring hedgerows (\cite{IDS}, p. 18).
-
-\subsection{Clusters}
-If animals are observed in clusters (for example pods for whales or packs for wolves) then it might be more convenient to estimate the abundance of clusters and use them as the fundamental unit to estimate. The cluster size can also be estimated and the abundance of clusters ``multiplied up'' to give the overall abundance (\cite{IDS}, p. 13). It is assumed throughout that the analysis is dealing with individuals rather than clusters.
 
 \subsection{Assumptions}
 In order to ensure that estimation is unbiased several assumptions are made. These are summarised below, more information (especially with regard to field procedure) may be found in \cite{IDS}, chapter 2.
@@ -261,11 +261,17 @@ The assumption being that objects' detectability is a function of their distance
 
 First off, as stated in the assumptions above, objects on the line are detected with certainty, so $g(0)=1$. Second, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a ``shoulder''. This is physically realistic since the observer should see most things close to him/her. Third, it is also desirable that the model for the detection function is robust, in the sense that it is flexible and can take many plausible shapes. Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
 
-We now must specify the functional form for $g$. \cite{buckland92} gives a ``key function plus adjustment terms'' formulation for the detection function. The idea is that the key function is used as a starting point for the basic shape of the detection function. The adjustment terms consist of a series expansion that improve the fit of the model. The adjustment terms may not be necessary, in which case they may be left out of the model. The key function is usually selected as one of a uniform, half-Normal or hazard-rate (\cite{buckland85}) function. The adjustment terms are typically either even simple polynomials, Hermite polynomials or cosine functions. Further information can be found in \cite{IDS} p.47.
+We now must specify the functional form for $g$. \cite{buckland92} gives a ``key function plus adjustment terms'' formulation for the detection function. The idea is that the key function is used as a starting point for the basic shape of the detection function. The adjustment terms consist of a series expansion that improve the fit of the model. The adjustment terms may not be necessary, in which case they may be left out of the model. The key function is usually selected as one of a uniform, half-Normal or hazard-rate (\cite{buckland85}) function. The adjustment terms are typically either even simple polynomials, Hermite polynomials or cosine functions. Further information can be found in \cite{IDS} p.47. Figure \ref{ds-detfct-examples} shows some possible detection functions.
+
+% Possible detection functions
+\begin{figure}
+\centering
+\includegraphics{intro/figs/detfct-examples.pdf}\\
+\caption{Three possible detection functions. The first is a half-Normal distribution, the second a hazard-rate function and the third the same half-Normal as the first but with a cosine adjustment term. Notice that the hazard-rate has a controllable ``shoulder''.}
+\label{ds-detfct-examples}
+\end{figure}
 
 This formulation leads to a class of highly flexible models and a normal analysis may consist of running models made up of various combinations of key functions and adjustment terms. Model selection is usually performed using AIC.
-
-[[FIG detection function on top of histogram]]
 
 
 
@@ -274,11 +280,11 @@ This formulation leads to a class of highly flexible models and a normal analysi
 
 \subsection{From $g(x)$ to $D$}
 
-Equation \ref{ds-D}, above shows that the central quantity to be estimated is $\mu$, the effective strip width. The previous section defined the detection function. Now the gap between these two concepts will be bridged.
+Equation \ref{ds-D}, above shows that in order to estimate the density of the population in question, we must estimate $\mu$, the effective strip width. To do this we must use the detection function.
 
 
 \subsubsection{Line transects} 
-As mentioned above, $\mu$ is defined to be the distance from the lines for which as many objects are detected beyond $\mu$ as are missed within $\mu$ (\cite{eenviron}). Figure \ref{ds-mu-explanation} shows how $\mu$ can be calculated, the idea is that we would like to find a distance up to which all objects were observed. 
+As mentioned above, $\mu$ is defined to be the distance from the lines for which as many objects are detected beyond $\mu$ as are missed within $\mu$ (\cite{eenviron}). Looking at figure \ref{ds-mu-explanation}, the shaded area above the curve (the detection function) represents those objects that were there up to a distance of $\mu$ from the line, but were missed by the observer. The shaded area below the curve represents those objects that were observed beyond a distance $\mu$. By moving $\mu$ to the left or to the right, it is possible to find a point at which the two shaded areas are of equal size. This fulfils the criterion for $\mu$.
 
 % explanation of mu
 \begin{figure}
@@ -288,34 +294,19 @@ As mentioned above, $\mu$ is defined to be the distance from the lines for which
 \label{ds-mu-explanation}
 \end{figure}
 
-This coincides with the definition for $\mu$, since the shaded area above the curve is the same size as the shaded area below the curve. Since this is the case, the integral in (\ref{ds-lt-mu-def}) defines $\mu$. Note also that since the maximum value of $g(x)$ is $1$, then $1 \cross \mu=\mu$ so the area is the same as the distance along the $x$ axis.
-
-Ignoring the functional form of $g(x)$ for now, we can define $\mu$ as:
+Now the question is: how is $\mu$ calculated? Note that the rectangle with side $0$ to $1$ on the $y$ axis and $0$ to $\mu$ on the $x$ axis has area $\mu$ and that this is the same as the area under the detection function. So, $\mu$ is also the distance out to which we observe everything and it is defined as:
 \begin{equation}
 \mu = \int_0^w g(x) \text{d}x.
 \label{ds-lt-mu-def}
 \end{equation}
-where $w$ is again the truncation distance. So we are now concerned with estimating $g(x)$.
-
-
-
-
-
+where $w$ is again the truncation distance and ignoring the functional form of $g(x)$. Hence $P_a$ is defined as:
+\begin{equation*}
+P_a = \frac{\int_0^w g(x) \text{d}x}{w}.
+\end{equation*}
 Substituting this expression into (\ref{ds-D}), we obtain:
-\begin{align}
-\hat{D}&=\frac{n}{2wL \frac{\int_0^w \hat{g}(x) \text{d}x}{w}},\\
-&=\frac{n}{2L\int_0^w \hat{g}(x) \text{d}x}.
-\end{align}
-and define
-\begin{equation}
-\mu = \int_0^w g(x) \text{d}x,
-\end{equation}
-such that
-\begin{equation}
-\hat{D}=n/2L\hat{\mu}
-\end{equation}
-as in \cite{IDS} p. 38. So the relation between $\mu$ and $P_a$ is $P_a=\mu/w$.
-
+\begin{equation*}
+\hat{D}=\frac{n}{2L \int_0^w \hat{g}(x) \text{d}x}.
+\end{equation*}
 Now let us assume that $g(x)$ has some fixed functional form and that we wish to estimate its parameter(s) (which for now will be referred to as $\bm{\theta}$). This can be done via standard maximum likelihood methods. First we must find a probability density function. Note that the expected number of objects at a distance $x$ from the transect line (including those not observed) is independent of $x$. This then implies that the shape of the density functions is the same as that of the detection function and can therefore be obtained by rescaling (\cite{IDS}, p. 38). So, the pdf of the perpendicular distance data, conditional on the object being observed is then:
 \begin{equation}
 f(x;\bm{\theta}) = \frac{g(x;\bm{\theta})}{\int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{g(x;\bm{\theta})}{\mu}.
@@ -332,23 +323,24 @@ Now we have obtained an expression for the pdf, we can form a likelihood:
 \end{align}
 The log of this quantity can then be used as an objective function in an optimisation procedure in order to find the maximum likelihood estimators of the parameters, $\bm{\theta}$.
 
+\subsubsection{Point transects} 
 
+Point transects follow an analogous explanation to line transects. Instead of effective strip width, we look at effective area of detection. 
 
-\subsubsection{Estimating $P_a$ - point transects} 
-The same results can be derived for point transects. First note that the relationship between $f(r)$ and $g(r)$ is different to that between $f(x)$ and $g(x)$ above. The increase in area due to an increase in radius of $\text{d}r$ is proportional to $r$ so $f(r)$ is proportional to $rg(r)$:
+For line transects, an infinitesimal strip has area $L\text{d}x$ (that is the length of the line, multiplied by an infinitesimal distance perpendicular to the line) and this value is independent of $x$. However, in the point transect case an incremental annulus depends on $r$ (the distance from the point), such an annulus has area $2\pi r \text{d}r$. So, the effective area of detection is therefore defined as:
+\begin{equation}
+\nu = 2 \pi \int_0^w r g(r) \text{d}r.
+\end{equation}
+Then, following through the arguments above, we can define the PDF as:
 \begin{equation}
 f(r) = \frac{r g(r)}{\int_0^w r g(r) \text{d}r},
 \end{equation}
+and hence: 
+\begin{equation}
+f(r) = \frac{2 \pi r g(r)}{\nu},
+\end{equation}
 a more rigorous proof of this is given in \cite{IDS} p. 54.
 
-Letting the \textit{effective area of detection}, $\nu$, be
-\begin{equation}
-\nu = 2 \pi \int_0^w r g(r) \text{d}r
-\end{equation}
-(which is analogous to $\mu$), we can write
-\begin{equation}
-f(r) = \frac{2 \pi r g(r)}{\nu}.
-\end{equation}
 By analogy to the line transect case the relation between $\nu$ and $P_a$ in the point transect case is
 \begin{equation}
 P_a=\frac{\nu}{\pi w^2}
@@ -366,9 +358,17 @@ As above, the log of this expression can then be used in an optimisation procedu
 
 
 \subsection{Covariates}
-One can very easily think of the case in which one or more factors effect the detectability of objects in a survey. A typical example might be sex or size of the object or weather conditions during when the object was observed. When available this information can be very useful in handling heterogeneity in the data (\cite{IDS}, p. 88). Covariates are included in detection function models by using a link function. One (or more) of the parameters of the detection function is considered to be a linear combination of the covariates.
+One can very easily think of the case in which one or more factors effect the detectability of objects in a survey. A typical example might be sex or size of the object or weather conditions during when the object was observed. When available this information can be very useful in handling heterogeneity in the data (\cite{IDS}, p. 88). Covariates are included in detection function models by using a link function. One (or more) of the parameters of the detection function is considered to be a linear combination of the covariates. Figure \ref{ds-covarex} shows the effect of both continuous and factor covariates on a hazard-rate detection function.
 
-[[ FIG FROM AUK PAPER? or something demonstrating covariates at work]]
+% example covariates and how they effect the detection function
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics{intro/figs/amakihi-detfct.pdf}\\
+\caption{The influence of covariates on the detection function (taken from \cite{amakihi}). The detection functions are for Hawaiian amakihi (\textit{Hemignathus virens}). The left panel shows the effect of a factor covariate (observer), while the right shows the effect of a continuous covariate (time). In each case the other covariate is held constant (time at $0900$ and observer as ``TJS'') while the other is varied.}
+\label{ds-covarex}
+\end{figure}
+
 
 Considering a detection function modelled by a half-Normal, we can write that:
 \begin{equation}
@@ -408,14 +408,21 @@ With this formulation, abundance can be estimated by a Horvitz-Thomspon-like est
 \hat{N} = \sum_{i=1}^n \frac{1}{P_a(\bm{z}_i)}.
 \end{equation}
 
+\subsection{Other considerations}
+\subsubsection{Line and point placement}
+The placement of the lines and points above is said to be ``random'', in practise randomly placing and orientating lines can be expensive and time-consuming (in particular in shipboard surveys where one wishes to minimise off-effort time). The solution to this is simply randomly placing and orientating a grid of lines or points. For shipboard surveys ``zigzag'' designs can be used to minimise off-effort time (\cite{strindberg04}). It is also important to ensure that transects to not run parallel to geographical features to avoid bias. For example using roads as transects (as was done in the US breeding birds survey) leads to bias since animals may be compelled to move away from the road and toward neighbouring hedgerows (\cite{IDS}, p. 18).
+
+\subsubsection{Clusters}
+If animals are observed in clusters (for example pods for whales or packs for wolves) then it might be more convenient to estimate the abundance of clusters and use them as the fundamental unit to estimate. The cluster size can also be estimated and the abundance of clusters ``multiplied up'' to give the overall abundance (\cite{IDS}, p. 13). It is assumed throughout that the analysis is dealing with individuals rather than clusters.
+
+
+
 \subsection{Summary}
-Distance sampling is unlike most methods in statistics, in that the quantity which we wish to find, abundance, is not given explicitly in the likelihood we wish to optimise. Instead we wish to find the parameters for the detection function, in order to obtain an estimate of $P_a$ (or equivalently $\mu$) in order to then find the density (and hence the abundance). Contrasting this with mark recapture, where the abundance is obtained directly from finding the MLE of the parameters, it seems rather complex and esoteric. However, distance sampling benefits from the simplicity and relative ease of the survey method.
+Distance sampling is unlike most methods in statistics, in that the quantity which we wish to find, abundance, is not given explicitly in the likelihood we wish to optimise. Instead we wish to find the parameters for the detection function, to then estimate of $\mu$, in order to estimate density (and hence the abundance). Contrasting this with capture-recapture, where the abundance is obtained directly from finding the MLE of the parameters, it seems rather complex and esoteric. 
 
-SOMETHING HERE?
-
+Distance sampling benefits from a relatively simple field procedure, a wealth of literature and easy to use software for analysis. Distance sampling has also been adapted for many different scenarios, including analysing data which was not initially part of a survey (incidental data).
 
 Non-covariate distance sampling, as described above, is commonly referred to as CDS (conventional distance sampling) and covariate distance sampling as MCDS (multiple covariate distance sampling. Other variants exist, for example mark-recapture distance sampling (MRDS, see \cite{mrdspaper}) and spatial distance sampling models (see chapter 4 of \cite{ADS}.
-
 
 \subsection{Monotonicity}
 One potential pitfall of both CDS and MCDS is that  it is possible to formulate models which are not physically realistic. In particular it is possible to create models which are non-monotonic functions of distance. Data with a mode away from zero distance may occur when there has been heaping, when objects move prior to observation or just by chance; fitting models to such ``bumps'' can cause bias in abundance estimates (\cite{IDS}, p. 132). To get around this problem \cite{distance-software} constrains the detection function to be monotonic. This is done by taking 10 equally spaced distances from $0$ to $w$ and checking that when the detection function is evaluated at each of these points they are less than the last (mathematically, $g(x_i)\geq g(x_{i+1})$ for distances $x_1 \dots x_10$ where $x_1=0$). This is referred to as \textit{strong monotonicity}. Alternatively users may opt for \textit{weak monotonicity} where each point is checked only against the value of $g$ at the origin (mathematically, $g(0)\geq g(x_i)$) or, to turn this off completely.
@@ -445,14 +452,20 @@ Mixture models provide models that can handle these situations in a parsimonious
 
 The logical extension of this approach is to include covariates in the mixture model too. Say, for example, that it is possible to identify the age of the animal but not the sex, the age can be included as a covariate and the ages classes can again be modelling using the mixture. Note that there is no classification going on here: there is no decision over whether observations are, say, male or female. Rather the proportions of each are being estimated along with the parameters of their respective detection functions.
 
+% example of composite detection function
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics{intro/figs/malefemale-detfct.pdf}\\
+\caption{A detection function (solid line) composed of two other detection functions (dashed lines) representing two parts of a population. The spike could represent less vocal males and the detection function with the wider shoulder could represent the more vocal (and hence more easily observable) females (for example).Taken from \cite{amakihi}.}
+\label{ds-malefemale-detfct}
+\end{figure}
+
+Figure \ref{ds-malefemale-detfct} shows the effect that might be seen when one subsection of the population (say females) are more detectable than another (males). Where the information on sex is available, a covariate analysis should be able to separate these two populations. If it is not, a CDS analysis will yield unsatisfactory results.
+
 If only monotonic functions are used in the mixture then a monotonic detection function will result as any sum of monotonic functions is, itself, monotonic. This avoids the problems of constrained optimisation inherent in the ``key function plus adjustment terms'' formulation currently used.
 
-Finally, the approach is also interesting for its own sake. There is no current literature on the use of mixture models as detection functions for distance sampling. Many detection function forms have been proposed (for example, \cite{buckland92} and  \cite{gammadetfct}), each having their own merits and pitfalls. there may be other advantages of using mixture models aside from those listed above.
-
-Figure FIG shows a mixture model made up of two parts (a \textit{2-point mixture}). Here the scale parameters are SCALE1 and SCALE2, the proportions are PROPORTION.
-
-[[example of mixture detection function]]
-
+Finally, the approach is also interesting for its own sake. There is no current literature on the use of mixture models as detection functions for distance sampling. Many detection function forms have been proposed (for example, \cite{buckland92} and  \cite{gammadetfct}), each having their own merits and pitfalls.
 
 
 
