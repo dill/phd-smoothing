@@ -1,13 +1,12 @@
 \section{Introduction}
 
-Repeat what was in the intro a bit
+%Repeat what was in the intro a bit
 
-Why do this?
+%Why do this?
 
-say something about \texttt{mmds}
+%say something about \texttt{mmds}
 
-
-Do I need to say something about Len here?
+%Do I need to say something about Len here?
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -15,7 +14,7 @@ Do I need to say something about Len here?
 
 This section lays out, mathematically, the mixture model formulations that can be used for distance sampling detection functions. Beginning with the simplest case (line transects with no covariates) the models are built up and it is shown that the simpler models are just special cases of the more complex ones, thus providing a general framework for mixture model detection functions.
 
-The core principle here is to replace the ``key function plus adjustment terms'' model for the detection function with a mixture model. The simplest example would be to define $g$ as some finite weighted sum of $J$ half-Normal distributions:
+The core principle here is to replace the ``key function plus adjustment terms'' model for the detection function with a mixture model. The simplest example would be to define $g$ as some finite weighted sum of half-Normal distributions:
 \begin{equation}
 g(x;\bm{\sigma},\bm{\pi}) = \sum_{j=1}^J \pi_j \exp \Big( \frac{-x^2}{2 \sigma_j^2}\Big).
 \label{mmds-simplemix}
@@ -40,14 +39,17 @@ So, the likelihood becomes:
 \begin{align}
 \mathcal{L}(\bm{\sigma}, \bm{\pi}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\sigma}, \bm{\pi}),\\
 &= \prod_{i=1}^n \frac{g(x_i;\bm{\sigma}, \bm{\pi})}{\mu},\\
-&= \prod_{i=1}^n \frac{\sum_{j=1}^J \pi_j \exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)}{\sum_{j=1}^J \pi_j \int_0^w  g_j(x;\sigma_j) \text{d}x}.
+&= \prod_{i=1}^n \frac{\sum_{j=1}^J \pi_j g_j(x_i;\sigma_j)}{\sum_{j=1}^J \pi_j \int_0^w  g_j(x;\sigma_j) \text{d}x},\\
+&= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{\exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)}{\int_0^w \exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big) \text{d}x}.
 \label{mmds-lt-likelihood}
 \end{align}
-which we can obviously think of alternatively as:
+Where $g_j(x_i;\sigma_j) = \exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)$.
+
+The above expression could also be thought of as decomposing $f$ into mixture parts ($f_j$), yielding the same expression:
 \begin{align}
 \mathcal{L}(\bm{\sigma}, \bm{\pi}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\sigma}, \bm{\pi}),\\
 &= \prod_{i=1}^n \sum_{j=1}^J \pi_j f_j(x_i;\bm{\sigma}, \bm{\pi}),\\
-&= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{\exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)}{\int_0^w  g_j(x;\sigma_j) \text{d}x}.
+&= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{\exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)}{\int_0^w  \exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big) \text{d}x}.
 \label{mmds-lt-likelihood-pdf}
 \end{align}
 
@@ -55,8 +57,9 @@ which we can obviously think of alternatively as:
 The detection function is, of course, the same for point transects as for line transects. What changes is the PDF and hence likelihood. The likelihood is therefore given as:
 \begin{align}
 \mathcal{L}(\bm{\sigma}, \bm{\pi}; \bm{r}) &= \prod_{i=1}^n f(r_i;\bm{\sigma}, \bm{\pi}),\\
-&= \prod_{i=1}^n \sum_{j=1}^J \pi_j f_j(r_i;\bm{\sigma}, \bm{\pi}),\\
-&= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{r_i \exp \Big( \frac{-r_i^2}{2 \sigma_j^2}\Big)}{\int_0^w r  g_j(r;\sigma_j) \text{d}r}.
+&= \prod_{i=1}^n \sum_{j=1}^J \pi_j f_j(r_i; \sigma_j),\\
+&= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{g_j(r_i; \sigma_j,)}{\nu_j},\\
+&= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{r_i \exp \Big( \frac{-r_i^2}{2 \sigma_j^2}\Big)}{\int_0^w r  \exp \Big( \frac{-r_i^2}{2 \sigma_j^2}\Big) \text{d}r}.
 \label{mmds-pt-likelihood-pdf}
 \end{align}
 where we can define a per-mixture effective area of detection:
@@ -80,7 +83,7 @@ defining $\sigma_j(\bm{z};\bm{\beta}_j)$ to be,
 \end{equation*}
 where $\bm{z}$ is the $K$-vector of all covariates. $K_j$ is the set of covariates to be used with mixture $j$. The vector of per mixture coefficients is $\bm{\beta}_j=(\beta_{0j},\{ \beta_{kj} : k \in K_j\})$. Finally $\bm{\beta}=(\bm{\beta}_1,\dots,\bm{\beta}_J)$ is the vector of all coefficients ordered by mixture part then covariate.
 
-When we have multiple observations we store the distances in $\bm{x}$ (an $n$-vector). Then, for each observation we have a $\bm{z}_i$ and $Z$ is an $n \cross K$ matrix of the covariates for each observation (ie. the $\bm{z}_i$s stacked on top of each other. So then $z_{ik}$ would be the $i^\text{th}$ observation's covariate $k$ (and the $ik^\text{th}$ element of $Z$).
+When we have multiple observations we store the distances in $\bm{x}$ (an $n$-vector). Then, for each observation we have a $\bm{z}_i$, which is a vector of covariates for that particular observation. $Z$ is an $n \cross K$ matrix of all covariates ie. the $\bm{z}_i$s stacked on top of each other. So then $z_{ik}$ would be the $i^\text{th}$ observation's covariate $k$ (and the $ik^\text{th}$ element of $Z$).
 
 \subsubsection{Covariates - intercept model}
 
@@ -98,11 +101,16 @@ NOT CURRENTLY IMPLEMENTED
 \subsubsection{Line transects}
 Considering the non-covariate case as a special case of the covariate model, the likelihood can then be written as:
 \begin{align}
-\mathcal{L}(\bm{\beta}, \bm{\pi} ; \bm{x}, Z) &= \prod_{i=1}^n f(x_i;\bm{\sigma}(\bm{\beta},Z)),\\
-&= \prod_{i=1}^n \frac{g(x_i;\bm{\sigma}(\bm{\beta},Z))}{\mu(Z)},\\
+\mathcal{L}(\bm{\beta}, \bm{\pi} ; \bm{x}, Z) &= \prod_{i=1}^n f(x_i;\bm{\sigma}(\bm{z}_i, \bm{\beta})),\\
+&= \prod_{i=1}^n \frac{g(x_i;\bm{\sigma}(\bm{z}_i, \bm{\beta}))}{\mu(\bm{z}_i)},\\
 &= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{g_j(x_i; \sigma_j(\bm{z}_i;\bm{\beta}_j))}{ \mu_j(\bm{z}_i)}.
 \label{mmds-lt-glikelihood}
 \end{align}
+where $\mu(\bm{z}_i)$ is the sum of the $\mu_j$s per observation, i.e.
+\begin{equation}
+\mu(\bm{z}_i) = \sum_{j=1}^J \int_0^w g_j(x; \sigma_j(\bm{z}_i;\bm{\beta}_j)) \text{d}x.
+\end{equation}
+
 where the $\sigma_j(\bm{z}_i;\bm{\beta}_j)$s take the covariate form above; in the case of a no covariate model, there is only the intercept term, $\beta_{0j}$ ie:
 \begin{equation}
 \sigma_j = \exp ( \beta_{0j} ).
@@ -111,8 +119,8 @@ where the $\sigma_j(\bm{z}_i;\bm{\beta}_j)$s take the covariate form above; in t
 \subsubsection{Point transects}
 For point transects the likelihood is similar, though with the $r$ pre-multiplier as seen for CDS and MCDS:
 \begin{align}
-\mathcal{L}(\bm{\beta}, \bm{\pi} ; \bm{r}, Z) &= \prod_{i=1}^n f(r_i;\bm{\sigma}(\bm{\beta},Z)),\\
-&= \prod_{i=1}^n \frac{g(r_i;\bm{\sigma}(\bm{\beta},Z))}{\nu(Z)},\\
+\mathcal{L}(\bm{\beta}, \bm{\pi} ; \bm{r}, Z) &= \prod_{i=1}^n f(r_i;\bm{\sigma}(\bm{z}_i, \bm{\beta})),\\
+&= \prod_{i=1}^n \frac{g(r_i;\bm{\sigma}(\bm{z}_i, \bm{\beta}))}{\nu(\bm{z}_i)},\\
 &= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{g_j(r_i; \sigma_j(\bm{z}_i;\bm{\beta}_j))}{ \nu_j(\bm{z}_i)}.
 \label{mmds-pt-glikelihood}
 \end{align}
