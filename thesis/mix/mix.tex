@@ -122,10 +122,55 @@ For point transects the likelihood is similar, though with the $r$ pre-multiplie
 \subsection{Detection probability}
 Calculation of $\mu_j$ (and $\nu_j$ and their covariate analogues) leads to a per-mixture (and per-observation, per-mixture) definition for the probability of detection. Although these quantities are useful (indeed, they are needed to calculate Horvitz-Thompson-type estimators of abundance), it is also useful to calculate the overall detection probability.
 
+\subsection{Per observation detectability}
+When using covariates, each object effectively has its own detection function and hence its own per observation detectability. Calculating this is fairly simple. Starting from the definition of detectability given in equation (3.19) of Buckland \textit{et al} (2004) p 38 (modified slightly for notational consistency), the detection function is replaced with the mixture model version:
+\begin{align*}
+P_a(\bm{z}_i) =& \frac{\mu(\bm{z}_i)}{w},\\
+=& \frac{1}{w} \int_0^w g(x; \sigma(\bm{z}_i,\bm{\theta})) \text{d}x,\\
+=& \frac{1}{w} \int_0^w \sum_{j=1}^J \hat{\pi}_j g_j(x; \sigma_j(\bm{z}_i, \bm{\beta}_j)) \text{d}x,\\
+=& \frac{1}{w} \sum_{j=1}^J \hat{\pi}_j \int_0^w  g_j(x; \sigma_j(\bm{z}_i, \bm{\beta}_j)) \text{d}x,
+\end{align*}
+so the detectability can now be calculated for each observation.
+
+
+\subsection{Average detectability}
+
+If we wish to calculate the average detectability, then we must first find the population mixture proportions and use these in order to calculate the overall average detectability. The estimated population mixture proportions, $\dot{\pi}_j$ (for $j=1\dots J$ are then defined as:
+\begin{equation}
+\dot{\pi}_j = \frac{\hat{\pi}_j/ p_j}{\sum_{j=1}^J p_j},
+\end{equation}
+where the $p_j$s are the per-mixture detection probabilities. Going back to first principles it is easy to see that we can define 
+\begin{align*}
+p_j=\frac{n}{N}.
+\end{align*}
+that is, the ratio of sample to population individuals. Then $N$ can be written as a Horvitz-Thompson estimator,
+\begin{align*}
+N=\sum_{i=1}^n \frac{1}{p_{ij}},
+\end{align*}
+where $p_{ij}$ is the probability of observing individual $i$ according to mixture part $j$.
+For the covariate case, we average over the covariates. For line transects:
+\begin{align*}
+p_{ij} = \frac{1}{w} \int_0^w g_j(x;\sigma_j(\bm{z}_i,\bm{\beta}_j) \text{d}x, 
+\end{align*}
+and point transects:
+\begin{align*}
+p_{ij} = \frac{1}{\pi w^2}  \int_0^w r g_j(r;\sigma_j(\bm{z}_i,\bm{\beta}_j) \text{d}r.
+\end{align*}
+For non-covariate mixtures these obviously reduce to
+\begin{align*}
+p_{ij}=\frac{1}{w} \int_0^w g_j(x;\sigma_j) \text{d}x, 
+\end{align*}
+for line transect and for point transects:
+\begin{align*}
+p_{ij}=\frac{1}{\pi w^2} \int_0^w r g_j(r ;\sigma_j) \text{d}r.
+\end{align*}
+which are identical for all $i$.
+
+Once the $\dot{\pi}_j$s are found, they can be used in place of the $\hat{\pi}_j$s in order to calculate the average detectability.
 
 
 
-$P_a$, per observation $p$, Var and CV.
+[[Var and CV.]]
 
 \subsection{Goodness of fit testing}
 
@@ -163,6 +208,7 @@ where $F$ is any continuous CDF on $(0,\infty]$. Exponentiation ensures that $e^
 \end{figure}
 
 \subsubsection{Inverse transform}
+\label{mmds-pi-inv}
 To transform from the $\pi_j$s back to the $\alpha_j$s we simply re-arrange the above expression.
 \begin{align*}
 \pi_j &= F(\sum_{k=1}^j e^{\alpha_k}) - F(\sum_{k=1}^{j-1} e^{\alpha_k})\\
@@ -194,31 +240,20 @@ First note that the likelihood for mixture models tends to be of the form:
 
 this form appears to be a weighted likelihood... SAY MORE FROM THE PIATER DOC
 
-Outline of the EM algorithm is taken from the very helpful set of notes by \cite{piater}. As is usual with EM, we loop between expectation and maximisation steps until convergence. For brevity we define:
-\begin{equation*}
-f_j(x_i,zj;\sigma_j) =  \frac{g_j(x_i, zj;\sigma_j)}{\mu_j(zj)},
-\end{equation*}
-in the line transect case and
-\begin{equation*}
-f_j(x_i,zj;\sigma_j) = \frac{2 \pi r_i g_j(r_i, zj;\sigma_j)}{nuj}.
-\end{equation*}
-for the point transect case.
-
+Outline of the EM algorithm is taken from the very helpful set of notes by \cite{piater}. As is usual with EM, expectation and maximisation steps are looped until convergence. Letting $f_j(x_i;\sigma_j(\bm{z}_i,\bm{\beta}_j))$ be the PDF of mixture part $j$ evaluated at distance $x_i$ with covariates $\bm{z}_i$, The expectation and maximisation steps are defined as follows.
 \begin{itemize}
-\item \textbf{Expectation}
-
-In the expectation step we need to calculate the expected values of the $w_{ij}$ for each datum $i$ and mixture $j$,
+\item \textbf{Expectation.}
+During the expectation step the mixture proportions are calculated. This is done using the expected values of the weights, $w_{ij}$, for each datum $i$ and mixture $j$,
 \begin{equation*}
-\mathbb{E}[w_{ij}] = \frac{\pi_j f_j(x_i,zj;\sigma_j)}{\sum_{k=1}^J \pi_k f_k(x_i,zj;\sigma_k)},
+\mathbb{E}[w_{ij}] = \frac{\pi_j f_j(x_i;\sigma_j(\bm{z}_i,\bm{\beta}_j))}{\sum_{k=1}^J \pi_k f_k(x_i;\sigma_k(\bm{z}_i,\bm{\beta}_k))}.
 \end{equation*}
-then calculate the $\pi_j$s as:
+Then $\pi_j$s may be calculated as:
 \begin{equation*}
-\pi_j=\frac{1}{n} \sum_{i=1}^n w_{ij}.
+\pi_j=\frac{1}{n} \sum_{i=1}^n \mathbb{E}[w_{ij}].
 \end{equation*}
 
-\item \textbf{Maximisation}
-
-Keeping the $\pi_j$s fixed, optimise with respect to the $\sigma_j$s (or, rather, $\beta_{jk}$s). Here we just use BFGS in \texttt{optim()}. 
+\item \textbf{Maximisation.}
+Keeping the $\pi_j$s fixed (from the previous step), optimise with respect to the $\sigma_j$s (or, rather, $\beta_{jk}$s). Here BFGS is used with analytic gradients. 
 \end{itemize}
 
 
@@ -232,12 +267,11 @@ maybe show why other parametrisation doesn't work??
 
 \subsection{Starting values}
 \label{mmds-starting-vals}
-Starting values are calculated by first sorting data by distance and then dividing it into $k$ equal parts (for a $k$ point mixture). For each of these parts work out a \cite{beavers98}-type estimate of the $\beta_{jk}$s and use that as start point. 
+\cite{beavers98} give a method for estimating the starting values for the scale parameter for a half-Normal detection function. In the non-covariate case, the estimate is given as the intercept parameter from intercept only regression on $\log(x+\frac{w}{1000})$ (where $w$ denotes the truncation distance, as above). For covariate models, the equation used for the $\sigma$ is used in the regression and the estimated parameters from the linear regression are used as the starting values for the $\beta$s.
 
-The Beavers and Ramsay estimate is given as the results of running an intercept only regression on $\log(x+\frac{w}{1000})$ (where $w$ denotes the truncation distance, as above) for the non-covariate models. For covariate models, the equation for the $\sigma_j$ is used. The estimated parameters from the linear regression are used as the starting values for the $\beta_{jk}s$.
+A similar approach can be use in the mixture case by first sorting data by distance and then dividing it into $k$ equal parts (for a $k$ point mixture). For each of these parts a \cite{beavers98}-type estimate is used for the $\beta_{jk}$s (or $\beta_j$s in the non-covariate case).
 
-For the $\alpha_j$s, a set of $\pi_j$ are generated as $1/k$ and then transformed by the procedure above to be on the $\alpha_j$ scale.
-
+For the $\alpha_j$s, a set of $\pi_j$ are generated as $1/k$ and then transformed by the procedure given in section \ref{mmds-pi-inv} to be on the $\alpha_j$ scale.
 
 
 \subsection{Derivatives}
