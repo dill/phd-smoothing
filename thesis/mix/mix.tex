@@ -1,5 +1,7 @@
 \section{Introduction}
 
+WRITE SOMETHING HERE!!!!
+
 %Repeat what was in the intro a bit
 
 %Why do this?
@@ -12,30 +14,32 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{General formulation}
 
-This section lays out, mathematically, the mixture model formulations that can be used for distance sampling detection functions. Beginning with the simplest case (line transects with no covariates) the models are built up and it is shown that the simpler models are just special cases of the more complex ones, thus providing a general framework for mixture model detection functions.
+This section lays out a mixture model formulation for distance sampling detection functions. Beginning with the simplest case (line transects with no covariates) the models are built up and it is shown that the simpler models are just special cases of the more complex ones, thus providing a general framework for mixture model detection functions.
 
-The core principle here is to replace the ``key function plus adjustment terms'' model for the detection function with a mixture model. The simplest example would be to define $g$ as some finite weighted sum of half-Normal distributions:
+The core principle here is to replace the ``key function plus adjustment terms'' model for the detection function with a mixture model. The simplest example would be to define the detection function, $g$, as some finite weighted sum of half-Normal distributions:
 \begin{equation}
 g(x;\bm{\sigma},\bm{\pi}) = \sum_{j=1}^J \pi_j \exp \Big( \frac{-x^2}{2 \sigma_j^2}\Big).
 \label{mmds-simplemix}
 \end{equation}
 Where the mixture proportions, $\pi_j$, have the property $\sum_{\forall j}\pi_j=1$ and $\bm{\pi} = (\pi_1, \dots, \pi_J)$. $\bm{\sigma}=(\sigma_1,\sigma_2,\dots,\sigma_J)$ are scale parameters. An example of a 2-point mixture of half-Normals is given in figure \ref{2ptdia}.
 
+[[PHYSICAL EXPLANATION HERE]]
+
 \begin{figure}
 \centering
 \includegraphics[width=3in]{mix/figs/2ptdia.pdf}
-\caption{An example of a 2-point mixture of half-Normals. The two constituent mixture components are shown with dashed lines, the whole mixture function is the solid line. The scale parameters for the Normal distributions are $0.8$ and $0.2$. The associated mixture proportions are $0.64$ and $0.36$.}
+\caption{An example of a 2-point mixture of half-Normals. The two constituent mixture components are shown with dashed lines, the whole mixture function is the solid line. The scale parameters are $0.8$ and $0.2$. The associated mixture proportions are $0.64$ and $0.36$.}
 \label{2ptdia}
 \end{figure}
 
-Clearly one can think of more complex versions of this: different functions, continuous mixtures or a finite mixture of continuous and finite mixtures (\textit{a la} \cite{morgan08}). However, here only the finite mixture case with half-Normal key functions is considered.
+Clearly one can think of many variations on this theme: alternative functions, different functions for each mixture component, continuous mixtures or a finite mixture of continuous and finite mixtures (\textit{a la} \cite{morgan08}). However, here only finite mixtures of half-Normals are considered.
 
 \subsection{Line transects}
-For line transects, we can simply substitute equation (\ref{mmds-simplemix}) into the line transect likelihood in equation (\ref{ds-lt-likelihood}). Before doing this we first note that the definition of $\mu$ has not changed, merely the definition of $g$:
+For line transects, we can simply substitute equation (\ref{mmds-simplemix}) into the line transect likelihood in equation (\ref{ds-lt-likelihood}). Before doing this we first note that the definition of $\mu$ has not changed, merely the definition of $g$. Denoting $g_j$ as one of the component detection functions of the mixture,
 \begin{align*}
 \mu = \int_0^w \sum_{j=1}^J \pi_j g_j(x;\sigma_j) \text{d}x = \sum_{j=1}^J \pi_j \int_0^w  g_j(x;\sigma_j) \text{d}x = \sum_{j=1}^J \pi_j \mu_j.
 \end{align*}
-So, the likelihood becomes:
+So, the likelihood is:
 \begin{align}
 \mathcal{L}(\bm{\sigma}, \bm{\pi}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\sigma}, \bm{\pi}),\\
 &= \prod_{i=1}^n \frac{g(x_i;\bm{\sigma}, \bm{\pi})}{\mu},\\
@@ -43,9 +47,9 @@ So, the likelihood becomes:
 &= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{\exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)}{\int_0^w \exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big) \text{d}x}.
 \label{mmds-lt-likelihood}
 \end{align}
-Where $g_j(x_i;\sigma_j) = \exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)$.
 
-The above expression could also be thought of as decomposing $f$ into mixture components ($f_j$), yielding the same expression:
+
+Rather than decomposing $g$ into its constituent $g_j$s, the likelihood can be thought of as a mixture of PDF components, $f_j$, yielding the same final expression:
 \begin{align}
 \mathcal{L}(\bm{\sigma}, \bm{\pi}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\sigma}, \bm{\pi}),\\
 &= \prod_{i=1}^n \sum_{j=1}^J \pi_j f_j(x_i;\bm{\sigma}, \bm{\pi}),\\
@@ -54,7 +58,7 @@ The above expression could also be thought of as decomposing $f$ into mixture co
 \end{align}
 
 \subsection{Point transects}
-The detection function is, of course, the same for point transects as for line transects. What changes is the PDF and hence likelihood. The likelihood is therefore given as:
+The detection function is, of course, the same for point transects as for line transects. What changes is the PDF and hence likelihood. The likelihood is therefore:
 \begin{align}
 \mathcal{L}(\bm{\sigma}, \bm{\pi}; \bm{r}) &= \prod_{i=1}^n f(r_i;\bm{\sigma}, \bm{\pi}),\\
 &= \prod_{i=1}^n \sum_{j=1}^J \pi_j f_j(r_i; \sigma_j),\\
@@ -64,20 +68,25 @@ The detection function is, of course, the same for point transects as for line t
 \end{align}
 where we can define a per-mixture effective area of detection:
 \begin{equation}
-\nu_j=\int_0^w r  g_j(r;\sigma_j) \text{d}r,
+\nu_j= 2 \pi \int_0^w r  g_j(r;\sigma_j) \text{d}r,
 \end{equation}
-which is analogous to $\mu_j$, above.
+which is analogous to $\mu_j$, above, and an overall area of detection:
+\begin{equation}
+\nu= \sum_{j=1}^J \pi_j \nu_j.
+\end{equation}
+
 
 Having these two likelihoods written down, the formulation for covariate models and the generalised likelihood can be derived.
 
 \subsection{Covariate models}
 The above models show that the differences between the CDS and mixture model DS (MMDS) are fairly minimal. For the covariate case things are a little more tricky. There are many possible model formulations and the notation is therefore more complicated.
 
-For simplicity of notation, we consider the case where one distance, $x$ (alternatively $r$ for point transects), has been observed and a set of corresponding covariates $z_1,\dots,z_K$ have been recorded too. As before $\sigma_j$ is a (link) function of these covariates and a set of coefficients, the detection function is then defined as:
+Consider the case where one distance, $x$ (alternatively $r$ for point transects), has been observed and a set of corresponding covariates $z_1,\dots,z_K$ have been recorded too. As in MCDS the scale function is thought of as a (link) function of these covariates and a set of coefficients, the detection function is then defined as:
 \begin{equation*}
 g(x, \bm{z};\bm{\beta},\bm{\pi}) = \sum_{j=1}^J \pi_j \exp \Big( \frac{-x^2}{2 \sigma_j(\bm{z};\bm{\beta}_j)^2}\Big),
+\label{mmds-detfct-covar}
 \end{equation*}
-defining $\sigma_j(\bm{z};\bm{\beta}_j)$ to be,
+and the scale parameter per mixture is defined as:
 \begin{equation*}
 \sigma_j(\bm{z};\bm{\beta}_j) = \exp \Big(\beta_{0j} + \sum_{k\in K_j} \beta_{kj} z_k \Big),
 \end{equation*}
@@ -85,15 +94,17 @@ where $\bm{z}$ is the $K$-vector of all covariates. $K_j$ is the set of covariat
 
 When we have multiple observations we store the distances in $\bm{x}$ (an $n$-vector). Then, for each observation we have a $\bm{z}_i$, which is a vector of covariates for that particular observation. $Z$ is an $n \cross K$ matrix of all covariates ie. the $\bm{z}_i$s stacked on top of each other. So then $z_{ik}$ would be the $i^\text{th}$ observation's covariate $k$ (and the $ik^\text{th}$ element of $Z$).
 
-\subsubsection{Covariates - intercept model}
+[[MORE BLURB ABOUT THESE MODELS]]
 
-One can think of a special case of the model above when the parameters estimated are common across all mixture components, except for an intercept.  Mathematically,
-\begin{align*}
-\sigma_j(\bm{z};\bm{\beta}_j) = \exp \Big(\beta_{0j} + \sum_{k\in K_j} \beta_{k} z_k \Big)
-\end{align*}
-so the $\beta_{0j}$s are estimated in each mixture but the $\beta_{k}$s are common to all mixtures and are estimated simultaneously. In this case, the $K_j$s are the same for all mixture components.
-
-NOT CURRENTLY IMPLEMENTED
+%\subsubsection{Covariates - intercept model}
+%
+%One can think of a special case of the model above when the parameters estimated are common across all mixture components, except for an intercept.  Mathematically,
+%\begin{align*}
+%\sigma_j(\bm{z};\bm{\beta}_j) = \exp \Big(\beta_{0j} + \sum_{k\in K_j} \beta_{k} z_k \Big)
+%\end{align*}
+%so the $\beta_{0j}$s are estimated in each mixture but the $\beta_{k}$s are common to all mixtures and are estimated simultaneously. In this case, the $K_j$s are the same for all mixture components.
+%
+%NOT CURRENTLY IMPLEMENTED
 
 \subsection{Generalised likelihood}
 \label{ds-genlik}
@@ -108,9 +119,8 @@ Considering the non-covariate case as a special case of the covariate model, the
 \end{align}
 where $\mu(\bm{z}_i)$ is the sum of the $\mu_j$s per observation, i.e.
 \begin{equation}
-\mu(\bm{z}_i) = \sum_{j=1}^J \int_0^w g_j(x; \sigma_j(\bm{z}_i;\bm{\beta}_j)) \text{d}x.
+\mu(\bm{z}_i) = \sum_{j=1}^J \pi_j \int_0^w g_j(x; \sigma_j(\bm{z}_i;\bm{\beta}_j)) \text{d}x.
 \end{equation}
-
 where the $\sigma_j(\bm{z}_i;\bm{\beta}_j)$s take the covariate form above; in the case of a no covariate model, there is only the intercept term, $\beta_{0j}$ ie:
 \begin{equation}
 \sigma_j = \exp ( \beta_{0j} ).
@@ -124,19 +134,25 @@ For point transects the likelihood is similar, though with the $r$ pre-multiplie
 &= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{g_j(r_i; \sigma_j(\bm{z}_i;\bm{\beta}_j))}{ \nu_j(\bm{z}_i)}.
 \label{mmds-pt-glikelihood}
 \end{align}
+So,
+\begin{equation}
+\nu(\bm{z}_i) = 2 \pi \sum_{j=1}^J \pi_j \int_0^w r g_j(r; \sigma_j(\bm{z}_i;\bm{\beta}_j)) \text{d}r.
+\end{equation}
 
 
+\subsection{Probability of detection}
 
-\subsection{Detection probability}
+[[ SOMETHING BETTER HERE!!!]]
+
 The detection probability, as we have seen, is a central concept in distance sampling. Notably, it can be used as a way of estimating abundance (via Horvitz-Thompson estimators). In this vein, the per-observation detectability is first derived. Next, an estimate of overall average detectability is often useful (and will be used later to asses the performance of the method), so this is also derived. Finally, the variance of the average detectability is also found and as a result of this, an estimator of the coefficient of variation is also given.
 
 \subsubsection{Per-observation detectability}
-When using covariates, each object effectively has its own detection function and hence its own per observation detectability. Calculating this is fairly simple. Starting from the definition of detectability given in equation (3.19) of Buckland \textit{et al} (2004) p 38 (modified slightly for notational consistency), the detection function is replaced with the mixture model version:
+When using covariates, each object effectively has its own detection function and hence its own per observation detectability. Calculating this is fairly simple. Starting from the definition of detectability given in equation (3.19) of Buckland \textit{et al} (2004) p 38 (modified slightly for notational consistency), the detection function is replaced with (\ref{mmds-detfct-covar}):
 \begin{align*}
 P_a(\bm{z}_i) =& \frac{\mu(\bm{z}_i)}{w},\\
-=& \frac{1}{w} \int_0^w g(x; \sigma(\bm{z}_i,\bm{\theta})) \text{d}x,\\
-=& \frac{1}{w} \int_0^w \sum_{j=1}^J \hat{\pi}_j g_j(x; \sigma_j(\bm{z}_i, \bm{\beta}_j)) \text{d}x,\\
-=& \frac{1}{w} \sum_{j=1}^J \hat{\pi}_j \int_0^w  g_j(x; \sigma_j(\bm{z}_i, \bm{\beta}_j)) \text{d}x,
+=& \frac{1}{w} \int_0^w g(x; \sigma(\bm{z}_i,\bm{\beta})) \text{d}x,\\
+=& \frac{1}{w} \int_0^w \sum_{j=1}^J \pi_j g_j(x; \sigma_j(\bm{z}_i, \bm{\beta}_j)) \text{d}x,\\
+=& \frac{1}{w} \sum_{j=1}^J \pi_j \int_0^w  g_j(x; \sigma_j(\bm{z}_i, \bm{\beta}_j)) \text{d}x,
 \end{align*}
 so the detectability can now be calculated for each observation.
 
@@ -205,28 +221,30 @@ talk about what it is...
 \section{Implementation}
 This section gives detail on the implementation of MMDS, particularly those used in the \textsf{R} package \texttt{mmds}.
 
+[[ MORE BLURB ]]
+
 \subsection{Parametrisation of the scale parameters}
 The parametrisation of the $\sigma_j$s given in section \ref{ds-genlik} is not only useful because it simplifies the notation in the likelihood. It also allows for unconstrained optimisation of the scale parameters in all situations. Since $\sigma_j$ must be positive, optimising a set of $\bm{\beta}_j$s on the log scale allows for the $\bm{\beta}_j$s to take values over all of $\mathbb{R}$.
 
 
 \subsection{Parametrisation of the mixture proportions}
-When using 2-point mixtures, the constraint that the $\pi_j$s sum to unity is enforced by definition (since $\pi_2=1-\pi_1$). However, in $J$-point mixtures when $J>2$, ensuring that the proportions sum to 1 is not guaranteed. The obvious way to get around this would be to penalise the likelihood, should the optimisation procedure propose values for the $\pi_j$s that do no comply with this condition. This is, of course, inefficient and ugly. Instead, a parametrisation is used for the mixture proportions.
+When using 2-point mixtures, the constraint that the $\pi_j$s must sum to unity is enforced by definition (since $\pi_2=1-\pi_1$). However, in $J$-point mixtures when $J>2$, ensuring that the proportions sum to 1 is not guaranteed. The obvious way to get around this would be to penalise the likelihood, should the optimisation procedure propose values for the $\pi_j$s that are not in accordance with this condition. This is, of course, inefficient and ugly. Instead, a parametrisation is used for the mixture proportions which yields $\pi_j$s that comply.
 
 Rather than estimating the $\pi_j$s, estimate $\alpha_k$s, where the relationship between the two is:
 \begin{equation*}
-\pi_j = F(\sum_{k=1}^j e^{\alpha_k}) - F(\sum_{k=1}^{j-1} e^{\alpha_k}) \qquad \text{for } 1\leq k \leq J-1
+\pi_j = F(\sum_{k=1}^j e^{\alpha_k}) - F(\sum_{k=1}^{j-1} e^{\alpha_k}) \qquad \text{for } 1\leq j \leq J-1
 \end{equation*}
 and
 \begin{equation*}
 \pi_J = 1-\sum_{j=1}^{J-1} \pi_j
 \end{equation*}
-where $F$ is any continuous CDF on $(0,\infty]$. Exponentiation ensures that $e^{\alpha_j}\geq0$ (so $\alpha_j$ may lie anywhere on $\mathbb{R}$ allowing unconstrained optimisation). Summing these orders the $\pi_j$s, since only offsets are estimated. Finally, using the cumulative density function ensures that the $\pi_j$s sum to $1$. In practise the $\text{Gamma}(3,2)$ CDF is (somewhat arbitrarily) used. Figure \ref{dlbpi} shows a diagram illustrating the relationship.
+where $F$ is any continuous CDF on $(0,\infty]$. Exponentiation ensures that $e^{\alpha_j}\geq0$, so $\alpha_j$ may lie anywhere on $\mathbb{R}$ allowing unconstrained optimisation. Summing these orders the $\pi_j$s, since only offsets are estimated. Finally, using the cumulative density function ensures that the $\pi_j$s sum to $1$. In practise the $\text{Gamma}(3,2)$ CDF is (somewhat arbitrarily) used. Figure \ref{dlbpi} illustrates the relationship.
 
 % illustration of the pi parametrisation - DLB's method
 \begin{figure}
 \centering
 \includegraphics[width=4in]{mix/figs/pidia.pdf}
-\caption{Illustration of the parameterisation of the $\pi_j$s. The black curve is a Gamma CDF (with shape parameter 3 and scale parameter 1/2). Here $\bm{\pi}=c(0.1,0.2,0.3,0.4)$. The differences in the ``heights'' of the evaluations of the CDF give the values of $\pi_j$.}
+\caption{Illustration of the parameterisation of the $\pi_j$s. The black curve is a Gamma CDF (with shape parameter 3 and scale parameter 1/2). Here $\bm{\pi}=(0.1,0.2,0.3,0.4)$. The differences in the ``heights'' of the evaluations of the CDF give the values of $\pi_j$.}
 \label{dlbpi}
 \end{figure}
 
@@ -240,17 +258,17 @@ F(\sum_{k=1}^j e^{\alpha_k}) &= \pi_j + F(\sum_{k=1}^{j-1} e^{\alpha_k})\\
 e^{\alpha_j} &= F^{-1}\Big(\pi_j + F(\sum_{k=1}^{j-1} e^{\alpha_k})\Big) - \sum_{k=1}^{j-1} e^{\alpha_k}\\
 \alpha_j &= \log_e \Big(F^{-1}\Big(\pi_j + F(\sum_{k=1}^{j-1} e^{\alpha_k})\Big) - \sum_{k=1}^{j-1} e^{\alpha_k}\Big)
 \end{align*}
-Thus, it is possible to move between the two parametrisations easily.
+Thus, it is possible to move between $\pi_j$s and $\alpha_j$s easily.
 
 \subsection{Fitting}
 It is well known that mixture model likelihoods are notoriously multi-modal (\cite{BDA} PAGES).
 
-MORE BLURB
+[[ MORE BLURB ]]
 
-Three different strategies were used for the optimisation and offered in the \texttt{mmds} package. The justification being that if one method fails to fit a particular model, then perhaps another might be better at tackling that particular problem. The first and simplest of these methods was a straightforward quasi-Newton method, BFGS (\cite{bfgs}) which simply maximised the likelihood with the help of analytic gradients (see appendix \ref{appendix-mmds-derivs}). In testing this method was unsatisfactory so two other procedures were also developed.
+Three different strategies were used for the optimisation and offered in the \texttt{mmds} package. The justification being that if one method fails to fit a particular model, then perhaps another might be better at tackling that particular problem. The first and simplest of these methods is a straightforward quasi-Newton method, BFGS (\cite{bfgs}) which simply maximises the likelihood with the help of analytic gradients (see appendix \ref{appendix-mmds-derivs}). In testing this method was unsatisfactory so two other procedures were also developed.
 
 \subsection{BFGS+SANN}
-The starting value calculation (see section \ref{mmds-starting-vals}) is relatively primitive and therefore perhaps does not start the optimisation in a particularly good position to begin the maximisation. Given this and the rather complex likelihood, the odds are not stacked in the favour of the optimisation procedure being successful. In order to move around the parameter space, simulated annealing (SIMULATED ANNEALING REF: NUM RECIPES?) is used to begin the maximisation then followed up with a BFGS step to find the maxima. Both BFGS and simulated annealing are available via the \texttt{optim()} function in the base \textsf{R} distribution.
+The starting value calculation (see section \ref{mmds-starting-vals}) is relatively primitive and therefore perhaps does not start the optimisation in a particularly good position to begin the maximisation. Given this and the rather complex likelihood, the odds are not stacked in the favour of the optimisation procedure being successful. In order to move around the parameter space, simulated annealing (SIMULATED ANNEALING REF: NUM RECIPES?) is used to begin the maximisation then followed by a BFGS round to find the maxima. Both BFGS and simulated annealing are available via the \texttt{optim()} function in the base \textsf{R} distribution.
 
 In particular, simulated annealing is used for 250 iterations, then unconstrained BFGS after that. In an attempt to avoid local maxima, these two steps are looped for five iterations and the results stored. The model with the lowest AIC is then chosen from these. If no models fit in the first 5 iterations, the procedure continues until at least one model fits, or there have been 20 attempts at fitting, whichever comes first.
 
@@ -259,7 +277,12 @@ It is worth noting that the method may appear to fail to converge for all attemp
 \subsection{Expectation-Maximisation Algorithm}
 A common (CITE SOME PAPERS) way of fitting mixture models is to use the Expectation-Maximisation (EM) algorithm of \cite{em}. [[WHY?]]
 
-Considering each of the observations as coming from one of the $J$ mixture components, we arrive at a latent variable interpretation of the mixture model. Given this latent variable view, it is possible to then evaluate the probability that each observation is from a particular mixture component. The mixture proportions can then we calculated by taking the average of these probabilities for a given mixture component. Once the mixture proportions are calculated, the scale parameters can be found using a some optimisation procedure (such as BFGS). This yields a new set of scale parameters, so the mixture proportions are then recalculated. EM switches between these two stages (expectation and maximisation) until the values for the mixture proportions and the scale parameters have converged.
+[[BLURB]]
+
+\subsubsection{Overview}
+
+[[ RE-WRITE !!! ]]
+Considering each of the observations as coming from one of the $J$ mixture components, we arrive at a latent variable interpretation of the mixture model. Given this latent variable view, it is possible to then evaluate the probability that each observation is from a particular mixture component. The mixture proportions can then we calculated by taking the expectation over the observations of these ``weights'' for a given mixture component. Once the mixture proportions are calculated, the scale parameters can be found using a some optimisation procedure (such as BFGS) keeping the mixture proportions constant within BFGS. This yields a new set of scale parameters, so the mixture proportions are then recalculated. EM switches between these two stages (expectation and maximisation) until the values for the mixture proportions and the scale parameters have converged.
 
 \subsubsection{EM steps}
 The expectation and maximisation steps are defined as follows. First note that $f_j(x_i;\sigma_j(\bm{z}_i,\bm{\beta}_j))$ is the PDF of mixture part $j$ evaluated at distance $x_i$ with covariates $\bm{z}_i$. 
@@ -289,7 +312,7 @@ maybe show why other parametrisation doesn't work??
 
 \subsection{Starting values}
 \label{mmds-starting-vals}
-\cite{beavers98} give a method for estimating the starting values for the scale parameter for a half-Normal detection function. In the non-covariate case, the estimate is given as the intercept parameter from intercept only regression on $\log(x+\frac{w}{1000})$ (where $w$ denotes the truncation distance, as above). For covariate models, the equation used for the $\sigma$ is used in the regression and the estimated parameters from the linear regression are used as the starting values for the $\beta$s.
+\cite{beavers98} give a method for estimating starting values for the scale parameter of a half-Normal detection function. In the non-covariate case, the estimate is given as the intercept parameter from intercept only regression on $\log(x+\frac{w}{1000})$ (where $w$ denotes the truncation distance, as above). For covariate models, the equation used for the $\sigma$ is used in the regression and the estimated parameters from the linear regression are used as the starting values for the $\beta$s.
 
 A similar approach can be use in the mixture case by first sorting data by distance and then dividing it into $k$ equal parts (for a $k$ point mixture). For each of these parts a \cite{beavers98}-type estimate is used for the $\beta_{jk}$s (or $\beta_j$s in the non-covariate case).
 
