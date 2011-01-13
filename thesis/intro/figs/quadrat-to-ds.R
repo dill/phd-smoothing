@@ -8,7 +8,7 @@ pdf(file="quadrat-to-ds.pdf",width=6,height=2)
 par(mfrow=c(1,3),mgp=c(2,1,0),mar=c(2,2,2,2))
 
 
-#set.seed(124)
+set.seed(1)
 
 # generate the data
 n.dat<-50
@@ -37,6 +37,7 @@ ydel<-c(rep(seq(0.05,0.75,len=3),2))
 for(i in 1:length(xdel)){
    lines(x=this.sq[,1]+xdel[i],y=this.sq[,2]+ydel[i],col="grey")
    inout<-inSide(list(x=this.sq[,1]+xdel[i],y=this.sq[,2]+ydel[i]),x,y)
+   inout<-inout & rbinom(length(inout),1,0.7)
    points(x[inout],y[inout],col="red",pch=19)
 }
 
@@ -53,6 +54,7 @@ this.sq[,1]<-this.sq[,1]*0.5
 for(i in 1:length(xdel)){
    lines(x=this.sq[,1]+xdel[i],y=this.sq[,2]+ydel[i],col="grey")
    inout<-inSide(list(x=this.sq[,1]+xdel[i],y=this.sq[,2]+ydel[i]),x,y)
+   inout<-inout & rbinom(length(inout),1,0.7)
    points(x[inout],y[inout],col="red",pch=19)
 }
 
@@ -77,6 +79,7 @@ for(i in 0:2){
                   y=c(0,1,1,0,0))
 
    inout<-inSide(this.box,x,y)
+   inout<-inout & rbinom(length(inout),1,0.7)
    points(x[inout],y[inout],col="red",pch=19)
 
    ylines<-y[inout]

@@ -24,7 +24,7 @@ Where the mixture proportions, $\pi_j$, have the property $\sum_{\forall j}\pi_j
 \begin{figure}
 \centering
 \includegraphics[width=3in]{mix/figs/2ptdia.pdf}
-\caption{An example of a 2-point mixture of half-Normals. The two constituent mixture parts are shown with dashed lines, the whole mixture function is the solid line. The scale parameters for the Normal distributions are $0.8$ and $0.2$. The associated mixture proportions are $0.64$ and $0.36$.}
+\caption{An example of a 2-point mixture of half-Normals. The two constituent mixture components are shown with dashed lines, the whole mixture function is the solid line. The scale parameters for the Normal distributions are $0.8$ and $0.2$. The associated mixture proportions are $0.64$ and $0.36$.}
 \label{2ptdia}
 \end{figure}
 
@@ -45,7 +45,7 @@ So, the likelihood becomes:
 \end{align}
 Where $g_j(x_i;\sigma_j) = \exp \Big( \frac{-x_i^2}{2 \sigma_j^2}\Big)$.
 
-The above expression could also be thought of as decomposing $f$ into mixture parts ($f_j$), yielding the same expression:
+The above expression could also be thought of as decomposing $f$ into mixture components ($f_j$), yielding the same expression:
 \begin{align}
 \mathcal{L}(\bm{\sigma}, \bm{\pi}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\sigma}, \bm{\pi}),\\
 &= \prod_{i=1}^n \sum_{j=1}^J \pi_j f_j(x_i;\bm{\sigma}, \bm{\pi}),\\
@@ -87,7 +87,7 @@ When we have multiple observations we store the distances in $\bm{x}$ (an $n$-ve
 
 \subsubsection{Covariates - intercept model}
 
-One can think of a special case of the model above when the parameters estimated are common across all mixture parts, except for an intercept.  Mathematically,
+One can think of a special case of the model above when the parameters estimated are common across all mixture components, except for an intercept.  Mathematically,
 \begin{align*}
 \sigma_j(\bm{z};\bm{\beta}_j) = \exp \Big(\beta_{0j} + \sum_{k\in K_j} \beta_{k} z_k \Big)
 \end{align*}
@@ -128,9 +128,9 @@ For point transects the likelihood is similar, though with the $r$ pre-multiplie
 
 
 \subsection{Detection probability}
-Calculation of $\mu_j$ (and $\nu_j$ and their covariate analogues) leads to a per-mixture (and per-observation, per-mixture) definition for the probability of detection. Although these quantities are useful (indeed, they are needed to calculate Horvitz-Thompson-type estimators of abundance), it is also useful to calculate the overall detection probability.
+The detection probability, as we have seen, is a central concept in distance sampling. Notably, it can be used as a way of estimating abundance (via Horvitz-Thompson estimators). In this vein, the per-observation detectability is first derived. Next, an estimate of overall average detectability is often useful (and will be used later to asses the performance of the method), so this is also derived. Finally, the variance of the average detectability is also found and as a result of this, an estimator of the coefficient of variation is also given.
 
-\subsection{Per observation detectability}
+\subsubsection{Per-observation detectability}
 When using covariates, each object effectively has its own detection function and hence its own per observation detectability. Calculating this is fairly simple. Starting from the definition of detectability given in equation (3.19) of Buckland \textit{et al} (2004) p 38 (modified slightly for notational consistency), the detection function is replaced with the mixture model version:
 \begin{align*}
 P_a(\bm{z}_i) =& \frac{\mu(\bm{z}_i)}{w},\\
@@ -141,9 +141,8 @@ P_a(\bm{z}_i) =& \frac{\mu(\bm{z}_i)}{w},\\
 so the detectability can now be calculated for each observation.
 
 
-\subsection{Average detectability}
-
-If we wish to calculate the average detectability, then we must first find the population mixture proportions and use these in order to calculate the overall average detectability. The estimated population mixture proportions, $\dot{\pi}_j$ (for $j=1\dots J$ are then defined as:
+\subsubsection{Average detectability}
+If we wish to calculate the overall average detectability, then we must first find the population mixture proportions and use these in order to calculate the overall average detectability. The estimated population mixture proportions, $\dot{\pi}_j$ (for $j=1\dots J$ are then defined as:
 \begin{equation}
 \dot{\pi}_j = \frac{\hat{\pi}_j/ p_j}{\sum_{j=1}^J p_j},
 \end{equation}
@@ -174,11 +173,27 @@ p_{ij}=\frac{1}{\pi w^2} \int_0^w r g_j(r ;\sigma_j) \text{d}r.
 \end{align*}
 which are identical for all $i$.
 
-Once the $\dot{\pi}_j$s are found, they can be used in place of the $\hat{\pi}_j$s in order to calculate the average detectability.
+Once the $\dot{\pi}_j$s are found, they can be used in place of the $\hat{\pi}_j$s in order to calculate the average detectability, $P_a$, as:
+\begin{equation}
+P_a = \frac{1}{w} \sum_{j=1}^J \dot{\pi}_j \int_0^w g_j(x;\sigma_j(\bm{z}_i,\bm{\beta}_j) \text{d}x,
+\end{equation}
+for line transects and
+\begin{equation}
+P_a = \frac{1}{\pi w^2} \sum_{j=1}^J \dot{\pi}_j \int_0^w r g_j(r;\sigma_j(\bm{z}_i,\bm{\beta}_j) \text{d}r,
+\end{equation}
+for point transects.
+
+[[WHAT ABOUT THE $i$s!!!!]]
+
+
+\subsubsection{Variance of $p$}
+why?!?!
 
 
 
-[[Var and CV.]]
+\subsubsection{CV}
+talk about what it is...
+
 
 \subsection{Goodness of fit testing}
 
@@ -242,13 +257,14 @@ In particular, simulated annealing is used for 250 iterations, then unconstraine
 It is worth noting that the method may appear to fail to converge for all attempts, however this does not necessarily indicate that the model will never converge. The stochastic nature of simulated annealing means that it is entirely possible that further runs may yield a useful result.
 
 \subsection{Expectation-Maximisation Algorithm}
-A common (CITE SOME PAPERS) way of fitting mixture models is to use the Expectation-Maximisation (EM) algorithm of CITE THE EM PAPER.
+A common (CITE SOME PAPERS) way of fitting mixture models is to use the Expectation-Maximisation (EM) algorithm of \cite{em}. [[WHY?]]
 
-First note that the likelihood for mixture models tends to be of the form:
+Considering each of the observations as coming from one of the $J$ mixture components, we arrive at a latent variable interpretation of the mixture model. Given this latent variable view, it is possible to then evaluate the probability that each observation is from a particular mixture component. The mixture proportions can then we calculated by taking the average of these probabilities for a given mixture component. Once the mixture proportions are calculated, the scale parameters can be found using a some optimisation procedure (such as BFGS). This yields a new set of scale parameters, so the mixture proportions are then recalculated. EM switches between these two stages (expectation and maximisation) until the values for the mixture proportions and the scale parameters have converged.
 
-this form appears to be a weighted likelihood... SAY MORE FROM THE PIATER DOC
+\subsubsection{EM steps}
+The expectation and maximisation steps are defined as follows. First note that $f_j(x_i;\sigma_j(\bm{z}_i,\bm{\beta}_j))$ is the PDF of mixture part $j$ evaluated at distance $x_i$ with covariates $\bm{z}_i$. 
 
-Outline of the EM algorithm is taken from the very helpful set of notes by \cite{piater}. As is usual with EM, expectation and maximisation steps are looped until convergence. Letting $f_j(x_i;\sigma_j(\bm{z}_i,\bm{\beta}_j))$ be the PDF of mixture part $j$ evaluated at distance $x_i$ with covariates $\bm{z}_i$, The expectation and maximisation steps are defined as follows.
+
 \begin{itemize}
 \item \textbf{Expectation.}
 During the expectation step the mixture proportions are calculated. This is done using the expected values of the weights, $w_{ij}$, for each datum $i$ and mixture $j$,
@@ -261,14 +277,12 @@ Then $\pi_j$s may be calculated as:
 \end{equation*}
 
 \item \textbf{Maximisation.}
-Keeping the $\pi_j$s fixed (from the previous step), optimise with respect to the $\sigma_j$s (or, rather, $\beta_{jk}$s). Here BFGS is used with analytic gradients. 
+Keeping the $\pi_j$s fixed (from the previous step), optimise with respect to the $\sigma_j$s (or, rather, $\beta_{jk}$s). Here BFGS is used with analytic gradients (see appendix \ref{appendix-mmds-derivs}). 
 \end{itemize}
 
 
 
 cite EM/CEM/SEM paper
-
-gelman multimodality
 
 maybe show why other parametrisation doesn't work??
 
@@ -316,9 +330,12 @@ Just source in the .tex from the vignette?
 
 \section{Acknowledgements}
 DLB - pi parametrisation
-JLL/Steve/Eric - general comments
+
+JLL/Steve- general comments
+
 Marc - interesting chat
+
 Len - obviously
 
-
+Outline of the EM algorithm is taken from the very helpful set of notes by \cite{piater}.
 

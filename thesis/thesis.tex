@@ -1,6 +1,6 @@
 % thesis?
 
-\documentclass{report}
+\documentclass[mitthesis]{report}
 \usepackage{baththesis}
 
 \usepackage{times, amsmath, amssymb, amsfonts, url, natbib, bm, rotating}
@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{rotating}
 \usepackage{psfrag}
+\usepackage{appendix}
 
  
 % Shortcuts
@@ -106,7 +107,9 @@ This thesis is split into three parts:
 \input{intro/intro}
 
 \chapter{The \sch\ transform as a method for finite area smoothing}
-% "failure is always an option" - Adam Savage
+\begin{quotation}
+``Failure is \textit{always} an option.'' -- Adam Savage
+\end{quotation}
 
 \input{sc/sc}
 
@@ -126,6 +129,11 @@ Using QR update to speed up model fitting for (G)AMs. At the moment the fitting 
 \chapter{Something else?}
 
 If there is time.
+
+\appendix
+\chapter{Derivatives of the likelihood for mixture model detection functions}
+
+Derivatives go here!
 
 \bibliographystyle{chicago}
 \bibliography{bib-hell}
