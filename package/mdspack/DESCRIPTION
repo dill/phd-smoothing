@@ -1,0 +1,10 @@
+Package: mdspack 
+Version: 0.1
+Author: David Lawrence Miller <dave@ninepointeightone.net>
+Maintainer: David Lawrence Miller <dave@ninepointeightone.net>
+Title: stuff to do mds smoothing with
+Description: ibid
+Depends: R (>= 2.3.0), mgcv, soap
+LazyLoad: yes
+License: GPL (>= 2)
+
