@@ -64,7 +64,7 @@ woodpath<-function(xpoints,ypoints,bnd,start=NA,faster=0,debug=0){
 
    # load the library
    #dyn.unload("wood.so")
-   library.dynam.unload("mdspack")
+   library.dynam.unload("mdspack",paste(.libPaths()[1],"mdspack",sep=""))
 
 
    return(D)
