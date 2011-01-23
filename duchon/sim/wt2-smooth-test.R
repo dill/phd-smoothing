@@ -1,6 +1,5 @@
 # function to run simulations on the wigglytop 2 domain
 # Copyright David Lawrence Miller 2009.
-source("mds.R")
  
 wt2_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
                           gendata,bnd,grid.mds,grid.mds3,my.grid,soap.knots,predd){

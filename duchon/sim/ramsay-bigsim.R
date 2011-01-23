@@ -31,7 +31,7 @@ grid.mds3<-cmdscale(D.grid,eig=TRUE,k=3,x.ret=TRUE)
 
 #################################
 
-sim.size<-200
+sim.size<-2#00
 samp.size<-250
 noise.level<-0.1
 
@@ -40,7 +40,7 @@ res.edf<-list(mds=rep(0,sim.size), duchon=rep(0,sim.size),soap=rep(0,sim.size),t
 
 for(i in 1:sim.size){
    res<-ramsay_smooth_test(samp.size=samp.size,noise.level=noise.level,plot.it=FALSE,
-                             bnd,my.grid,grid.mds2,grid.mds3,xx,yy,onoff,faster=faster)
+                             bnd,my.grid,grid.mds2,grid.mds3,xx=xx,yy=yy,onoff,faster=faster)
    res.mse$mds[i]<-res$mds
    res.mse$duchon[i]<-res$duchon
    res.mse$soap[i]<-res$soap

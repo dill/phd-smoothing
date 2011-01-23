@@ -21,12 +21,10 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    # new MDS coords for the prediction points
    pred.mds<-insert.mds(pred.data,my.grid,grid.mds2,bnd,faster=faster)
    # put this in the correct format 
-   pred.size<-length(xx)
+   pred.size<-dim(samp.mds)[1]+dim(pred.mds)[1]
    pred.data.mds<-list(x=rep(0,pred.size),y=rep(0,pred.size))
-   pred.data.mds$x[samp.ind]<-samp.data.mds$x  # need to add in the sample points too
-   pred.data.mds$x[-samp.ind]<-pred.mds[,1]
-   pred.data.mds$y[samp.ind]<-samp.data.mds$y  # need to add in the sample points too
-   pred.data.mds$y[-samp.ind]<-pred.mds[,2]
+   pred.data.mds$x<-pred.mds[,1]
+   pred.data.mds$y<-pred.mds[,2]
 
 
    #### 3D MDS stuff!
@@ -36,12 +34,9 @@ ramsay_smooth_test<-function(samp.size=250,noise.level=0.05,plot.it=FALSE,
    pred.mds3<-insert.mds(pred.data,my.grid,grid.mds3,bnd,faster=faster)
    # put this in the correct format 
    pred.data.mds3<-list(x=rep(0,pred.size),y=rep(0,pred.size),w=rep(0,pred.size))
-   pred.data.mds3$x[samp.ind]<-samp.data.mds3$x 
-   pred.data.mds3$x[-samp.ind]<-pred.mds[,1]
-   pred.data.mds3$y[samp.ind]<-samp.data.mds3$y  
-   pred.data.mds3$y[-samp.ind]<-pred.mds[,2]
-   pred.data.mds3$w[samp.ind]<-samp.data.mds3$w
-   pred.data.mds3$w[-samp.ind]<-pred.mds[,3]
+   pred.data.mds3$x<-pred.mds3[,1]
+   pred.data.mds3$y<-pred.mds3[,2]
+   pred.data.mds3$w<-pred.mds3[,3]
 
 
    # truth

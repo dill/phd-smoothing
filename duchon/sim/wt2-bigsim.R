@@ -3,7 +3,7 @@
 
 library(mdspack)
 
-source("sim/wt2-smooth-test.R")
+source("wt2-smooth-test.R")
 
 ######################################################
 # The following models get tested:
