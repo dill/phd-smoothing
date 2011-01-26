@@ -64,6 +64,7 @@ tp.pred<-predict(tp.fit,newdata=pred.grid,type="response")
 pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-tp.pred
 image(pred.mat,x=unique(gxx),y=unique(gyy),main="tprs",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
+contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
 lines(bnd,lwd=2)
 
 
@@ -185,7 +186,7 @@ pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-mds3.pred
 image(pred.mat,x=unique(gxx),y=unique(gyy),
       xlab="km (East)",ylab="km (North)",
-      xlim=xlims,ylim=ylims,asp=1,zlim=zlims,main="Duchon")
+      xlim=xlims,ylim=ylims,asp=1,zlim=zlims,main="3D tprs")
 contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
 lines(bnd,lwd=2)
 
