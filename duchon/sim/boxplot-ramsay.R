@@ -1,6 +1,6 @@
 # make some boxplots
 
-pdf(file="mds-ramsay-boxplot.pdf",width=6,height=5)
+#pdf(file="mds-ramsay-boxplot.pdf",width=6,height=5)
 
 # make the text look better for printout
 par(cex.lab=0.75)
@@ -35,4 +35,4 @@ for(err.lev in c("0.1","1","10")){
 
 }
 
-dev.off()
+#dev.off()

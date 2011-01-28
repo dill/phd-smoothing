@@ -3,6 +3,9 @@
  
 library(mdspack)
 
+#this.seed<-get(".Random.seed",envir=.GlobalEnv) ## store RNG seed
+
+
 wt2_smooth_test<-function(samp.size=250,noise.level=0.9,plot.it=FALSE){
  
    ## create a boundary...
