@@ -32,18 +32,29 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
       D.grid<-old.obj$D
       my.grid<-old.obj$grid
 
+      m<-old.obj$m
+      bs<-old.obj$bs
+      k<-old.obj$k
+
    }else{
       # object to store all the results for later
       new.obj<-list()
 
       # create the grid
-      grid.obj<-calc.grid(bnd,grid.res)
-   
+      #grid.obj<-calc.grid(bnd,grid.res)
+      grid.obj<-create_refgrid(bnd,120)
+      D.grid<-create_distance_matrix(grid.obj$x,grid.obj$y,bnd)
+      grid.obj<-list(D=D.grid,grid=list(x=grid.obj$x,y=grid.obj$y))
+
       D.grid<-grid.obj$D
       my.grid<-grid.obj$grid
       # store!
       new.obj$D.grid<-D.grid
       new.obj$grid<-my.grid
+
+      new.obj$m<-m
+      new.obj$bs<-bs
+      new.obj$k<-k
 
    }
 
@@ -84,26 +95,27 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
    # store!
    new.obj$samp.mds<-samp.mds
 
-   # if we have predictions then map them in too
+   ### fit the model
 
-
-   # fit the model
+   # find the prediction terms
    pred.terms<-names(samp.mds)
    pred.terms<-pred.terms[-length(pred.terms)]
    pred.terms<-paste(pred.terms,sep=",")
 
+   # create the gam formula
    if(is.null(m)){
       gam.options<-paste("bs='",bs,"', k=",k,sep="")
+   }else if(!is.null(m) & length(m)==1){
+      gam.options<-paste("bs='",bs,"', k=",k,", m=",m,sep="")
    }else{
       gam.options<-paste("bs='",bs,"', k=",k,", m=c(",m[1],",",m[2],")",sep="")
    }
-   
    gam.formula<-paste("z~s(",paste(pred.terms,collapse=","),",",gam.options,")")
-   
    gam.formula<-as.formula(gam.formula)
 
+   # run the model
    b.mapped<-gam(gam.formula,data=samp.mds)
-
+   # store
    new.obj$gam<-b.mapped
 
    # do the preictions
@@ -118,8 +130,6 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
 
       #new.obj$pred<-cbind(predp,fv.mapped)
       new.obj$pred<-fv.mapped
-
-
    }
 
    # put everything back into the object

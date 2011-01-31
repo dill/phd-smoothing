@@ -111,7 +111,7 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.9,plot.it=FALSE){
    #fv.te <- predict(b.mapped.te,newdata=pred.data)
 
    # mapping
-   b.mapped.s<-gam(z~s(x,y,w,k=100,m=c(2,3/2-1),bs="ds"),data=samp.data)
+   b.mapped.s<-gam(z~s(x,y,w,k=100,m=c(3,3/2-1),bs="ds"),data=samp.data)
    fv.s <- predict(b.mapped.s,newdata=pred.data)
 
    # normal tprs

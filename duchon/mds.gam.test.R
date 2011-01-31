@@ -3,10 +3,8 @@
  
 library(mdspack)
 
-
-
 samp.size=250
-noise.level=0.05
+noise.level=0.9
 plot.it=TRUE
  
 ## create a boundary...
@@ -44,12 +42,12 @@ gendata.samp<- list(x=gendata$x[samp.ind],
                     z=gendata$z[samp.ind])
 
 
-a<-gam.mds(gendata.samp,NULL,bnd,grid.res=c(20,20))
+a<-gam.mds(gendata.samp,NULL,bnd,grid.res=c(16,16))
 
 
 
 # try prediction
-predtry<-gam.mds(gendata.samp,gendata,bnd,grid.res=c(10,10),old.obj=a)
+predtry<-gam.mds(gendata.samp,gendata,bnd,old.obj=a)
 
 
 gendata.ind <- read.csv("wt2truth.csv",header=TRUE)
