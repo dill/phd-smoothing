@@ -39,13 +39,20 @@ par(mfrow=c(3,2),mar=c(1.8,1.5,1.8,1.5),las=1)
 std.mds<-a
 plot.pred(std.mds,"2D MDS")
 
+wlen<-0
 
 par(mfrow=c(4,3),mar=c(1.8,1.5,1.8,1.5),las=1)
 for(mds.dim in c(2,3,4,5)){
-   for(d.val in c(2,3,4)){
+   for(m.val in c(2,3,4)){
       
-      mds.mod<-gam.mds(gendata.samp,NULL,bnd,mds.dim=mds.dim,bs="ds",m=c(d.val,d.val/2-1))
-      plot.pred(mds.mod,paste(mds.dim,"D MDS d=",d.val,sep=""))
+      mds.mod<-gam.mds(gendata.samp,NULL,bnd,mds.dim=mds.dim,bs="ds",m=c(m.val,mds.dim/2-1))
+   
+      if(wlen==length(warnings())){
+         plot.pred(mds.mod,paste(mds.dim,"D MDS d=",m.val,sep=""))
+      }else{
+         plot(1:10,1:10,type="n")
+         wlen<-wlen+1
+      }
    }
 }
 
