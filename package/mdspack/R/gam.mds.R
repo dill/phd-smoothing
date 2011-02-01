@@ -36,6 +36,10 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
       bs<-old.obj$bs
       k<-old.obj$k
 
+      if(!is.null(old.obj$mds.dim)){
+         mds.dim<-old.obj$mds.dim
+      }
+
    }else{
       # object to store all the results for later
       new.obj<-list()
@@ -49,7 +53,7 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
       D.grid<-grid.obj$D
       my.grid<-grid.obj$grid
       # store!
-      new.obj$D.grid<-D.grid
+      new.obj$D<-D.grid
       new.obj$grid<-my.grid
 
       new.obj$m<-m
