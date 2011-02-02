@@ -36,9 +36,15 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
       D.samp<-old.obj$D.samp
       D.pred<-old.obj$D.pred
 
-      m<-old.obj$m
-      bs<-old.obj$bs
-      k<-old.obj$k
+      if(!is.null(old.obj$m)){
+         m<-old.obj$m
+      }
+      if(!is.null(old.obj$bs)){
+         bs<-old.obj$bs
+      }
+      if(!is.null(old.obj$k)){
+         k<-old.obj$k
+      }
 
       if(!is.null(old.obj$mds.dim)){
          mds.dim<-old.obj$mds.dim
@@ -60,14 +66,14 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
       new.obj$D<-D.grid
       new.obj$grid<-my.grid
 
-      new.obj$m<-m
-      new.obj$bs<-bs
-      new.obj$k<-k
 
       D.samp<-NULL
       D.pred<-NULL
 
    }
+   new.obj$m<-m
+   new.obj$bs<-bs
+   new.obj$k<-k
 
    grid.mds<-cmdscale(D.grid,eig=TRUE,k=mds.dim,x.ret=TRUE)
    
