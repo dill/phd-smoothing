@@ -46,7 +46,7 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
 
       # create the grid
       #grid.obj<-calc.grid(bnd,grid.res)
-      grid.obj<-create_refgrid(bnd,120)
+      grid.obj<-create_refgrid(bnd,grid.res)
       D.grid<-create_distance_matrix(grid.obj$x,grid.obj$y,bnd)
       grid.obj<-list(D=D.grid,grid=list(x=grid.obj$x,y=grid.obj$y))
 

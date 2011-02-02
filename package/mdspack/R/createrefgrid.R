@@ -4,12 +4,21 @@ create_refgrid<-function(bnd,dens=25){
    # starting value
    res<-10
 
-   # using a square grid: make_soap_grid   
-   grid<-make_soap_grid(bnd,res,log=TRUE,delta=TRUE)
-   
-   while(length(grid$x)<dens){
-      res<-res+1
-      grid<-make_soap_grid(bnd,res)
+
+   if(length(dens)==2){
+
+      grid<-make_soap_grid(bnd,dens,log=TRUE,delta=TRUE)
+
+   }else{
+
+      # using a square grid: make_soap_grid   
+      grid<-make_soap_grid(bnd,res,log=TRUE,delta=TRUE)
+      
+      while(length(grid$x)<dens){
+         res<-res+1
+         grid<-make_soap_grid(bnd,res)
+      }
+
    }
 
    grid$nrefx<-res
