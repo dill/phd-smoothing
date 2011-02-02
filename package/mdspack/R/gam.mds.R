@@ -71,15 +71,22 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
       D.pred<-NULL
 
    }
-   new.obj$m<-m
-   new.obj$bs<-bs
-   new.obj$k<-k
+
+   # if there was a non-integer supplied, then we can
+   # assume that we want what proportion of the variance 
+   # explained...
+   if(mds.dim!=floor(mds.dim)){
+      lev<-mds.dim
+      mds.dim<-choose.mds.dim(D.grid,mds.dim)
+      if(bs=="ds"){
+         m<-c(2,mds.dim/2-1)
+      }
+      new.obj$prop.explained<-lev
+      cat("mds.dim=",mds.dim,"explains",lev,"of the variance\n")
+   }
 
    grid.mds<-cmdscale(D.grid,eig=TRUE,k=mds.dim,x.ret=TRUE)
    
-   new.obj$mds.dim<-mds.dim
-
-
    # map the samples
 
    ## according to the formula, what are the predictor names
@@ -162,6 +169,10 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
    }
 
    # put everything back into the object
+   new.obj$m<-m
+   new.obj$bs<-bs
+   new.obj$k<-k
+   new.obj$mds.dim<-mds.dim
 
    return(new.obj)
 }

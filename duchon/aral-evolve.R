@@ -97,30 +97,40 @@ plot.it<-function(dat,main.title){
    lines(bnd,lwd=2)
 }
 
-mds2<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20))
+#mds2<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20))
+load("rly.RData")
 plot.it(mds2,"mds 2D - tprs")
 
 # reset the mds dimension, so we can re-use Ds...
 mds2$mds.dim<-NULL
+mds2$m<-NULL
+mds2$bs<-NULL
 
 
 mds3<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,old.obj=mds2) 
-plot.it(mds3,"mds 2D - tprs")
+plot.it(mds3,"mds 3D - tprs")
 
 
-#mds3<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3)
-#plot.it(mds3,"mds 3D")
-#
-#
-#mds3ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,m=c(2,3/2-1),bs="ds")
-#plot.it(mds3ds,"mds 3D - ds")
-#
-#mds4ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=4,m=c(2,4/2-1),bs="ds")
-#plot.it(mds4ds,"mds 3D - ds")
+mds3.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,m=c(2,3/2-1),bs="ds",old.obj=mds2)
+plot.it(mds3.ds,"mds 3D - ds, s=0.5")
 
 
+mds4.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=4,m=c(2,4/2-1),bs="ds",old.obj=mds2)
+plot.it(mds4.ds,"mds 4D - ds, s=1")
 
 
+mds5.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=5,m=c(2,5/2-1),bs="ds",old.obj=mds2)
+plot.it(mds5.ds,"mds 5D - ds, s=1.5")
+
+mds6.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=6,m=c(2,6/2-1),bs="ds",old.obj=mds2)
+plot.it(mds6.ds,"mds 6D - ds, s=2")
+
+
+#mds7.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=7,m=c(2,7/2-1),bs="ds",old.obj=mds2)
+#plot.it(mds7.ds,"mds 7D - ds, s=2.5")
+
+mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.9,bs="ds",old.obj=mds2)
+plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2],sep=""))
 
 ## mds grid
 #m<-20;n<-20
