@@ -192,7 +192,7 @@ pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
                           w=pred.grid.mds[,4])
 
 # fit the model
-mds4d.fit<-gam(chl~s(w,x,y,z,k=140,bs="ds",m=c(3,4/3-1)),data=aral.mds,family=Gamma(link="log"))
+mds4d.fit<-gam(chl~s(w,x,y,z,k=140,bs="ds",m=c(2,4/2-1)),data=aral.mds,family=Gamma(link="log"))
 
 # do the prediction
 mds4d.pred<-predict(mds4d.fit,newdata=pred.grid.mds,type="response")
