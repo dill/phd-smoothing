@@ -27,10 +27,14 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
       # object to store all the results for later
       new.obj<-old.obj
 
-      # if there is no sample then just do prediction
-
+      # pull out the grid D matrix
       D.grid<-old.obj$D
       my.grid<-old.obj$grid
+
+      # also the pred and sample D matrices if
+      # they are there
+      D.samp<-old.obj$D.samp
+      D.pred<-old.obj$D.pred
 
       m<-old.obj$m
       bs<-old.obj$bs
@@ -60,6 +64,9 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
       new.obj$bs<-bs
       new.obj$k<-k
 
+      D.samp<-NULL
+      D.pred<-NULL
+
    }
 
    grid.mds<-cmdscale(D.grid,eig=TRUE,k=mds.dim,x.ret=TRUE)
@@ -87,8 +94,14 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
    #old.names<-names(samp.data)
    #names(samp.data)<-c("x","y")
 
-   # insert the sample
-   samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd)
+   # insert the sample - if there was a D cached, use that
+   if(is.null(D.samp)){
+      samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd)
+      new.obj$D.samp<-attr(samp.mds,"D")
+   }else{
+      samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd,oldD=D.samp)
+   }
+
 
    #samp.mds<-as.data.frame(samp.mds)
    samp.mds<-as.data.frame(cbind(samp.mds,response.var))
@@ -124,7 +137,13 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
 
    # do the preictions
    if(!is.null(predp)){
-      pred.mds<-insert.mds(predp,my.grid,grid.mds,bnd,faster=1)
+      # insert the sample - if there was a D cached, use that
+      if(is.null(D.samp)){
+         pred.mds<-insert.mds(predp,my.grid,grid.mds,bnd,faster=1)
+         new.obj$D.pred<-attr(pred.mds,"D")
+      }else{
+         pred.mds<-insert.mds(predp,my.grid,grid.mds,bnd,faster=1,oldD=D.pred)
+      }
 
       pred.mds<-as.data.frame(pred.mds)
 
