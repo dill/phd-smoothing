@@ -63,14 +63,22 @@ yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
 
 
 
-
-mds.mod<-gam.mds(gendata.samp,gendata,bnd,mds.dim=0.9,bs="ds")
-
+par(mfrow=c(1,2))
+mds.mod$m<-NULL
+mds.mod$bs<-NULL
 mds.mod$mds.dim<-NULL
-mds.mod<-gam.mds(gendata.samp,gendata,bnd,mds.dim=0.85,bs="ds",old.obj=mds.mod)
-quartz()
 
-
+mds.mod<-gam.mds(gendata.samp,gendata,bnd,mds.dim=3,old.obj=mds.mod)
+pred.mat<-rep(NA,length(gendata.ind$x))
+pred.mat[ind]<-mds.mod$pred
+pred.mat<-matrix(pred.mat,50,50)
+image(xscale,yscale,pred.mat,main=paste(mds.mod$mds.dim,"D MDS s=",mds.mod$m[2],sep=""),
+         asp=1,xlab="",ylab="",col=heat.colors(100),cex.axis=0.5)
+contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
+mds.mod$m<-NULL
+mds.mod$mds.dim<-NULL
+mds.mod$bs<-NULL
+mds.mod<-gam.mds(gendata.samp,gendata,bnd,mds.dim=3,bs="ds",m=c(2,3/2-1),old.obj=mds.mod)
 pred.mat<-rep(NA,length(gendata.ind$x))
 pred.mat[ind]<-mds.mod$pred
 pred.mat<-matrix(pred.mat,50,50)
@@ -80,6 +88,22 @@ contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
 
 
 
+#mds.mod<-gam.mds(gendata.samp,gendata,bnd,mds.dim=0.9,bs="ds")
+#
+#mds.mod$mds.dim<-NULL
+#mds.mod<-gam.mds(gendata.samp,gendata,bnd,mds.dim=0.85,bs="ds",old.obj=mds.mod)
+#quartz()
+#
+#
+#pred.mat<-rep(NA,length(gendata.ind$x))
+#pred.mat[ind]<-mds.mod$pred
+#pred.mat<-matrix(pred.mat,50,50)
+#image(xscale,yscale,pred.mat,main=paste(mds.mod$mds.dim,"D MDS s=",mds.mod$m[2],sep=""),
+#         asp=1,xlab="",ylab="",col=heat.colors(100),cex.axis=0.5)
+#contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
+#
+#
+#
 #
 #      #mds.mod<-try(gam.mds(gendata.samp,NULL,bnd,mds.dim=mds.dim,bs="ds",m=c(2,mds.dim/2-1)))
 #   
