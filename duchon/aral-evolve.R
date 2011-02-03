@@ -1,5 +1,6 @@
 # Aral Sea data set analysis - evolce Duchon...
 
+load("rly.RData")
 # libraries
 library(mgcv)
 library(soap)
@@ -11,7 +12,7 @@ library(mdspack)
 aral<-read.csv("aral.dat",sep=" ")
 bnd<-read.csv("aralbnd.csv")
 
-zlims<-c(1.905461, 19.275249)
+#zlims<-c(1.905461, 19.275249)
 zlims<-c(1, 20)
 
 # first cut out the crap using inSide
@@ -90,6 +91,7 @@ lines(bnd,lwd=2)
 names(aral.dat)<-c("x","y","z")
 
 plot.it<-function(dat,main.title){
+   zlims<-c(1, 20)
    pred.mat<-matrix(NA,gm,gn)
    pred.mat[pred.onoff]<-dat$pred
    image(pred.mat,x=unique(gxx),y=unique(gyy),main=main.title,
@@ -99,7 +101,6 @@ plot.it<-function(dat,main.title){
 }
 
 #mds2<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20))
-load("rly.RData")
 plot.it(mds2,"mds 2D - tprs")
 
 # reset the mds dimension, so we can re-use Ds...
