@@ -14,7 +14,7 @@ plot.it<-function(obj){
  
 library(mdspack)
 
-set.seed(123)
+#set.seed(123)
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
 
 names(bnd)<-c("x","y")
@@ -27,24 +27,7 @@ gendata<-list(x=gendata$x[gendata$inside==1],
                y=gendata$y[gendata$inside==1],
                z=gendata$z[gendata$inside==1])
 
-
 zlims<-c(min(gendata$z),max(gendata$z))
-
-
-#na.ind<-!(is.na(gendata$x)&is.na(gendata$y)&is.na(gendata$z))
-#
-#gendata<-list(x=gendata$x[na.ind],
-#               y=gendata$y[na.ind],
-#               z=gendata$z[na.ind])
-#
-## attempt to get around the inside bug
-#bnd.neg<-list(x=-bnd$x,y=-bnd$y)
-#onoff<-inSide(bnd.neg,-gendata$x,-gendata$y)
-#
-#gendata<-list(x=gendata$x[onoff],
-#               y=gendata$y[onoff],
-#               z=gendata$z[onoff])
-
 
 # plot for truth
 par(mfrow=c(1,5),mar=c(1.8,1.5,1.8,1.5),las=1)
@@ -57,10 +40,6 @@ pred.mat<-matrix(pred.mat,50,50)
 image(xscale,yscale,pred.mat,main="Truth",asp=1,xlab="",ylab="",
          col=heat.colors(100),cex.axis=0.5,zlim=zlims)
 contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5,zlim=zlims)
-
-
-
-
 
 # make a sample
 samp.size<-500

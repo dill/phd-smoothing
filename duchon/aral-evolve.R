@@ -12,6 +12,7 @@ aral<-read.csv("aral.dat",sep=" ")
 bnd<-read.csv("aralbnd.csv")
 
 zlims<-c(1.905461, 19.275249)
+zlims<-c(1, 20)
 
 # first cut out the crap using inSide
 onoff<-inSide(bnd,aral$lo,aral$la)
@@ -52,7 +53,7 @@ ylims<-c(min(aral.dat$y)-10,max(aral.dat$y)+10)
 
 aral$chl[!onoff]<-NA
 image(z=matrix(aral$chl,46,46),x=aral.lab$km.e,y=aral.lab$km.n,
-      asp=1,main="raw data",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims)
+      asp=1,main="raw data",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,zlim=zlims)
 lines(bnd,lwd=2)
 
 #######################################################################
@@ -92,8 +93,8 @@ plot.it<-function(dat,main.title){
    pred.mat<-matrix(NA,gm,gn)
    pred.mat[pred.onoff]<-dat$pred
    image(pred.mat,x=unique(gxx),y=unique(gyy),main=main.title,
-         xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
-   contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
+         xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1,zlim=zlims)
+   contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,zlim=zlims)#,levels=pretty(zlims,15))
    lines(bnd,lwd=2)
 }
 
@@ -106,206 +107,30 @@ mds2$mds.dim<-NULL
 mds2$m<-NULL
 mds2$bs<-NULL
 
-
-mds3<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,old.obj=mds2) 
+mds3<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,old.obj=mds2,family=Gamma(link="log")) 
 plot.it(mds3,"mds 3D - tprs")
 
-
-mds3.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,m=c(2,3/2-1),bs="ds",old.obj=mds2)
+mds3.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,m=c(2,3/2-1),bs="ds",old.obj=mds2,family=Gamma(link="log"))
 plot.it(mds3.ds,"mds 3D - ds, s=0.5")
 
-
-mds4.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=4,m=c(2,4/2-1),bs="ds",old.obj=mds2)
-plot.it(mds4.ds,"mds 4D - ds, s=1")
-
-
-mds5.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=5,m=c(2,5/2-1),bs="ds",old.obj=mds2)
-plot.it(mds5.ds,"mds 5D - ds, s=1.5")
-
-mds6.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=6,m=c(2,6/2-1),bs="ds",old.obj=mds2)
-plot.it(mds6.ds,"mds 6D - ds, s=2")
-
-
+#mds4.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=4,m=c(2,4/2-1),bs="ds",old.obj=mds2)
+#plot.it(mds4.ds,"mds 4D - ds, s=1")
+#mds5.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=5,m=c(2,5/2-1),bs="ds",old.obj=mds2)
+#plot.it(mds5.ds,"mds 5D - ds, s=1.5")
+#mds6.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=6,m=c(2,6/2-1),bs="ds",old.obj=mds2)
+#plot.it(mds6.ds,"mds 6D - ds, s=2")
 #mds7.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=7,m=c(2,7/2-1),bs="ds",old.obj=mds2)
 #plot.it(mds7.ds,"mds 7D - ds, s=2.5")
 
-mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.9,bs="ds",old.obj=mds2)
-plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2],sep=""))
+mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.8,bs="ds",old.obj=mds2,family=Gamma(link="log"))
+plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2]," (0.8 variation)",sep=""))
 
-## mds grid
-#m<-20;n<-20
-#xm <- seq(min(aral.dat$x),max(aral.dat$x),length=m)
-#yn<-seq(min(aral.dat$y),max(aral.dat$y),length=n)
-#xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
-#grid.onoff<-inSide(bnd,xx,yy)
-#mds.grid<-data.frame(x=xx[grid.onoff],y=yy[grid.onoff])
-#
-## actually do the MDS
-#D<-create_distance_matrix(mds.grid$x,mds.grid$y,bnd,faster=1)
-######################################
-#
-#
-#
-#
-#grid.mds<-cmdscale(D,eig=TRUE,k=2,x.ret=TRUE)
-#
-## create the data frame and fit the model
-#aral.mds<-insert.mds(aral.dat,mds.grid,grid.mds,bnd,faster=1)
-#aral.mds<-data.frame(x=aral.mds[,1],
-#                     y=aral.mds[,2],
-#                     chl=aral.dat$chl)
-#
-## fit the model
-#mds.fit<-gam(chl~s(x,y,k=70),data=aral.mds,family=Gamma(link="log"))
-#
-## mds prediction grid
-#pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd,faster=1)
-#pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
-#                          y=pred.grid.mds[,2])
-#
-## do the prediction
-#mds.pred<-predict(mds.fit,newdata=pred.grid.mds,type="response")
-#
-## plot
-#pred.mat<-matrix(NA,gm,gn)
-#pred.mat[pred.onoff]<-mds.pred
-#image(pred.mat,x=unique(gxx),y=unique(gyy),main="mds",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
-#contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
-#lines(bnd,lwd=2)
-#
-#
-#
-#
-#
-#######################################################################
-#
-#### 3D + MDS
-#grid.mds<-cmdscale(D,eig=TRUE,k=3,x.ret=TRUE)
-#
-## create the data frame and fit the model
-#aral.mds<-insert.mds(aral.dat,mds.grid,grid.mds,bnd,faster=1)
-#aral.mds<-data.frame(x=aral.mds[,1],
-#                     y=aral.mds[,2],
-#                     z=aral.mds[,3],
-#                     chl=aral.dat$chl)
-#
-#
-## mds prediction grid
-#pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd,faster=1)
-#pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
-#                          y=pred.grid.mds[,2],
-#                          z=pred.grid.mds[,3])
-#
-## fit the model
-#mds3.fit<-gam(chl~s(x,y,z,k=140),data=aral.mds,family=Gamma(link="log"))
-#
-## do the prediction
-#mds3.pred<-predict(mds3.fit,newdata=pred.grid.mds,type="response")
-#
-#pred.mat<-matrix(NA,gm,gn)
-#pred.mat[pred.onoff]<-mds3.pred
-#image(pred.mat,x=unique(gxx),y=unique(gyy),
-#      xlab="km (East)",ylab="km (North)",
-#      xlim=xlims,ylim=ylims,asp=1,zlim=zlims,main="3D tprs")
-#contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
-#lines(bnd,lwd=2)
-#
-#
-#
-#
-#######################################################################
-#### Duchon
-#
-## 3d Duchon
-#
-#
-#grid.mds<-cmdscale(D,eig=TRUE,k=3,x.ret=TRUE)
-#
-## create the data frame and fit the model
-#aral.mds<-insert.mds(aral.dat,mds.grid,grid.mds,bnd,faster=1)
-#aral.mds<-data.frame(x=aral.mds[,1],
-#                     y=aral.mds[,2],
-#                     z=aral.mds[,3],
-#                     w=aral.mds[,4],
-#                     chl=aral.dat$chl)
-#
-#
-## mds prediction grid
-#pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd,faster=1)
-#pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
-#                          y=pred.grid.mds[,2],
-#                          z=pred.grid.mds[,3],
-#                          w=pred.grid.mds[,4])
-##########
-## fit the model
-#mds4d.fit<-gam(chl~s(w,x,y,z,k=140,bs="ds",m=c(2,4/2-1)),data=aral.mds,family=Gamma(link="log"))
-#
-## do the prediction
-#mds4d.pred<-predict(mds4d.fit,newdata=pred.grid.mds,type="response")
-#
-#
-#pred.mat<-matrix(NA,gm,gn)
-#pred.mat[pred.onoff]<-mds4d.pred
-#image(pred.mat,x=unique(gxx),y=unique(gyy),
-#      xlab="km (East)",ylab="km (North)",
-#      xlim=xlims,ylim=ylims,asp=1,zlim=zlims,main="Duchon - 3D")
-#contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
-#lines(bnd,lwd=2)
-#
-#
-#
-#
-#
-#
-## 4d Duchon
-#
-#grid.mds<-cmdscale(D,eig=TRUE,k=4,x.ret=TRUE)
-#
-## create the data frame and fit the model
-#aral.mds<-insert.mds(aral.dat,mds.grid,grid.mds,bnd,faster=1)
-#aral.mds<-data.frame(x=aral.mds[,1],
-#                     y=aral.mds[,2],
-#                     z=aral.mds[,3],
-#                     w=aral.mds[,4],
-#                     chl=aral.dat$chl)
-#
-#
-## mds prediction grid
-#pred.grid.mds<-insert.mds(pred.grid,mds.grid,grid.mds,bnd,faster=1)
-#pred.grid.mds<-data.frame(x=pred.grid.mds[,1],
-#                          y=pred.grid.mds[,2],
-#                          z=pred.grid.mds[,3],
-#                          w=pred.grid.mds[,4])
-##########
-## fit the model m=c(3,4/2-1))
-#mds4d.fit<-gam(chl~s(w,x,y,z,k=140,bs="ds",m=c(3,3/2-1)),data=aral.mds,family=Gamma(link="log"))
-#
-## do the prediction
-#mds4d.pred<-predict(mds4d.fit,newdata=pred.grid.mds,type="response")
-#
-#
-#pred.mat<-matrix(NA,gm,gn)
-#pred.mat[pred.onoff]<-mds4d.pred
-#image(pred.mat,x=unique(gxx),y=unique(gyy),
-#      xlab="km (East)",ylab="km (North)",
-#      xlim=xlims,ylim=ylims,asp=1,zlim=zlims,main="Duchon 4D s=2")
-#contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
-#lines(bnd,lwd=2)
-# 
-#
-#########
-## fit the model m=c(3,4/3-1))
-#mds4d.fit<-gam(chl~s(w,x,y,z,k=140,bs="ds",m=c(3,4/3-1)),data=aral.mds,family=Gamma(link="log"))
-#
-## do the prediction
-#mds4d.pred<-predict(mds4d.fit,newdata=pred.grid.mds,type="response")
-#
-#
-#pred.mat<-matrix(NA,gm,gn)
-#pred.mat[pred.onoff]<-mds4d.pred
-#image(pred.mat,x=unique(gxx),y=unique(gyy),
-#      xlab="km (East)",ylab="km (North)",
-#      xlim=xlims,ylim=ylims,asp=1,zlim=zlims,main="Duchon 4D s=3")
-#contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
-#lines(bnd,lwd=2)
-#
+mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.85,bs="ds",old.obj=mds2,family=Gamma(link="log"))
+plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2]," (0.85 variation)",sep=""))
+
+mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.9,bs="ds",old.obj=mds2,family=Gamma(link="log"))
+plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2]," (0.9 variation)",sep=""))
+
+mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.95,bs="ds",old.obj=mds2,family=Gamma(link="log"))
+plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2]," (0.95 variation)",sep=""))
+

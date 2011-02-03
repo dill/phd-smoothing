@@ -1,6 +1,6 @@
 gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
 #                 gam.options=list(bs="tp",k=100),
-                  bs="tp",k=100,m=NULL,
+                  bs="tp",k=100,m=NULL,family=gaussian(),
                  old.obj=NULL){
    # general wrapper function for mds gam stuff
 
@@ -144,7 +144,7 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
    gam.formula<-as.formula(gam.formula)
 
    # run the model
-   b.mapped<-gam(gam.formula,data=samp.mds)
+   b.mapped<-gam(gam.formula,data=samp.mds,family=family)
    # store
    new.obj$gam<-b.mapped
 
@@ -162,7 +162,7 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
 
       names(pred.mds)<-letters[(25-(dim(pred.mds)[2]-1)):25] 
 
-      fv.mapped<-predict(b.mapped,newdata=pred.mds)
+      fv.mapped<-predict(b.mapped,newdata=pred.mds,type="response")
 
       #new.obj$pred<-cbind(predp,fv.mapped)
       new.obj$pred<-fv.mapped
