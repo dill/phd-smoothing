@@ -8,9 +8,12 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
    # data            the data we actually want to do the smoothing over
    # predp           prediction points (if we want to do prediction)
    # bnd             the boundry in which the data lie
-   # k               dimension of MDS projection
+   # mds.dim         dimension of MDS projection
    # grid.res        resolution of the MDS grid
 ###   # gam.options     options to put in the s() term of the gam
+   # bs              gam basis
+   # k               gam basis size
+   # m               m parameter for gam (not really used)
    # old.obj         previous gam.mds object
 
 
@@ -33,8 +36,16 @@ gam.mds<-function(data,predp=NULL,bnd,mds.dim=2,grid.res=c(50,50),
 
       # also the pred and sample D matrices if
       # they are there
-      D.samp<-old.obj$D.samp
-      D.pred<-old.obj$D.pred
+      if(!is.null(old.obj$D.samp)){
+         D.samp<-old.obj$D.samp
+      }else{
+         D.samp<-NULL
+      }
+      if(!is.null(old.obj$D.pred)){
+         D.pred<-old.obj$D.pred
+      }else{
+         D.pred<-NULL
+      }
 
       if(!is.null(old.obj$m)){
          m<-old.obj$m
