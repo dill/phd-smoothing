@@ -8,13 +8,7 @@ source("wt2-smooth-test.R")
 ######################################################
 # The following models get tested:
 #
-#     * tprs
-#     * mds+tp
-#     * mds+cr
-#     * mds+tp (3d)
-#     * mds+tp + penalty adjustments
-#     * soap
-#     * 3D with Duchon splines 
+#      col.names<-c("tprs","mds2d","mds3dds","mds85","mds90","mds95","soap")
 
 
 ######################################################
