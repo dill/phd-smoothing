@@ -77,7 +77,8 @@ base.mds$k<-NULL
 ##########################################################
 # actually run the sim now... 
 
-noiselevels<-c(0.35)#,0.9,1.55)
+#noiselevels<-c(0.35,0.9,1.55)
+noiselevels<-c(0.9,1.55)
 
 for(samp.size in samp.sizes){
    for(noise.level in noiselevels){
