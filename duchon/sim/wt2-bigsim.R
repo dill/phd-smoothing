@@ -21,6 +21,7 @@ source("wt2-smooth-test.R")
 # OPTIONS
 sim.size<-200
 samp.sizes<-c(250,500)
+samp.sizes<-c(500)
 # noise levels = 0.35,0.9,1.55
 # snr = 0.95,0.75,0.50
 #noise.level<-1.55
@@ -79,6 +80,7 @@ base.mds$k<-NULL
 
 #noiselevels<-c(0.35,0.9,1.55)
 noiselevels<-c(0.9,1.55)
+noiselevels<-c(1.55)
 
 for(samp.size in samp.sizes){
    for(noise.level in noiselevels){
