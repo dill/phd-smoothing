@@ -5,15 +5,12 @@
 mod.names<-c("tprs","mds2d","mds3dds","mds85","mds90","mds95","soap")
 
 # make the text look better for printout
-par(cex.axis=0.75,las=1,mgp=c(2,0.75,0),mar=c(2,3,1,1))#,mfrow=c(2,1))
+par(cex.axis=0.75,las=1,mgp=c(2,0.75,0),mar=c(2,3,1,1),mfrow=c(2,1))
 
-samp.size<-250
-#for(samp.size in c(250,500)){
-
+for(samp.size in c(250,500)){
 
    # stick all of the results into one matrix
    mses<-matrix(NA,100,0)
-   
    
    for(err.lev in c("0.35","0.9","1.55")){
    
@@ -22,22 +19,22 @@ samp.size<-250
       mse<-mse[1:100,]
       mses<-cbind(mses,mse)
    
-   #   cols<-c()
-   #
-   #   # extra Wilcoxon test stuff
-   #   for(i in 1:5){
-   #      pv<-wilcox.test(mse[,6],mse[,i],paired=TRUE)$p.value
-   #      med<-median(mse[,i]-mse[,6])
-   #      if(pv<0.01 & med>0){
-   #         cols<-c(cols,"red")
-   #      }else if(pv<0.01 & med<0){
-   #         cols<-c(cols,"green")
-   #      }else{
-   #         cols<-c(cols,"white")
-   #      }
-   #      cat("soap vs. ",mod.names[i],pv,"\n")
-   #   }
-   #   cols<-c(cols,"white")
+      cols<-c()
+   
+      # extra Wilcoxon test stuff
+      for(i in 1:6){
+         pv<-wilcox.test(mse[,7],mse[,i],paired=TRUE)$p.value
+         med<-median(mse[,i]-mse[,6])
+         if(pv<0.01 & med>0){
+            cols<-c(cols,"red")
+         }else if(pv<0.01 & med<0){
+            cols<-c(cols,"green")
+         }else{
+            cols<-c(cols,"white")
+         }
+         cat("soap vs. ",mod.names[i],pv,"\n")
+      }
+      cols<-c(cols,"white")
    
    }
    
@@ -53,10 +50,10 @@ samp.size<-250
    # do the plot
    boxplot(mses,main="",names=rep(mod.names,3),
          xlab="",
-   #      col=cols,
+         col=cols,
          medlwd=1,
          ylab="log(mean MSE per realisation)")
-#}
+}
 
 
 #dev.off()
