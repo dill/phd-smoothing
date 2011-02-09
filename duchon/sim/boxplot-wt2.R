@@ -16,7 +16,7 @@ for(samp.size in c(250,500)){
    
       mse<-read.csv(paste("wt2-mse-",samp.size,"-",err.lev,".csv",sep=""))
       mse<-mse[,-1]
-      mse<-mse[1:100,]
+      mse<-mse[1:200,]
       mses<-cbind(mses,mse)
    
       cols<-c()
@@ -24,7 +24,7 @@ for(samp.size in c(250,500)){
       # extra Wilcoxon test stuff
       for(i in 1:6){
          pv<-wilcox.test(mse[,7],mse[,i],paired=TRUE)$p.value
-         med<-median(mse[,i]-mse[,6])
+         med<-median(mse[,i]-mse[,7])
          if(pv<0.01 & med>0){
             cols<-c(cols,"red")
          }else if(pv<0.01 & med<0){
