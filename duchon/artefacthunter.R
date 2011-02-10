@@ -84,6 +84,17 @@ mse.cd.ds<-gam.mds(gendata.samp,gendata,bnd,grid.res=120,mds.dim=expl,old.obj=ba
 plot.it(mse.cd.ds)
 
 
+res<-c()
+
+for(expl in seq(3,22,by=1)){
+   mds.cd.ds<-gam.mds(gendata.samp,gendata,bnd,grid.res=120,mds.dim=expl,old.obj=base.fit,bs="ds",m=c(2,expl/2-1))
+   res<-rbind(c(expl,summary(mds.cd.ds$gam)$sp.criterion),res)
+}
+
+
+
+plot(res,xlab="MDS dimension",ylab="GCV Score",pch=19,cex=0.3)
+abline(h=min(res[,2]),col="red")
 
 #   ### calculate MSEs
 #   mses<-list(mds=mean((fv.s-gendata.ind$z[ind])^2,na.rm=T),

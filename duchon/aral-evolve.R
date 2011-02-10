@@ -25,6 +25,8 @@ aral.dat<-data.frame(x=aral.km$km.e,
                      y=aral.km$km.n,
                      chl=as.numeric(aral$chl[onoff]))
 
+names(aral.dat)<-c("x","y","z")
+
 # convert boundary to northings and eastings
 bnd.km<-latlong2km(bnd[,2],bnd[,3],59.5,45)
 bnd<-list(x=bnd.km$km.e,y=bnd.km$km.n)
@@ -134,4 +136,21 @@ plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pic
 
 mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.95,bs="ds",old.obj=mds2,family=Gamma(link="log"))
 plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2]," (0.95 variation)",sep=""))
+
+
+
+### how does GCV vary with k
+res<-c()
+
+for(expl in seq(2,22,by=1)){
+   mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=expl,bs="ds",old.obj=mds2,family=Gamma(link="log"))
+   res<-rbind(c(expl,summary(mds.pick$gam)$sp.criterion),res)
+}
+
+
+
+plot(res,xlab="MDS dimension",ylab="GCV Score",pch=19,cex=0.3)
+abline(h=min(res[,2]),col="red")
+
+
 
