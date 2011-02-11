@@ -1,5 +1,5 @@
 gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
-                  bs="tp",k=100,m=NULL,family=gaussian(),
+                  bs="ds",k=100,m=NULL,family=gaussian(),
                  old.obj=NULL){
    ### general wrapper function for mds gam stuff
    # Args:
@@ -93,7 +93,14 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
 
       for(test.dim in mds.bnds[1]:mds.bnds[2]){
          # fit the model
-         model.list[[i]]<-run.gam(samp.data,D.grid,test.dim,my.grid,bnd,gam.options,D.samp,family,m,k,bs)
+         model.list[[i]]<-run.gam(samp.data,D.grid,test.dim,my.grid,bnd,
+                                  gam.options,D.samp,family,m,k,bs)
+
+         # if we didn't calculate D.samp before, calculate it the first time
+         # then store it for the future runs
+         if(is.null(D.samp)){
+            D.samp<-model.list[[i]]$D.samp
+         }
          # extract the GCV
          gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
          i<-i+1
@@ -106,11 +113,12 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
 
       fit.ret<-model.list[[and.the.winner.is]]
 
-   # if there was a non-integer supplied, then we can
-   # assume that we want what proportion of the variance 
-   # explained...
+   # otherwise, do what the user wants
    }else{
 
+      # if there was a non-integer supplied, then we can
+      # assume that we want what proportion of the variance 
+      # explained...
       if(mds.dim!=floor(mds.dim)){
          lev<-mds.dim
          mds.dim<-choose.mds.dim(D.grid,mds.dim)
@@ -121,13 +129,13 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
       fit.ret<-run.gam(samp.data,D.grid,mds.dim,my.grid,bnd,gam.options,D.samp,family,m,k,bs)
    }
 
-   # store the mds sample
+   # store some objects
    new.obj$samp.mds<-fit.ret$samp.mds
-
-   # store the gam object
    new.obj$gam<-fit.ret$gam
-
+   new.obj$D.samp<-fit.ret$D.samp
    grid.mds<-fit.ret$grid.mds
+
+
 
    ###########################################################################
    # do the preictions
@@ -196,7 +204,7 @@ run.gam<-function(samp.data,D.grid,mds.dim,my.grid,bnd,gam.options,D.samp,family
    # insert the sample - if there was a D cached, use that
    if(is.null(D.samp)){
       samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd)
-      new.obj$D.samp<-attr(samp.mds,"D")
+      D.samp<-attr(samp.mds,"D")
    }else{
       samp.mds<-insert.mds(samp.data,my.grid,grid.mds,bnd,oldD=D.samp)
    }
@@ -218,5 +226,6 @@ run.gam<-function(samp.data,D.grid,mds.dim,my.grid,bnd,gam.options,D.samp,family
    # run the model
    b<-gam(gam.formula,data=samp.mds,family=family)
 
-   return(list(gam=b,samp.mds=samp.mds,grid.mds=grid.mds,m=m,k=k,bs=bs,mds.dim=mds.dim))
+   return(list(gam=b,samp.mds=samp.mds,grid.mds=grid.mds,m=m,k=k,
+               bs=bs,mds.dim=mds.dim,D.samp=D.samp))
 }
