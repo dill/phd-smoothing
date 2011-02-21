@@ -94,7 +94,7 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
       for(test.dim in mds.bnds[1]:mds.bnds[2]){
          # fit the model
          model.list[[i]]<-run.gam(samp.data,D.grid,test.dim,my.grid,bnd,
-                                  gam.options,D.samp,family,m,k,bs)
+                                  D.samp,family,m,k,bs)
 
          # if we didn't calculate D.samp before, calculate it the first time
          # then store it for the future runs
@@ -126,7 +126,8 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
          cat("mds.dim=",mds.dim,"explains",lev,"of the variance\n")
       }
 
-      fit.ret<-run.gam(samp.data,D.grid,mds.dim,my.grid,bnd,gam.options,D.samp,family,m,k,bs)
+      # otherwise the user supplied a number of dimensions to use
+      fit.ret<-run.gam(samp.data,D.grid,mds.dim,my.grid,bnd,D.samp,family,m,k,bs)
    }
 
    # store some objects
@@ -166,6 +167,8 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
    return(new.obj)
 }
 
+
+
 calc.grid<-function(bnd,grid.res){
    # create a grid
    xm <- seq(-1,3.5,length=grid.res[1])
@@ -180,8 +183,11 @@ calc.grid<-function(bnd,grid.res){
    D.grid<-create_distance_matrix(xx,yy,bnd)
    return(list(D=D.grid,grid=my.grid))
 }
+
+
+
 # routine to actually fit the model for a set dimension
-run.gam<-function(samp.data,D.grid,mds.dim,my.grid,bnd,gam.options,D.samp,family,m,k,bs){
+run.gam<-function(samp.data,D.grid,mds.dim,my.grid,bnd,D.samp,family,m,k,bs){
 
    # set the gam options
    if(is.null(m)){
