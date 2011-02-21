@@ -67,11 +67,6 @@ codei<-1
 #   nseg<-c(nseg,constituencies[[k]]$num.points)
 #}
 
-some.cons<-1:length(constituencies)
-# remove some islands
-#some.cons<-some.cons[-c(610,612,613,615:617,619,631)]
-
-
 ###############################
 # some of the constituencies are __very__ big!
 # let's get rid of some islands
@@ -95,7 +90,7 @@ for(i in too.big){
 ###############################
 
 # this is inelegant
-for(i in some.cons){
+for(i in 1:length(constituencies)){
 
    parts<-c(constituencies[[i]]$parts,length(constituencies[[i]]$points$X))
 
@@ -121,8 +116,7 @@ for(i in some.cons){
 
 # put the speaker and Thirsk and Malton in!!!
 # 52.9 Thirsk and Malton
-# 47.3 for Buckingham (of we think of Bercow as a Tory... he is)
-
+# 47.3 for Buckingham (if we think of Bercow as a Tory... he is)
 
 bigframe<-bigframe[-1,]
 
@@ -134,10 +128,7 @@ p<-ggplot()
 p<-p+con.geom
 p<-p+scale_fill_continuous(low="red",high="blue")
 
+# save!
 save.image("done.RData")
 
 p
-   
-
-
-

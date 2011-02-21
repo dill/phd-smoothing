@@ -120,10 +120,10 @@ Wang and Ranalli first create a weighted, undirected graph ($G$, say) with a dat
 As the authors point out, the quality of the approximation is dependent on the size of the data set and its density. At low densities the estimated geodesic distance will tend towards the Euclidean, at high densities the approximation tends, asymptotically toward the true geodesic distance (\cite{bernstein}). Even if  dense enough data were available, the method will be rather slow since Floyd's algorithm is cubic in the number of vertices (the size of the data set). Finally, although the $k$-nearest neighbours algorithm used is not specified in the paper, in general such procedures are computationally expensive, adding another source of impedance to the technique.
 
 \textbf{Write about the penalty problem here.}
-Since the method only uses the geodesic distances in the radial basis functions of the thin plate spline (see, for example \cite{simonbook},  p. 154) but not the unpenalised (those residing in the nullspace of the usual penalty), a knot-based approach must be used with a ridge-type penalty rather than the approach of \cite{wood2003}. This is because if the latter approach is taken, the square root of the smoother matrix cannot be taken (since there are negative eigenvalues).
-
+Since the method only uses the geodesic distances in the radial basis functions of the thin plate spline (see, for example \cite{simonbook},  p. 154) but not the unpenalised (those residing in the nullspace of the usual penalty), a knot-based approach must be used with a ridge-type penalty rather than the approach of \cite{wood2003}. This is because if the latter approach is taken, the square root of the smoother matrix cannot be taken (since there are negative eigenvalues). \textbf{MORE}
 
 Taking these points into account, Wang and Ranalli's approach appears cumbersome, slow and dependent on dense data.
+
 
 \item The soap film smoother (\cite{soap}) uses a rather simple physical model to prevent leakage from occurring. First, consider the domain boundary to be made of wire, then dip this wire into a bucket of soapy water, you will then have (provided it doesn't pop(!)) a soap film in the shape of your boundary. Now consider the wire to lie in the $x-y$ plane and the height of the soap film at a given point to be the functional value of the model. This film is then distorted smoothly by moving it toward the data, while minimising the surface tension in the film. The domain ($\Omega$) is bounded by some polygon with boundary conditions that are either known or estimated by a cyclic spline.
 
@@ -152,7 +152,6 @@ The solution of the PDEs above, yielding the basis and penalty, is the most comp
 
 Although mathematically elegant, the soap film smoother is a rather complex model. It also treats the boundary differently from the interior and uses a cyclic spline in order to approximate the boundary values. 
 
-\textbf{Do we want to talk about soap at all?}
 
 \item An alternative approach to treating the boundary as something special is to transform the space in which the points lie to instead lie in a different domain which is more suitable for smoothing. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe into a long strip and then smooth on that domain. Indeed, \cite{eilerstalk} proposed using the Schwarz-Christoffel transform (\cite{driscoll}) for this very purpose. 
 
@@ -165,85 +164,15 @@ The authors have investigated this approach further and have found it to not be 
 \item MDS+TP + Curriero
 \end{itemize}
 
-\section{Aim and scope of this article}
-
-Aim here is to compare a set of WAD-based methods, what are the general problems, when can they be useful.
-
-\section{Within area distance - why?}
-
-
-
-
-
 \section{Our approach}
 
 Set out the models to be compared here.
 
 
+\subsection{Within-area distance algorithm}
 
 
-\section{Simulation experiment}
-
-Simulation settings same as W+R paper. 200 realisations, 100 samples, noise=0.05, 40 knots selected using the \texttt{cover.design()} function in \texttt{fields}. Use a simplified boundary for speed: take every 5th vertex on the curved parts of the boundary. Predicated back over 
-
-Compare the following models:
-
-\begin{itemize}
-	\item MDS+tprs
-	\item MDS+tps
-	\item soap film smoother
-	\item WR+tps
-\end{itemize}
-
-Calculated MSE, 
-
-% MSE plot
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=6.5in]{figs/ramsim-mse.pdf}\\
-\caption{Boxplot of MSE}
-\label{ramsim-mse}
-\end{figure}
-
-
-0.05\\
-soap vs.  tps 1.447002e-34 \\
-soap vs.  wr 0.0136878 \\
-soap vs.  mdstps 1.447002e-34 \\
-soap vs.  mdstprs 2.508476e-26 \\
-
-0.5\\
-soap vs.  tps 1.447002e-34 \\
-soap vs.  wr 0.0001010435 \\
-soap vs.  mdstps 1.447002e-34 \\
-soap vs.  mdstprs 1.028156e-06 \\
-
-5\\
-soap vs.  tps 1.224688e-16 \\
-soap vs.  wr 0.5446379 \\
-soap vs.  mdstps 4.034417e-32 \\
-soap vs.  mdstprs 8.986215e-09 \\
-
-
-
-
-
-%also ``artefactiness'':
-%\begin{equation}
-%\label{artedef}
-%A= \int\int_\Omega  \Big( \frac{\partial^2 (f_m(x,y)-f_t(x,y))}{\partial x^2}\Big)^2 + \Big(\frac{\partial^2 (f_m(x,y)-f_t(x,y))}{\partial x \partial y}\Big)^2 + \Big(\frac{\partial^2 (f_m(x,y)-f_t(x,y))}{\partial y^2}\Big)^2 \text{d}x\text{d}y.
-%\end{equation}
-%where $f_m(x,y)$ is the model and  $f_t(x,y)$ is the truth. This is supposed to measure the wigglyness in the difference between the two, giving an idea of whether there are artefacts in the smooth.
-%
-%% artefactiness plot
-%\begin{figure}
-%\centering
-%% trim order l b r t
-%\includegraphics[width=4in]{figs/arteboxplot.pdf}\\
-%\caption{Boxplot comparing the models tested for ``artefactiness'' as defined in (\ref{artedef}).}
-%\label{arteboxplot}
-%\end{figure}
+\subsection{Duchon's splines}
 
 
 
