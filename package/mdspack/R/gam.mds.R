@@ -1,5 +1,5 @@
 gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
-                  bs="ds",k=100,m=NULL,family=gaussian(),old.obj=NULL
+                  bs="ds",k=100,m=NULL,family=gaussian(),old.obj=NULL,
                   gam.method="GCV.Cp"){
    ### general wrapper function for mds gam stuff
    # Args:
