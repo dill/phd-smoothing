@@ -92,6 +92,7 @@ for(i in 1:n.runs){
 #plot(res,xlab="MDS dimension",ylab="GCV Score",pch=19,cex=0.3)
 #abline(h=min(res[,2]),col="red")
 
+save.image("gcvml.RData")
 
 
 ## plot something
