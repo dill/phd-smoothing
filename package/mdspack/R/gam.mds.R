@@ -1,6 +1,6 @@
 gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
-                  bs="ds",k=100,m=NULL,family=gaussian(),
-                 old.obj=NULL){
+                  bs="ds",k=100,m=NULL,family=gaussian(),old.obj=NULL
+                  gam.method="GCV.Cp"){
    ### general wrapper function for mds gam stuff
    # Args:
    #  samp.data    the data we actually want to do the smoothing over
@@ -12,10 +12,10 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
    #  k            gam basis size
    #  m            m parameter for gam (not really used)
    #  old.obj      previous gam.mds object
+   #  gam.method   what to use as method="" in the gam() call
 
    # TODO
-   #  non-geographical predictors
-   #  predictors
+   #  extra, non-geographical, predictors
 
    # first check that oldobj==NULL, otherwise use the data
    # from that rather than re-generating it!
@@ -75,8 +75,6 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
    }
 
 
-
-
    # when mds.dim is not specified, do a grid search for the 
    # dimension
    if(is.null(mds.dim)){
@@ -94,7 +92,7 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
       for(test.dim in mds.bnds[1]:mds.bnds[2]){
          # fit the model
          model.list[[i]]<-run.gam(samp.data,D.grid,test.dim,my.grid,bnd,
-                                  D.samp,family,m,k,bs)
+                                  D.samp,family,m,k,bs,gam.method)
 
          # if we didn't calculate D.samp before, calculate it the first time
          # then store it for the future runs
@@ -127,7 +125,7 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
       }
 
       # otherwise the user supplied a number of dimensions to use
-      fit.ret<-run.gam(samp.data,D.grid,mds.dim,my.grid,bnd,D.samp,family,m,k,bs)
+      fit.ret<-run.gam(samp.data,D.grid,mds.dim,my.grid,bnd,D.samp,family,m,k,bs,gam.method)
    }
 
    # store some objects
@@ -187,7 +185,7 @@ calc.grid<-function(bnd,grid.res){
 
 
 # routine to actually fit the model for a set dimension
-run.gam<-function(samp.data,D.grid,mds.dim,my.grid,bnd,D.samp,family,m,k,bs){
+run.gam<-function(samp.data,D.grid,mds.dim,my.grid,bnd,D.samp,family,m,k,bs,gam.method){
 
    # set the gam options
    if(is.null(m)){
@@ -230,7 +228,7 @@ run.gam<-function(samp.data,D.grid,mds.dim,my.grid,bnd,D.samp,family,m,k,bs){
    gam.formula<-as.formula(gam.formula)
 
    # run the model
-   b<-gam(gam.formula,data=samp.mds,family=family)
+   b<-gam(gam.formula,data=samp.mds,family=family,method=gam.method)
 
    return(list(gam=b,samp.mds=samp.mds,grid.mds=grid.mds,m=m,k=k,
                bs=bs,mds.dim=mds.dim,D.samp=D.samp))
