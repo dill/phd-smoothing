@@ -36,6 +36,9 @@ The whole proposed procedure is as follows:
 
 This approach is referred to as \mdsap\ (MultiDimensional Scaling with Regression Splines) throughout the chapter.
 
+
+\textbf{CORRECT THIS!!}
+
 The rest of this chapter is structured as follows: in \secref{MDStechdet} a technical overview of MDS is given, along with technical details of how the MDS configuration is calculated; \secref{mdsdist} focuses on how the within-area distances are found; \secref{mdssims} shows some examples of this method on simulated data. \Secref{MDSimprov} shows some improvements to the initial method and further simulations, \secref{mds-problems} details remaining problems and \secref{mds-prac} gives some notes for practitioners wishing to use \mdsap. Finally, \secref{mds-conc} draws the topic to a conclusion and lays out areas of further work and interest.
 
 
@@ -435,12 +438,7 @@ Prediction &  53.5105 & 29.3946 & 0.1249\\
 
 In order to make \mdsap\ worthwhile for a practitioner to use the method, it would be preferable for it not only to have a sensible physical model, but also outperform the soap film smoother in either (or both) of accuracy and speed.
 
-\section{Improvements}
-\label{MDSimprov}
-
-This section focuses on strategies to improve the above method in terms of speed and accuracy. The first part looks at the speed of \mdsap, the latter on the accuracy. 
-
-\subsection{Making \mdsap\ faster}
+\section{Making \mdsap\ faster}
 \label{mds-faster}
 
 \subsubsection{Calculating MDS by Lanczos iteration}
@@ -497,7 +495,7 @@ Prediction & 155.4004 & 53.5105 & 29.3946 & 0.1249\\
 \end{table}
 
 
-\subsection{Improving the accuracy of \mdsap\ by adjusting the penalty}
+\section{Penalty adjustments}
 \label{mds-penadjust}
 
 The higher MSEs shown in \tabref{wt2resultstable} at lower noise levels might be explained by the change in density of points in the domain after it has been transformed into MDS space and the way in this changes the measure of smoothness. In this case it makes sense to adjust the penalty in order to take into account the change in point density in MDS space.
@@ -660,9 +658,9 @@ The simulation results show that there is a decrease in MSE when the expansion/c
 
 The next section puts the adjusted penalty approach to the test on a number of domains and compares it to other possible models.
 
-\section{Wider simulations and real data}
+\subsection{Wider simulations and real data}
 
-\subsection{Peninsulae domain}
+\subsubsection{Peninsulae domain}
 \label{wt2bigsim}
 
 Using the same setup as in \secref{mds-wt2-sim}, for each error level ($\sigma=0.35, 0.9, \text{ and } 1.55$), 200 realisations were generated. From these 250 samples were drawn to fit the model, predictions were made over a grid of 1253 points with MSE and EDF recorded per model for each simulation. 
@@ -717,7 +715,7 @@ $\sigma$  & tprs & mds+tp & mds+cr & mds+tp 3D & mds+tp+adj & soap\\
 \end{sidewaysfigure}
 
 
-\subsection{Aral sea}
+\subsubsection{Aral sea}
 
 The Aral sea is located between Kazakhstan and Uzbekistan. It has been steadily shrinking since the Soviet government diverted the sea's two tributaries in order to irrigate the surrounding desert during the 1960s. The NASA SeaWifs satellite collected data on chlorophyll levels in the Aral sea (\cite{soap}). The 496 data are averages of the $38^\text{th}$ 8 day observation period over the years 1998 to 2002. Smooths were fitted to the spatial coordinates (Northings and Easting projected from latitude and longitude) with the logarithm of chlorophyll concentration (with Gamma errors) as the response.
 
@@ -847,15 +845,28 @@ $n$ & SNR & tprs & mds+tp & mds+cr & mds+tp 3D & mds+tp+adj & soap\\
 \rule{6in}{1pt}
 \begin{center}
 \textbf{CUT HERE AND EDIT TO INCLUDE DUCHON SPLINES}
+\textbf{be careful with labels!}
 \end{center}
 
-\section{Problems with \mdsap}
+\section{Problems with the methodology so far}
 \label{mds-problems}
 
-\subsection{Why the penalty adjustment sucks}
+\textbf{Some intro blurb goes here}
+
+Left with several problems here, they are
+
+penalty adjustment problems
+	ordering
+	guarantee of separation
+
+nullspace size
+
+
+
+\subsection{Why adjusting the penalty is not the solution}
 \label{pensuck}
 
-The simulations show that there is no big advantage of using the adjusted penalty scheme for \mdsap\ over the non-adjusted penalty. Before running the simulations, several different functions of the MDS point density were tried out. All were worse than the function that was finally settled on.
+The simulations show that there is no big advantage of using the adjusted penalty scheme for \mdsap\ over the non-adjusted penalty. Before running the simulations, several different functions of the MDS point density were compared. All were worse than the function that was finally settled on.
 
 An explanation for why the penalty adjustment doesn't offer much improvement can be found by investigating the good performance of the 3-D projection model. 
 
@@ -916,6 +927,15 @@ So, in this case it is not unreasonable to think that an extra dimension could h
 % generated by thesis/mds/figs/comb.R
 \end{figure}
 
+
+\rule{6in}{1pt}
+
+\rule{6in}{1pt}
+
+\textbf{THINK ABOUT THIS SECTION}
+\textbf{Need to keep some of it, but not sure that the quantitative parts are useful.}
+
+
 Although these plots are illustrative, a quantitative measure of how well the within-area distances are being approximated by the MDS projection is desirable. Given the eigen-decomposition attempts to minimise the spectral norm, this is the logical metric to use. If we label the matrix of within-area distances $D$ (as above) and the matrix of Euclidean distances in MDS space as $D_E$, then we may calculate the spectral norm as the largest eigenvalue of $D-D_E$.
 
 % Results here are in mds/counter/run-DRcomp.R
@@ -947,8 +967,62 @@ $k$ & Comb  & Peninsulae & Aral\\
 
 Moving into continually higher dimensions seems appealing, but practically it is rather more taxing. As the dimension of the problem is increased, the order of the penalty in the GAM increases too(see \secref{GAMpenalties}). As this happens, the dimension of the nullspace of the penalty increases, meaning that more functions are unpenalised in the model. This will not lead to a simple model being fitted to the data: the real aim of \mdsap.
 
+
+\rule{6in}{1pt}
+
+\rule{6in}{1pt}
+
+\section{Reliable high dimensional smoothing using Duchon splines}
+
+The previous section makes clear that there are two conflicting issues impeding the utility of this approach to smoothing over complex regions. The first is that the ordering of the points in space must be maintained, but (second) once a sufficiently high dimensional projection of the data has been obtained, the nullspace of the penalty must be kept as small as possible in order to stop a large space of wiggly function from being fit without being penalised.
+
+Facing the interplay of these two factors, the requirement we seek is clear: we wish to smooth in as many dimensions as possible but while doing this we must also limit the nullspace of the penalty. Fortunately, this is possible using the ideas put forth in \cite{duchon77}. The methods detailed there give a generalisation of the thin plate spline basis that allows for the nullspace to be constrained.
+
+The next subsection goes into the technical detail of how this approach works. Subsequent sections give the practical implications \textbf{add more to this!}
+
+\subsection{blah}
+fucking Duchon splines: how do they work?
+
+
+\begin{equation}
+\lVert u \rVert_{m,s} = \Big( \int_{\mathbb{R}^n} \lvert \tau \rvert^{2s} \lvert \mathfrak{F} D^m u(\tau) \rvert^2 \text{d} \tau \Big)^{1/2}
+\end{equation}
+
+\subsection{blah}
+
+percent variation
+
+
+\subsection{blah}
+
+using gcv/ml score to choose k
+
+
+\subsection{blah}
+
+some simulations
+
+
+\subsection{blah}
+
+nice smoothed version of aral sea
+
+\subsection{blah}
+
+some stuff about software
+
+
+
+
+\rule{6in}{1pt}
+
+\rule{6in}{1pt}
+
+
 \section{\mdsap\ in practise}
 \label{mds-prac}
+
+\textbf{This can now go at the end, modified for the Duchon splines stuff.}
 
 Although \mdsap\ has problems, there may be some cases in which it is useful. For this reason, some practical tips on using the method are given here.
 
@@ -957,6 +1031,12 @@ As has been seen in the previous sections, \mdsap\ does have potential pitfalls 
 Choosing a suitable boundary is also essential to making sure that a model can be fitted in reasonable time. The more complex the boundary, the longer the shortest paths will take to calculate. Simplifying the boundary to only include those boundary vertices that are essential to combatting leakage will improve the speed of the fit.
 
 From the analyses above, it is apparent that looking at the plots of the points in MDS space is vital to understanding whether transformation is useful and, in some cases, deciding whether a higher-dimensional projection is necessary.
+
+
+\rule{6in}{1pt}
+
+\textbf{IGNORE THIS FOR NOW}
+\textbf{Most of this is fine, but needs to be adapted.}
 
 \section{Conclusion}
 \label{mds-conc}
