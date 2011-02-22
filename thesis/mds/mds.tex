@@ -984,6 +984,23 @@ The next subsection goes into the technical detail of how this approach works. S
 fucking Duchon splines: how do they work?
 
 
+\cite{simonbook} p. 153 gives the formulation for the thin plate penalty in $d$ dimensions with penalty order $m$ as:
+\begin{equation}
+J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d
+\end{equation}
+which can be written into more compact notation as:
+\begin{equation}
+J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d
+\end{equation}
+
+
+
+
+
+
+
+
+what's in the paper:
 \begin{equation}
 \lVert u \rVert_{m,s} = \Big( \int_{\mathbb{R}^n} \lvert \tau \rvert^{2s} \lvert \mathfrak{F} D^m u(\tau) \rvert^2 \text{d} \tau \Big)^{1/2}
 \end{equation}

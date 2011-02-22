@@ -58,7 +58,7 @@ real.results<-c()
 
 # now run many times
 
-#for(i in 1:n.runs){
+for(i in 1:n.runs){
    # make samples
    samp.ind<-sample(1:length(gendata$x),samp.size)
    noise<-noise.level*rnorm(length(samp.ind))
@@ -68,9 +68,7 @@ real.results<-c()
    
 ## parallel
 #   for(j in 1:length(dim.list)){
-
-   result<-foreach(j = 1:length(dim.list), .combine=rbind, 
-                     .inorder=FALSE, init=c()) %dopar% {
+   result<-foreach(j = 1:length(dim.list),.combine=rbind,init=rep(NA,4)) %dopar% {
 
       this.line<-c()
 
@@ -100,12 +98,12 @@ real.results<-c()
 
    real.results<-rbind(real.results,result)
 
-#}
+}
 
 #plot(res,xlab="MDS dimension",ylab="GCV Score",pch=19,cex=0.3)
 #abline(h=min(res[,2]),col="red")
 
-#save.image("gcvml.RData")
+save.image("gcvml.RData")
 
 
 ## plot something
