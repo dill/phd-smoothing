@@ -51,7 +51,7 @@ base.fit$D.samp<-NULL
 
 ## storage
 n.dims<-20
-n.runs<-2#60
+n.runs<-60
 dim.list<-seq(3,n.dims,by=1)
 
 real.results<-c()
