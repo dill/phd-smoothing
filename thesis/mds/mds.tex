@@ -988,11 +988,20 @@ fucking Duchon splines: how do they work?
 \begin{equation}
 J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d
 \end{equation}
-which can be written into more compact notation as:
-\begin{equation}
-J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d
-\end{equation}
+where the summation index can be interpreted as all of the possible combinations of penalty orders such than their sum is still $m$.
 
+\textbf{Re-write this, there is no direct correspondence between the $x$s! The things after the Fourier transform are just frequencies -- hence the premultiplication works on the frequencies and is equiv when $s=0$}
+
+
+Duchon suggests using the Fourier transform [[ref?]] of the derivatives and pre-multiplying the norm (ie. the summation in the above expression) by a function of the variables in the frequency domain [[check]] and a constant $s$. Letting $\mathfrak{F}$ denote the Fourier transform operator [[check]] and a breve indicate the frequency domain equivalents of the explanatory variables (eg $x_1$ becomes $\breve{x}_1$), the penalty, $\breve{J}_{m,d}$ can be written:
+\begin{equation}
+\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^n} \lvert (\breve{x}_1, \dots, \breve{x}_d) \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \Big( \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}\Big) \Big)^2 \text{d} \breve{x}_1 \ldots  \text{d} \breve{x}_d.
+\end{equation}
+Duchon shows that since the Fourier transform is isometric on $\mathcal{L}^2(\mathbb{R}^n)$, $J_{m,d} = \breve{J}_{m,d}$ when $s=0$.
+
+Thinking about what the penalty does in practise, the Fourier transform of the derivative terms means that the penalty is now penalising those derivatives which have higher frequencies more than those with lower frequencies, this corresponds to those derivatives which are more wiggly in $J_{m,d}$ and hence the equivalence when $s=0$.
+
+When $s\neq 0$, the 
 
 
 
@@ -1002,7 +1011,7 @@ J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m
 
 what's in the paper:
 \begin{equation}
-\lVert u \rVert_{m,s} = \Big( \int_{\mathbb{R}^n} \lvert \tau \rvert^{2s} \lvert \mathfrak{F} D^m u(\tau) \rvert^2 \text{d} \tau \Big)^{1/2}
+\lVert u \rVert_{m,s} = \Big( \int_{\mathbb{R}^n} \lvert \tau \rvert^{2s} \lvert \mathfrak{F} \mathsf{D}^m u(\tau) \rvert^2 \text{d} \tau \Big)^{1/2}
 \end{equation}
 
 \subsection{blah}
