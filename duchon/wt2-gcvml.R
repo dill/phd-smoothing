@@ -68,7 +68,7 @@ for(i in 1:n.runs){
    
 ## parallel
 #   for(j in 1:length(dim.list)){
-   result<-foreach(j = 1:length(dim.list),.combine=rbind,init=rep(NA,4)) %dopar% {
+   result<-foreach(j = 1:length(dim.list),.combine=rbind) %dopar% {
 
       this.line<-c()
 
