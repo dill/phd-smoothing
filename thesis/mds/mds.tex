@@ -716,6 +716,7 @@ $\sigma$  & tprs & mds+tp & mds+cr & mds+tp 3D & mds+tp+adj & soap\\
 
 
 \subsubsection{Aral sea}
+\label{aral-sec}
 
 The Aral sea is located between Kazakhstan and Uzbekistan. It has been steadily shrinking since the Soviet government diverted the sea's two tributaries in order to irrigate the surrounding desert during the 1960s. The NASA SeaWifs satellite collected data on chlorophyll levels in the Aral sea (\cite{soap}). The 496 data are averages of the $38^\text{th}$ 8 day observation period over the years 1998 to 2002. Smooths were fitted to the spatial coordinates (Northings and Easting projected from latitude and longitude) with the logarithm of chlorophyll concentration (with Gamma errors) as the response.
 
@@ -974,54 +975,73 @@ Moving into continually higher dimensions seems appealing, but practically it is
 
 \section{Reliable high dimensional smoothing using Duchon splines}
 
+[[ say something about manifolds]]
+
 The previous section makes clear that there are two conflicting issues impeding the utility of this approach to smoothing over complex regions. The first is that the ordering of the points in space must be maintained, but (second) once a sufficiently high dimensional projection of the data has been obtained, the nullspace of the penalty must be kept as small as possible in order to stop a large space of wiggly function from being fit without being penalised.
 
 Facing the interplay of these two factors, the requirement we seek is clear: we wish to smooth in as many dimensions as possible but while doing this we must also limit the nullspace of the penalty. Fortunately, this is possible using the ideas put forth in \cite{duchon77}. The methods detailed there give a generalisation of the thin plate spline basis that allows for the nullspace to be constrained.
 
 The next subsection goes into the technical detail of how this approach works. Subsequent sections give the practical implications \textbf{add more to this!}
 
-\subsection{blah}
-fucking Duchon splines: how do they work?
-
+\subsection{Duchon splines}
 
 \cite{simonbook} p. 153 gives the formulation for the thin plate penalty in $d$ dimensions with penalty order $m$ as:
 \begin{equation}
-J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d
+J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f(x_1,\dots,x_d)}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d,
 \end{equation}
 where the summation index can be interpreted as all of the possible combinations of penalty orders such than their sum is still $m$.
 
-\textbf{Re-write this, there is no direct correspondence between the $x$s! The things after the Fourier transform are just frequencies -- hence the premultiplication works on the frequencies and is equiv when $s=0$}
+This penalty is a particular case of a more general result. \cite{duchon77} suggests using the Fourier transform [[ref?]] of the derivatives and pre-multiplying the norm (ie. the summation in the above expression) by a function of the variables in the frequency domain [[check]] and a constant $s$. 
 
-
-Duchon suggests using the Fourier transform [[ref?]] of the derivatives and pre-multiplying the norm (ie. the summation in the above expression) by a function of the variables in the frequency domain [[check]] and a constant $s$. Letting $\mathfrak{F}$ denote the Fourier transform operator [[check]] and a breve indicate the frequency domain equivalents of the explanatory variables (eg $x_1$ becomes $\breve{x}_1$), the penalty, $\breve{J}_{m,d}$ can be written:
+Defining the Fourier transform of some function, $g$, in the usual way:
 \begin{equation}
-\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^n} \lvert (\breve{x}_1, \dots, \breve{x}_d) \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \Big( \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}\Big) \Big)^2 \text{d} \breve{x}_1 \ldots  \text{d} \breve{x}_d.
+\mathfrak{F} g(\tau) = \int_{-\infty}^\infty e^{2 \pi i x \tau} g(x) \text{d}x,
 \end{equation}
-Duchon shows that since the Fourier transform is isometric on $\mathcal{L}^2(\mathbb{R}^n)$, $J_{m,d} = \breve{J}_{m,d}$ when $s=0$.
-
-Thinking about what the penalty does in practise, the Fourier transform of the derivative terms means that the penalty is now penalising those derivatives which have higher frequencies more than those with lower frequencies, this corresponds to those derivatives which are more wiggly in $J_{m,d}$ and hence the equivalence when $s=0$.
-
-When $s\neq 0$, the 
+where $i=\sqrt{-1}$. [[MORE BLURB HERE]] For our purposes it only serves to remember that the Fourier transform decomposes functions into their frequency domain representations. [[BETTER]]
 
 
 
 
-
-
-
-what's in the paper:
+The penalty proposed by Duchon can be written (in the above notation) as:
 \begin{equation}
-\lVert u \rVert_{m,s} = \Big( \int_{\mathbb{R}^n} \lvert \tau \rvert^{2s} \lvert \mathfrak{F} \mathsf{D}^m u(\tau) \rvert^2 \text{d} \tau \Big)^{1/2}
+\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^n} \lvert \mathbf{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\mathbf{\tau}) \Big)^2 \text{d} \mathbf{\tau}.
 \end{equation}
+where $\mathbf{\tau}$ is a vector of frequencies. Duchon shows that since the Fourier transform is isometric on $\mathcal{L}^2(\mathbb{R}^n)$, $J_{m,d} = \breve{J}_{m,d}$ when $s=0$.
 
-\subsection{blah}
+Thinking about what the penalty actually does, the Fourier transform of the derivative terms means that the penalty is now the integral in the frequency domain of the frequency components, this corresponds to the ``wigglyness'' measure usually used in $J_{m,d}$ and hence the equivalence when $s=0$.
 
-percent variation
+When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$. So, $s$ can be used to allow smoothing in high dimensional spaces, using lower-order penalties whilst still yielding continuous results.
+
+Literature [[CITATION]] suggests that $m=2$ yields [[GOOD/BEST/OPTIMAL??]] results. Using the above results it is then possible to use $m=2$ for smoothing in any dimension ($d$) by altering the value of $s$. Indeed, the inequality relating the three quantities can be seen as a guide for choosing $s$, given some fixed values of $d$ and $m$:
+\begin{equation}
+d/2 -m \leq s,
+\end{equation}
+so, letting
+\begin{equation}
+s=d/2-2
+\end{equation}
+does not seem unreasonable. Here $d$ is the dimension of the MDS projection. The next subsection details how to choose this automatically.
+
+%what's in the paper:
+%\begin{equation}
+%\lVert u \rVert_{m,s} = \Big( \int_{\mathbb{R}^n} \lvert \tau \rvert^{2s} \lvert \mathfrak{F} \mathsf{D}^m u(\tau) \rvert^2 \text{d} \tau \Big)^{1/2}
+%\end{equation}
+
+\subsection{Choosing MDS projection dimension}
+
+With Duchon's method in mind, it is now possible to smooth a space of any dimension using an order 2 penalty, simply by picking $s$ appropriately. Picking the dimension of the MDS projection is now a concern since there is no reason to believe that simply going to higher and higher dimensions will yield better and better results (even using Duchon splines).
+
+\subsubsection{Using proportion of variation explained}
+
+It is clear that as higher and higher projections are used, a larger and larger proportion of the variation in the distance matrix is explained. It therefore seems reasonable to base the choice of dimension on the proportion of the variation explained. However, what proportion should be used? 80\%? 90\%? 99\%? There is no reason to choose any one of these over the others. Setting the proportion of variation to be explained generally is surely a bad idea, since what works for one domain may well be a disaster for another.
 
 
-\subsection{blah}
+\subsubsection{Using GCV/ML scores}
 
-using gcv/ml score to choose k
+Since the models we are fitting are relatively cheap compared to the cost of finding the within-area distances, GCV or ML scores can be used to find an optimal dimension for the MDS projection.
+
+REML not comparable
+
 
 
 \subsection{blah}
@@ -1029,9 +1049,12 @@ using gcv/ml score to choose k
 some simulations
 
 
-\subsection{blah}
+\subsection{Revisiting the Aral sea}
 
-nice smoothed version of aral sea
+Going back to the Aral sea example from section \ref{aral-sec}, we can compare the previous attempt at smoothing with this new method.
+
+
+
 
 \subsection{blah}
 
