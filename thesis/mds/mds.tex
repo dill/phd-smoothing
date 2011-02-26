@@ -1039,11 +1039,11 @@ It is clear that as higher and higher projections are used, a larger and larger 
 
 Since the models we are fitting are relatively cheap compared to the cost of finding the within-area distances, the GCV score can be used to find an optimal dimension for the MDS projection. For a particular model the expensive part of the operation is finding the within-area distances, the cost of actually fitting the GAM is not such a great concern. So, using this to our advantage, a series of projections can be tried, their GCV scores calculated and the best selected as the projection to use for the model.
 
-In particular, starting from a 2-dimensional projection, the dimensionality is increased until there is no decrease in GCV score. This favours simpler models (in dimensionality terms), although of course a full search can be performed if there is some prior belief that the dimensionality should be higher (indeed there is no reason to believe that the GCV score should be unimodal in dimension).
+In particular, starting from a 2-dimensional projection, the dimensionality is increased until there is no decrease in GCV score. This favours simpler models (in dimensionality terms), although of course a full search can be performed if there is some prior belief that the dimensionality should be higher (indeed there is no reason to believe that the GCV score should be unimodal in dimension). Simulations show that the minima in the GCV score and MSE are in agreement.
 
 [[say here why not ML or REML]] REML not comparable with different fixed effects.
 
-
+Figure [[BLAH]] shows a plot of GCV score for 60 simulations from the wiggly top domain. [[ITS A DIFFERENT WT2, MENTION THIS!]] The boxplots are grouped according to the dimension of the MDS projection used, a loess [[cite Cleveland]] smooth is superimposed. The graph shows that there is a (albeit fairly shallow) minima in the score when the dimension is six.
 
 
 \subsection{blah}
