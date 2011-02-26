@@ -991,16 +991,13 @@ J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m
 \end{equation}
 where the summation index can be interpreted as all of the possible combinations of penalty orders such than their sum is still $m$.
 
-This penalty is a particular case of a more general result. \cite{duchon77} suggests using the Fourier transform [[ref?]] of the derivatives and pre-multiplying the norm (ie. the summation in the above expression) by a function of the variables in the frequency domain [[check]] and a constant $s$. 
+This penalty is a particular case of a more general result. \cite{duchon77} suggests using the Fourier transform of the derivatives and pre-multiplying the norm (ie. the summation in the above expression) by a function of the variables in the Fourier domain.
 
 Defining the Fourier transform of some function, $g$, in the usual way:
 \begin{equation}
-\mathfrak{F} g(\tau) = \int_{-\infty}^\infty e^{2 \pi i x \tau} g(x) \text{d}x,
+\mathfrak{F} g(\mathbf{\tau}) = \int_{\mathbb{R}^n} e^{2 \pi i x \mathbf{\tau}} g(\mathbf{x}) \text{d}\mathbf{x},
 \end{equation}
-where $i=\sqrt{-1}$. [[MORE BLURB HERE]] For our purposes it only serves to remember that the Fourier transform decomposes functions into their frequency domain representations. [[BETTER]]
-
-
-
+where here $i=\sqrt{-1}$. More detail on Fourier transforms can be found in any standard undergraduate text book. For our purposes it only serves to remember that the Fourier transform decomposes functions into their frequency domain representations.
 
 The penalty proposed by Duchon can be written (in the above notation) as:
 \begin{equation}
@@ -1036,11 +1033,16 @@ With Duchon's method in mind, it is now possible to smooth a space of any dimens
 It is clear that as higher and higher projections are used, a larger and larger proportion of the variation in the distance matrix is explained. It therefore seems reasonable to base the choice of dimension on the proportion of the variation explained. However, what proportion should be used? 80\%? 90\%? 99\%? There is no reason to choose any one of these over the others. Setting the proportion of variation to be explained generally is surely a bad idea, since what works for one domain may well be a disaster for another.
 
 
-\subsubsection{Using GCV/ML scores}
+\subsubsection{Using GCV scores}
 
-Since the models we are fitting are relatively cheap compared to the cost of finding the within-area distances, GCV or ML scores can be used to find an optimal dimension for the MDS projection.
+[[going to ignore ML results here since they were useless]]
 
-REML not comparable
+Since the models we are fitting are relatively cheap compared to the cost of finding the within-area distances, the GCV score can be used to find an optimal dimension for the MDS projection. For a particular model the expensive part of the operation is finding the within-area distances, the cost of actually fitting the GAM is not such a great concern. So, using this to our advantage, a series of projections can be tried, their GCV scores calculated and the best selected as the projection to use for the model.
+
+In particular, starting from a 2-dimensional projection, the dimensionality is increased until there is no decrease in GCV score. This favours simpler models (in dimensionality terms), although of course a full search can be performed if there is some prior belief that the dimensionality should be higher (indeed there is no reason to believe that the GCV score should be unimodal in dimension).
+
+[[say here why not ML or REML]] REML not comparable with different fixed effects.
+
 
 
 

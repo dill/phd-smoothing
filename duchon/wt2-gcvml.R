@@ -103,7 +103,7 @@ for(i in 1:n.runs){
 #plot(res,xlab="MDS dimension",ylab="GCV Score",pch=19,cex=0.3)
 #abline(h=min(res[,2]),col="red")
 
-save.image("gcvml.RData")
+#save.image("gcvml.RData")
 
 
 ## plot something
@@ -125,12 +125,14 @@ names(ml.mse)<-names(gcv.mse)<-names(ml.score)<-names(gcv.score)<-c("sim","dim",
 
 
 p<-ggplot(ml.score)
-p<-p+geom_line(aes(x=dim,y=score,group=sim))
+p<-p+geom_boxplot(aes(factor(dim),score))
+#p<-p+geom_line(aes(x=dim,y=score,group=sim))
 p
 
 
 p<-ggplot(gcv.score)
-p<-p+geom_line(aes(x=dim,y=score,group=sim))
+p<-p+geom_boxplot(aes(factor(dim),score))
+#p<-p+geom_line(aes(x=dim,y=score,group=sim))
 p
 
 
@@ -147,6 +149,30 @@ p<-p+geom_boxplot(aes(factor(dim),score))
 p
 
 
+# popularity contest
+a<-rep(NA,60)
+for(i in 1:60){
+   a[i]<-gcv.score$dim[gcv.score$sim==i][which.min(gcv.score$score[gcv.score$sim==i])]
+}
+attr(which.max(table(a)),"names")
 
+a<-rep(NA,60)
+for(i in 1:60){
+   a[i]<-ml.score$dim[ml.score$sim==i][which.min(ml.score$score[ml.score$sim==i])]
+}
+attr(which.max(table(a)),"names")
+
+
+a<-rep(NA,60)
+for(i in 1:60){
+   a[i]<-gcv.mse$dim[gcv.mse$sim==i][which.min(gcv.mse$score[gcv.mse$sim==i])]
+}
+attr(which.max(table(a)),"names")
+
+a<-rep(NA,60)
+for(i in 1:60){
+   a[i]<-ml.mse$dim[ml.mse$sim==i][which.min(ml.mse$score[ml.mse$sim==i])]
+}
+attr(which.max(table(a)),"names")
 
 
