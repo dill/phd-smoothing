@@ -43,7 +43,7 @@ pred.grid<-data.frame(x=gxx[pred.onoff],y=gyy[pred.onoff])
 
 ######################################################################
 # plot setup
-par(mfrow=c(2,4),las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
+par(mfrow=c(1,2),las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 
 # set the x and y values for the image plot
 aral.lab<-latlong2km(unique(sort(aral$lo)),unique(sort(aral$la)),59.5,45)
@@ -102,55 +102,38 @@ plot.it<-function(dat,main.title){
    lines(bnd,lwd=2)
 }
 
+mds.fit<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),family=Gamma(link="log")) 
+plot.it(mds.fit,"mds 4D")
+
 #mds2<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20))
-plot.it(mds2,"mds 2D - tprs")
+#plot.it(mds2,"mds 2D - tprs")
 
 # reset the mds dimension, so we can re-use Ds...
-mds2$mds.dim<-NULL
-mds2$m<-NULL
-mds2$bs<-NULL
+#mds2$mds.dim<-NULL
+#mds2$m<-NULL
+#mds2$bs<-NULL
+#
+#mds3<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,old.obj=mds2,family=Gamma(link="log")) 
+#plot.it(mds3,"mds 3D - tprs")
+#
+#mds3.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,m=c(2,3/2-1),bs="ds",old.obj=mds2,family=Gamma(link="log"))
+#plot.it(mds3.ds,"mds 3D - ds, s=0.5")
 
-mds3<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,old.obj=mds2,family=Gamma(link="log")) 
-plot.it(mds3,"mds 3D - tprs")
-
-mds3.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=3,m=c(2,3/2-1),bs="ds",old.obj=mds2,family=Gamma(link="log"))
-plot.it(mds3.ds,"mds 3D - ds, s=0.5")
-
-#mds4.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=4,m=c(2,4/2-1),bs="ds",old.obj=mds2)
-#plot.it(mds4.ds,"mds 4D - ds, s=1")
-#mds5.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=5,m=c(2,5/2-1),bs="ds",old.obj=mds2)
-#plot.it(mds5.ds,"mds 5D - ds, s=1.5")
-#mds6.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=6,m=c(2,6/2-1),bs="ds",old.obj=mds2)
-#plot.it(mds6.ds,"mds 6D - ds, s=2")
-#mds7.ds<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=7,m=c(2,7/2-1),bs="ds",old.obj=mds2)
-#plot.it(mds7.ds,"mds 7D - ds, s=2.5")
-
-mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.8,bs="ds",old.obj=mds2,family=Gamma(link="log"))
-plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2]," (0.8 variation)",sep=""))
-
-mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.85,bs="ds",old.obj=mds2,family=Gamma(link="log"))
-plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2]," (0.85 variation)",sep=""))
-
-mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.9,bs="ds",old.obj=mds2,family=Gamma(link="log"))
-plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2]," (0.9 variation)",sep=""))
-
-mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=0.95,bs="ds",old.obj=mds2,family=Gamma(link="log"))
-plot.it(mds.pick,paste("mds ",mds.pick$mds.dim,"D - ",mds.pick$bs,", s=",mds.pick$m[2]," (0.95 variation)",sep=""))
 
 
 
 ### how does GCV vary with k
-res<-c()
-
-for(expl in seq(2,22,by=1)){
-   mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=expl,bs="ds",old.obj=mds2,family=Gamma(link="log"))
-   res<-rbind(c(expl,summary(mds.pick$gam)$sp.criterion),res)
-}
-
-
-
-plot(res,xlab="MDS dimension",ylab="GCV Score",pch=19,cex=0.3)
-abline(h=min(res[,2]),col="red")
+#res<-c()
+#
+#for(expl in seq(2,22,by=1)){
+#   mds.pick<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),mds.dim=expl,bs="ds",old.obj=mds2,family=Gamma(link="log"))
+#   res<-rbind(c(expl,summary(mds.pick$gam)$sp.criterion),res)
+#}
+#
+#
+#
+#plot(res,xlab="MDS dimension",ylab="GCV Score",pch=19,cex=0.3)
+#abline(h=min(res[,2]),col="red")
 
 
 

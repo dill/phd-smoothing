@@ -14,10 +14,8 @@ nom.mapper<-match(nomdat$code,shapefile$dbf$dbf$CODE)
 #> shapefile$dbf$dbf$CODE[605]
 #[1] E14000554
 
-
 # other way !!
 nom.mapper<-match(shapefile$dbf$dbf$CODE,nomdat$code)
-
 
 pay.column<-as.numeric(as.character(nomdat$pay[nom.mapper]))
 # this will warn that it's put NAs in -- that's GOOD!
@@ -26,31 +24,47 @@ na.id<-which(is.na(pay.column))
 
 pay.column<-pay.column[which(!is.na(pay.column))]
 
-D<-dist(pay.column)
-
-library(mdspack)
-k<-choose.mds.dim(D,0.8)
-
-mds<-cmdscale(D,k=k)
-
 these.votes<-con.voteshare[mapper]
 these.votes<-these.votes[-mapper[na.id]]
 
-samp.data<-data.frame(votes=these.votes,
-                      x=mds[,1],
-                      y=mds[,2],
-                      z=mds[,3])
+# what's going on here? - this is a mess
+vote.dat<-data.frame(votes=these.votes,pay=pay.column)
+library(ggplot2)
+p<-ggplot(vote.dat)
+p<-p+geom_point(aes(x=pay,y=votes))
+p
 
-library(mgcv)
+# what about looking at regions?
+region.lookup<-read.csv("regiontoconst.csv")
 
-b<-gam(votes~s(x,y,z),data=samp.data)
+# do some matching again....
+# just missing some dots...
+region.lookup<-data.frame(constituency=as.character(region.lookup$PCON10NM),
+                          region=as.character(region.lookup$GOR09NM))
 
-preds<-predict(b,samp.data)
+region.lookup$constituency<-gsub("St ","St. ",region.lookup$constituency)
 
-b<-gam(votes~s(x,y,z,bs="ds",m=c(2,3/2-1)),data=samp.data)
+region.mapper<-match(region.lookup$constituency,os.names)
+bregion.mapper<-match(os.names,region.lookup$constituency)
 
 
+region<-as.character(region.lookup$region[bregion.mapper])
+region<-region[-mapper[na.id]]
+region[is.na(region)]<-"Scotland/Wales"
 
+vote.dat<-data.frame(votes=these.votes,
+                     pay=pay.column,
+                     region=region)
+
+p<-ggplot(vote.dat)
+
+p<-p+geom_point(aes(x=pay,y=votes))
+
+p<-p+stat_smooth(aes(x=pay,y=votes),se=FALSE)
+
+p<-p+facet_wrap(~region,ncol=3)
+
+p
 
 
 
