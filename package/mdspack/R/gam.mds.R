@@ -80,16 +80,20 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
    if(is.null(mds.dim)){
       # find the bounds for the dimensions of the MDS projection
       # min is 2; max is whatever gives 95% variation
-      mds.bnds<-c(2,choose.mds.dim(D.grid,0.95))
+      mds.bnds<-seq(2,choose.mds.dim(D.grid,0.95),by=1)
       
       gcvs<-c() # store GCV scores
       model.list<-list()
       i<-1 # counter
 
-      cat("Choosing the MDS dimension between",mds.bnds[1],"and",
-            mds.bnds[2],"based on GCV score.\n")
+      #cat("Choosing the MDS dimension between",mds.bnds[1],"and",
+      #      mds.bnds[2],"based on GCV score.\n")
 
-      for(test.dim in mds.bnds[1]:mds.bnds[2]){
+      #for(test.dim in mds.bnds[1]:mds.bnds[2]){
+      while(i<3 || gcvs[i-1]<gcvs[i-2]){
+      
+         test.dim<-mds.bnds[i]
+         
          # fit the model
          model.list[[i]]<-run.gam(samp.data,D.grid,test.dim,my.grid,bnd,
                                   D.samp,family,m,k,bs,gam.method)
