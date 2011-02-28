@@ -86,7 +86,7 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
       model.list<-list()
       i<-1 # counter
 
-      for(test.dim in mds.bnds[1]:mds.bnds[2]){
+      for(test.dim in mds.bnds){
       #while(gcvs[i-1]<=gcvs[i-2]){
       
          # fit the model
@@ -102,7 +102,9 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
          gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
          i<-i+1
          if(i>2){
-            if(gcvs[i-1]>gcvs[i-2]){ break}
+            if(gcvs[i-1]>gcvs[i-2]){ 
+               break
+            }
          }
       }
 

@@ -103,7 +103,7 @@ plot.it<-function(dat,main.title){
 }
 
 mds.fit<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),family=Gamma(link="log")) 
-plot.it(mds.fit,"mds 4D")
+plot.it(mds.fit,paste("mds ",mds.fit$mds.dim,"D",sep=""))
 
 #mds2<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20))
 #plot.it(mds2,"mds 2D - tprs")
