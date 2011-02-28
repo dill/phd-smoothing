@@ -89,8 +89,6 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
       for(test.dim in mds.bnds[1]:mds.bnds[2]){
       #while(gcvs[i-1]<=gcvs[i-2]){
       
-         test.dim<-mds.bnds[i]
-         
          # fit the model
          model.list[[i]]<-run.gam(samp.data,D.grid,test.dim,my.grid,bnd,
                                   D.samp,family,m,k,bs,gam.method)
@@ -103,8 +101,8 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
          # extract the GCV
          gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
          i<-i+1
-         if(i>2 && gcvs[i-1]>gcvs[i-2]){
-            break
+         if(i>2){
+            if(gcvs[i-1]>gcvs[i-2]){ break}
          }
       }
 
@@ -140,7 +138,7 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
    # do the preictions
    if(!is.null(predp)){
       # insert the sample - if there was a D cached, use that
-      if(is.null(D.samp)){
+      if(is.null(D.pred)){
          pred.mds<-insert.mds(predp,my.grid,grid.mds,bnd,faster=1)
          new.obj$D.pred<-attr(pred.mds,"D")
       }else{
