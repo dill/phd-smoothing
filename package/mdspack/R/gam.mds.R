@@ -86,11 +86,8 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
       model.list<-list()
       i<-1 # counter
 
-      #cat("Choosing the MDS dimension between",mds.bnds[1],"and",
-      #      mds.bnds[2],"based on GCV score.\n")
-
-      #for(test.dim in mds.bnds[1]:mds.bnds[2]){
-      while(i<3 || gcvs[i-1]<gcvs[i-2]){
+      for(test.dim in mds.bnds[1]:mds.bnds[2]){
+      #while(gcvs[i-1]<=gcvs[i-2]){
       
          test.dim<-mds.bnds[i]
          
@@ -106,12 +103,13 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
          # extract the GCV
          gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
          i<-i+1
+         if(i>2 && gcvs[i-1]>gcvs[i-2]){
+            break
+         }
       }
 
       # now that's done, what was the smallest GCV?
       and.the.winner.is<-which.min(gcvs)
-
-      cat("GCV =",min(gcvs)," Dimension =",and.the.winner.is,"\n")
 
       fit.ret<-model.list[[and.the.winner.is]]
 
@@ -137,8 +135,6 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
    new.obj$gam<-fit.ret$gam
    new.obj$D.samp<-fit.ret$D.samp
    grid.mds<-fit.ret$grid.mds
-
-
 
    ###########################################################################
    # do the preictions
