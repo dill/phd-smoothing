@@ -47,10 +47,10 @@ real.results<-c()
 noise.levels<-c(0.35,0.9,1.55)
 sim.size<-200
 
-result<-c()
 
 # now run the sim
 for(noise.level in noise.levels){
+result<-c()
 
    set.seed(1)
 
