@@ -1,15 +1,7 @@
 # comparison of using GCV and ML for selecting the number 
 # of dimensions to project into
 
-
 library(mdspack)
-
-# let's do this in parallel
-library(foreach)
-library(doMC)
-options(cores=6)
-registerDoMC()
-
 
 #set.seed(123)
 bnd <- read.csv("wt2-verts.csv",header=FALSE)
@@ -55,6 +47,7 @@ real.results<-c()
 noise.levels<-c(0.35,0.9,1.55)
 sim.size<-200
 
+result<-c()
 
 # now run the sim
 for(noise.level in noise.levels){
@@ -62,8 +55,8 @@ for(noise.level in noise.levels){
    set.seed(1)
 
    ## parallel
-   result<-foreach(j = 1:sim.size,.combine=rbind) %dopar% {
-
+   #result<-foreach(j = 1:sim.size,.combine=rbind) %dopar% {
+   for(j in 1:sim.size){
       # make samples
       samp.ind<-sample(1:length(gendata$x),samp.size)
       noise<-noise.level*rnorm(length(samp.ind))
@@ -82,7 +75,7 @@ for(noise.level in noise.levels){
       this.line<-rbind(this.line,c(ind,"edf",sum(mds.cd.ds$gam$edf)))
       this.line<-rbind(this.line,c(ind,"mse",sum((mds.cd.ds$pred-gendata$z)^2)))
 
-      this.line
+      result<-rbind(result,this.line)
    }
    ## end parallel
 
