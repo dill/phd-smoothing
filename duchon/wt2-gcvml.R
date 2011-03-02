@@ -106,6 +106,7 @@ for(i in 1:n.runs){
 
 #save.image("gcvml.RData")
 
+########################################################################
 
 # plot something
 load("gcvml.RData")
@@ -146,12 +147,14 @@ p<-ggplot(gcv.score)
 p<-p+geom_boxplot(aes(factor(dim),score))
 #p<-p+geom_smooth(aes(x=dim-2,y=score))
 p<-p+labs(x="MDS projection dimension",y="GCV score")
+p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
 print(p,vp=subplot(1,1))
 
 p<-ggplot(gcv.mse)
 p<-p+geom_boxplot(aes(factor(dim),score))
 #p<-p+geom_smooth(aes(x=dim-2,y=score))
 p<-p+labs(x="MDS projection dimension",y="MSE")
+p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
 print(p,vp=subplot(1,2))
 
 
