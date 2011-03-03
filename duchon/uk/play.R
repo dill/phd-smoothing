@@ -117,6 +117,9 @@ for(i in 1:length(constituencies)){
 # put the speaker and Thirsk and Malton in!!!
 # 52.9 Thirsk and Malton
 # 47.3 for Buckingham (if we think of Bercow as a Tory... he is)
+bigframe$votes[bigframe$code==89]<-47.3/100
+bigframe$votes[bigframe$code==523]<-52.9/100
+
 
 bigframe<-bigframe[-1,]
 
