@@ -1,5 +1,6 @@
 # love for nomis
 
+library(ggplot2)
 load("done.RData")
 
 
@@ -29,10 +30,9 @@ these.votes<-these.votes[-mapper[na.id]]
 
 # what's going on here? - this is a mess
 vote.dat<-data.frame(votes=these.votes,pay=pay.column)
-library(ggplot2)
-p<-ggplot(vote.dat)
-p<-p+geom_point(aes(x=pay,y=votes))
-p
+#p<-ggplot(vote.dat)
+#p<-p+geom_point(aes(x=pay,y=votes))
+#p
 
 # what about looking at regions?
 region.lookup<-read.csv("regiontoconst.csv")
@@ -58,7 +58,7 @@ vote.dat<-data.frame(votes=these.votes,
 
 p<-ggplot(vote.dat)
 
-p<-p+geom_point(aes(x=pay,y=votes))
+p<-p+geom_point(aes(x=pay,y=votes,colour=con))
 
 p<-p+stat_smooth(aes(x=pay,y=votes),se=FALSE)
 
