@@ -123,13 +123,16 @@ bigframe$votes[bigframe$code==523]<-52.9/100
 
 bigframe<-bigframe[-1,]
 
-# constituency polygons
-con.geom<-geom_polygon(aes(x=x, y=y, fill=votes, group=group), data=bigframe)
 
 # do the plotting
 p<-ggplot()
+# constituency polygons
+con.geom<-geom_polygon(aes(x=x, y=y, fill=votes, group=group), data=bigframe)
 p<-p+con.geom
-p<-p+scale_fill_continuous(low="red",high="blue")
+p<-p+scale_fill_continuous(low="red",high="blue",limits=c(0,1))
+p<-p+opts(axis.text.x = theme_blank(),axis.ticks = theme_blank(),axis.text.y = theme_blank())
+p<-p+labs(x="",y="",fill="Conservative\nvote proportion")
+
 
 # save!
 save.image("done.RData")
