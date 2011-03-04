@@ -1,38 +1,38 @@
 # make some boxplots
 
+library(ggplot2)
+
 pdf(file="mds-ramsay-boxplot.pdf",width=6,height=5)
 
-# make the text look better for printout
-par(cex.lab=0.75)
-
-# b l t r
-#par(mar=c(7,3,2,1)+.1)
-#par(mgp=c(0,2,1))
-par(las=1,cex=0.9,mfrow=c(1,3))
-
-
 # ordering is mds, soap, tprs
+
+mses<-c()
 
 for(err.lev in c("0.1","1","10")){
 
    mse<-read.csv(paste("ramsay-mse-250-",err.lev,".csv",sep=""))
-   mse<-log(mse[,-1])
-#   mse<-mse[,-1]
-   
-#   mses<-c(signif(mean(mse[,1],na.rm=TRUE),3),
-#           signif(mean(mse[,2],na.rm=TRUE),3),
-#           signif(mean(mse[,3],na.rm=TRUE),3))
-#   
-#   ses<-c(signif(sd(mse[,1],na.rm=TRUE),3),
-#          signif(sd(mse[,2],na.rm=TRUE),3),
-#          signif(sd(mse[,3],na.rm=TRUE),3))
-#   
-#   xlab=paste("MDS: MSE=",mses[1],"se(MSE)=",ses[1],"\n",
-#              "soap: MSE=",mses[2],"se(MSE)=",ses[2],"\n",
-#              "TPRS: MSE=",mses[3],"se(MSE)=",ses[3],"\n")
-   
-   boxplot(mse,main="")#,xlab=xlab)
+   mse<-mse[,-1]
 
+   mse<-melt(mse)
+   mse<-cbind(mse,rep(err.lev,dim(mse)[1]))
+
+   mses<-rbind(mses,mse)
 }
+
+names(mses)<-c("method","mse","noise")
+
+mses$mse<-log(mses$mse)
+
+theme_set(theme_bw())
+
+p<-ggplot(mses)
+p<-p+stat_boxplot(aes(x=method,y=mse))
+p<-p+facet_wrap(~noise,nrow=1)
+p<-p+opts(panel.grid.major=theme_blank(),
+                    panel.grid.minor=theme_blank(),
+                    panel.background=theme_rect())
+p<-p+labs(x="Method",y="log(mean MSE per realisation)")
+print(p)
+
 
 dev.off()
