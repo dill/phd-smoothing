@@ -82,7 +82,7 @@ for(i in 1:n.runs){
                          old.obj=base.fit,bs="ds",gam.method="GCV.Cp")
       # store some results
       this.line<-rbind(this.line,c(ind,"gcv.score",mds.cd.ds$gam$gcv.ubre))
-      this.line<-rbind(this.line,c(ind,"ml.aic",mds.cd.ds$gam$aic))
+      this.line<-rbind(this.line,c(ind,"gcv.aic",mds.cd.ds$gam$aic))
       this.line<-rbind(this.line,c(ind,"gcv.mse",sum((mds.cd.ds$pred-gendata$z)^2)))
 
       ## run for ML
@@ -99,9 +99,9 @@ for(i in 1:n.runs){
                          old.obj=base.fit,bs="ds",gam.method="REML")
 
       # store some results
-      this.line<-rbind(this.line,c(ind,"ml.score",mds.cd.ds$gam$gcv.ubre))
-      this.line<-rbind(this.line,c(ind,"ml.aic",mds.cd.ds$gam$aic))
-      this.line<-rbind(this.line,c(ind,"ml.mse",sum((mds.cd.ds$pred-gendata$z)^2)))
+      this.line<-rbind(this.line,c(ind,"reml.score",mds.cd.ds$gam$gcv.ubre))
+      this.line<-rbind(this.line,c(ind,"reml.aic",mds.cd.ds$gam$aic))
+      this.line<-rbind(this.line,c(ind,"reml.mse",sum((mds.cd.ds$pred-gendata$z)^2)))
 
 
 
@@ -117,60 +117,85 @@ for(i in 1:n.runs){
 #plot(res,xlab="MDS dimension",ylab="GCV Score",pch=19,cex=0.3)
 #abline(h=min(res[,2]),col="red")
 
-save.image("gcvml.RData")
+#save.image("gcvml.RData")
 
 ########################################################################
 
 # plot something
-#load("gcvml.RData")
-#library(dillhandy)
-#library(ggplot2)
-#
-#real.results<-as.data.frame(real.results)
-#real.results[,1]<-as.numeric(as.character(real.results[,1]))
-#real.results[,2]<-as.numeric(as.character(real.results[,2]))+2
-#real.results[,4]<-as.numeric(as.character(real.results[,4]))
-#
-#ml.mse<-as.data.frame(pe(real.results,real.results[,3]=="ml.mse"))
-#gcv.mse<-as.data.frame(pe(real.results,real.results[,3]=="gcv.mse"))
-#ml.score<-as.data.frame(pe(real.results,real.results[,3]=="ml.score"))
-#gcv.score<-as.data.frame(pe(real.results,real.results[,3]=="gcv.score"))
-#
-#names(ml.mse)<-names(gcv.mse)<-names(ml.score)<-names(gcv.score)<-c("sim","dim","name","score")
-#
-## setup for a 1x2 plot
-#Layout <- grid.layout(nrow = 1, ncol = 2, 
-#                      widths = unit(rep(1,2),"null"), 
-#                      heights = unit(rep(1,1), "null"))
-#
-#subplot <- function(x, y) viewport(layout.pos.row = x,layout.pos.col = y)
-#vplayout <- function(...) {
-#     grid.newpage()
-#     pushViewport(viewport(layout = Layout))
-#}
-#
-#
-#theme_set(theme_bw())
-#
-#
-#grid.newpage()
-#pushViewport(viewport(layout = Layout))
-#
-#p<-ggplot(gcv.score)
-#p<-p+geom_boxplot(aes(factor(dim),score))
-##p<-p+geom_smooth(aes(x=dim-2,y=score))
-#p<-p+labs(x="MDS projection dimension",y="GCV score")
-#p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
-#print(p,vp=subplot(1,1))
-#
-#p<-ggplot(gcv.mse)
-#p<-p+geom_boxplot(aes(factor(dim),score))
-##p<-p+geom_smooth(aes(x=dim-2,y=score))
-#p<-p+labs(x="MDS projection dimension",y="MSE")
-#p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
-#print(p,vp=subplot(1,2))
+load("gcvml.RData")
+library(dillhandy)
+library(ggplot2)
+
+real.results<-as.data.frame(real.results)
+real.results[,1]<-as.numeric(as.character(real.results[,1]))
+real.results[,2]<-as.numeric(as.character(real.results[,2]))+2
+real.results[,4]<-as.numeric(as.character(real.results[,4]))
+
+ml.mse<-as.data.frame(pe(real.results,real.results[,3]=="ml.mse"))
+gcv.mse<-as.data.frame(pe(real.results,real.results[,3]=="gcv.mse"))
+ml.score<-as.data.frame(pe(real.results,real.results[,3]=="ml.score"))
+gcv.score<-as.data.frame(pe(real.results,real.results[,3]=="gcv.score"))
+
+names(ml.mse)<-names(gcv.mse)<-names(ml.score)<-names(gcv.score)<-c("sim","dim","name","score")
+
+# setup for a 1x2 plot
+Layout <- grid.layout(nrow = 1, ncol = 2, 
+                      widths = unit(rep(1,2),"null"), 
+                      heights = unit(rep(1,1), "null"))
+
+subplot <- function(x, y) viewport(layout.pos.row = x,layout.pos.col = y)
+vplayout <- function(...) {
+     grid.newpage()
+     pushViewport(viewport(layout = Layout))
+}
 
 
+theme_set(theme_bw())
+
+
+grid.newpage()
+pushViewport(viewport(layout = Layout))
+
+p<-ggplot(gcv.score)
+p<-p+geom_boxplot(aes(factor(dim),score))
+#p<-p+geom_smooth(aes(x=dim-2,y=score))
+p<-p+labs(x="MDS projection dimension",y="GCV score")
+p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
+print(p,vp=subplot(1,1))
+
+p<-ggplot(gcv.mse)
+p<-p+geom_boxplot(aes(factor(dim),score))
+#p<-p+geom_smooth(aes(x=dim-2,y=score))
+p<-p+labs(x="MDS projection dimension",y="MSE")
+p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
+print(p,vp=subplot(1,2))
+
+
+
+# AIC
+aics<-as.data.frame(pe(real.results,real.results[,3]=="ml.aic"))
+gcv.aic<-aics[seq(1,dim(aics)[1],by=3),]
+gcv.aic<-cbind(gcv.aic,rep("gcv",dim(gcv.aic)[1]))
+ml.aic<-aics[seq(2,dim(aics)[1],by=3),]
+ml.aic<-cbind(ml.aic,rep("ml",dim(ml.aic)[1]))
+reml.aic<-aics[seq(3,dim(aics)[1],by=3),]
+reml.aic<-cbind(reml.aic,rep("reml",dim(reml.aic)[1]))
+
+names(gcv.aic)<-names(ml.aic)<-names(reml.aic)<-c("sim","dim","name","score","fit")
+
+aics<-rbind(gcv.aic,ml.aic,reml.aic)
+
+
+
+p<-ggplot(aics)
+p<-p+geom_boxplot(aes(factor(dim),score))
+p<-p+facet_wrap(~fit,nrow=1)
+print(p)
+
+
+
+
+## ML score decreases
 #p<-ggplot(ml.score)
 #p<-p+geom_boxplot(aes(factor(dim),score))
 #p
@@ -179,6 +204,13 @@ save.image("gcvml.RData")
 #p<-p+geom_boxplot(aes(factor(dim),score))
 ##p<-p+geom_line(aes(x=dim,y=score,group=sim))
 #p
+## REML score just decreases too!
+#reml.score<-real.results[seq(7,dim(real.results)[1],9),]
+#names(reml.score)<-c("sim","dim","name","score")
+#p<-ggplot(reml.score)
+#p<-p+geom_boxplot(aes(factor(dim),score))
+#p
+
 
 
 ## popularity contest
@@ -206,5 +238,5 @@ save.image("gcvml.RData")
 #   a[i]<-ml.mse$dim[ml.mse$sim==i][which.min(ml.mse$score[ml.mse$sim==i])]
 #}
 #attr(which.max(table(a)),"names")
-#
-#
+
+
