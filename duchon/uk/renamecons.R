@@ -44,11 +44,11 @@ mapper<-match(guardian.names,os.names)
 # commas
 guardian.names[which(is.na(mapper))]<-gsub("(Liverpool|Birmingham|Brighton|Sheffield|Manchester|Plymouth|Southampton|Enfield|Ealing|Lewisham) (\\w*)","\\1, \\2",guardian.names[which(is.na(mapper))],perl=TRUE)
 
-# fuck Devon
+# Devon
 guardian.names<-gsub("Devon West and Torridge","Torridge and West Devon",guardian.names)
 mapper<-match(guardian.names,os.names)
 
-# the awkward squad
+# awkward
 awkward<-guardian.names[which(is.na(mapper))]
 awkward<-gsub("(\\w+) (West|South|Central|North|East|Mid) and (\\w+)","\\2 \\1 and \\3",awkward)
 guardian.names[which(is.na(mapper))]<-awkward
