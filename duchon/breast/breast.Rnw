@@ -1,0 +1,164 @@
+% investigating the breast cancer data
+% David Lawrence Miller
+% dave@ninepointeightone.net
+  
+\documentclass[a4paper,10pt]{article}
+\setlength{\textheight}{22.5cm}
+\setlength{\textwidth}{6.47in}
+\setlength{\oddsidemargin}{-1mm}
+\setlength{\topmargin}{0.1cm}
+\setlength{\evensidemargin}{-5mm} 
+ 
+% Load some packages
+\usepackage{times, amsmath, amssymb, amsfonts, url, bm, rotating}
+ 
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{psfrag}
+\usepackage{soul}
+
+% top matter
+\title{breast cancer data analysis}
+\author{David Lawrence Miller\\Mathematical Sciences\\University of Bath\\\texttt{dave@ninepointeightone.net}}
+ 
+% Shortcuts
+% Probability
+\newcommand{\prob}[1]{\mathbb{P}\left[ #1 \right]}
+% fprime
+\newcommand{\fprime}{f^\prime(z)}
+% figure reference command
+\newcommand{\fig}[1]{\emph{fig.} \ref{#1}}
+% Figure reference command
+\newcommand{\Fig}[1]{\emph{Fig.} \ref{#1}}
+% table reference command
+\newcommand{\tabref}[1]{\emph{table} \ref{#1}}
+% Table reference command
+\newcommand{\Tabref}[1]{\emph{Table} \ref{#1}}
+% equation reference command
+\newcommand{\eqn}[1]{(\ref{#1})}
+% phi inverse
+\newcommand{\phiinv}{\phi^{-1}}
+% use other phi
+\renewcommand{\phi}{\varphi}
+%transpose
+\newcommand{\tr}[1]{#1^{\text{T}}}
+% diagonal
+\newcommand{\diag}{\text{diag}}
+% call \times \cross
+\newcommand{\cross}{\times}
+% section references
+\newcommand{\secref}[1]{section \ref{#1}}
+\newcommand{\Secref}[1]{Section \ref{#1}}
+\newcommand{\ijth}{$ij^{\text{th}}$}
+% error function
+\newcommand{\erf}{\text{Erf}}
+% derivative shortcuts
+\newcommand{\palphaj}{\frac{\partial}{\partial \alpha_{j*}}}
+\newcommand{\pbetajk}{\frac{\partial}{\partial \beta_{j*k*}}}
+%nu_j shortcut + starred
+\newcommand{\nuj}{\nu_j(\bm{z}^{(j)})}
+\newcommand{\nujs}{\nu_{j*}(\bm{z}^{(j*)})}
+% z_ik^j shortcut + with starts
+\newcommand{\zijk}{z_{ik}^{(j)}}
+\newcommand{\zijkss}{z_{ik*}^{(j*)}}
+% z^(j) shortcut + with starts
+\newcommand{\zj}{\bm{z}^{(j)}}
+\newcommand{\zjs}{\bm{z}^{(j*)}}
+% z^(J) shortcut + with starts
+\newcommand{\zJ}{\bm{z}^{(J)}}
+
+
+
+\begin{document}
+
+\maketitle
+
+\section{Setting up the data...}
+
+Looking at the breast cancer data from Wit and McClure.
+
+First off, load some packages....
+
+<<>>=
+library(mdspack)
+library(ggplot2)
+library(smida)
+data(breast)
+@
+
+The data is in a list. Putting that into a \texttt{data.frame} by first taking the non-microarray data, which are:
+\begin{itemize}
+	\item \texttt{npi} - Nottingham prognostic index
+	\item \texttt{surv.time} - surivival time
+	\item \texttt{size} - size of the tumor (mm)
+	\item \texttt{age.at.diag} - age at diagnosis
+	\item \texttt{any.death} - whether the patient died
+	\item \texttt{cancer.death} - whether that death was from cancer
+	\item \texttt{cancer.grade} - cancer severity grade
+\end{itemize}
+Putting those in the frame \texttt{breast.dat}:
+<<>>=
+breast.dat<-as.data.frame(cbind(breast$npi,breast$surv.time, breast$size, breast$age.at.diag,
+                                breast$any.death,breast$cancer.death,
+                                breast$cancer.grade))
+names(breast.dat)<-c("npi","surv.time","size","age.at.diag",
+                     "any.death","cancer.death",
+                     "cancer.grade")
+@
+And putting the microarray data in a matrix:
+<<>>=
+breast.array<-as.matrix(breast$dat)
+@
+
+Now, we only want those patients who died of cancer within the study period (of which there are 20), so create an index for those and cut down the original data saving the full data sets first.
+<<>>=
+ind1<-breast.dat$any.death==1
+ind2<-breast.dat$cancer.death==1
+ind1[is.na(ind1)]<-0
+ind2[is.na(ind2)]<-0
+
+# save first
+breast.array.full<-breast.array
+breast.dat.full<-breast.dat
+
+# array data
+breast.array<-breast.array[ind1 & ind2,]
+# other data
+breast.dat<-breast.dat[ind1 & ind2,]
+@
+
+\section{EDA}
+
+Looking at the effect that each variable as on survival time, just using a simple scatter plot, see fig \ref{surv-vs-plot}. The following code generated the figure:
+<<eval=false>>=
+breast.m<-melt(breast.dat,c("surv.time"))
+p<-ggplot(breast.m)
+p<-p+geom_point(aes(value,surv.time))
+p<-p+facet_wrap(~variable,nrow=1,scales="free_x")
+p<-p+labs(x="", y="Survival time")
+print(p)
+@
+
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+breast.m<-melt(breast.dat,c("surv.time"))
+p<-ggplot(breast.m)
+p<-p+geom_point(aes(value,surv.time))
+p<-p+facet_wrap(~variable,nrow=1,scales="free_x")
+p<-p+labs(x="", y="Survival time")
+print(p)
+@
+\end{center}
+\label{surv-vs-time}
+\caption{Survival time against the other non-microarray variables for the 20 patients.}
+\end{figure}
+
+
+
+
+
+
+\end{document}

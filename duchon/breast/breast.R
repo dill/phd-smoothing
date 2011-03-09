@@ -1,4 +1,5 @@
 # analyse the breast cancer data from "Statistics for Microarrays"
+# by Wit and McClure
 
 library(mdspack)
 library(ggplot2)
@@ -20,9 +21,11 @@ data(breast)
 #  whether that death was from cancer
 #  cancer severity grade
 breast.dat<-as.data.frame(cbind(breast$npi,breast$surv.time, breast$size, breast$age.at.diag, 
-                  breast$any.death,breast$cancer.death,breast$cancer.grade))
-names(breast.dat)<-c("npi","surv.time","size","age.at.diag","any.death",
-                     "cancer.death","cancer.grade")
+#                                breast$any.death,breast$cancer.death,
+                                breast$cancer.grade))
+names(breast.dat)<-c("npi","surv.time","size","age.at.diag",
+#                     "any.death","cancer.death",
+                     "cancer.grade")
 
 
 
@@ -64,24 +67,26 @@ ddist<-dist(breast.array,diag=TRUE,upper=TRUE)
 #> choose.mds.dim(ddist,0.95)
 #[1] 15
 
-mds.proj<-as.data.frame(cmdscale(ddist,choose.mds.dim(ddist,0.8)))
-colnames(mds.proj)<-letters[(26-dim(mds.proj)[2]+1):26]
-gam.dat<-cbind(breast.dat,mds.proj)
 
 # could use sammon instead? p112
 #sam<-sammon(ddist,k=5)$points
 #colnames(sam)<-letters[(26-dim(sam)[2]+1):26]
 #gam.dat<-cbind(breast.dat,sam)
+#m<-c(2,dim(sam)[2]/2-1)
+#gam.formula<-paste("surv.time~s(",paste(colnames(sam),collapse=","),
+#                   ",",gam.options,")")
 
+
+mds.proj<-as.data.frame(cmdscale(ddist,choose.mds.dim(ddist,0.7)))
+colnames(mds.proj)<-letters[(26-dim(mds.proj)[2]+1):26]
+gam.dat<-cbind(breast.dat,mds.proj)
 
 # lazily construct a formula
 m<-c(2,dim(mds.proj)[2]/2-1)
-#m<-c(2,dim(sam)[2]/2-1)
 gam.options<-paste("bs='ds', k=10, m=c(",m[1],",",m[2],")",sep="")
 gam.formula<-paste("surv.time~s(",paste(colnames(mds.proj),collapse=","),
-#gam.formula<-paste("surv.time~s(",paste(colnames(sam),collapse=","),
                    ",",gam.options,")",
-                   "+s(age.at.diag)")
+                   "+s(age.at.diag)+s(size)")
 
 
 
