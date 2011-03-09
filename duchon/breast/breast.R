@@ -77,7 +77,7 @@ ddist<-dist(breast.array,diag=TRUE,upper=TRUE)
 #                   ",",gam.options,")")
 
 
-mds.proj<-as.data.frame(cmdscale(ddist,choose.mds.dim(ddist,0.7)))
+mds.proj<-as.data.frame(cmdscale(ddist,choose.mds.dim(ddist,0.8)))
 colnames(mds.proj)<-letters[(26-dim(mds.proj)[2]+1):26]
 gam.dat<-cbind(breast.dat,mds.proj)
 
@@ -86,17 +86,18 @@ m<-c(2,dim(mds.proj)[2]/2-1)
 gam.options<-paste("bs='ds', k=10, m=c(",m[1],",",m[2],")",sep="")
 gam.formula<-paste("surv.time~s(",paste(colnames(mds.proj),collapse=","),
                    ",",gam.options,")",
-                   "+s(age.at.diag)+s(size)")
-
-
+                     "+s(size)",#)
+#                     "+s(age.at.diag)")
+                   "+factor(cancer.grade)")
 
 gam.formula<-as.formula(gam.formula)
 
-
-b<-gam(gam.formula,data=gam.dat,family=Gamma(link="log"))
+#b<-gam(gam.formula,data=gam.dat)#,family=Gamma(link="log"))
+#b<-gam(gam.formula,data=gam.dat,family=Tweedie(link=power(0),p=1.45))
+b<-gam(gam.formula,data=gam.dat)
 
 summary(b)
 
-
+gam.check(b)
 
 

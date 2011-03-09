@@ -130,13 +130,21 @@ breast.dat<-breast.dat[ind1 & ind2,]
 
 \section{EDA}
 
-Looking at the effect that each variable as on survival time, just using a simple scatter plot, see fig \ref{surv-vs-plot}. The following code generated the figure:
+Looking at the effect that each variable as on survival time, just using a simple scatter plot, see fig \ref{surv-vs-plot}. Linear regression lines are superimposed. The following code generated the figure:
 <<eval=false>>=
-breast.m<-melt(breast.dat,c("surv.time"))
+breast.m<-melt(breast.dat,c("surv.time","any.death","cancer.death"))
 p<-ggplot(breast.m)
 p<-p+geom_point(aes(value,surv.time))
 p<-p+facet_wrap(~variable,nrow=1,scales="free_x")
 p<-p+labs(x="", y="Survival time")
+ p<-p+geom_smooth(aes(value,surv.time),method="lm")
+print(p)
+@
+a histogram of survival time is generated with the following code (and shown in fig \ref{surv-time-hist}):
+<<eval=false>>=
+p<-ggplot(breast.m)
+p<-p+geom_histogram(aes(surv.time),binwidth=1)
+p<-p+labs(y="Frequency", x="Survival time")
 print(p)
 @
 
@@ -144,11 +152,12 @@ print(p)
 \begin{figure}[tb]
 \begin{center}
 <<fig=TRUE,echo=FALSE,cache=true>>=
-breast.m<-melt(breast.dat,c("surv.time"))
+breast.m<-melt(breast.dat,c("surv.time","any.death","cancer.death"))
 p<-ggplot(breast.m)
 p<-p+geom_point(aes(value,surv.time))
 p<-p+facet_wrap(~variable,nrow=1,scales="free_x")
 p<-p+labs(x="", y="Survival time")
+p<-p+geom_smooth(aes(value,surv.time),method="lm")
 print(p)
 @
 \end{center}
@@ -156,6 +165,18 @@ print(p)
 \caption{Survival time against the other non-microarray variables for the 20 patients.}
 \end{figure}
 
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+p<-ggplot(breast.m)
+p<-p+geom_histogram(aes(surv.time),binwidth=1)
+p<-p+labs(y="Frequency", x="Survival time")
+print(p)
+@
+\end{center}
+\label{surv-time-hist}
+\caption{Histogram of survival times.}
+\end{figure}
 
 
 
