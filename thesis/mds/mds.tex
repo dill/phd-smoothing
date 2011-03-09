@@ -988,19 +988,19 @@ where the summation index can be interpreted as all of the possible combinations
 
 \cite{duchon77} suggests using the Fourier transform of the derivatives and pre-multiplying the norm (ie. the summation in the above expression) by a function of the variables in the Fourier domain.
 
-Defining the Fourier transform of some function, $g$, in the usual way:
+The Fourier transform decomposes functions into their frequency domain representations (from $\mathbf{x}$ to $\boldsymbol{\tau}$). The Fourier transform of some function, $g$, is defined in the usual way:
 \begin{equation}
-\mathfrak{F} g(\mathbf{\tau}) = \int_{\mathbb{R}^n} e^{2 \pi \sqrt{-1} x \mathbf{\tau}} g(\mathbf{x}) \text{d}\mathbf{x}.
+\mathfrak{F} g(\boldsymbol{\tau}) = \int_{\mathbb{R}^n} e^{2 \pi \sqrt{-1} \mathbf{x} \cdot \boldsymbol{\tau}} g(\mathbf{x}) \text{d}\mathbf{x}.
 \end{equation}
-More detail on Fourier transforms can be found in any standard undergraduate text book. For our purposes it only serves to remember that the Fourier transform decomposes functions into their frequency domain representations (from $\mathbf{x}$ to $\mathbf{\tau}$).
+Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (an $n$-vector which characterizes the frequencies). More detail on Fourier transforms can be found in (for example) \cite{bracewell}. 
+
+Duchon suggests using the Fourier transform of the derivatives in the penalty, thus penalising those second derivatives that have particularly high frequencies. He also suggests putting a weighting factor in the integral. 
 
 The penalty proposed by Duchon can be written (in the above notation) as:
 \begin{equation}
-\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^n} \lvert \mathbf{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\mathbf{\tau}) \Big)^2 \text{d} \mathbf{\tau}.
+\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^n} \lvert \boldsymbol{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau}.
 \end{equation}
-where $\mathbf{\tau}$ is a vector of frequencies. Duchon shows that since the Fourier transform is isometric on $\mathcal{L}^2(\mathbb{R}^n)$, $J_{m,d} = \breve{J}_{m,d}$ when $s=0$ (this is known as Plancherel's theorem).
-
-Thinking about what the penalty actually does, the Fourier transform of the derivative terms means that the penalty is now the integral in the frequency domain of the frequency components, this corresponds to the ``wigglyness'' measure usually used in $J_{m,d}$ and hence the equivalence when $s=0$.
+Duchon shows that since the Fourier transform is isometric on $\mathcal{L}^2(\mathbb{R}^n)$, $J_{m,d} = \breve{J}_{m,d}$ when $s=0$ (this result is known as Plancherel's theorem). Duchon chooses the weighting function $\lvert \boldsymbol{\tau} \rvert^{2s}$ due to its invariance to translation and rotation (here $\lvert \cdot \rvert$ is the Euclidean norm).
 
 When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$. So, $s$ can be used to allow smoothing in high dimensional spaces, using lower-order penalties whilst still yielding continuous results.
 
