@@ -20,10 +20,13 @@ gcv.score<-as.data.frame(pe(real.results,real.results[,3]=="gcv.score"))
 
 names(ml.mse)<-names(gcv.mse)<-names(ml.score)<-names(gcv.score)<-c("sim","dim","name","score")
 
-# setup for a 1x2 plot
-Layout <- grid.layout(nrow = 1, ncol = 2, 
-                      widths = unit(rep(1,2),"null"), 
-                      heights = unit(rep(1,1), "null"))
+# plot layout
+plot.rows<-3
+plot.cols<-2
+Layout <- grid.layout(nrow = plot.rows, ncol = plot.cols, 
+                      widths = unit(rep(3,plot.rows*plot.cols),"null"), 
+                      heights = unit(rep(3,plot.rows*plot.cols), "null"))
+
 
 subplot <- function(x, y) viewport(layout.pos.row = x,layout.pos.col = y)
 vplayout <- function(...) {
@@ -38,6 +41,9 @@ theme_set(theme_bw())
 grid.newpage()
 pushViewport(viewport(layout = Layout))
 
+
+# GCV - score and MSE
+
 p<-ggplot(gcv.score)
 p<-p+geom_boxplot(aes(factor(dim),score))
 #p<-p+geom_smooth(aes(x=dim-2,y=score))
@@ -48,7 +54,7 @@ print(p,vp=subplot(1,1))
 p<-ggplot(gcv.mse)
 p<-p+geom_boxplot(aes(factor(dim),score))
 #p<-p+geom_smooth(aes(x=dim-2,y=score))
-p<-p+labs(x="MDS projection dimension",y="MSE")
+p<-p+labs(x="MDS projection dimension",y="MSE (for GCV)")
 p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
 print(p,vp=subplot(1,2))
 
@@ -72,7 +78,22 @@ aics<-rbind(gcv.aic,ml.aic,reml.aic)
 p<-ggplot(aics)
 p<-p+geom_boxplot(aes(factor(dim),score))
 p<-p+facet_wrap(~fit,nrow=1)
-print(p)
+p<-p+labs(x="MDS projection dimension",y="AIC")
+p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
+print(p,vp=subplot(2,1:2))
+
+
+
+p<-ggplot(aics)
+p<-p+geom_line(aes(dim,score,group=sim),alpha=0.6)
+p<-p+facet_wrap(~fit,nrow=1)
+p<-p+labs(x="MDS projection dimension",y="AIC")
+p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
+print(p,vp=subplot(3,1:2))
+
+
+
+
 
 
 
