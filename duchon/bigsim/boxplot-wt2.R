@@ -33,6 +33,8 @@ for(err.lev in c("0.35","0.9","1.55")){
    # add in Duchon
    tmp<-ddat.mse[ddat.noise==err.lev]
    mse<-cbind(mse,tmp)
+spurious<-c(111,135,157)
+mse<-mse[-spurious,]
 
    # extra Wilcoxon test stuff
    test.against<-3
@@ -65,8 +67,6 @@ for(err.lev in c("0.35","0.9","1.55")){
 
 
 # 3 spurious soap results, remove them
-#spurious<-c(111,135,157)
-#mses<-mses[-spurious,]
 
 
 # log the results
