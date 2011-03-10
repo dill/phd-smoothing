@@ -20,7 +20,9 @@ for(err.lev in c("0.35","0.9","1.55")){
    mse<-read.csv(paste("wt2-mse-250-",err.lev,".csv",sep=""))
    mse<-mse[,-1]
    names(mse)<-mod.names
-   mse<-mse[1:100,] # why???
+   mse<-mse[1:200,] # why???
+spurious<-c(111,135,157)
+mse<-mse[-spurious,]
 
    mse<-melt(mse)
    mse<-cbind(mse,rep(err.lev,dim(mse)[1]))
