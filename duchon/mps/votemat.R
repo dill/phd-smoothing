@@ -20,10 +20,8 @@ labbin<-data.frame(lab=as.numeric(lookup$party=="Lab"),mpid=lookup$mpid)
 #1273 divisions
 
 
-
 # load in the vote matrix, rowid, date, voteno, Bill name, then MP codes
 votes<-read.delim2(file=paste("votematrix-",year,".dat",sep=""),header=T,quote="",fill=FALSE)
-
 
 ## pull out some other bits of data
 # mpid in votes
@@ -96,7 +94,7 @@ result<-foreach(i=1:sim.size,.combine=rbind,.init=c()) %dopar% {
    samp.mds<-as.data.frame(samp.mds)
    
    # model setup
-   m<-c(2,(dim(samp.mds)[2]-1)/2-1)
+   m<-c(2,mds.dim/2-1)
    gam.options<-paste("bs='ds',k=100, m=c(",m[1],",",m[2],")",sep="")
    
    # find the prediction terms
@@ -124,7 +122,9 @@ result<-foreach(i=1:sim.size,.combine=rbind,.init=c()) %dopar% {
    attr(pred.mds,"dimnames")[[2]]<-letters[(26-(dim(samp.mds)[2]-2)):26]
    
    # predict back over _all_ MPs
-   pred.mds<-as.data.frame(rbind(mds.obj$points,pred.mds))
+   pred.mds<-matrix(NA,length(mpid),mds.dim)
+   pred.mds[samp.ind,]<-mds.obj$points
+   pred.mds[-samp.ind,]<-pred.mds
    
    pr<-predict(b,pred.mds,type="response")
    
@@ -132,16 +132,13 @@ result<-foreach(i=1:sim.size,.combine=rbind,.init=c()) %dopar% {
    pr[pr>0.5]<-1
    
    # mse
-   party.pred<-c(mpparty[samp.ind],mpparty[-samp.ind])
-   ds.mse<-sum((pr-party.pred)^2)
+   #ds.mse<-sum((pr-labbin$lab)^2)
    
-   
-   wrong<-mpid[(t(t(pr))-party.pred)!=0]
+   wrong<-mpid[(t(t(pr))-labbin$lab)!=0]
    wrong.ind<-match(wrong,lookup$mpid)
    
    # return vector, put 1s where we messed up
    retvec[wrong.ind]<-1
-
 
    return(retvec)
 
