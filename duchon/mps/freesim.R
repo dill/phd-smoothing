@@ -85,7 +85,7 @@ for(i in 1:sim.size){
    
    bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
    
-   gam.ret<-gam.mds.fit(mpparty[samp.ind],D.samp,mds.dim.bnds=c(4,0.8))
+   gam.ret<-gam.mds.fit(mpparty[samp.ind],D.samp,mds.dim.bnds=c(5,0.85))
 #   attach(gam.ret)
    mds.obj<-gam.ret$mds.obj
    mds.dim<-gam.ret$mds.dim
