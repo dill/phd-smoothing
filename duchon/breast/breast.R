@@ -32,22 +32,31 @@ names(breast.dat)<-c("npi","surv.time","size","age.at.diag",
 # the array data
 breast.array<-as.matrix(breast$dat)
 
+########### survival
+## want only those who died of cancer in the study period
+#ind1<-breast.dat$any.death==1
+#ind2<-breast.dat$cancer.death==1
+#ind1[is.na(ind1)]<-0
+#ind2[is.na(ind2)]<-0
+#
+## save first
+#breast.array.full<-breast.array
+#breast.dat.full<-breast.dat
+#
+## array data
+#breast.array<-breast.array[ind1 & ind2,]
+## other data
+#breast.dat<-breast.dat[ind1 & ind2,]
+############
 
-# want only those who died of cancer in the study period
-ind1<-breast.dat$any.death==1
-ind2<-breast.dat$cancer.death==1
-ind1[is.na(ind1)]<-0
-ind2[is.na(ind2)]<-0
-
-# save first
+########### for npi
 breast.array.full<-breast.array
 breast.dat.full<-breast.dat
-
+ind<-!is.na(breast$npi)
 # array data
-breast.array<-breast.array[ind1 & ind2,]
+breast.array<-breast.array[ind,]
 # other data
-breast.dat<-breast.dat[ind1 & ind2,]
-
+breast.dat<-breast.dat[ind,]
 
 
 # calculate the distance matrix
@@ -77,18 +86,18 @@ ddist<-dist(breast.array,diag=TRUE,upper=TRUE)
 #                   ",",gam.options,")")
 
 
-mds.proj<-as.data.frame(cmdscale(ddist,choose.mds.dim(ddist,0.8)))
+mds.proj<-as.data.frame(cmdscale(ddist,choose.mds.dim(ddist,0.75)))
 colnames(mds.proj)<-letters[(26-dim(mds.proj)[2]+1):26]
 gam.dat<-cbind(breast.dat,mds.proj)
 
 # lazily construct a formula
 m<-c(2,dim(mds.proj)[2]/2-1)
-gam.options<-paste("bs='ds', k=10, m=c(",m[1],",",m[2],")",sep="")
-gam.formula<-paste("surv.time~s(",paste(colnames(mds.proj),collapse=","),
+gam.options<-paste("bs='ds', k=35, m=c(",m[1],",",m[2],")",sep="")
+gam.formula<-paste("npi~s(",paste(colnames(mds.proj),collapse=","),
                    ",",gam.options,")",
-                     "+s(size)",#)
+                     "+s(size)")
 #                     "+s(age.at.diag)")
-                   "+factor(cancer.grade)")
+#                   "+factor(cancer.grade)")
 
 gam.formula<-as.formula(gam.formula)
 
