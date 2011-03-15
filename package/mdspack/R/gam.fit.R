@@ -1,5 +1,5 @@
 # fit a gam to general distance data
-gam.mds.fit<-function(response,D,mds.dim=NULL,k=100){
+gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL){
    # Args
    #  response    vector of responses
    #  D           sample distance matrix (maybe generated using dist())
@@ -21,8 +21,12 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100){
 
    if(is.null(mds.dim)){
       # find the optimal MDS dimension
-      mds.bnds<-seq(2,choose.mds.dim(D,0.8),by=1)
-      
+      if(is.null(mds.dim.bnds)){
+         mds.bnds<-seq(2,choose.mds.dim(D,0.8),by=1)
+      }else{
+         mds.bnds<-seq(mds.dim.bnds[1],choose.mds.dim(D,mds.dim.bnds[2]),by=1)
+      }
+   
       gcvs<-c() # store GCV scores
       model.list<-list()
       i<-1 # counter

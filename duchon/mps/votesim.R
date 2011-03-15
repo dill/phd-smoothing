@@ -52,19 +52,11 @@ votemat[votemat==5]<- -1
 mpparty<-labbin$lab[match(mpid,labbin$mpid)]
 names(mpparty)<-"lab"
 
-## this looks like a cross
-#plot(cmdscale(dist(votemat),2))
-## this doesn't
-#library(rgl)
-#plot3d(cmdscale(dist(votemat),3))
-
-
-
 ############################################################
 # take a sample, fit a model, predict back
 
 samp.size<-100
-sim.size<-100
+sim.size<-2#100
 
 library(foreach)
 library(doMC)
