@@ -177,7 +177,7 @@ for(n.sim in 1:2){
    ## what about using the Lasso
    lars.obj<-lars(as.matrix(samp.dat),mpparty[samp.ind])
    pp<-predict.lars(lars.obj,votemat)
-   cv.obj<-cv.lars(as.matrix(samp.dat),mpparty[samp.ind],plot.it=FALSE,fraction=pp$fraction)
+   cv.obj<-cv.lars(as.matrix(samp.dat),mpparty[samp.ind],plot.it=FALSE,index=pp$fraction,mode="fraction")
    cv.min<-which.min(cv.obj$cv)
    pp<-pp$fit[,cv.min]
    
