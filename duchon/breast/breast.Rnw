@@ -111,21 +111,17 @@ And putting the microarray data in a matrix:
 breast.array<-as.matrix(breast$dat)
 @
 
-Now, we only want those patients who died of cancer within the study period (of which there are 20), so create an index for those and cut down the original data saving the full data sets first.
+Can't look at the survival times as there are only 20 non-censored observations, instead let's try Nottingham prognostic index, NPI.
 <<>>=
-ind1<-breast.dat$any.death==1
-ind2<-breast.dat$cancer.death==1
-ind1[is.na(ind1)]<-0
-ind2[is.na(ind2)]<-0
-
 # save first
 breast.array.full<-breast.array
 breast.dat.full<-breast.dat
 
+ind<-!is.na(breast$npi)
 # array data
-breast.array<-breast.array[ind1 & ind2,]
+breast.array<-breast.array[ind,]
 # other data
-breast.dat<-breast.dat[ind1 & ind2,]
+breast.dat<-breast.dat[ind,]
 @
 
 \section{EDA}

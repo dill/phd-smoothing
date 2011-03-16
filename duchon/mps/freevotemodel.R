@@ -2,6 +2,22 @@ source("getdata.R")
 
 library(mdspack)
 
+insert.mds.generic<-function(mds.obj,new.points,old.points,dist.metric="euclidean"){
+
+   big.points<-rbind(old.points,new.points)
+   ind<-1:nrow(old.points)
+   ind2<-(nrow(old.points)+1):nrow(big.points)
+
+   lambda.inverse<-diag(1/mds.obj$eig[1:dim(mds.obj$points)[2]])
+   new.dist<-as.matrix(dist(big.points,method=dist.metric,diag=T,upper=T))[ind,]
+   new.dist<-new.dist[,ind2]
+   S<- -1/2*mds.obj$x
+   d<- -(new.dist^2-diag(S))
+   mds.points<-t(1/2*(lambda.inverse %*% t(mds.obj$points) %*% d))
+
+   return(mds.points)
+}
+
 # model for free votes only
 
 # these are the free votes for the 1997-2001 parliament
@@ -68,28 +84,88 @@ pred.dat<-votemat[-samp.ind,]
 #dist.metric<-"manhattan"
 dist.metric<-"euclidean"
 
-D.samp<-dist(samp.dat,method=dist.metric)
-
 bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
+bl.len<-length(bigletters)
 
-gam.ret<-gam.mds.fit(mpparty[samp.ind],D.samp)
-attach(gam.ret)
-b<-gam.ret$gam
+###########################################
+# make a grid
+library(sfsmisc)
+#base.grid<-t(digitsBase(sample(1:2^17,10000),2,17))
+#base.grid[base.grid==0]<- -1
+base.grid<-rbind(diag(17),-diag(17))
 
-# predictions
+D.grid<-dist(base.grid,method=dist.metric)
+
+####### ##############
+gcvs<-c()
+models<-list()
+mds.bnds<-2:choose.mds.dim(D.grid,0.8)
+i<-1
+for(mds.dim in mds.bnds){
+k<-100
+
+   mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
+   samp.mds<-insert.mds.generic(mds.obj,samp.dat,base.grid)
+
+   samp.mds<-cbind(mpparty[samp.ind],samp.mds)
+   attr(samp.mds,"dimnames")[[2]]<-c("response",
+                                     bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
+   attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
+   samp.mds<-as.data.frame(samp.mds)
+
+   # model setup
+   m<-c(2,mds.dim/2-1)
+   gam.options<-paste("bs='ds',k=",k,", m=c(",m[1],",",m[2],")",sep="")
+
+   # find the prediction terms
+   pred.terms<-bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len]
+   pred.terms<-paste(pred.terms,collapse=",")
+
+   # create the gam formula
+   gam.formula<-paste("response","~s(",paste(pred.terms,collapse=","),",",gam.options,")")
+   gam.formula<-as.formula(gam.formula)
+
+   # run the model
+   models[[i]]<-gam(gam.formula,data=samp.mds,family=binomial(link="logit"))
+   gcvs<-c(gcvs,models[[i]]$gcv.ubre)
+   i<-i+1
+}
+
+and.the.winner.is<-which.min(gcvs)
+b<-models[[and.the.winner.is]]
+mds.dim<-mds.bnds[and.the.winner.is]
+mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
+samp.mds<-insert.mds.generic(mds.obj,samp.dat,base.grid)
+
+samp.mds<-cbind(mpparty[samp.ind],samp.mds)
+attr(samp.mds,"dimnames")[[2]]<-c("response",
+                                  bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
+attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
+samp.mds<-as.data.frame(samp.mds)
+
+
+
+######## ###############
+
+###########################################
+
+#D.samp<-dist(samp.dat,method=dist.metric)
+
+
+#gam.ret<-gam.mds.fit(mpparty[samp.ind],D.samp)
+#attach(gam.ret)
+#b<-gam.ret$gam
+
+### predictions
 
 # map the predictions
 # using code from insert.mds
-lambda.inverse<-diag(1/mds.obj$eig[1:dim(mds.obj$points)[2]])
-new.dist<-as.matrix(dist(votemat,method=dist.metric))[samp.ind,]
-new.dist<-new.dist[,-samp.ind]
-S<- -1/2*mds.obj$x
-d<- -(new.dist^2-diag(S))
-pred.mds<-t(1/2*(lambda.inverse %*% t(mds.obj$points) %*% d))
+
+pred.mds<-insert.mds.generic(mds.obj,pred.dat,base.grid)
 
 # predict back over _all_ MPs
 pred.grid<-matrix(NA,length(mpid),mds.dim)
-pred.grid[samp.ind,]<-mds.obj$points
+pred.grid[samp.ind,]<-as.matrix(samp.mds)[,-1]
 pred.grid[-samp.ind,]<-pred.mds
 pred.grid<-as.data.frame(pred.grid)
 attr(pred.grid,"names")<-bigletters[(length(bigletters)-(dim(samp.mds)[2]-2)):length(bigletters)]
@@ -100,14 +176,33 @@ pr[pr<=0.5]<-0
 pr[pr>0.5]<-1
 
 # mse
-#ds.mse<-sum((pr-mpparty)^2)
-#cat("MSE=",ds.mse,"\n")
+ds.mse<-sum((pr-mpparty)^2)
+cat("ds MSE=",ds.mse,"\n")
 
-wrong<-mpid[(t(t(pr))-mpparty)!=0]
-wrong.ind<-match(wrong,lookup$mpid)
-
-cat("wrong=",length(wrong),"\n")
-
-wrong.names<-paste(lookup$firstname[wrong.ind],lookup$surname[wrong.ind])  
+#wrong<-mpid[(t(t(pr))-mpparty)!=0]
+#wrong.ind<-match(wrong,lookup$mpid)
+#
+#cat("wrong=",length(wrong),"\n")
+#
+#wrong.names<-paste(lookup$firstname[wrong.ind],lookup$surname[wrong.ind])  
 #cat(wrong.names,sep="\n")
+
+
+
+## what about using the Lasso
+
+library(lars)
+lars.obj<-lars(as.matrix(samp.dat),mpparty[samp.ind])
+pp<-predict.lars(lars.obj,votemat)
+cv.obj<-cv.lars(as.matrix(samp.dat),mpparty[samp.ind],plot.it=FALSE,fraction=pp$fraction)
+cv.min<-which.min(cv.obj$cv)
+pp<-pp$fit[,cv.min]
+
+pp[pp<=0.5]<-0
+pp[pp>0.5]<-1
+lasso.mse<-sum((pp-mpparty)^2)
+cat("lasso MSE=",lasso.mse,"\n")
+
+#detach(gam.ret)
+
 
