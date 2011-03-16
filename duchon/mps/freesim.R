@@ -97,7 +97,7 @@ k<-100
 bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
 bl.len<-length(bigletters)
 
-for(n.sim in 1:2){
+for(n.sim in 1:200){
 
    # create sample and prediction data sets
    samp.ind<-sample(1:dim(votemat)[1],samp.size)
