@@ -1,0 +1,140 @@
+% investigating the MP voting data
+% David Lawrence Miller
+% dave@ninepointeightone.net
+  
+\documentclass[a4paper,10pt]{article}
+\setlength{\textheight}{22.5cm}
+\setlength{\textwidth}{6.47in}
+\setlength{\oddsidemargin}{-1mm}
+\setlength{\topmargin}{0.1cm}
+\setlength{\evensidemargin}{-5mm} 
+ 
+% Load some packages
+\usepackage{times, amsmath, amssymb, amsfonts, url, bm, rotating}
+ 
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{psfrag}
+\usepackage{soul}
+
+% top matter
+\title{MP voting data for 1997-2001 UK parliament}
+\author{David Lawrence Miller\\Mathematical Sciences\\University of Bath\\\texttt{dave@ninepointeightone.net}}
+ 
+% Shortcuts
+% Probability
+\newcommand{\prob}[1]{\mathbb{P}\left[ #1 \right]}
+% fprime
+\newcommand{\fprime}{f^\prime(z)}
+% figure reference command
+\newcommand{\fig}[1]{\emph{fig.} \ref{#1}}
+% Figure reference command
+\newcommand{\Fig}[1]{\emph{Fig.} \ref{#1}}
+% table reference command
+\newcommand{\tabref}[1]{\emph{table} \ref{#1}}
+% Table reference command
+\newcommand{\Tabref}[1]{\emph{Table} \ref{#1}}
+% equation reference command
+\newcommand{\eqn}[1]{(\ref{#1})}
+% phi inverse
+\newcommand{\phiinv}{\phi^{-1}}
+% use other phi
+\renewcommand{\phi}{\varphi}
+%transpose
+\newcommand{\tr}[1]{#1^{\text{T}}}
+% diagonal
+\newcommand{\diag}{\text{diag}}
+% call \times \cross
+\newcommand{\cross}{\times}
+% section references
+\newcommand{\secref}[1]{section \ref{#1}}
+\newcommand{\Secref}[1]{Section \ref{#1}}
+\newcommand{\ijth}{$ij^{\text{th}}$}
+% error function
+\newcommand{\erf}{\text{Erf}}
+% derivative shortcuts
+\newcommand{\palphaj}{\frac{\partial}{\partial \alpha_{j*}}}
+\newcommand{\pbetajk}{\frac{\partial}{\partial \beta_{j*k*}}}
+%nu_j shortcut + starred
+\newcommand{\nuj}{\nu_j(\bm{z}^{(j)})}
+\newcommand{\nujs}{\nu_{j*}(\bm{z}^{(j*)})}
+% z_ik^j shortcut + with starts
+\newcommand{\zijk}{z_{ik}^{(j)}}
+\newcommand{\zijkss}{z_{ik*}^{(j*)}}
+% z^(j) shortcut + with starts
+\newcommand{\zj}{\bm{z}^{(j)}}
+\newcommand{\zjs}{\bm{z}^{(j*)}}
+% z^(J) shortcut + with starts
+\newcommand{\zJ}{\bm{z}^{(J)}}
+
+
+
+\begin{document}
+
+\maketitle
+
+\section{Setting up the data...}
+
+Public Whip\footnote{\url{http://www.publicwhip.org.uk/}.} provide data on the votes of 676 MPs in the 1997--2001 Westminster parliament. During this time the House took 1273 divisions. The data are provided as a matrix with 1273 rows and 676 columns. There is also data on the party allegiance of each MP. Each vote is coded according to table \ref{voting-code}.
+
+
+\begin{table}  
+\begin{centering}
+\begin{tabular}{ccc}    Value & Description & Code \\     \hline    Missing & MP did not vote in this division & 0 \\     Tell aye & MP voted for the motion and was a teller & 1 \\     Aye & MP voted for the motion & 1 \\     Both & MP voted both for  and against the motion & 0 \\     No & MP voted against the motion & -1 \\     Tell no & MP voted against the motion and was a teller & -1 \\ 
+  \end{tabular}
+\caption{Coding and description of voting data values.}
+\end{centering}
+\label{voting-code}
+\end{table}
+
+
+\section{The model}
+
+MDS+Duchon
+
+Take the matrix of votes, find the corresponding Euclidean distances between the MPs (rows) and form the distance matrix. Multidimensional scaling was then used to project these distances into a GCV-optimal number of dimensions.
+
+grid
+
+ds
+
+
+
+\section{Using free votes to predict party}
+
+Of these 1273 divisions, 17 of them were declared\footnote{Information from the House of Commons library \url{http://www.parliament.uk/briefingpapers/commons/lib/research/briefings/snpc-04793.pdf}.} as ``free votes'', these are summarised in table \ref{free-vote-description}.
+
+\begin{table}  
+\begin{centering}
+\begin{tabular}{cc}	Date & Bill name \\    \hline
+22 March 2001    &   Election of a Speaker \\
+17 January 2001  &   Hunting Bill \\
+17 January 2001  &   Hunting Bill \\
+17 January 2001  &   Hunting Bill\\
+20 December 2000 &   Hunting Bill \\
+19 December 2000 &   Human Fertilisation and Embryology\\
+31 October 2000  &   Stem Cell Research \\
+14 April 2000    &   Medical Treatment (Prevention of Euthanasia) Bill \\
+28 February 2000 &   Sexual Offences (Amendment) Bill \\
+10 February 2000 &   Sexual Offences (Amendment) Bill \\
+28 January 2000  &   Medical Treatment (Prevention of Euthanasia) Bill\\
+25 January 1999  &   Sexual Offences (Amendment) Bill\\
+22 June 1998     &  Crime and Disorder Bill \\
+22 June 1998     &  Crime and Disorder Bill \\
+28 November 1997 &  Wild Mammals (Hunting with Dogs) Bill\\
+  \end{tabular}
+\caption{Free votes in the 1997-2001 parliament.}
+\end{centering}
+\label{free-vote-description}
+\end{table}
+
+Using these votes, 100 MPs were selected at random and both the MDS+DS model and a lasso fit. Predictions were then made over all 676 MPs.
+
+This was done 200 times, and for each realisation the number of misclassifications as well as which MPs were misclassified were recorded for both models. The GCV score at different numbers of dimensions was also recorded for the MDS+DS model.
+
+
+
+
+
+\end{document}
