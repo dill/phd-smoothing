@@ -1,50 +1,74 @@
-# what happened in that sim?
+# what happened in the free votes sim?
 library(ggplot2)
 
-# load the data and calculate a summary
-load("mps-results.RData")
-res<-colSums(result)
-
-# create an object to plot...
-res<-data.frame(count=res,id=1:length(res),lab=mpparty)
-
-
+# plotting options
 theme_set(theme_bw())
-
-plot.rows<-2
+plot.rows<-3
 plot.cols<-1
 Layout <- grid.layout(nrow = plot.rows, ncol = plot.cols,
                       widths = unit(rep(3,plot.rows*plot.cols),"null"),
                       heights = unit(rep(3,plot.rows*plot.cols), "null"))
-
 
 subplot <- function(x, y) viewport(layout.pos.row = x,layout.pos.col = y)
 vplayout <- function(...) {
      grid.newpage()
      pushViewport(viewport(layout = Layout))
 }
-
-
-
 grid.newpage()
 pushViewport(viewport(layout = Layout))
 
-p<-ggplot(res)
-p<-p+geom_bar(aes(y=count,id,fill=lab),binwidth=1,stat="identity")
-p<-p+scale_fill_discrete("Party",breaks=c(0,1),limits=c(0,1),h=c(10,200))
-p<-p+labs(x="MP ID",y="Count")
+
+# load the data and calculate a summary
+load("freesim.RData")
+
+# store the min GCV per sim and the dimension
+min.gcvs<-as.data.frame(cbind(apply(gcv.res,1,min),mds.bnds[apply(gcv.res,1,which.min)]))
+names(min.gcvs)<-c("gcv","dim")
+
+# first plot the lines of the GCV scores...
+dimnames(gcv.res)[[1]]<-1:200
+gcv.res<-melt(gcv.res)
+names(gcv.res)<-c("sim","dim","gcv")
+gcv.res$dim<-mds.bnds[gcv.res$dim]
+
+p<-ggplot(gcv.res)
+p<-p+geom_line(aes(x=dim,y=gcv,group=sim),alpha=0.3)
+p<-p+geom_smooth(aes(x=dim,y=gcv),alpha=0.3,fill="green")
+p<-p+geom_point(aes(x=dim,y=gcv),colour="red",data=min.gcvs)
+p<-p+labs(x="MDS dimension",y="GCV score")
 print(p,vp=subplot(1,1))
 
 
-# now for each sim how many were wrong?
-res.wrong<-rowSums(result)
+# now looking at the errors...
+res<-wrong.mat[,-686]
+res<-matrix(as.numeric(res),nrow(res),ncol(res))
+res<-res[,mpid]
 
-# create an object to plot...
-res.wrong<-data.frame(count=res.wrong,id=1:dim(result)[1])
-p<-ggplot(res.wrong)
-p<-p+geom_bar(aes(y=count,id),binwidth=1,stat="identity")
-p<-p+labs(x="Sim number",y="Number of incorrect classifications")
+#### per simulation results
+
+sim.res<-data.frame(mse=685-rowSums(res),model=wrong.mat[,686],sim=as.numeric(sapply(1:200,rep,2)))
+
+p<-ggplot(sim.res)
+p<-p+geom_histogram(aes(y=mse,sim),stat="identity",binwidth=1)
+p<-p+facet_wrap(~model,nrow=1)
 print(p,vp=subplot(2,1))
+
+
+#### per MP simulations
+
+lasso.mps<-res[seq(1,400,2),]
+ds.mps<-res[seq(2,400,2),]
+
+
+
+
+#sim.res<-data.frame(mse=400-colSums(res),model=wrong.mat[,686],sim=as.numeric(sapply(1:200,rep,2)))
+#
+#p<-ggplot(sim.res)
+#p<-p+geom_histogram(aes(y=mse,sim),stat="identity")
+#p<-p+facet_wrap(~model,nrow=1)
+#print(p,vp=subplot(2,1))
+
 
 
 

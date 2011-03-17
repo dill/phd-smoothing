@@ -84,6 +84,8 @@ for(i in 1:n.runs){
       this.line<-rbind(this.line,c(ind,"gcv.score",mds.cd.ds$gam$gcv.ubre))
       this.line<-rbind(this.line,c(ind,"gcv.aic",mds.cd.ds$gam$aic))
       this.line<-rbind(this.line,c(ind,"gcv.mse",sum((mds.cd.ds$pred-gendata$z)^2)))
+      # store the EDF for the GCV model
+      this.line<-rbind(this.line,c(ind,"gcv.edf",sum(mds.cd.ds$gam$edf)))
 
       ## run for ML
       mds.cd.ds<-gam.mds(gendata.samp,gendata,bnd,grid.res=120,mds.dim=expl,

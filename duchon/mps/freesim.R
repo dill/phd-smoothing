@@ -74,7 +74,7 @@ mpid<-mpid[-del.rows]
 
 ################################################
 # make a grid
-library(sfsmisc)
+#library(sfsmisc)
 #base.grid<-t(digitsBase(sample(1:2^17,10000),2,17))
 #base.grid[base.grid==0]<- -1
 base.grid<-rbind(diag(17),-diag(17))

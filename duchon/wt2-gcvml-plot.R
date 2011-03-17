@@ -87,6 +87,18 @@ names(gcv.aic)<-names(ml.aic)<-names(reml.aic)<-c("sim","dim","name","score","fi
 aics<-rbind(gcv.aic,ml.aic,reml.aic)
 
 
+### minima
+ml.mat<-matrix(ml.aic$score,18,60)
+ml.min<-data.frame(score=apply(ml.mat,2,min),dim=apply(ml.mat,2,which.min),fit="ml")
+reml.mat<-matrix(reml.aic$score,18,60)
+reml.min<-data.frame(score=apply(reml.mat,2,min),dim=apply(reml.mat,2,which.min),fit="reml")
+gcv.mat<-matrix(gcv.aic$score,18,60)
+gcv.min<-data.frame(score=apply(gcv.mat,2,min),dim=apply(gcv.mat,2,which.min),fit="gcv")
+
+min.mat<-rbind(ml.min,reml.min,gcv.min)
+min.mat$dim<-c(3:20)[min.mat$dim]
+
+
 # boxplots
 p<-ggplot(aics)
 p<-p+geom_boxplot(aes(factor(dim),score))
@@ -95,9 +107,12 @@ p<-p+labs(x="MDS projection dimension",y="AIC")
 p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())
 print(p,vp=subplot(1,1))
 
+
+
 # line plots
 p<-ggplot(aics)
 p<-p+geom_line(aes(dim,score,group=sim),alpha=0.6)
+p<-p+geom_point(aes(x=dim,y=score),data=min.mat,colour="red")
 p<-p+facet_wrap(~fit,nrow=1)
 p<-p+labs(x="MDS projection dimension",y="AIC")
 p<-p+opts(panel.grid.major=theme_blank(), panel.grid.minor=theme_blank(), panel.background=theme_rect())

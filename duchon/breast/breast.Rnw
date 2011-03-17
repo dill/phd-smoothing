@@ -126,21 +126,21 @@ breast.dat<-breast.dat[ind,]
 
 \section{EDA}
 
-Looking at the effect that each variable as on survival time, just using a simple scatter plot, see fig \ref{surv-vs-plot}. Linear regression lines are superimposed. The following code generated the figure:
+Looking at the effect that each variable has on NPI, just using a simple scatter plot, see fig \ref{npi-vs-plot}. Linear regression lines are superimposed. The following code generated the figure:
 <<eval=false>>=
-breast.m<-melt(breast.dat,c("surv.time","any.death","cancer.death"))
+breast.m<-melt(breast.dat,c("npi","any.death","cancer.death"))
 p<-ggplot(breast.m)
-p<-p+geom_point(aes(value,surv.time))
+p<-p+geom_point(aes(value,npi))
 p<-p+facet_wrap(~variable,nrow=1,scales="free_x")
-p<-p+labs(x="", y="Survival time")
- p<-p+geom_smooth(aes(value,surv.time),method="lm")
+p<-p+labs(x="", y="NPI")
+ p<-p+geom_smooth(aes(value,npi),method="lm")
 print(p)
 @
-a histogram of survival time is generated with the following code (and shown in fig \ref{surv-time-hist}):
+a histogram of survival time is generated with the following code (and shown in fig \ref{npi-hist}):
 <<eval=false>>=
 p<-ggplot(breast.m)
-p<-p+geom_histogram(aes(surv.time),binwidth=1)
-p<-p+labs(y="Frequency", x="Survival time")
+p<-p+geom_histogram(aes(npi),binwidth=1)
+p<-p+labs(y="Frequency", x="NPI")
 print(p)
 @
 
@@ -148,16 +148,16 @@ print(p)
 \begin{figure}[tb]
 \begin{center}
 <<fig=TRUE,echo=FALSE,cache=true>>=
-breast.m<-melt(breast.dat,c("surv.time","any.death","cancer.death"))
+breast.m<-melt(breast.dat,c("npi","any.death","cancer.death"))
 p<-ggplot(breast.m)
-p<-p+geom_point(aes(value,surv.time))
+p<-p+geom_point(aes(value,npi))
 p<-p+facet_wrap(~variable,nrow=1,scales="free_x")
-p<-p+labs(x="", y="Survival time")
-p<-p+geom_smooth(aes(value,surv.time),method="lm")
+p<-p+labs(x="", y="NPI")
+ p<-p+geom_smooth(aes(value,npi),method="lm")
 print(p)
 @
 \end{center}
-\label{surv-vs-time}
+\label{npi-vs-time}
 \caption{Survival time against the other non-microarray variables for the 20 patients.}
 \end{figure}
 
@@ -165,12 +165,12 @@ print(p)
 \begin{center}
 <<fig=TRUE,echo=FALSE,cache=true>>=
 p<-ggplot(breast.m)
-p<-p+geom_histogram(aes(surv.time),binwidth=1)
-p<-p+labs(y="Frequency", x="Survival time")
+p<-p+geom_histogram(aes(npi),binwidth=1)
+p<-p+labs(y="Frequency", x="NPI")
 print(p)
 @
 \end{center}
-\label{surv-time-hist}
+\label{npi-hist}
 \caption{Histogram of survival times.}
 \end{figure}
 
