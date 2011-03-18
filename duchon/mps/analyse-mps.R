@@ -67,7 +67,7 @@ lasso.mps<-res[seq(2,400,2),]
 lasso.mps<-data.frame(wrong=200-colSums(lasso.mps),id=mpid,party=mpparty,model=rep("lasso",676))
 ds.mps<-data.frame(wrong=200-colSums(ds.mps),id=mpid,party=mpparty,model=rep("ds",676))
 
-mp.res<-rbind(lasso.mps,ds.mps)
+mp.res<-rbind(ds.mps,lasso.mps)
 p<-p+labs(x="MPs",y="Missclassifications")
 
 p<-ggplot(mp.res)
