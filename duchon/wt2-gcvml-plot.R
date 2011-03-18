@@ -14,10 +14,10 @@ real.results[,2]<-as.numeric(as.character(real.results[,2]))+2
 real.results[,4]<-as.numeric(as.character(real.results[,4]))
 
 # because I'm an idiot
-real.names<-c("gcv.score","gcv.aic","gcv.mse",
+real.names<-c("gcv.score","gcv.aic","gcv.mse","gcv.edf",
               "ml.score","ml.aic","ml.mse",
               "reml.score","reml.aic","reml.mse")
-real.results[,3]<-rep(real.names,nrow(real.results)/9)
+real.results[,3]<-rep(real.names,nrow(real.results)/10)
 
 
 ml.mse<-as.data.frame(pe(real.results,real.results[,3]=="ml.mse"))
@@ -43,6 +43,7 @@ vplayout <- function(...) {
 }
 
 
+
 theme_set(theme_bw())
 
 
@@ -66,14 +67,11 @@ pushViewport(viewport(layout = Layout))
 #print(p,vp=subplot(1,2))
 
 
-
+#############################
 # (roll your own) AIC
-gcv.aic<-as.data.frame(pe(real.results,real.results[,3]=="gcv.aic"))
-gcv.aic<-cbind(gcv.aic,rep("gcv",dim(gcv.aic)[1]))
-
 
 # for ML and REML, take the ML/REML score (negative log marginal likelihood 
-# or negative log restricted likelihood), multiply by -2 then add 2*dimension
+# or negative log restricted likelihood), multiply by 2 then add 2*dimension
 ml.aic<-ml.score
 reml.aic<-reml.score
 
@@ -83,9 +81,16 @@ reml.aic[,4]<-2*reml.aic[,2]+2*reml.aic[,4]
 ml.aic<-cbind(ml.aic,rep("ml",dim(ml.aic)[1]))
 reml.aic<-cbind(reml.aic,rep("reml",dim(reml.aic)[1]))
 
+# for GCV selected models, subtract twice the EDF then add twice the number of dimensions
+gcv.aic<-as.data.frame(pe(real.results,real.results[,3]=="gcv.aic"))
+#gcv.edf<-as.data.frame(pe(real.results,real.results[,3]=="gcv.edf"))
+#gcv.aic[,4]<- gcv.aic[,4]+2*gcv.aic[,2]-gcv.edf[,4]
+gcv.aic<-cbind(gcv.aic,rep("gcv",dim(gcv.aic)[1]))
+
 names(gcv.aic)<-names(ml.aic)<-names(reml.aic)<-c("sim","dim","name","score","fit")
 aics<-rbind(gcv.aic,ml.aic,reml.aic)
 
+#### DONE!
 
 ### minima
 ml.mat<-matrix(ml.aic$score,18,60)
