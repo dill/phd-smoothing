@@ -1,5 +1,5 @@
 # fit a gam to general distance data
-gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL){
+gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussian()){
    # Args
    #  response    vector of responses
    #  D           sample distance matrix (maybe generated using dist())
@@ -24,7 +24,11 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL){
       if(is.null(mds.dim.bnds)){
          mds.bnds<-seq(2,choose.mds.dim(D,0.8),by=1)
       }else{
-         mds.bnds<-seq(mds.dim.bnds[1],choose.mds.dim(D,mds.dim.bnds[2]),by=1)
+         if(mds.dim.bnds[2]==floor(mds.dim.bnds[2])){
+            mds.bnds<-seq(mds.dim.bnds[1],mds.dim.bnds[2],by=1)
+         }else{
+            mds.bnds<-seq(mds.dim.bnds[1],choose.mds.dim(D,mds.dim.bnds[2]),by=1)
+         }
       }
    
       gcvs<-c() # store GCV scores
@@ -35,7 +39,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL){
       
          # fit the model
          mds.dim<-test.dim
-         model.list[[i]]<-gam.fitter(response,D,mds.dim,k)
+         model.list[[i]]<-gam.fitter(response,D,mds.dim,k,fam)
       
          # extract the GCV
          gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
@@ -53,14 +57,14 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL){
       fitted<-model.list[[and.the.winner.is]]
       mds.dim<-mds.bnds[and.the.winner.is]
       
-      ret$gcvs<-gcvs
+      ret$gcvs<-data.frame(gcv=gcvs,dim=mds.bnds)
 
 
    }else if(floor(mds.dim)==mds.dim){
-      fitted<-gam.fitter(response,D,mds.dim,k)
+      fitted<-gam.fitter(response,D,mds.dim,k,fam)
    }else{
       mds.dim<-choose.mds.dim(D,mds.dim)
-      fitted<-gam.fitter(response,D,mds.dim,k)
+      fitted<-gam.fitter(response,D,mds.dim,k,fam)
    }
 
    ret$gam<-fitted$gam
@@ -72,7 +76,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL){
 
 }
 
-gam.fitter<-function(response,D,mds.dim,k){
+gam.fitter<-function(response,D,mds.dim,k,fam){
    # big set of letters for column names
    bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
    bl.len<-length(bigletters)
@@ -85,7 +89,7 @@ gam.fitter<-function(response,D,mds.dim,k){
    samp.mds<-cbind(response,samp.mds)
    attr(samp.mds,"dimnames")[[2]]<-c("response",
                                      bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
-   attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
+   #attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
    samp.mds<-as.data.frame(samp.mds)
    
    # model setup
@@ -101,7 +105,7 @@ gam.fitter<-function(response,D,mds.dim,k){
    gam.formula<-as.formula(gam.formula)
    
    # run the model
-   b<-gam(gam.formula,data=samp.mds,family=binomial(link="logit"))
+   b<-gam(gam.formula,data=samp.mds,family=fam)
 
    ret<-list(gam=b,mds.obj=mds.obj,samp.mds=samp.mds)
 

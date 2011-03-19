@@ -4,6 +4,7 @@ source("getdata.R")
 
 library(mdspack)
 library(lars)
+library(glmnet)
 
 insert.mds.generic<-function(mds.obj,new.points,old.points,dist.metric="euclidean"){
 
@@ -173,7 +174,7 @@ for(n.sim in 1:200){
    wrongvec[wrong.ds]<-0
    wrong.mat<-rbind(wrong.mat,c(wrongvec,"ds"))
    
-
+   ##################################################
    ## what about using the Lasso
    lars.obj<-lars(as.matrix(samp.dat),mpparty[samp.ind])
    pp<-predict.lars(lars.obj,votemat)
@@ -188,6 +189,24 @@ for(n.sim in 1:200){
    wrongvec<-retvec
    wrongvec[wrong.lasso]<-0
    wrong.mat<-rbind(wrong.mat,c(wrongvec,"lasso"))
+
+
+
+   ##################################################
+   # trying glmnet lasso instead?
+   cv.lasso<-cv.glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial")
+   lasso.obj<-glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial",
+                     lambda=cv.lasso$lambda.min)
+
+   pp<-predict(lasso.obj,votemat,type="response")
+
+   pp[pp<=0.5]<-0
+   pp[pp>0.5]<-1
+
+   wrong.glmnet<-mpid[(t(t(pp))-mpparty)!=0]
+   wrongvec<-retvec
+   wrongvec[wrong.glmnet]<-0
+   wrong.mat<-rbind(wrong.mat,c(wrongvec,"glmnet"))
 
    gcv.res<-rbind(gcv.res,gcvs)
 }

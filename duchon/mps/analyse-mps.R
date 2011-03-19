@@ -79,5 +79,29 @@ print(p,vp=subplot(3,1))
 
 
 
+# what did the voting look like?
+lasso.errors<-which(lasso.mps[,1]==200)
+
+#neworder.votemat<-rbind(votemat[lasso.errors,],votemat[-lasso.errors,])
+neworder.votemat<-votemat
+
+new.names<-as.numeric(sub("mpid","",dimnames(neworder.votemat)[[1]]))
+new.names[lasso.errors]<-new.names[lasso.errors]+1000
+
+dimnames(neworder.votemat)[[1]]<-new.names
+
+pvotemat<-melt(neworder.votemat)
+names(pvotemat)<-c("mpid","voteid","vote")
+pvotemat$mpid<-sub("mpid","",pvotemat$mpid)
+
+
+
+
+
+p<-ggplot(pvotemat)
+p<-p+geom_tile(aes(y=factor(voteid),x=mpid,fill=vote))
+p
+
+
 
 

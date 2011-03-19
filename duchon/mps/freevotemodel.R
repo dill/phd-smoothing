@@ -191,18 +191,28 @@ cat("ds MSE=",ds.mse,"\n")
 
 ## what about using the Lasso
 
-library(lars)
-lars.obj<-lars(as.matrix(samp.dat),mpparty[samp.ind])
-pp<-predict.lars(lars.obj,votemat)
-cv.obj<-cv.lars(as.matrix(samp.dat),mpparty[samp.ind],plot.it=FALSE,fraction=pp$fraction)
-cv.min<-which.min(cv.obj$cv)
-pp<-pp$fit[,cv.min]
+#library(lars)
+#lars.obj<-lars(as.matrix(samp.dat),mpparty[samp.ind])
+#pp<-predict.lars(lars.obj,votemat)
+#cv.obj<-cv.lars(as.matrix(samp.dat),mpparty[samp.ind],plot.it=FALSE,fraction=pp$fraction)
+#cv.min<-which.min(cv.obj$cv)
+#pp<-pp$fit[,cv.min]
+#
+#pp[pp<=0.5]<-0
+#pp[pp>0.5]<-1
+#lasso.mse<-sum((pp-mpparty)^2)
+#cat("lasso MSE=",lasso.mse,"\n")
+#
+##detach(gam.ret)
 
+
+# trying glmnet lasso instead?
+library(glmnet)
+cv.lasso<-cv.glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial")
+lasso.obj<-glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial",lambda=cv.lasso$lambda.min)
+pp<-predict(lasso.obj,votemat,type="response")
+#
 pp[pp<=0.5]<-0
 pp[pp>0.5]<-1
 lasso.mse<-sum((pp-mpparty)^2)
 cat("lasso MSE=",lasso.mse,"\n")
-
-#detach(gam.ret)
-
-

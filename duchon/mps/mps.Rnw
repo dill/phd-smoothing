@@ -81,7 +81,15 @@ Public Whip\footnote{\url{http://www.publicwhip.org.uk/}.} provide data on the v
 
 \begin{table}  
 \begin{centering}
-\begin{tabular}{ccc}    Value & Description & Code \\     \hline    Missing & MP did not vote in this division & 0 \\     Tell aye & MP voted for the motion and was a teller & 1 \\     Aye & MP voted for the motion & 1 \\     Both & MP voted both for  and against the motion & 0 \\     No & MP voted against the motion & -1 \\     Tell no & MP voted against the motion and was a teller & -1 \\ 
+\begin{tabular}{ccc}
+    Value & Description & Code \\ 
+    \hline
+    Missing & MP did not vote in this division & 0 \\ 
+    Tell aye & MP voted for the motion and was a teller & 1 \\ 
+    Aye & MP voted for the motion & 1 \\ 
+    Both & MP voted both for  and against the motion & 0 \\ 
+    No & MP voted against the motion & -1 \\ 
+    Tell no & MP voted against the motion and was a teller & -1 \\ 
   \end{tabular}
 \caption{Coding and description of voting data values.}
 \end{centering}
@@ -107,7 +115,9 @@ Of these 1273 divisions, 17 of them were declared\footnote{Information from the 
 
 \begin{table}  
 \begin{centering}
-\begin{tabular}{cc}	Date & Bill name \\    \hline
+\begin{tabular}{cc}
+	Date & Bill name \\
+    \hline
 22 March 2001    &   Election of a Speaker \\
 17 January 2001  &   Hunting Bill \\
 17 January 2001  &   Hunting Bill \\
@@ -133,6 +143,15 @@ Using these votes, 100 MPs were selected at random and both the MDS+DS model and
 
 This was done 200 times, and for each realisation the number of misclassifications as well as which MPs were misclassified were recorded for both models. The GCV score at different numbers of dimensions was also recorded for the MDS+DS model.
 
+The results are summarised in figure \ref{freevote-plot}. There are a couple of striking features in these results. Starting with the top plot, each line shows the relationship between the MDS projection dimension and the GCV score for each realisation in the simulation. Unlike when the within-area distances were used, there is no common minima for the MDS projection dimension. The second row of the figure shows the number of misclassifications per simulation for both MDS+DS (``ds'') and the lasso (``lasso''). The lasso is much more consistent in its error rate than MDS+DS, which has a much more variability (the standard error of the number of misclassifications for MDS+DS was roughly twice that of the lasso. Moving to the last row, the number of misclassifications per MP are given. Again there is some interesting behaviour here; the lasso misclassifies 26 of the MPs in every simulation. Looking at those MPs classified in more than 100 simulations (ie. more than half of the time), MDS+DS does this for 40 MPs whereas the lasso misclassifies 57 MPs.
+
+\begin{figure}
+\centering
+% trim order l b r t
+\includegraphics[width=6in]{freevote-analysis.pdf} \\
+\caption{}
+\label{freevote-plot}
+\end{figure}
 
 
 

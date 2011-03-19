@@ -95,7 +95,7 @@ The data is in a list. Putting that into a \texttt{data.frame} by first taking t
 	\item \texttt{age.at.diag} - age at diagnosis
 	\item \texttt{any.death} - whether the patient died
 	\item \texttt{cancer.death} - whether that death was from cancer
-	\item \texttt{cancer.grade} - cancer severity grade
+	\item \texttt{cancer.grade} - cancer severity grade [[is this the same as tumour grade?]]
 \end{itemize}
 Putting those in the frame \texttt{breast.dat}:
 <<>>=
@@ -123,6 +123,14 @@ breast.array<-breast.array[ind,]
 # other data
 breast.dat<-breast.dat[ind,]
 @
+Excluding those observations which do not have NPI recorded we have 45 observations.
+
+The Nottingham Prognostic Index is defined as:
+\begin{equation}
+\text{NPI} = 0.2(\text{size of index lesion in cm}) + \text{number of lymph nodes} + \text{tumour grade}
+\end{equation}
+see [[refs]] for more information. [[High values are BAD.]]
+
 
 \section{EDA}
 
@@ -136,6 +144,7 @@ p<-p+labs(x="", y="NPI")
  p<-p+geom_smooth(aes(value,npi),method="lm")
 print(p)
 @
+From that figure, it's easy to see the relationship between NPI and its constituent parts.
 a histogram of survival time is generated with the following code (and shown in fig \ref{npi-hist}):
 <<eval=false>>=
 p<-ggplot(breast.m)
@@ -171,9 +180,58 @@ print(p)
 @
 \end{center}
 \label{npi-hist}
-\caption{Histogram of survival times.}
+\caption{Histogram of Nottingham prognostic index.}
 \end{figure}
 
+
+\section{Model development}
+
+We would like to smooth over all the covariates in the model, both the age at diagnosis and the microarray data. Unfortunately this would lead to a big $p$, small $n$ problem where there are too many covariates for a smooth model to be fit.
+
+So, to get around this problem an MDS+DS approach is used. The idea here is that distances are calculated between patients covariate values, those distances are then used to create a new data set using multidimensional scaling. This new data is in a high dimensional space (although not as high as the original data) so Duchon splines are used to smooth reliably in this new space.
+
+The dimension to use is chosen by optimising the GCV score, this is done by fitting the model in a number of different dimensions and choosing the dimensionality corresponding to the lowest GCV score. Note that there is no guarantee of the score monotonically decreasing as a function of dimension, so the score is calculated over all dimensions in a set range to ensure a minimum is found.
+
+Before doing the analysis we also drop those columns that contain \texttt{NA} values.
+<<>>=
+col.ind<-colSums(is.na(breast.array))>0
+breast.array<-breast.array[,!col.ind]
+@
+
+
+Calculating the distance matrix for the microarray data:
+<<>>=
+breast.dist<-dist(breast.array,diag=TRUE,upper=TRUE)
+@
+this can then be fed to the fitting routine:
+<<>>=
+b.gcv<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85))
+@
+The arguments are as follows:
+\begin{enumerate}
+	\item \texttt{breast.dat\$npi} - the response variable
+	\item \texttt{ddist} - the distance matrix
+	\item \texttt{NULL} - the MDS dimension to use, \texttt{NULL} indicates selection by GCV score
+	\item \texttt{45} - the basis dimension to use
+	\item \texttt{c(2,0.9)} - vector of the lower bound for the dimension and upper proportion of variability explained - used for the lower and upper bounds of the MDS dimension search
+\end{enumerate}
+at the moment we are not including age at diagnosis in the model.
+
+The object returned is a list, one of its elements (\texttt{gcvs}) gives the GCV score for each dimension checked. This can be used as a handy diagnostic tool to check for multimodality in the score. Such a plot is shown in figure \ref{gcvscore}.
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+plot(b.gcv$gcvs$dim, b.gcv$gcvs$gcv,ylab="GCV score",xlab="MDS dimension",type="l")
+@
+\end{center}
+\label{gcvscore}
+\caption{GCV score as a function of MDS projection dimension.}
+\end{figure}
+
+
+
+\section{Comparison with lasso}
 
 
 
