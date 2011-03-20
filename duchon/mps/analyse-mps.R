@@ -50,7 +50,9 @@ res<-res[,mpid]
 
 #### per simulation results
 
-sim.res<-data.frame(mse=685-rowSums(res),model=wrong.mat[,686],sim=as.numeric(sapply(1:200,rep,2)))
+sim.res<-data.frame(mse=685-rowSums(res),
+                    model=wrong.mat[,686],
+                    sim=as.numeric(sapply(1:200,rep,3)))
 
 p<-ggplot(sim.res)
 p<-p+geom_histogram(aes(y=mse,sim,binwidth=1),stat="identity")
@@ -61,13 +63,15 @@ print(p,vp=subplot(2,1))
 
 #### per MP simulations
 
-ds.mps<-res[seq(1,400,2),]
-lasso.mps<-res[seq(2,400,2),]
+ds.mps<-res[seq(1,600,3),]
+lasso.mps<-res[seq(2,600,3),]
+glmnet.mps<-res[seq(3,600,3),]
 
-lasso.mps<-data.frame(wrong=200-colSums(lasso.mps),id=mpid,party=mpparty,model=rep("lasso",676))
 ds.mps<-data.frame(wrong=200-colSums(ds.mps),id=mpid,party=mpparty,model=rep("ds",676))
+lasso.mps<-data.frame(wrong=200-colSums(lasso.mps),id=mpid,party=mpparty,model=rep("lasso",676))
+glmnet.mps<-data.frame(wrong=200-colSums(glmnet.mps),id=mpid,party=mpparty,model=rep("glmnet",676))
 
-mp.res<-rbind(ds.mps,lasso.mps)
+mp.res<-rbind(ds.mps,glmnet.mps,lasso.mps)
 p<-p+labs(x="MPs",y="Missclassifications")
 
 p<-ggplot(mp.res)
@@ -80,27 +84,30 @@ print(p,vp=subplot(3,1))
 
 
 # what did the voting look like?
+
+# which were _very_ wrong
 lasso.errors<-which(lasso.mps[,1]==200)
+glmnet.errors<-which(glmnet.mps[,1]==200)
 
-#neworder.votemat<-rbind(votemat[lasso.errors,],votemat[-lasso.errors,])
-neworder.votemat<-votemat
-
-new.names<-as.numeric(sub("mpid","",dimnames(neworder.votemat)[[1]]))
-new.names[lasso.errors]<-new.names[lasso.errors]+1000
-
-dimnames(neworder.votemat)[[1]]<-new.names
-
-pvotemat<-melt(neworder.votemat)
-names(pvotemat)<-c("mpid","voteid","vote")
-pvotemat$mpid<-sub("mpid","",pvotemat$mpid)
-
-
-
-
-
-p<-ggplot(pvotemat)
-p<-p+geom_tile(aes(y=factor(voteid),x=mpid,fill=vote))
-p
+##neworder.votemat<-rbind(votemat[lasso.errors,],votemat[-lasso.errors,])
+#neworder.votemat<-votemat
+#
+#new.names<-as.numeric(sub("mpid","",dimnames(neworder.votemat)[[1]]))
+#new.names[lasso.errors]<-new.names[lasso.errors]+1000
+#
+#dimnames(neworder.votemat)[[1]]<-new.names
+#
+#pvotemat<-melt(neworder.votemat)
+#names(pvotemat)<-c("mpid","voteid","vote")
+#pvotemat$mpid<-sub("mpid","",pvotemat$mpid)
+#
+#
+#
+#
+#quartz()
+#p<-ggplot(pvotemat)
+#p<-p+geom_tile(aes(y=factor(voteid),x=mpid,fill=vote))
+#print(p)
 
 
 

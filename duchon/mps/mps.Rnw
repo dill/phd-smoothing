@@ -99,15 +99,9 @@ Public Whip\footnote{\url{http://www.publicwhip.org.uk/}.} provide data on the v
 
 \section{The model}
 
-MDS+Duchon
+Taking the matrix of votes, Euclidean distances between the MPs (rows) were found and used to form the distance matrix. Multidimensional scaling was then used to project these distances into a GCV-optimal number of dimensions. Smoothing was then performed (using Duchon splines in \texttt{mgcv}) in votespace to predict the party affiliation of the MP using logit link.
 
-Take the matrix of votes, find the corresponding Euclidean distances between the MPs (rows) and form the distance matrix. Multidimensional scaling was then used to project these distances into a GCV-optimal number of dimensions.
-
-grid
-
-ds
-
-
+In order to stabilise the MDS projection a start grid was used and the samples and prediction points were inserted into this MDS configuration. When this was not used there were numerical issues when fitting the GAM.
 
 \section{Using free votes to predict party}
 
@@ -139,11 +133,11 @@ Of these 1273 divisions, 17 of them were declared\footnote{Information from the 
 \label{free-vote-description}
 \end{table}
 
-Using these votes, 100 MPs were selected at random and both the MDS+DS model and a lasso fit. Predictions were then made over all 676 MPs.
+Using these votes, 100 MPs were selected at random and the model fit to the data and predictions were then made over all 676 MPs. For comparison two implementations of the lasso (using the packages \texttt{lars} and \texttt{glmnet}) were fit one with identity link and the other with a logit link.
 
-This was done 200 times, and for each realisation the number of misclassifications as well as which MPs were misclassified were recorded for both models. The GCV score at different numbers of dimensions was also recorded for the MDS+DS model.
+Over realisation 200 times the number of misclassifications as well as which MPs were misclassified were recorded for the models. The GCV score at different numbers of dimensions was also recorded for the MDS+DS model.
 
-The results are summarised in figure \ref{freevote-plot}. There are a couple of striking features in these results. Starting with the top plot, each line shows the relationship between the MDS projection dimension and the GCV score for each realisation in the simulation. Unlike when the within-area distances were used, there is no common minima for the MDS projection dimension. The second row of the figure shows the number of misclassifications per simulation for both MDS+DS (``ds'') and the lasso (``lasso''). The lasso is much more consistent in its error rate than MDS+DS, which has a much more variability (the standard error of the number of misclassifications for MDS+DS was roughly twice that of the lasso. Moving to the last row, the number of misclassifications per MP are given. Again there is some interesting behaviour here; the lasso misclassifies 26 of the MPs in every simulation. Looking at those MPs classified in more than 100 simulations (ie. more than half of the time), MDS+DS does this for 40 MPs whereas the lasso misclassifies 57 MPs.
+The results are summarised in figure \ref{freevote-plot}. There are a couple of striking features in these results. Starting with the top plot, each line shows the relationship between the MDS projection dimension and the GCV score for each realisation in the simulation. Unlike when the within-area distances were used, there is no common minima for the MDS projection dimension. The second row of the figure shows the number of misclassifications per simulation for MDS+DS (``ds'') and the lasso using \texttt{lars} (``lasso'') and the lasso using \texttt{glmnet} (``glmnet''). Both lasso models are much more consistent in their misclassification rates than MDS+DS, which significantly more variabiliable (the standard error of the number of misclassifications for MDS+DS was roughly twice that of the lasso. Moving to the last row, the number of misclassifications per MP are given. Again there is some interesting behaviour here; the \texttt{lars} lasso misclassifies 26 of the MPs in every simulation and the \texttt{glmnet} lasso only does slightly better with 21 (all but one of which are the same as with \texttt{lars}). Looking at those MPs classified in more than 100 simulations (ie. more than half of the time), MDS+DS does this for 40 MPs whereas the \texttt{lars} and \texttt{glmnet} lasso methods misclassify 58 and 57 MPs respectively.
 
 \begin{figure}
 \centering
