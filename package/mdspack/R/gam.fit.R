@@ -1,12 +1,18 @@
 # fit a gam to general distance data
-gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussian()){
+gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussian(),start.grid=NULL,samp.points=NULL){
    # Args
-   #  response    vector of responses
-   #  D           sample distance matrix (maybe generated using dist())
-   #  mds.dim     dimension of MDS projection, NULL = select via GCV
+   #  response       vector of responses
+   #  D              sample distance matrix (maybe generated using dist())
+   #  mds.dim        dimension of MDS projection, NULL = select via GCV
    #                                        integer = dimension
    #                                        real = proportion of variation
-   #  k           GAM basis dimension
+   #  k              GAM basis dimension
+   #  mds.dim.bnds   bounds for MDS dimension search --  lower always integer
+   #                                                     upper int == bound
+   #                                                     upper real == prop variation
+   #  fam            family arg to gam()
+   #  start.grid     initial grid to use, can be NULL
+   #  samp.points    sample points, needed if the above is specified    
 
    # Return - list
    #  $gam        gamObject of fitted model
@@ -18,6 +24,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussi
    bl.len<-length(bigletters)
 
    ret<-list()
+
 
    if(is.null(mds.dim)){
       # find the optimal MDS dimension
@@ -39,7 +46,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussi
       
          # fit the model
          mds.dim<-test.dim
-         model.list[[i]]<-gam.fitter(response,D,mds.dim,k,fam)
+         model.list[[i]]<-gam.fitter(response,D,mds.dim,k,fam,samp.points,start.grid)
       
          # extract the GCV
          gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
@@ -61,10 +68,10 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussi
 
 
    }else if(floor(mds.dim)==mds.dim){
-      fitted<-gam.fitter(response,D,mds.dim,k,fam)
+      fitted<-gam.fitter(response,D,mds.dim,k,fam,samp.points,start.grid)
    }else{
       mds.dim<-choose.mds.dim(D,mds.dim)
-      fitted<-gam.fitter(response,D,mds.dim,k,fam)
+      fitted<-gam.fitter(response,D,mds.dim,k,fam,samp.points,start.grid)
    }
 
    ret$gam<-fitted$gam
@@ -76,15 +83,29 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussi
 
 }
 
-gam.fitter<-function(response,D,mds.dim,k,fam){
+### actually fit some GAMs
+gam.fitter<-function(response,D,mds.dim,k,fam,samp.points=NULL,grid.points=NULL){
    # big set of letters for column names
    bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
    bl.len<-length(bigletters)
 
-   mds.obj<-cmdscale(D,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
-   samp.mds<-mds.obj$points
+
+   ### Do the MDS projection
+   if(is.null(samp.points) & is.null(grid.points)){
+
+      mds.obj<-cmdscale(D,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
+      samp.mds<-mds.obj$points
    
-   #response<-as.data.frame(response)
+   }else if(!is.null(samp.points) & !is.null(grid.points)){
+
+      D.grid<-dist(grid.points,method="euclidean")
+
+      mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
+      samp.mds<-insert.mds.generic(mds.obj,samp.points,grid.points,dist.metric="euclidean")
+
+   }else{
+      stop("Neither sample points or distance matrix supplied to gan.fitter\n")
+   }
 
    samp.mds<-cbind(response,samp.mds)
    attr(samp.mds,"dimnames")[[2]]<-c("response",

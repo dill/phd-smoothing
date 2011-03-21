@@ -83,8 +83,8 @@ reml.aic<-cbind(reml.aic,rep("reml",dim(reml.aic)[1]))
 
 # for GCV selected models, subtract twice the EDF then add twice the number of dimensions
 gcv.aic<-as.data.frame(pe(real.results,real.results[,3]=="gcv.aic"))
-#gcv.edf<-as.data.frame(pe(real.results,real.results[,3]=="gcv.edf"))
-#gcv.aic[,4]<- gcv.aic[,4]+2*gcv.aic[,2]-gcv.edf[,4]
+gcv.edf<-as.data.frame(pe(real.results,real.results[,3]=="gcv.edf"))
+gcv.aic[,4]<- gcv.aic[,4]+2*gcv.aic[,2]#-2*gcv.edf[,4]
 gcv.aic<-cbind(gcv.aic,rep("gcv",dim(gcv.aic)[1]))
 
 names(gcv.aic)<-names(ml.aic)<-names(reml.aic)<-c("sim","dim","name","score","fit")
