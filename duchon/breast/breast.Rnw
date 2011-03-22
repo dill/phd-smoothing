@@ -320,8 +320,8 @@ Figure \ref{gamcheck-2} shows the results of running \texttt{gam.check}. This lo
 gam.check(b.gcv.gamma$gam)
 @
 \end{center}
-\label{lasso-coef}
-\caption{lasso coefficients}
+\label{gamcheck-2}
+\caption{Results of running \texttt{gam.check} on model 2.}
 \end{figure}
 
 \subsection{Tweedie}

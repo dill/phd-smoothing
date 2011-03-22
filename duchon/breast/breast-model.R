@@ -25,7 +25,6 @@ new.pen<-solve(t(X.qr.R))%*%S%*%solve(X.qr.R)
 new.pen<-eigen(new.pen)
 
 beta.dash.dash<-t(new.pen$vectors)%*%beta.dash
-new.pen.D<-diag()
 
 # so the new parameters are in beta.dash.dash
 # the EDF of the ith parameter is
