@@ -167,16 +167,17 @@ print(p)
 @
 \end{center}
 \label{npi-vs-time}
-\caption{Survival time against the other non-microarray variables for the 20 patients.}
+\caption{Plotting Nottingham prognostic index against the other non-microarray data. Note that both size and cancer grade have obvious linear relationships with NPI, as they are used in its calculation.}
 \end{figure}
 
 \begin{figure}[tb]
 \begin{center}
 <<fig=TRUE,echo=FALSE,cache=true>>=
-p<-ggplot(breast.m)
-p<-p+geom_histogram(aes(npi),binwidth=1)
-p<-p+labs(y="Frequency", x="NPI")
-print(p)
+#p<-ggplot(breast.m)
+#p<-p+geom_histogram(aes(npi),binwidth=1)
+#p<-p+labs(y="Frequency", x="NPI")
+#print(p)
+hist(breast.m$npi,xlab="NPI",main="")
 @
 \end{center}
 \label{npi-hist}
@@ -203,7 +204,10 @@ Calculating the distance matrix for the microarray data:
 <<>>=
 breast.dist<-dist(breast.array,diag=TRUE,upper=TRUE)
 @
-this can then be fed to the fitting routine:
+this can then be fed to the fitting routine.
+
+\subsection{Model 1 - simple}
+
 <<>>=
 b.gcv<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85))
 @
@@ -226,13 +230,121 @@ plot(b.gcv$gcvs$dim, b.gcv$gcvs$gcv,ylab="GCV score",xlab="MDS dimension",type="
 @
 \end{center}
 \label{gcvscore}
-\caption{GCV score as a function of MDS projection dimension.}
+\caption{GCV score as a function of MDS projection dimension for model 1.}
 \end{figure}
 
+Performing model checking, we can first look at the results of a \texttt{summary}:
+<<>>=
+summary(b.gcv$gam)
+@
+The $R^2$ is rather low and the EDF seems to indicate something strange going on. Using the ``natural'' parametrisation (see Red Book p. 208--210), we can look the EDF of each term and see what's happening.
+<<>>=
+X.mm<-model.matrix(b.gcv$gam)
+X.qr.R<-qr.R(qr(X.mm))
+
+S<-b.gcv$gam$smooth[[1]]$S[[1]] # pull out penalty matrix
+S<-cbind(rep(0,nrow(S)),S)
+S<-rbind(rep(0,ncol(S)),S)
+
+
+beta.dash<-X.qr.R%*%b.gcv$gam$coefficients
+new.pen<-solve(t(X.qr.R))%*%S%*%solve(X.qr.R)
+new.pen<-eigen(new.pen)
+
+# the coefficients in their "natural" parametrisation
+beta.dash.dash<-t(new.pen$vectors)%*%beta.dash
+
+# so the new parameters are in beta.dash.dash
+# the EDF of the ith parameter is
+lambda<-b.gcv$gam$sp
+EDF<-1/(1+lambda*new.pen$values)
+@
+Investigating the per-parameter EDF:
+<<>>=
+EDF
+@
+and the coefficient values
+<<>>=
+as.vector(beta.dash.dash)
+@
+So there's not really any smoothing going on here, these last terms with larger coefficients and EDFs, are those terms in the nullspace of the penalty.
+
+Things aren't looking good for this model. 
+
+Figure \ref{gamcheck-1} we see that there are too many residuals in the lower tail of the histogram and slightly too few in the middle, this is reflected in the QQ plot. The right side of the plot doesn't suggest anything problematic, although it is rather difficult to see what is going on with such a small sample.
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+gam.check(b.gcv$gam)
+@
+\end{center}
+\label{gamcheck-1}
+\caption{Results of running \texttt{gam.check} on model 1.}
+\end{figure}
+
+
+\subsection{Model 2 - Gamma errors}
+
+Using Gamma errors and an identity link provides a significant increase in the $R^2$.
+<<>>=
+b.gcv.gamma<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=Gamma(link=identity))
+summary(b.gcv.gamma$gam)
+@
+Note also the big decrease in GCV score (see figure \ref{gcvscore2} for a plot of GCV score against MDS projection dimension).
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+plot(b.gcv.gamma$gcvs$dim, b.gcv.gamma$gcvs$gcv,ylab="GCV score",xlab="MDS dimension",type="l")
+@
+\end{center}
+\label{gcvscore2}
+\caption{GCV score as a function of MDS projection dimension for model 2.}
+\end{figure}
+
+To check to see what information is left in the residuals, we can fit a model to them.
+<<>>=
+resid.data<-b.gcv.gamma$samp.mds
+resid.data$response<-b.gcv.gamma$gam$residuals
+b.gcv.resids<-gam(response~s(bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
+summary(b.gcv.resids)
+@
+This looks okay, not much going on there (same when just plain TPRS is fit to the residuals).
+
+Figure \ref{gamcheck-2} shows the results of running \texttt{gam.check}. This looks better but the QQ plot and histogram of residuals still don't look quite right.
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+gam.check(b.gcv.gamma$gam)
+@
+\end{center}
+\label{lasso-coef}
+\caption{lasso coefficients}
+\end{figure}
+
+\subsection{Tweedie}
 
 
 \section{Comparison with lasso}
 
+Comparing the above approach with the lasso [[ref]], provided in the package \texttt{glmnet}. By default all values of the [[blah]] parameter are calculated.
+<<>>=
+library(glmnet)
+b.lasso.full<-glmnet(breast.array,breast.dat$npi)
+@
+A [[name that plot]] plot is shown in figure \ref{lasso-coef}.
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+plot(b.lasso.full)
+@
+\end{center}
+\label{lasso-coef}
+\caption{lasso coefficients}
+\end{figure}
 
 
 

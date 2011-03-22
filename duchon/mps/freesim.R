@@ -6,22 +6,6 @@ library(mdspack)
 library(lars)
 library(glmnet)
 
-insert.mds.generic<-function(mds.obj,new.points,old.points,dist.metric="euclidean"){
-
-   big.points<-rbind(old.points,new.points)
-   ind<-1:nrow(old.points)
-   ind2<-(nrow(old.points)+1):nrow(big.points)
-
-   lambda.inverse<-diag(1/mds.obj$eig[1:dim(mds.obj$points)[2]])
-   new.dist<-as.matrix(dist(big.points,method=dist.metric,diag=T,upper=T))[ind,]
-   new.dist<-new.dist[,ind2]
-   S<- -1/2*mds.obj$x
-   d<- -(new.dist^2-diag(S))
-   mds.points<-t(1/2*(lambda.inverse %*% t(mds.obj$points) %*% d))
-
-   return(mds.points)
-}
-
 # model for free votes only
 
 # these are the free votes for the 1997-2001 parliament
@@ -78,14 +62,14 @@ mpid<-mpid[-del.rows]
 #library(sfsmisc)
 #base.grid<-t(digitsBase(sample(1:2^17,10000),2,17))
 #base.grid[base.grid==0]<- -1
-base.grid<-rbind(diag(17),-diag(17))
-
-# which metric to use
-#dist.metric<-"manhattan"
-dist.metric<-"euclidean"
-
-D.grid<-dist(base.grid,method=dist.metric)
-mds.bnds<-2:choose.mds.dim(D.grid,0.8)
+#base.grid<-rbind(diag(17),-diag(17))
+#
+## which metric to use
+##dist.metric<-"manhattan"
+#dist.metric<-"euclidean"
+#
+#D.grid<-dist(base.grid,method=dist.metric)
+#mds.bnds<-2:choose.mds.dim(D.grid,0.8)
 
 # take a sample, fit a model, predict back
 
@@ -98,63 +82,76 @@ k<-100
 bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
 bl.len<-length(bigletters)
 
-for(n.sim in 1:200){
+for(n.sim in 1:2){
 
    # create sample and prediction data sets
    samp.ind<-sample(1:dim(votemat)[1],samp.size)
    samp.dat<-votemat[samp.ind,]
    pred.dat<-votemat[-samp.ind,]
    
-   gcvs<-c()
-   models<-list()
-   i<-1
+   D.samp<-dist(samp.dat,upper=T,diag=T)
 
-   for(mds.dim in mds.bnds){
-   
-      mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
-      samp.mds<-insert.mds.generic(mds.obj,samp.dat,base.grid)
-   
-      samp.mds<-cbind(mpparty[samp.ind],samp.mds)
-      attr(samp.mds,"dimnames")[[2]]<-c("response",
-                                        bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
-      attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
-      samp.mds<-as.data.frame(samp.mds)
-   
-      # model setup
-      m<-c(2,mds.dim/2-1)
-      gam.options<-paste("bs='ds',k=",k,", m=c(",m[1],",",m[2],")",sep="")
-   
-      # find the prediction terms
-      pred.terms<-bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len]
-      pred.terms<-paste(pred.terms,collapse=",")
-   
-      # create the gam formula
-      gam.formula<-paste("response","~s(",paste(pred.terms,collapse=","),",",gam.options,")")
-      gam.formula<-as.formula(gam.formula)
-   
-      # run the model
-      models[[i]]<-gam(gam.formula,data=samp.mds,family=binomial(link="logit"))
-      gcvs<-c(gcvs,models[[i]]$gcv.ubre)
-      i<-i+1
-   }
-   
-   and.the.winner.is<-which.min(gcvs)
-   b<-models[[and.the.winner.is]]
-   mds.dim<-mds.bnds[and.the.winner.is]
-   mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
-   samp.mds<-insert.mds.generic(mds.obj,samp.dat,base.grid)
-   
-   samp.mds<-cbind(mpparty[samp.ind],samp.mds)
-   attr(samp.mds,"dimnames")[[2]]<-c("response",
-                                     bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
-   attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
+   mpparty.samp<-as.data.frame(mpparty[samp.ind])
+   rownames(mpparty.samp)<-mpid[samp.ind]
+
+   gam.obj<-gam.mds.fit(mpparty.samp,D.samp,NULL,k,c(3,16),fam=binomial(link="logit"))
+
+###############################################################################
+#   gcvs<-c()
+#   models<-list()
+#   i<-1
+#
+#   for(mds.dim in mds.bnds){
+#   
+#      mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
+#      samp.mds<-insert.mds.generic(mds.obj,samp.dat,base.grid)
+#   
+#      samp.mds<-cbind(mpparty[samp.ind],samp.mds)
+#      attr(samp.mds,"dimnames")[[2]]<-c("response",
+#                                        bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
+#      attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
+#      samp.mds<-as.data.frame(samp.mds)
+#   
+#      # model setup
+#      m<-c(2,mds.dim/2-1)
+#      gam.options<-paste("bs='ds',k=",k,", m=c(",m[1],",",m[2],")",sep="")
+#   
+#      # find the prediction terms
+#      pred.terms<-bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len]
+#      pred.terms<-paste(pred.terms,collapse=",")
+#   
+#      # create the gam formula
+#      gam.formula<-paste("response","~s(",paste(pred.terms,collapse=","),",",gam.options,")")
+#      gam.formula<-as.formula(gam.formula)
+#   
+#      # run the model
+#      models[[i]]<-gam(gam.formula,data=samp.mds,family=binomial(link="logit"))
+#      gcvs<-c(gcvs,models[[i]]$gcv.ubre)
+#      i<-i+1
+#   }
+#   
+#   and.the.winner.is<-which.min(gcvs)
+#
+#   b<-models[[and.the.winner.is]]
+#   mds.dim<-mds.bnds[and.the.winner.is]
+#   mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
+#   samp.mds<-insert.mds.generic(mds.obj,samp.dat,base.grid)
+#   
+###############################################################################
+
+   b<-gam.obj$gam
+   mds.dim<-gam.obj$mds.dim
+   mds.obj<-gam.obj$mds.obj
+   samp.mds<-gam.obj$samp.mds
+   gcvs<-gam.obj$gcvs
+
    samp.mds<-as.data.frame(samp.mds)
    
    ### predictions
    # map the predictions
    # using code from insert.mds
    
-   pred.mds<-insert.mds.generic(mds.obj,pred.dat,base.grid)
+   pred.mds<-insert.mds.generic(mds.obj,pred.dat,samp.dat)
    
    # predict back over _all_ MPs
    pred.grid<-matrix(NA,length(mpid),mds.dim)
@@ -211,5 +208,5 @@ for(n.sim in 1:200){
    gcv.res<-rbind(gcv.res,gcvs)
 }
 
-save.image("freesim.RData")
+#save.image("freesim.RData")
 

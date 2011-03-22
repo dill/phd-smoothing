@@ -107,9 +107,8 @@ gam.fitter<-function(response,D,mds.dim,k,fam,samp.points=NULL,grid.points=NULL)
       stop("Neither sample points or distance matrix supplied to gan.fitter\n")
    }
 
-   samp.mds<-cbind(response,samp.mds)
-   attr(samp.mds,"dimnames")[[2]]<-c("response",
-                                     bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
+   samp.mds<-as.data.frame(cbind(response,samp.mds))
+   colnames(samp.mds)<-c("response",bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
    #attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
    samp.mds<-as.data.frame(samp.mds)
    
