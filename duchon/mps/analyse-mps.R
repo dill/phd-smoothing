@@ -26,14 +26,15 @@ lookup<-lookup[-del.rows,]
 
 
 # store the min GCV per sim and the dimension
-min.gcvs<-as.data.frame(cbind(apply(gcv.res,1,min),mds.bnds[apply(gcv.res,1,which.min)]))
+min.gcvs<-as.data.frame(cbind(apply(gcv.res,1,min),
+                        as.numeric(colnames(gcv.res)[apply(gcv.res,1,which.min)])))
 names(min.gcvs)<-c("gcv","dim")
 
 # first plot the lines of the GCV scores...
 dimnames(gcv.res)[[1]]<-1:200
 gcv.res<-melt(gcv.res)
 names(gcv.res)<-c("sim","dim","gcv")
-gcv.res$dim<-mds.bnds[gcv.res$dim]
+#gcv.res$dim<-mds.bnds[gcv.res$dim]
 
 p<-ggplot(gcv.res)
 p<-p+geom_line(aes(x=dim,y=gcv,group=sim),alpha=0.3)
