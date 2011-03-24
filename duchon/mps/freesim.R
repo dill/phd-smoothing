@@ -144,8 +144,6 @@ for(n.sim in 1:200){
    wrongvec[wrong.lasso]<-0
    wrong.mat<-rbind(wrong.mat,c(wrongvec,"lasso"))
 
-
-
    ##################################################
    # trying glmnet lasso instead?
    cv.lasso<-cv.glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial")
@@ -168,4 +166,3 @@ for(n.sim in 1:200){
 colnames(gcv.res)<-gcvs$dim
 
 save.image("freesim.RData")
-
