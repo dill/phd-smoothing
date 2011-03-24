@@ -395,7 +395,14 @@ gam.check(b.gcv.quasi$gam)
 \caption{Results of running \texttt{gam.check} on model 3.}
 \end{figure}
 
-
+Checking to see if there is any information left in the residuals, 
+<<>>=
+resid.data<-b.gcv.quasi$samp.mds
+resid.data$response<-b.gcv.quasi$gam$residuals
+b.gcv.resids<-gam(response~s(bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
+summary(b.gcv.resids)
+@
+There doesn't seem to be anything going on there.
 
 \subsubsection{Comparison with lasso}
 
@@ -471,7 +478,7 @@ Trying that power and keeping the variance constant:
 b.gcv.quasi<-gam.mds.fit(breast.dat$cancer.grade,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=power(0.4643001),variance="constant"))
 summary(b.gcv.quasi$gam)
 @
-The results of running \texttt{gam/check} on this model can be found in figure \ref{grade-quasi-gamcheck} and the GCV score plot for finding the MDS projection dimension can be found in figure \ref{grade-gcv}.
+The results of running \texttt{gam.check} on this model can be found in figure \ref{grade-quasi-gamcheck} and the GCV score plot for finding the MDS projection dimension can be found in figure \ref{grade-gcv}.
 
 \begin{figure}[tb]
 \begin{center}
@@ -482,6 +489,15 @@ gam.check(b.gcv.quasi$gam)
 \label{grade-quasi-gamcheck}
 \caption{Results of running \texttt{gam.check} for the quasi-likelihood model for the tumour grade model.}
 \end{figure}
+
+Again, checking to see if there is any information left in the residuals:
+<<>>=
+resid.data<-b.gcv.quasi$samp.mds
+resid.data$response<-b.gcv.quasi$gam$residuals
+b.gcv.resids<-gam(response~s(bs,bt,bu,bv,bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
+summary(b.gcv.resids)
+@
+
 
 
 \begin{figure}[tb]
@@ -496,8 +512,17 @@ plot(b.gcv.quasi$gcvs$dim, b.gcv.quasi$gcvs$gcv,ylab="GCV score",xlab="MDS dimen
 
 \subsubsection{Comparison to lasso}
 
-
-
-
+Again, as above, we can run a multinomial response lasso on the data
+<<>>=
+cvmin.lasso<-cv.glmnet(breast.array,breast.dat$cancer.grade,family="multinomial")
+b.lasso<-glmnet(breast.array,breast.dat$cancer.grade,family="multinomial",lambda=cvmin.lasso$lambda.min)
+@
+and then calculate the MSE:
+<<>>=
+ds.mse<-sum((breast.dat$cancer.grade-round(fitted(b.gcv.quasi$gam),0))^2)
+lasso.mse<-sum((breast.dat$cancer.grade-apply(predict(b.lasso,breast.array,type="response"),1,which.max))^2)
+ds.mse
+lasso.mse
+@
 
 \end{document}

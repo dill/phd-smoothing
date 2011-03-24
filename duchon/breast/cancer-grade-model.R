@@ -24,7 +24,7 @@ plot(b.gcv.quasi$gcvs$dim, b.gcv.quasi$gcvs$gcv,ylab="GCV score",xlab="MDS dimen
 ## resid model
 resid.data<-b.gcv.quasi$samp.mds
 resid.data$response<-b.gcv.quasi$gam$residuals
-b.gcv.resids<-gam(response~s(bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
+b.gcv.resids<-gam(response~s(bs,bt,bu,bv,bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
 summary(b.gcv.resids)
 
 

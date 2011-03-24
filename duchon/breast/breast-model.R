@@ -40,22 +40,16 @@ EDF<-1/(1+lambda*new.pen$values)
 b.gcv.gamma<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=Gamma(link=identity))
 summary(b.gcv.gamma$gam)
 
-## resid model
-resid.data<-b.gcv.gamma$samp.mds
-resid.data$response<-b.gcv.gamma$gam$residuals
-b.gcv.resids<-gam(response~s(bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
-summary(b.gcv.resids)
-
-
-# tweedie - this doesn't really get anywhere...
-#b.gcv.tweedie<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=Tweedie(link=identity,p=1))
-#summary(b.gcv.gamma$gam)
 
 # quasi? -  messing about gives this as best R^2...
 b.gcv.quasi<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=power(1/3),variance="mu^3"))
 summary(b.gcv.quasi$gam)
 
-## plain old tprs
+## resid model
+resid.data<-b.gcv.quasi$samp.mds
+resid.data$response<-b.gcv.quasi$gam$residuals
+b.gcv.resids<-gam(response~s(bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
+summary(b.gcv.resids)
 
 
 
