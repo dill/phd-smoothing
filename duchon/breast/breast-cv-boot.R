@@ -24,11 +24,10 @@ base.grid<-diag(27)
 b.rows<-nrow(breast.array)
 gcv.boot<-c()
 
-for(i in 13:100){
+for(i in 1:100){
 
    # do the sampling
    this.samp<-sample(b.rows,b.rows,replace=TRUE)
-   #this.samp<-1:42
    breast.boot<-breast.array[this.samp,]
    npi.boot<-breast.dat$npi[this.samp]
 
@@ -36,7 +35,8 @@ for(i in 13:100){
    breast.dist<-dist(breast.boot,diag=TRUE,upper=TRUE)
 
    # fit the model
-   b.gcv<-gam.mds.fit(npi.boot,breast.dist,NULL,25,c(3,15),gaussian(),base.grid,breast.boot)
+   #b.gcv<-gam.mds.fit(npi.boot,breast.dist,NULL,25,c(3,15),gaussian(),base.grid,breast.boot)
+   b.gcv<-gam.mds.fit(npi.boot,breast.dist,NULL,25,c(9,18),gaussian())
 
    # record the GCV
    gcv.boot<-rbind(gcv.boot,b.gcv$gcvs$gcv)

@@ -51,7 +51,9 @@ summary(b.gcv.resids)
 #b.gcv.tweedie<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=Tweedie(link=identity,p=1))
 #summary(b.gcv.gamma$gam)
 
-
+# quasi? -  messing about gives this as best R^2...
+b.gcv.quasi<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=power(1/3),variance="mu^3"))
+summary(b.gcv.quasi$gam)
 
 ## plain old tprs
 
@@ -63,9 +65,36 @@ library(glmnet)
 # run the full lasso
 b.lasso.full<-glmnet(breast.array,breast.dat$npi)
 
-
+# CV optimal lasso...
 cvmin.lasso<-cv.glmnet(breast.array,breast.dat$npi)
-
 b.lasso<-glmnet(breast.array,breast.dat$npi,lambda=cvmin.lasso$lambda.min)
+
+
+
+### comparison plot
+ind<-1:45
+
+quasi.err<-fitted(b.gcv.quasi$gam)-breast.dat$npi
+lasso.err<-predict(b.lasso,breast.array)-breast.dat$npi
+
+pmax<-max(quasi.err,lasso.err)
+pmin<-min(quasi.err,lasso.err)
+
+plot(seq(pmin,pmax,len=length(ind)),ind,pch=20,type="n",xlab="bias",ylab="observation")
+points(quasi.err,ind,pch=19,cex=0.5,col="red")
+points(lasso.err,ind,pch=19,cex=0.5,col="blue")
+abline(v=0,lty=2)
+
+for(i in 1:45){
+   lines(c(quasi.err[i],lasso.err[i]),c(i,i))
+}
+
+
+### MSE
+
+ds.mse<-sum((breast.dat$npi-fitted(b.gcv.quasi$gam))^2)
+lasso.mse<-sum((breast.dat$npi-predict(b.lasso,breast.array))^2)
+
+
 
 

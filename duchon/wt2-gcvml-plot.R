@@ -71,12 +71,24 @@ pushViewport(viewport(layout = Layout))
 # (roll your own) AIC
 
 # for ML and REML, take the ML/REML score (negative log marginal likelihood 
-# or negative log restricted likelihood), multiply by 2 then add 2*dimension
+# or negative log restricted likelihood), multiply by 2 then add a penalty (see below)
 ml.aic<-ml.score
 reml.aic<-reml.score
 
-ml.aic[,4]<-2*ml.aic[,2]+2*ml.aic[,4]
-reml.aic[,4]<-2*reml.aic[,2]+2*reml.aic[,4]
+## penalties
+# dimension of projection
+#ml.pen<-ml.aic[,4]
+#reml.pen<-reml.aic[,4]
+#gcv.pen<-gcv.aic[,4]
+
+# nullspace dimension
+ml.pen<-choose(2+ml.aic[,2]-1,ml.aic[,2])
+reml.pen<-choose(2+reml.aic[,2]-1,reml.aic[,2])
+gcv.pen<-choose(2+gcv.aic[,2]-1,gcv.aic[,2])
+
+# calculate the new AIC
+ml.aic[,4]<-2*ml.pen+2*ml.aic[,4]
+reml.aic[,4]<-2*reml.pen+2*reml.aic[,4]
 
 ml.aic<-cbind(ml.aic,rep("ml",dim(ml.aic)[1]))
 reml.aic<-cbind(reml.aic,rep("reml",dim(reml.aic)[1]))
@@ -84,13 +96,15 @@ reml.aic<-cbind(reml.aic,rep("reml",dim(reml.aic)[1]))
 # for GCV selected models, subtract twice the EDF then add twice the number of dimensions
 gcv.aic<-as.data.frame(pe(real.results,real.results[,3]=="gcv.aic"))
 gcv.edf<-as.data.frame(pe(real.results,real.results[,3]=="gcv.edf"))
-gcv.aic[,4]<- gcv.aic[,4]+2*gcv.aic[,2]#-2*gcv.edf[,4]
+#gcv.pen<-2*gcv.aic[,4]
+gcv.aic[,4]<-gcv.aic[,4]-2*gcv.edf[,4]+2*gcv.pen
 gcv.aic<-cbind(gcv.aic,rep("gcv",dim(gcv.aic)[1]))
 
 names(gcv.aic)<-names(ml.aic)<-names(reml.aic)<-c("sim","dim","name","score","fit")
 aics<-rbind(gcv.aic,ml.aic,reml.aic)
 
 #### DONE!
+#############################
 
 ### minima
 ml.mat<-matrix(ml.aic$score,18,60)

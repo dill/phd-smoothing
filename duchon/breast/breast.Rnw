@@ -191,6 +191,12 @@ We would like to smooth over all the covariates in the model, both the age at di
 
 So, to get around this problem an MDS+DS approach is used. The idea here is that distances are calculated between patients covariate values, those distances are then used to create a new data set using multidimensional scaling. This new data is in a high dimensional space (although not as high as the original data) so Duchon splines are used to smooth reliably in this new space.
 
+Mathematically the model may be written as
+\begin{equation*}
+\text{NPI}_i = f(x_{1i}, \dots, x_{di}) + \epsilon_i, \qquad  \epsilon_i \sim D
+\end{equation*}
+where $D$ is some distribution and $x_{1i}, \dots, x_{di}$ is the MDS projection of datum $i$ into $d$ dimensional MDS space. $f$ is some smooth function.
+
 The dimension to use is chosen by optimising the GCV score, this is done by fitting the model in a number of different dimensions and choosing the dimensionality corresponding to the lowest GCV score. Note that there is no guarantee of the score monotonically decreasing as a function of dimension, so the score is calculated over all dimensions in a set range to ensure a minimum is found.
 
 Before doing the analysis we also drop those columns that contain \texttt{NA} values.
@@ -199,14 +205,13 @@ col.ind<-colSums(is.na(breast.array))>0
 breast.array<-breast.array[,!col.ind]
 @
 
-
 Calculating the distance matrix for the microarray data:
 <<>>=
 breast.dist<-dist(breast.array,diag=TRUE,upper=TRUE)
 @
 this can then be fed to the fitting routine.
 
-\subsection{Model 1 - simple}
+\subsection{Model 1 -- simple}
 
 <<>>=
 b.gcv<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85))
@@ -284,7 +289,7 @@ gam.check(b.gcv$gam)
 \end{figure}
 
 
-\subsection{Model 2 - Gamma errors}
+\subsection{Model 2 -- Gamma errors}
 
 Using Gamma errors and an identity link provides a significant increase in the $R^2$.
 <<>>=
@@ -324,7 +329,25 @@ gam.check(b.gcv.gamma$gam)
 \caption{Results of running \texttt{gam.check} on model 2.}
 \end{figure}
 
-\subsection{Tweedie}
+\subsection{Model 3 -- quasi-likelihood}
+
+Messing around with the quasi options gets:
+<<>>=
+b.gcv.quasi<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=power(1/3),variance="mu^3"))
+summary(b.gcv.quasi$gam)
+@
+Which gives a slightly improved $R^2$, GCV score and percent deviance explained. The histogram of residuals also looks a bit better.
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+gam.check(b.gcv.quasi$gam)
+@
+\end{center}
+\label{gamcheck-2}
+\caption{Results of running \texttt{gam.check} on model 3.}
+\end{figure}
+
 
 
 \section{Comparison with lasso}
@@ -334,7 +357,12 @@ Comparing the above approach with the lasso [[ref]], provided in the package \te
 library(glmnet)
 b.lasso.full<-glmnet(breast.array,breast.dat$npi)
 @
-A [[name that plot]] plot is shown in figure \ref{lasso-coef}.
+A profile of the coefficients in the lasso is shown in figure \ref{lasso-coef}. Selecting an optimal number of parameters via cross validation yields a model with 27 parameters:
+<<>>=
+cvmin.lasso<-cv.glmnet(breast.array,breast.dat$npi)
+b.lasso<-glmnet(breast.array,breast.dat$npi,lambda=cvmin.lasso$lambda.min)
+b.lasso$dim
+@
 
 \begin{figure}[tb]
 \begin{center}
@@ -343,8 +371,42 @@ plot(b.lasso.full)
 @
 \end{center}
 \label{lasso-coef}
-\caption{lasso coefficients}
+\caption{Profile of lasso coefficients.}
 \end{figure}
+
+Figure \ref{ds-lasso-err} shows the difference between truth and the fitted value per observation for both the quasi-likelihood and lasso model. Lines join the points per observation for the two models, making the plot easier to read. Only 5 lines cross the dashed line, meaning that the the estimated provided by the new model and usually the same sign as the lasso. Looking at this more quantitatively, the mean squared errors are:
+<<>>=
+ds.mse<-sum((breast.dat$npi-fitted(b.gcv.quasi$gam))^2)
+lasso.mse<-sum((breast.dat$npi-predict(b.lasso,breast.array))^2)
+ds.mse
+lasso.mse
+@
+this confirms the idea that the MDS model is performing better than the lasso.
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+ind<-1:45
+quasi.err<-fitted(b.gcv.quasi$gam)-breast.dat$npi
+lasso.err<-predict(b.lasso,breast.array)-breast.dat$npi
+
+pmax<-max(quasi.err,lasso.err)
+pmin<-min(quasi.err,lasso.err)
+
+plot(seq(pmin,pmax,len=length(ind)),ind,pch=20,type="n",xlab="truth-fitted",ylab="observation")
+points(quasi.err,ind,pch=19,cex=0.5,col="red")
+points(lasso.err,ind,pch=19,cex=0.5,col="blue")
+abline(v=0,lty=2)
+
+for(i in 1:45){
+   lines(c(quasi.err[i],lasso.err[i]),c(i,i))
+}
+@
+\end{center}
+\label{ds-lasso-err}
+\caption{Difference between the truth and the fitted values. Lasso given by blue points, quasi red.}
+\end{figure}
+
 
 
 
