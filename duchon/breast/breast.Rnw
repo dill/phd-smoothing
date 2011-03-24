@@ -95,7 +95,7 @@ The data is in a list. Putting that into a \texttt{data.frame} by first taking t
 	\item \texttt{age.at.diag} - age at diagnosis
 	\item \texttt{any.death} - whether the patient died
 	\item \texttt{cancer.death} - whether that death was from cancer
-	\item \texttt{cancer.grade} - cancer severity grade [[is this the same as tumour grade?]]
+	\item \texttt{cancer.grade} - cancer severity grade
 \end{itemize}
 Putting those in the frame \texttt{breast.dat}:
 <<>>=
@@ -110,6 +110,10 @@ And putting the microarray data in a matrix:
 <<>>=
 breast.array<-as.matrix(breast$dat)
 @
+
+\subsection{Response variables}
+
+\subsubsection{NPI}
 
 Can't look at the survival times as there are only 20 non-censored observations, instead let's try Nottingham prognostic index, NPI.
 <<>>=
@@ -129,10 +133,17 @@ The Nottingham Prognostic Index is defined as:
 \begin{equation}
 \text{NPI} = 0.2(\text{size of index lesion in cm}) + \text{number of lymph nodes} + \text{tumour grade}
 \end{equation}
-see [[refs]] for more information. [[High values are BAD.]]
+see [[refs]] for more information. High values of NPI are bad, identifying those patients with very poor prognoses.
+
+\subsubsection{Tumour grade}
+
+Also look at the tumour grade. This was scored I-III. The same observations had missing values for NPI as had missing values for tumour grade.
+
 
 
 \section{EDA}
+
+\subsection{NPI}
 
 Looking at the effect that each variable has on NPI, just using a simple scatter plot, see fig \ref{npi-vs-plot}. Linear regression lines are superimposed. The following code generated the figure:
 <<eval=false>>=
@@ -152,7 +163,6 @@ p<-p+geom_histogram(aes(npi),binwidth=1)
 p<-p+labs(y="Frequency", x="NPI")
 print(p)
 @
-
 
 \begin{figure}[tb]
 \begin{center}
@@ -184,6 +194,41 @@ hist(breast.m$npi,xlab="NPI",main="")
 \caption{Histogram of Nottingham prognostic index.}
 \end{figure}
 
+\subsection{Tumour grade}
+
+Plotting equivalent plots as for NPI...
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+breast.m<-melt(breast.dat,c("cancer.grade","any.death","cancer.death"))
+p<-ggplot(breast.m)
+p<-p+geom_point(aes(value,cancer.grade))
+p<-p+facet_wrap(~variable,nrow=1,scales="free_x")
+p<-p+labs(x="", y="Tumour grade")
+ p<-p+geom_smooth(aes(value,cancer.grade),method="lm")
+print(p)
+@
+\end{center}
+\label{grade-vs-time}
+\caption{WORDS}
+\end{figure}
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+#p<-ggplot(breast.m)
+#p<-p+geom_histogram(aes(cancer.grade),binwidth=1)
+#p<-p+labs(y="Frequency", x="Tumour grade")
+#print(p)
+hist(breast.m$cancer.grade,xlab="Tumour grade",main="")
+@
+\end{center}
+\label{grade-hist}
+\caption{Histogram of tumour grade.}
+\end{figure}
+
+
 
 \section{Model development}
 
@@ -193,9 +238,9 @@ So, to get around this problem an MDS+DS approach is used. The idea here is that
 
 Mathematically the model may be written as
 \begin{equation*}
-\text{NPI}_i = f(x_{1i}, \dots, x_{di}) + \epsilon_i, \qquad  \epsilon_i \sim D
+\text{response}_i = f(x_{1i}, \dots, x_{di}) + \epsilon_i, \qquad  \epsilon_i \sim D
 \end{equation*}
-where $D$ is some distribution and $x_{1i}, \dots, x_{di}$ is the MDS projection of datum $i$ into $d$ dimensional MDS space. $f$ is some smooth function.
+where $D$ is some distribution and $x_{1i}, \dots, x_{di}$ is the MDS projection of datum $i$ into $d$ dimensional MDS space. $f$ is some smooth function. The response is either the tumour grade or NPI.
 
 The dimension to use is chosen by optimising the GCV score, this is done by fitting the model in a number of different dimensions and choosing the dimensionality corresponding to the lowest GCV score. Note that there is no guarantee of the score monotonically decreasing as a function of dimension, so the score is calculated over all dimensions in a set range to ensure a minimum is found.
 
@@ -211,7 +256,9 @@ breast.dist<-dist(breast.array,diag=TRUE,upper=TRUE)
 @
 this can then be fed to the fitting routine.
 
-\subsection{Model 1 -- simple}
+\subsection{NPI model}
+
+\subsubsection{Model 1 -- simple}
 
 <<>>=
 b.gcv<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85))
@@ -289,7 +336,7 @@ gam.check(b.gcv$gam)
 \end{figure}
 
 
-\subsection{Model 2 -- Gamma errors}
+\subsubsection{Model 2 -- Gamma errors}
 
 Using Gamma errors and an identity link provides a significant increase in the $R^2$.
 <<>>=
@@ -329,7 +376,7 @@ gam.check(b.gcv.gamma$gam)
 \caption{Results of running \texttt{gam.check} on model 2.}
 \end{figure}
 
-\subsection{Model 3 -- quasi-likelihood}
+\subsubsection{Model 3 -- quasi-likelihood}
 
 Messing around with the quasi options gets:
 <<>>=
@@ -350,7 +397,7 @@ gam.check(b.gcv.quasi$gam)
 
 
 
-\section{Comparison with lasso}
+\subsubsection{Comparison with lasso}
 
 Comparing the above approach with the lasso [[ref]], provided in the package \texttt{glmnet}. By default all values of the [[blah]] parameter are calculated.
 <<>>=
@@ -406,6 +453,49 @@ for(i in 1:45){
 \label{ds-lasso-err}
 \caption{Difference between the truth and the fitted values. Lasso given by blue points, quasi red.}
 \end{figure}
+
+\section{Tumour grade model}
+
+Now from the start this is going to be harder. The data is effectively multinomial, so need to use quasi-likelihood.
+<<>>=
+b.gcv.quasi<-gam.mds.fit(breast.dat$cancer.grade,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=identity,variance="constant"))
+@
+Using the method in the Red Book, p 231--232, we can look at the mean-variance relationship.
+<<>>=
+e<-b.gcv.quasi$gam$residuals
+fv<-fitted(b.gcv.quasi$gam)
+(lm(log(e^2)~log(fv))$coeff[2])^2
+@
+Trying that power and keeping the variance constant:
+<<>>=
+b.gcv.quasi<-gam.mds.fit(breast.dat$cancer.grade,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=power(0.4643001),variance="constant"))
+summary(b.gcv.quasi$gam)
+@
+The results of running \texttt{gam/check} on this model can be found in figure \ref{grade-quasi-gamcheck} and the GCV score plot for finding the MDS projection dimension can be found in figure \ref{grade-gcv}.
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+gam.check(b.gcv.quasi$gam)
+@
+\end{center}
+\label{grade-quasi-gamcheck}
+\caption{Results of running \texttt{gam.check} for the quasi-likelihood model for the tumour grade model.}
+\end{figure}
+
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+plot(b.gcv.quasi$gcvs$dim, b.gcv.quasi$gcvs$gcv,ylab="GCV score",xlab="MDS dimension",type="l")
+@
+\end{center}
+\label{grade-gcv}
+\caption{Relationship between the GCV score and the MDS projection dimension for the quasi-likelihood model for the tumour grade model.}
+\end{figure}
+
+\subsubsection{Comparison to lasso}
+
 
 
 
