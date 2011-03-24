@@ -94,50 +94,7 @@ for(n.sim in 1:200){
    mpparty.samp<-as.data.frame(mpparty[samp.ind])
    rownames(mpparty.samp)<-mpid[samp.ind]
 
-   gam.obj<-gam.mds.fit(mpparty.samp,D.samp,NULL,k,c(6,16),fam=binomial(link="logit"))
-
-###############################################################################
-#   gcvs<-c()
-#   models<-list()
-#   i<-1
-#
-#   for(mds.dim in mds.bnds){
-#   
-#      mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
-#      samp.mds<-insert.mds.generic(mds.obj,samp.dat,base.grid)
-#   
-#      samp.mds<-cbind(mpparty[samp.ind],samp.mds)
-#      attr(samp.mds,"dimnames")[[2]]<-c("response",
-#                                        bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
-#      attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
-#      samp.mds<-as.data.frame(samp.mds)
-#   
-#      # model setup
-#      m<-c(2,mds.dim/2-1)
-#      gam.options<-paste("bs='ds',k=",k,", m=c(",m[1],",",m[2],")",sep="")
-#   
-#      # find the prediction terms
-#      pred.terms<-bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len]
-#      pred.terms<-paste(pred.terms,collapse=",")
-#   
-#      # create the gam formula
-#      gam.formula<-paste("response","~s(",paste(pred.terms,collapse=","),",",gam.options,")")
-#      gam.formula<-as.formula(gam.formula)
-#   
-#      # run the model
-#      models[[i]]<-gam(gam.formula,data=samp.mds,family=binomial(link="logit"))
-#      gcvs<-c(gcvs,models[[i]]$gcv.ubre)
-#      i<-i+1
-#   }
-#   
-#   and.the.winner.is<-which.min(gcvs)
-#
-#   b<-models[[and.the.winner.is]]
-#   mds.dim<-mds.bnds[and.the.winner.is]
-#   mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
-#   samp.mds<-insert.mds.generic(mds.obj,samp.dat,base.grid)
-#   
-###############################################################################
+   gam.obj<-gam.mds.fit(mpparty.samp,D.samp,NULL,k,c(4,16),fam=binomial(link="logit"))
 
    b<-gam.obj$gam
    mds.dim<-gam.obj$mds.dim
