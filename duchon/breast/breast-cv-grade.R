@@ -6,7 +6,7 @@ library(glmnet)
 # using leave-one-out cross validation
 
 # general setup
-b.rows<-nrow(breast.array)
+b.rows<-2#nrow(breast.array)
 gcv.cv<-c()
 ds.mse.cv<-c()
 lasso.mse.cv<-c()
@@ -15,7 +15,7 @@ for(i in 1:b.rows){
 
    # do the sampling
    breast.samp<-breast.array[-i,]
-   npi.samp<-breast.dat$npi[-i]
+   grade.samp<-breast.dat$cancer.grade[-i]
 
    ### DS model
 
@@ -23,8 +23,8 @@ for(i in 1:b.rows){
    breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
 
    # fit the model
-   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
-                            fam=quasi(link=power(1/3),variance="mu^3"))
+   b.gcv<-gam.mds.fit(grade.samp,breast.dist,NULL,40,
+                  c(2,0.85),fam=quasi(link=power(0.4643001),variance="constant"))
 
    # record the GCV
    this.gcv<-cbind(as.data.frame(b.gcv$gcvs),rep(i,length(b.gcv$gcvs$gcv)))
@@ -38,14 +38,14 @@ for(i in 1:b.rows){
    model.preds[-i]<-fitted(b.gcv$gam)
    model.preds[i]<-pp
    # record the MSE
-   ds.mse.cv<-c(ds.mse.cv,sum((breast.dat$npi-model.preds)^2))
-
+   ds.mse.cv<-c(ds.mse.cv,sum((breast.dat$cancer.grade-round(model.preds,0))^2))
 
    ### lasso model
-   cvmin.lasso<-cv.glmnet(breast.array[-i,],breast.dat$npi[-i])
-   b.lasso<-glmnet(breast.array[-i,],breast.dat$npi[-i],lambda=cvmin.lasso$lambda.min)
-   lasso.mse.cv<-c(lasso.mse.cv,sum((breast.dat$npi-predict(b.lasso,breast.array))^2))
-
+   cvmin.lasso<-cv.glmnet(breast.array[-i,],breast.dat$cancer.grade[-i],family="multinomial")
+   b.lasso<-glmnet(breast.array[-i,],breast.dat$cancer.grade[-i],
+                   family="multinomial",lambda=cvmin.lasso$lambda.min)
+   lasso.mse.cv<-c(lasso.mse.cv,sum((breast.dat$cancer.grade-
+                  apply(predict(b.lasso,breast.array,type="response"),1,which.max))^2))
 }
 
 names(gcv.cv)<-c("gcv","dim","booti")
