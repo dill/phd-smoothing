@@ -82,7 +82,7 @@ bl.len<-length(bigletters)
 
 D.samp<-dist(samp.dat)
 
-gam.ret<-gam.mds.fit(mpparty[samp.ind],D.samp,NULL,100,c(5,16),binomial())
+gam.ret<-gam.mds.fit(mpparty[samp.ind],D.samp,NULL,100,c(2,16),binomial())
 attach(gam.ret)
 b<-gam.ret$gam
 

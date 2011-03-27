@@ -82,7 +82,7 @@ k<-100
 bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
 bl.len<-length(bigletters)
 
-for(n.sim in 1:200){
+for(n.sim in 1:2){
 
    # create sample and prediction data sets
    samp.ind<-sample(1:dim(votemat)[1],samp.size)
@@ -94,7 +94,8 @@ for(n.sim in 1:200){
    mpparty.samp<-as.data.frame(mpparty[samp.ind])
    rownames(mpparty.samp)<-mpid[samp.ind]
 
-   gam.obj<-gam.mds.fit(mpparty.samp,D.samp,NULL,k,c(4,16),fam=binomial(link="logit"))
+#   gam.obj<-gam.mds.fit(mpparty.samp,D.samp,NULL,k,c(4,16),fam=binomial(link="logit"))
+   gam.obj<-gam.mds.fit(mpparty.samp,D.samp,3,k,NULL,fam=binomial(link="logit"))
 
    b<-gam.obj$gam
    mds.dim<-gam.obj$mds.dim
