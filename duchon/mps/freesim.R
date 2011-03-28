@@ -57,113 +57,110 @@ mpparty<-mpparty[-del.rows]
 mpid<-mpid[-del.rows]
 
 
-################################################
-# make a grid
-#library(sfsmisc)
-#base.grid<-t(digitsBase(sample(1:2^17,10000),2,17))
-#base.grid[base.grid==0]<- -1
-#base.grid<-rbind(diag(17),-diag(17))
-#
-## which metric to use
-##dist.metric<-"manhattan"
-#dist.metric<-"euclidean"
-#
-#D.grid<-dist(base.grid,method=dist.metric)
-#mds.bnds<-2:choose.mds.dim(D.grid,0.8)
+#samp.size<-200
+n.sims<-2#00
 
-# take a sample, fit a model, predict back
+for(samp.size in c(200,300,400,500)){
 
-samp.size<-200
-gcv.res<-c()
-wrong.mat<-c()
-retvec<-rep(1,max(mpid))
-
-k<-100
-bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
-bl.len<-length(bigletters)
-
-for(n.sim in 1:2){
-
-   # create sample and prediction data sets
-   samp.ind<-sample(1:dim(votemat)[1],samp.size)
-   samp.dat<-votemat[samp.ind,]
-   pred.dat<-votemat[-samp.ind,]
+   gcv.res<-c()
+   wrong.mat<-c()
+   retvec<-rep(1,max(mpid))
    
-   D.samp<-dist(samp.dat,upper=T,diag=T)
+   k<-100
+   bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
+   bl.len<-length(bigletters)
+   
+   for(n.sim in 1:n.sims){
+   
+      # create sample and prediction data sets
+      samp.ind<-sample(1:dim(votemat)[1],samp.size)
+      samp.dat<-votemat[samp.ind,]
+      pred.dat<-votemat[-samp.ind,]
+      
+      D.samp<-dist(samp.dat,upper=T,diag=T)
+   
+      mpparty.samp<-as.data.frame(mpparty[samp.ind])
+      rownames(mpparty.samp)<-mpid[samp.ind]
+   
+      # using both ML and GCV scoring...
+      for(method in c("GCV.Cp","ML")){
 
-   mpparty.samp<-as.data.frame(mpparty[samp.ind])
-   rownames(mpparty.samp)<-mpid[samp.ind]
+         gam.obj<-gam.mds.fit(mpparty.samp,D.samp,NULL,k,c(2,0.85),
+                              family=binomial(link="logit"),method=method)
 
-#   gam.obj<-gam.mds.fit(mpparty.samp,D.samp,NULL,k,c(4,16),fam=binomial(link="logit"))
-   gam.obj<-gam.mds.fit(mpparty.samp,D.samp,3,k,NULL,fam=binomial(link="logit"))
+         # record the score
+         this.score<-as.data.frame(gam.boj$scores)
+         this.score<-cbind(this.score,rep(method,nrow(this.score)))
+         score.res<-rbind(score.res,this.score)
 
-   b<-gam.obj$gam
-   mds.dim<-gam.obj$mds.dim
-   mds.obj<-gam.obj$mds.obj
-   samp.mds<-gam.obj$samp.mds
-   gcvs<-gam.obj$gcvs
-
-   samp.mds<-as.data.frame(samp.mds)
+         # assign some objects
+         b<-gam.obj$gam
+         mds.dim<-gam.obj$mds.dim
+         mds.obj<-gam.obj$mds.obj
+         samp.mds<-gam.obj$samp.mds
    
-   ### predictions
-   # map the predictions
-   # using code from insert.mds
+         samp.mds<-as.data.frame(samp.mds)
+         
+         ### predictions
+         # map the predictions
+         # using code from insert.mds
+         
+         pred.mds<-insert.mds.generic(mds.obj,pred.dat,samp.dat)
+         
+         # predict back over _all_ MPs
+         pred.grid<-matrix(NA,length(mpid),mds.dim)
+         pred.grid[samp.ind,]<-as.matrix(samp.mds)[,-1]
+         pred.grid[-samp.ind,]<-pred.mds
+         pred.grid<-as.data.frame(pred.grid)
+         attr(pred.grid,"names")<-bigletters[(length(bigletters)-
+                                             (dim(samp.mds)[2]-2)):length(bigletters)]
+         
+         pr<-predict(b,pred.grid,type="response")
+         
+         pr[pr<=0.5]<-0
+         pr[pr>0.5]<-1
+         
+         wrong.ds<-mpid[(t(t(pr))-mpparty)!=0]
+         wrongvec<-retvec
+         wrongvec[wrong.ds]<-0
+         wrong.mat<-rbind(wrong.mat,c(wrongvec,paste("ds-",method,sep="")))
+      }
+      
+      ##################################################
+      ## what about using the Lasso
+      lars.obj<-lars(as.matrix(samp.dat),mpparty[samp.ind])
+      pp<-predict.lars(lars.obj,votemat)
+      cv.obj<-cv.lars(as.matrix(samp.dat),mpparty[samp.ind],plot.it=FALSE,index=pp$fraction,mode="fraction")
+      cv.min<-which.min(cv.obj$cv)
+      pp<-pp$fit[,cv.min]
+      
+      pp[pp<=0.5]<-0
+      pp[pp>0.5]<-1
+      
+      wrong.lasso<-mpid[(t(t(pp))-mpparty)!=0]
+      wrongvec<-retvec
+      wrongvec[wrong.lasso]<-0
+      wrong.mat<-rbind(wrong.mat,c(wrongvec,"lasso"))
    
-   pred.mds<-insert.mds.generic(mds.obj,pred.dat,samp.dat)
+      ##################################################
+      # trying glmnet lasso instead?
+      cv.lasso<-cv.glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial")
+      lasso.obj<-glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial",
+                        lambda=cv.lasso$lambda.min)
    
-   # predict back over _all_ MPs
-   pred.grid<-matrix(NA,length(mpid),mds.dim)
-   pred.grid[samp.ind,]<-as.matrix(samp.mds)[,-1]
-   pred.grid[-samp.ind,]<-pred.mds
-   pred.grid<-as.data.frame(pred.grid)
-   attr(pred.grid,"names")<-bigletters[(length(bigletters)-(dim(samp.mds)[2]-2)):length(bigletters)]
+      pp<-predict(lasso.obj,votemat,type="response")
    
-   pr<-predict(b,pred.grid,type="response")
+      pp[pp<=0.5]<-0
+      pp[pp>0.5]<-1
    
-   pr[pr<=0.5]<-0
-   pr[pr>0.5]<-1
+      wrong.glmnet<-mpid[(t(t(pp))-mpparty)!=0]
+      wrongvec<-retvec
+      wrongvec[wrong.glmnet]<-0
+      wrong.mat<-rbind(wrong.mat,c(wrongvec,"glmnet"))
    
+   }
    
-   wrong.ds<-mpid[(t(t(pr))-mpparty)!=0]
-   wrongvec<-retvec
-   wrongvec[wrong.ds]<-0
-   wrong.mat<-rbind(wrong.mat,c(wrongvec,"ds"))
-   
-   ##################################################
-   ## what about using the Lasso
-   lars.obj<-lars(as.matrix(samp.dat),mpparty[samp.ind])
-   pp<-predict.lars(lars.obj,votemat)
-   cv.obj<-cv.lars(as.matrix(samp.dat),mpparty[samp.ind],plot.it=FALSE,index=pp$fraction,mode="fraction")
-   cv.min<-which.min(cv.obj$cv)
-   pp<-pp$fit[,cv.min]
-   
-   pp[pp<=0.5]<-0
-   pp[pp>0.5]<-1
-   
-   wrong.lasso<-mpid[(t(t(pp))-mpparty)!=0]
-   wrongvec<-retvec
-   wrongvec[wrong.lasso]<-0
-   wrong.mat<-rbind(wrong.mat,c(wrongvec,"lasso"))
-
-   ##################################################
-   # trying glmnet lasso instead?
-   cv.lasso<-cv.glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial")
-   lasso.obj<-glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial",
-                     lambda=cv.lasso$lambda.min)
-
-   pp<-predict(lasso.obj,votemat,type="response")
-
-   pp[pp<=0.5]<-0
-   pp[pp>0.5]<-1
-
-   wrong.glmnet<-mpid[(t(t(pp))-mpparty)!=0]
-   wrongvec<-retvec
-   wrongvec[wrong.glmnet]<-0
-   wrong.mat<-rbind(wrong.mat,c(wrongvec,"glmnet"))
-
-   gcv.res<-rbind(gcv.res,gcvs$gcv)
+   # save some data to file
+   write.csv(gcv.res,file=paste("freesim-gcv-",samp.size,".csv",sep=""))
+   write.csv(wrong.mat,file=paste("freesim-misclass-",samp.size,".csv",sep=""))
 }
-
-colnames(gcv.res)<-gcvs$dim
-
-save.image("freesim.RData")
