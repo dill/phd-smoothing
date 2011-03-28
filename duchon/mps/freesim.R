@@ -58,11 +58,11 @@ mpid<-mpid[-del.rows]
 
 
 #samp.size<-200
-n.sims<-2#00
+n.sims<-200
 
 for(samp.size in c(200,300,400,500)){
 
-   gcv.res<-c()
+   score.res<-c()
    wrong.mat<-c()
    retvec<-rep(1,max(mpid))
    
@@ -89,7 +89,7 @@ for(samp.size in c(200,300,400,500)){
                               family=binomial(link="logit"),method=method)
 
          # record the score
-         this.score<-as.data.frame(gam.boj$scores)
+         this.score<-as.data.frame(gam.obj$scores)
          this.score<-cbind(this.score,rep(method,nrow(this.score)))
          score.res<-rbind(score.res,this.score)
 
@@ -141,6 +141,7 @@ for(samp.size in c(200,300,400,500)){
       wrongvec<-retvec
       wrongvec[wrong.lasso]<-0
       wrong.mat<-rbind(wrong.mat,c(wrongvec,"lasso"))
+      ##################################################
    
       ##################################################
       # trying glmnet lasso instead?
@@ -157,10 +158,32 @@ for(samp.size in c(200,300,400,500)){
       wrongvec<-retvec
       wrongvec[wrong.glmnet]<-0
       wrong.mat<-rbind(wrong.mat,c(wrongvec,"glmnet"))
+      ##################################################
+
+      ##################################################
+      glm.samp<-as.data.frame(cbind(mpparty[samp.ind],samp.dat))
+      names(glm.samp)<-c("response",letters[1:17])
    
+      b.glm<-glm(as.formula(paste("response~",paste(letters[1:17],collapse="+"),sep="")),
+                 family=binomial(link="logit"),
+                 data=glm.samp)
+      glm.step<-step(b.glm,trace=0)
+      gvotemat<-as.data.frame(votemat)
+      names(gvotemat)<-letters[1:17]
+      pp<-predict(glm.step,gvotemat,type="response")
+
+      pp[pp<=0.5]<-0
+      pp[pp>0.5]<-1
+   
+      wrong.glm<-mpid[(t(t(pp))-mpparty)!=0]
+      wrongvec<-retvec
+      wrongvec[wrong.glm]<-0
+      wrong.mat<-rbind(wrong.mat,c(wrongvec,"glm"))
+
+      ##################################################
    }
    
    # save some data to file
-   write.csv(gcv.res,file=paste("freesim-gcv-",samp.size,".csv",sep=""))
+   write.csv(score.res,file=paste("freesim-gcv-",samp.size,".csv",sep=""))
    write.csv(wrong.mat,file=paste("freesim-misclass-",samp.size,".csv",sep=""))
 }
