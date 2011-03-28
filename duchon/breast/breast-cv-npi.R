@@ -7,7 +7,7 @@ library(glmnet)
 
 # general setup
 b.rows<-nrow(breast.array)
-gcv.cv<-c()
+score.cv<-c()
 ds.mse.cv<-c()
 lasso.mse.cv<-c()
 
@@ -22,23 +22,30 @@ for(i in 1:b.rows){
    # calculate the distance matrix for the microarray data
    breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
 
-   # fit the model
-   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
-                            fam=quasi(link=power(1/3),variance="mu^3"))
+   # use moth ML and GCV scoring
+   for(method in c("ML","GCV.Cp")){
 
-   # record the GCV
-   this.gcv<-cbind(as.data.frame(b.gcv$gcvs),rep(i,length(b.gcv$gcvs$gcv)))
-   gcv.cv<-rbind(gcv.cv,this.gcv)
+      # fit the model
+      b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
+                         family=quasi(link=power(1/3),variance="mu^3"),method=method)
+   
+      # record the GCV
+      this.score<-cbind(as.data.frame(b.gcv$scores),
+                        rep(i,length(b.gcv$scores$score)),
+                        rep(method,length(b.gcv$scores$score)))
+      score.cv<-rbind(score.cv,this.score)
+   
+      # do some prediction
+      pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
+      names(pred.data)<-names(b.gcv$samp.mds)[-1]
+      pp<-predict(b.gcv$gam,pred.data)
+      model.preds<-rep(NA,length(breast.dat$npi))
+      model.preds[-i]<-fitted(b.gcv$gam)
+      model.preds[i]<-pp
+      # record the MSE
+      ds.mse.cv<-rbind(ds.mse.cv,cbind(sum((breast.dat$npi-model.preds)^2),method))
 
-   # do some prediction
-   pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
-   names(pred.data)<-names(b.gcv$samp.mds)[-1]
-   pp<-predict(b.gcv$gam,pred.data)
-   model.preds<-rep(NA,length(breast.dat$npi))
-   model.preds[-i]<-fitted(b.gcv$gam)
-   model.preds[i]<-pp
-   # record the MSE
-   ds.mse.cv<-c(ds.mse.cv,sum((breast.dat$npi-model.preds)^2))
+   }
 
 
    ### lasso model
@@ -50,35 +57,21 @@ for(i in 1:b.rows){
 
 names(gcv.cv)<-c("gcv","dim","booti")
 
-# MSE plot
-plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
-     xlab="CV round",ylab="MSE",type="n")
-lines(1:45,lasso.mse.cv,col="blue")
-points(1:45,lasso.mse.cv,pch=19,col="blue")
-points(1:45,ds.mse.cv,pch=19)
-lines(1:45,ds.mse.cv,pch=19)
-
-# CV score
-cat("lasso=",mean(lasso.mse.cv),"\n")
-cat("ds=",mean(ds.mse.cv),"\n")
-
-# GCV plot
-p<-ggplot(as.data.frame(gcv.cv))
-p<-p+geom_line(aes(dim,gcv,group=booti))
+save.image("npi-cv.RData")
 
 
-## data mudging
-#gcv.mins<-data.frame(gcv=apply(gcv.boot,1,min),dim=apply(gcv.boot,1,which.min))
+## MSE plot
+#plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
+#     xlab="CV round",ylab="MSE",type="n")
+#lines(1:45,lasso.mse.cv,col="blue")
+#points(1:45,lasso.mse.cv,pch=19,col="blue")
+#points(1:45,ds.mse.cv,pch=19)
+#lines(1:45,ds.mse.cv,pch=19)
 #
-#gcv.boot<-melt(gcv.boot)
-#names(gcv.boot)<-c("sim","dim","gcv")
+## CV score
+#cat("lasso=",mean(lasso.mse.cv),"\n")
+#cat("ds=",mean(ds.mse.cv),"\n")
 #
-## plotting
-#p<-ggplot(gcv.boot)
-#p<-p+geom_line(aes(x=dim+2,y=gcv,group=sim),alpha=0.3)
-#p<-p+geom_smooth(aes(x=dim+2,y=gcv))
-#p<-p+geom_point(aes(x=dim+2,y=gcv),data=gcv.mins,colour="red")
-#print(p)
-#
-### what does the GCV score look like?
-##plot(b.gcv$gcvs$dim, b.gcv$gcvs$gcv,ylab="GCV score",xlab="MDS dimension",type="l")
+## GCV plot
+#p<-ggplot(as.data.frame(gcv.cv))
+#p<-p+geom_line(aes(dim,gcv,group=booti))
