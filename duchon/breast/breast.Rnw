@@ -278,7 +278,7 @@ The object returned is a list, one of its elements (\texttt{gcvs}) gives the GCV
 \begin{figure}[tb]
 \begin{center}
 <<fig=TRUE,echo=FALSE,cache=true>>=
-plot(b.gcv$gcvs$dim, b.gcv$gcvs$gcv,ylab="GCV score",xlab="MDS dimension",type="l")
+plot(b.gcv$scores$dim, b.gcv$scores$score,ylab="GCV score",xlab="MDS dimension",type="l")
 @
 \end{center}
 \label{gcvscore}
@@ -340,7 +340,7 @@ gam.check(b.gcv$gam)
 
 Using Gamma errors and an identity link provides a significant increase in the $R^2$.
 <<>>=
-b.gcv.gamma<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=Gamma(link=identity))
+b.gcv.gamma<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),family=Gamma(link=identity))
 summary(b.gcv.gamma$gam)
 @
 Note also the big decrease in GCV score (see figure \ref{gcvscore2} for a plot of GCV score against MDS projection dimension).
@@ -348,7 +348,7 @@ Note also the big decrease in GCV score (see figure \ref{gcvscore2} for a plot o
 \begin{figure}[tb]
 \begin{center}
 <<fig=TRUE,echo=FALSE,cache=true>>=
-plot(b.gcv.gamma$gcvs$dim, b.gcv.gamma$gcvs$gcv,ylab="GCV score",xlab="MDS dimension",type="l")
+plot(b.gcv.gamma$scores$dim, b.gcv.gamma$scores$score,ylab="GCV score",xlab="MDS dimension",type="l")
 @
 \end{center}
 \label{gcvscore2}
@@ -380,7 +380,7 @@ gam.check(b.gcv.gamma$gam)
 
 Messing around with the quasi options gets:
 <<>>=
-b.gcv.quasi<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=power(1/3),variance="mu^3"))
+b.gcv.quasi<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),family=quasi(link=power(1/3),variance="mu^3"))
 summary(b.gcv.quasi$gam)
 @
 Which gives a slightly improved $R^2$, GCV score and percent deviance explained. The histogram of residuals also looks a bit better.
@@ -461,11 +461,42 @@ for(i in 1:45){
 \caption{Difference between the truth and the fitted values. Lasso given by blue points, quasi red.}
 \end{figure}
 
+
+\subsection{Leave-one-out cross-validation}
+\label{npi-cv}
+
+Can use leave-one-out cross-validation to see how sensitive the results are to changes in the data.
+
+Algorithm that was used is as follows:
+
+\begin{enumerate}
+	\item Fit the model ($f^{(-i)}$, say) to the data with the $i^\text{th}$ datum removed.
+	\item Predict over all the data.
+	\item Calculate and record:
+		\begin{equation}
+		L(f^{(-i)}) = \frac{1}{N} \sum_{i=1}^N (\text{NPI}_i -f^{(-i)}(\mathbf{x}_i))^2
+		\end{equation}
+\end{enumerate}
+
+The CV score can be then calculated as:
+\begin{equation}
+\text{CV}(f^{(-i)}) = \frac{1}{N} \sum_{i=1}^N L(f^{(-i)})
+\end{equation}
+
+% see breast-cv-npi.R for the code for this!
+For the lasso model the CV was 46.13 and for the MDS+DS model the CV score was 30.16.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Tumour grade model}
 
 Now from the start this is going to be harder. The data is effectively multinomial, so need to use quasi-likelihood.
 <<>>=
-b.gcv.quasi<-gam.mds.fit(breast.dat$cancer.grade,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=identity,variance="constant"))
+b.gcv.quasi<-gam.mds.fit(breast.dat$cancer.grade,breast.dist,NULL,45,c(2,0.85),family=quasi(link=identity,variance="constant"))
 @
 Using the method in the Red Book, p 231--232, we can look at the mean-variance relationship.
 <<>>=
@@ -475,7 +506,7 @@ fv<-fitted(b.gcv.quasi$gam)
 @
 Trying that power and keeping the variance constant:
 <<>>=
-b.gcv.quasi<-gam.mds.fit(breast.dat$cancer.grade,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=power(0.4643001),variance="constant"))
+b.gcv.quasi<-gam.mds.fit(breast.dat$cancer.grade,breast.dist,NULL,45,c(2,0.85),family=quasi(link=power(0.4643001),variance="constant"))
 summary(b.gcv.quasi$gam)
 @
 The results of running \texttt{gam.check} on this model can be found in figure \ref{grade-quasi-gamcheck} and the GCV score plot for finding the MDS projection dimension can be found in figure \ref{grade-gcv}.
@@ -503,7 +534,7 @@ summary(b.gcv.resids)
 \begin{figure}[tb]
 \begin{center}
 <<fig=TRUE,echo=FALSE,cache=true>>=
-plot(b.gcv.quasi$gcvs$dim, b.gcv.quasi$gcvs$gcv,ylab="GCV score",xlab="MDS dimension",type="l")
+plot(b.gcv.quasi$scores$dim, b.gcv.quasi$scores$score,ylab="GCV score",xlab="MDS dimension",type="l")
 @
 \end{center}
 \label{grade-gcv}
@@ -524,5 +555,11 @@ lasso.mse<-sum((breast.dat$cancer.grade-apply(predict(b.lasso,breast.array,type=
 ds.mse
 lasso.mse
 @
+
+\subsection{Leave-one-out cross-validation}
+
+% see breast-cv-grade.R for the code!
+As in section \ref{npi-cv} we can calculate the CV scores for the two models. For the lasso the CV score was 21.76 and for the MDS+DS model the score was 2.27.
+ 
 
 \end{document}

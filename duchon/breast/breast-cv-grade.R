@@ -6,7 +6,7 @@ library(glmnet)
 # using leave-one-out cross validation
 
 # general setup
-b.rows<-2#nrow(breast.array)
+b.rows<-nrow(breast.array)
 score.cv<-c()
 ds.mse.cv<-c()
 lasso.mse.cv<-c()
@@ -43,8 +43,9 @@ for(i in 1:b.rows){
       model.preds[-i]<-fitted(b.gcv$gam)
       model.preds[i]<-pp
       # record the MSE
-      ds.mse.cv<-rbind(ds.mse.cv,cbind(sum((breast.dat$cancer.grade-round(model.preds,0))^2),
-                                       method)
+      ds.mse.cv<-rbind(ds.mse.cv,cbind(as.data.frame(
+                                          sum((breast.dat$cancer.grade-round(model.preds,0))^2)),
+                                       method))
 #   }
 
    ### lasso model
@@ -55,23 +56,31 @@ for(i in 1:b.rows){
                   apply(predict(b.lasso,breast.array,type="response"),1,which.max))^2))
 }
 
-names(gcv.cv)<-c("gcv","dim","booti")
+names(score.cv)<-c("gcv","dim","booti")
+names(ds.mse.cv)<-c("MSE","method")
+ds.mse.cv<-ds.mse.cv$MSE
+
 
 save.image("grade-cv.RData")
 
-## MSE plot
-#plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
-#     xlab="CV round",ylab="MSE",type="n")
-#lines(1:45,lasso.mse.cv,col="blue")
-#points(1:45,lasso.mse.cv,pch=19,col="blue")
-#points(1:45,ds.mse.cv,pch=19)
-#lines(1:45,ds.mse.cv,pch=19)
-#
-## CV score
-#cat("lasso=",mean(lasso.mse.cv),"\n")
-#cat("ds=",mean(ds.mse.cv),"\n")
-#
-## GCV plot
-#p<-ggplot(as.data.frame(gcv.cv))
-#p<-p+geom_line(aes(dim,gcv,group=booti))
+# MSE plot
+plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
+     xlab="CV round",ylab="MSE",type="n")
+lines(1:45,lasso.mse.cv,col="blue")
+points(1:45,lasso.mse.cv,pch=19,col="blue")
+points(1:45,ds.mse.cv,pch=19)
+lines(1:45,ds.mse.cv,pch=19)
+
+
+# CV score
+cat("lasso=",mean(lasso.mse.cv),"\n")
+cat("ds=",mean(ds.mse.cv),"\n")
+
+# GCV plot
+p<-ggplot(as.data.frame(score.cv))
+p<-p+geom_line(aes(dim,gcv,group=booti))
+p<-p+stat_smooth(aes(dim,gcv))
+print(p)
+
+
 
