@@ -1,5 +1,5 @@
 # fit a gam to general distance data
-gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gaussian(),start.grid=NULL,samp.points=NULL,method="GCV.Cp"){
+gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gaussian(),method="GCV.Cp",start.grid=NULL,samp.points=NULL){
    # Args
    #  response       vector of responses
    #  D              sample distance matrix (maybe generated using dist())
