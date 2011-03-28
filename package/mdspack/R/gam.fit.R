@@ -60,7 +60,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
       fitted<-model.list[[and.the.winner.is]]
       mds.dim<-mds.bnds[and.the.winner.is]
       
-      ret$scores<-data.frame(score=score,dim=mds.bnds)
+      ret$scores<-data.frame(score=scores,dim=mds.bnds)
 
 
    }else if(floor(mds.dim)==mds.dim){
