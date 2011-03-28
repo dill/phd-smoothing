@@ -22,7 +22,8 @@ for(i in 1:b.rows){
    # calculate the distance matrix for the microarray data
    breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
 
-   for(method in c("ML","GCV.Cp")){
+#   for(method in c("ML","GCV.Cp")){
+   method<-"GCV.Cp"
       # fit the model
       b.gcv<-gam.mds.fit(grade.samp,breast.dist,NULL,40,c(2,0.85),
                      family=quasi(link=power(0.4643001),variance="constant"),
@@ -44,7 +45,7 @@ for(i in 1:b.rows){
       # record the MSE
       ds.mse.cv<-rbind(ds.mse.cv,cbind(sum((breast.dat$cancer.grade-round(model.preds,0))^2),
                                        method)
-   }
+#   }
 
    ### lasso model
    cvmin.lasso<-cv.glmnet(breast.array[-i,],breast.dat$cancer.grade[-i],family="multinomial")

@@ -23,7 +23,8 @@ for(i in 1:b.rows){
    breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
 
    # use moth ML and GCV scoring
-   for(method in c("ML","GCV.Cp")){
+#   for(method in c("ML","GCV.Cp")){
+   method<-"GCV.Cp"
 
       # fit the model
       b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
@@ -45,7 +46,7 @@ for(i in 1:b.rows){
       # record the MSE
       ds.mse.cv<-rbind(ds.mse.cv,cbind(sum((breast.dat$npi-model.preds)^2),method))
 
-   }
+#   }
 
 
    ### lasso model
