@@ -1,5 +1,5 @@
 # fit a gam to general distance data
-gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussian(),start.grid=NULL,samp.points=NULL){
+gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gaussian(),start.grid=NULL,samp.points=NULL,method="GCV.Cp"){
    # Args
    #  response       vector of responses
    #  D              sample distance matrix (maybe generated using dist())
@@ -10,9 +10,10 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussi
    #  mds.dim.bnds   bounds for MDS dimension search --  lower always integer
    #                                                     upper int == bound
    #                                                     upper real == prop variation
-   #  fam            family arg to gam()
+   #  family         family arg to gam()
    #  start.grid     initial grid to use, can be NULL
    #  samp.points    sample points, needed if the above is specified    
+   #  method         method= for gam() -- GCV.Cp and ML
 
    # Return - list
    #  $gam        gamObject of fitted model
@@ -38,7 +39,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussi
          }
       }
    
-      gcvs<-c() # store GCV scores
+      scores<-c() # store GCV/ML scores
       model.list<-list()
       i<-1 # counter
       
@@ -46,32 +47,27 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussi
       
          # fit the model
          mds.dim<-test.dim
-         model.list[[i]]<-gam.fitter(response,D,mds.dim,k,fam,samp.points,start.grid)
+         model.list[[i]]<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method)
       
          # extract the GCV
-         gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
+         scores<-c(scores,model.list[[i]]$gam$gcv.ubre)
          i<-i+1
-      #   if(i>2){
-      #      if(gcvs[i-1]>gcvs[i-2]){
-      #         break
-      #      }
-      #   }
       }
       
       # now that's done, what was the smallest GCV?
-      and.the.winner.is<-which.min(gcvs)
+      and.the.winner.is<-which.min(scores)
       
       fitted<-model.list[[and.the.winner.is]]
       mds.dim<-mds.bnds[and.the.winner.is]
       
-      ret$gcvs<-data.frame(gcv=gcvs,dim=mds.bnds)
+      ret$scores<-data.frame(score=score,dim=mds.bnds)
 
 
    }else if(floor(mds.dim)==mds.dim){
-      fitted<-gam.fitter(response,D,mds.dim,k,fam,samp.points,start.grid)
+      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method)
    }else{
       mds.dim<-choose.mds.dim(D,mds.dim)
-      fitted<-gam.fitter(response,D,mds.dim,k,fam,samp.points,start.grid)
+      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method)
    }
 
    ret$gam<-fitted$gam
@@ -84,7 +80,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,fam=gaussi
 }
 
 ### actually fit some GAMs
-gam.fitter<-function(response,D,mds.dim,k,fam,samp.points=NULL,grid.points=NULL){
+gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NULL,method){
    # big set of letters for column names
    bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
    bl.len<-length(bigletters)
@@ -125,7 +121,7 @@ gam.fitter<-function(response,D,mds.dim,k,fam,samp.points=NULL,grid.points=NULL)
    gam.formula<-as.formula(gam.formula)
    
    # run the model
-   b<-gam(gam.formula,data=samp.mds,family=fam)
+   b<-gam(gam.formula,data=samp.mds,family=family,method=method)
 
    ret<-list(gam=b,mds.obj=mds.obj,samp.mds=samp.mds)
 
