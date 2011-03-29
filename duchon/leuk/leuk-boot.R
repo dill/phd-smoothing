@@ -24,7 +24,7 @@ leuk<-as.data.frame(as.matrix(leuk))
 ##############################
 ## Now do some simulatuon stuff
 
-samp.size<-100
+samp.size<-200
 n.sims<-1#200
 
 score.res<-c()
