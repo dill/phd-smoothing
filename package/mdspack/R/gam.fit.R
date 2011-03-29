@@ -21,11 +21,10 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
    #  $samp.mds   mds sample data.frame
 
    # big set of letters for column names
-   bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
+   bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
 
    ret<-list()
-
 
    if(is.null(mds.dim)){
       # find the optimal MDS dimension
@@ -82,7 +81,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
 ### actually fit some GAMs
 gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NULL,method){
    # big set of letters for column names
-   bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
+   bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
 
 
