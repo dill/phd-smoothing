@@ -2,6 +2,7 @@
 load("leuk.RData")
 
 library(mdspack)
+library(glmnet)
 
 ### Setup the data...
 ###############################
