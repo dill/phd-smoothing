@@ -40,7 +40,7 @@ for(i in 1:n.sims){
    # make the prediction
    leuk.pred<-leuk[-samp.ind,]
    
-   gam.obj<-gam.mds.fit(leuk.type.samp,D.samp,NULL,k=100,mds.dim.bnds=c(20,100),family=quasi())
+   gam.obj<-gam.mds.fit(leuk.type.samp,D.samp,NULL,k=100,mds.dim.bnds=c(20,95),family=quasi())
    # record the score
    this.score<-as.data.frame(gam.obj$scores)
    this.score<-cbind(this.score,rep("gcv",nrow(this.score)))
