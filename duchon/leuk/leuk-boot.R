@@ -73,7 +73,7 @@ for(i in 1:n.sims){
    pr<-round(pr,0)
 
    wrongvec<-retvec
-   wrongvec[(t(t(pr))-leuk.type)!=0]<-0
+   wrongvec[(t(t(pr))-leuk.type)^2!=0]<-0
    wrong.mat<-rbind(wrong.mat,c(wrongvec,"ds"))
 
 #   ##################################################
