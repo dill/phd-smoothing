@@ -25,7 +25,7 @@ leuk<-as.data.frame(as.matrix(leuk))
 ## Now do some simulatuon stuff
 
 samp.size<-200
-n.sims<-1#200
+n.sims<-100
 
 score.res<-c()
 retvec<-rep(1,length(leuk.type))
