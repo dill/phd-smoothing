@@ -60,14 +60,15 @@ mpid<-mpid[-del.rows]
 #samp.size<-200
 n.sims<-200
 
-for(samp.size in c(200,300,400,500)){
+#for(samp.size in c(200,300,400,500)){
+for(samp.size in c(500)){
 
    score.res<-c()
    wrong.mat<-c()
    retvec<-rep(1,max(mpid))
    
    k<-100
-   bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
+   bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
    
    for(n.sim in 1:n.sims){
