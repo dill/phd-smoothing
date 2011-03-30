@@ -76,21 +76,21 @@ for(i in 1:n.sims){
    wrongvec[(t(t(pr))-leuk.type)!=0]<-0
    wrong.mat<-rbind(wrong.mat,c(wrongvec,"ds"))
 
-   ##################################################
-   # trying glmnet lasso instead?
-   cv.lasso<-cv.glmnet(as.matrix(leuk.samp),leuk.type.samp,family="multinomial")
-   lasso.obj<-glmnet(as.matrix(leuk.samp),leuk.type.samp,family="multinomial",
-                     lambda=cv.lasso$lambda.min)
-
-   pp<-predict(lasso.obj,leuk,type="response")
-
-   pp<-apply(max,2,pp)
-
-   wrongvec<-retvec
-   wrongvec[(t(t(pp))-leuk.type)!=0]<-0
-   wrong.mat<-rbind(wrong.mat,c(wrongvec,"glmnet"))
-   ##################################################
+#   ##################################################
+#   # trying glmnet lasso instead?
+#   cv.lasso<-cv.glmnet(as.matrix(leuk.samp),leuk.type.samp,family="multinomial")
+#   lasso.obj<-glmnet(as.matrix(leuk.samp),leuk.type.samp,family="multinomial",
+#                     lambda=cv.lasso$lambda.min)
+#
+#   pp<-predict(lasso.obj,leuk,type="response")
+#
+#   pp<-apply(max,2,pp)
+#
+#   wrongvec<-retvec
+#   wrongvec[(t(t(pp))-leuk.type)!=0]<-0
+#   wrong.mat<-rbind(wrong.mat,c(wrongvec,"glmnet"))
+#   ##################################################
 }
 
-
+save.image("leuk-ds-test.RData")
 
