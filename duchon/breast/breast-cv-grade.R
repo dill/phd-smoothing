@@ -22,38 +22,34 @@ for(i in 1:b.rows){
    # calculate the distance matrix for the microarray data
    breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
 
-#   for(method in c("ML","GCV.Cp")){
-   method<-"GCV.Cp"
-      # fit the model
-      b.gcv<-gam.mds.fit(grade.samp,breast.dist,NULL,40,c(2,0.85),
-                     family=quasi(link=power(0.4643001),variance="constant"),
-                     method=method)
+   method<-"ds"
+   # fit the model
+   b.gcv<-gam.mds.fit(grade.samp,breast.dist,NULL,40,c(2,0.90),
+                  family=quasi(link=power(0.4643001),variance="constant"))
    
-      # record the GCV
-      this.score<-cbind(as.data.frame(b.gcv$score),
-                        rep(i,length(b.gcv$scores$score)),
-                        rep(method,length(b.gcv$scores$score)))
-      score.cv<-rbind(score.cv,this.score)
+   # record the GCV
+   this.score<-cbind(as.data.frame(b.gcv$score),
+                     rep(i,length(b.gcv$scores$score)),
+                     rep(method,length(b.gcv$scores$score)))
+   score.cv<-rbind(score.cv,this.score)
    
-      # do some prediction
-      pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
-      names(pred.data)<-names(b.gcv$samp.mds)[-1]
-      pp<-predict(b.gcv$gam,pred.data)
-      model.preds<-rep(NA,length(breast.dat$npi))
-      model.preds[-i]<-fitted(b.gcv$gam)
-      model.preds[i]<-pp
-      # record the MSE
-      ds.mse.cv<-rbind(ds.mse.cv,cbind(as.data.frame(
-                                          sum((breast.dat$cancer.grade-round(model.preds,0))^2)),
-                                       method))
-#   }
+   # predict the missing value
+   pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
+   names(pred.data)<-names(b.gcv$samp.mds)[-1]
+   pp<-predict(b.gcv$gam,pred.data)
 
+   # record the MSE
+   ds.mse.cv<-rbind(ds.mse.cv,cbind(as.data.frame(
+                                    (breast.dat$cancer.grade[i]-round(pp,0))^2),
+                                    method))
+
+   ########################################################
    ### lasso model
    cvmin.lasso<-cv.glmnet(breast.array[-i,],breast.dat$cancer.grade[-i],family="multinomial")
    b.lasso<-glmnet(breast.array[-i,],breast.dat$cancer.grade[-i],
                    family="multinomial",lambda=cvmin.lasso$lambda.min)
-   lasso.mse.cv<-c(lasso.mse.cv,sum((breast.dat$cancer.grade-
-                  apply(predict(b.lasso,breast.array,type="response"),1,which.max))^2))
+   lasso.mse.cv<-c(lasso.mse.cv,(breast.dat$cancer.grade[i]-
+                  apply(predict(b.lasso,as.matrix(t(breast.array[i,])),type="response"),1,which.max))^2)
 }
 
 names(score.cv)<-c("gcv","dim","booti")

@@ -22,43 +22,35 @@ for(i in 1:b.rows){
    # calculate the distance matrix for the microarray data
    breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
 
-   # use moth ML and GCV scoring
-#   for(method in c("ML","GCV.Cp")){
-   method<-"GCV.Cp"
-
-      # fit the model
-      b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
-                         family=quasi(link=power(1/3),variance="mu^3"),method=method)
+   # fit the model
+   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
+                      family=quasi(link=power(1/3),variance="mu^3"))
    
-      # record the GCV
-      this.score<-cbind(as.data.frame(b.gcv$scores),
-                        rep(i,length(b.gcv$scores$score)),
-                        rep(method,length(b.gcv$scores$score)))
-      score.cv<-rbind(score.cv,this.score)
+   # record the GCV
+   this.score<-cbind(as.data.frame(b.gcv$scores),
+                     rep(i,length(b.gcv$scores$score)))
+   score.cv<-rbind(score.cv,this.score)
    
-      # do some prediction
-      pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
-      names(pred.data)<-names(b.gcv$samp.mds)[-1]
-      pp<-predict(b.gcv$gam,pred.data)
-      model.preds<-rep(NA,length(breast.dat$npi))
-      model.preds[-i]<-fitted(b.gcv$gam)
-      model.preds[i]<-pp
-      # record the MSE
-      ds.mse.cv<-rbind(ds.mse.cv,cbind(as.data.frame(sum((breast.dat$npi-model.preds)^2)),method))
+   # do some prediction
+   pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
+   names(pred.data)<-names(b.gcv$samp.mds)[-1]
+   pp<-predict(b.gcv$gam,pred.data)
 
-#   }
+   # record the MSE
+   ds.mse.cv<-c(ds.mse.cv,(breast.dat$npi[i]-pp)^2)
 
-
+   #################################################################
    ### lasso model
    cvmin.lasso<-cv.glmnet(breast.array[-i,],breast.dat$npi[-i])
    b.lasso<-glmnet(breast.array[-i,],breast.dat$npi[-i],lambda=cvmin.lasso$lambda.min)
-   lasso.mse.cv<-c(lasso.mse.cv,sum((breast.dat$npi-predict(b.lasso,breast.array))^2))
+   lasso.mse.cv<-c(lasso.mse.cv,(breast.dat$npi[i]-
+                                 predict(b.lasso,as.matrix(t(breast.array[i,]))))^2)
 
 }
 
 names(score.cv)<-c("gcv","dim","booti")
-names(ds.mse.cv)<-c("MSE","method")
-ds.mse.cv<-ds.mse.cv$MSE
+#names(ds.mse.cv)<-c("MSE","method")
+#ds.mse.cv<-ds.mse.cv$MSE
 
 save.image("npi-cv.RData")
 
