@@ -58,7 +58,7 @@ for(samp.size in c(200,300)){
 }
 
 # non-zero
-mp.res<-mp.res[mp.res$wrong!=0,]
+#mp.res<-mp.res[mp.res$wrong!=0,]
 
 
 p<-ggplot(mp.res)

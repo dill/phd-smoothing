@@ -94,3 +94,25 @@ for(i in 1:n.sims){
 
 save.image("leuk-ds-test.RData")
 
+###########################################################################
+# analysis
+model.names<-wrong.mat[,-ncol(wrong.mat)]
+wrong.mat<-matrix(as.numeric(wrong.mat[,-ncol(wrong.mat)]),nrow(wrong.mat),ncol(wrong.mat)-1)
+
+
+cat("Mean misclassifications per simulation",mean(rowSums(wrong.mat)),"\n")
+
+
+# which ones did we misclassify the most?
+
+type.wrong<-colSums(wrong.mat)
+
+type.vec<-rep(NA,10)
+type.prop<-rep(NA,10)
+
+for(i in 1:10){
+   type.vec[i]<-sum(type.wrong[leuk.type==i])
+   type.prop[i]<-type.vec[i]/(sum(leuk.type==i)*200)
+}
+
+

@@ -60,18 +60,25 @@ mpid<-mpid[-del.rows]
 #samp.size<-200
 n.sims<-200
 
+
+
 #for(samp.size in c(200,300,400,500)){
-for(samp.size in c(500)){
+for(samp.size in c(300)){
 
    score.res<-c()
    wrong.mat<-c()
    retvec<-rep(1,max(mpid))
+
+# record the Brier score too
+brier<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
    
    k<-100
    bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
    
    for(n.sim in 1:n.sims){
+
+      this.brier<-c()
    
       # create sample and prediction data sets
       samp.ind<-sample(1:dim(votemat)[1],samp.size)
@@ -118,6 +125,8 @@ for(samp.size in c(500)){
          
          pr<-predict(b,pred.grid,type="response")
          
+         this.brier<-c(this.brier,mean((t(t(pr))-mpparty)^2))
+
          pr[pr<=0.5]<-0
          pr[pr>0.5]<-1
          
@@ -134,6 +143,8 @@ for(samp.size in c(500)){
       cv.obj<-cv.lars(as.matrix(samp.dat),mpparty[samp.ind],plot.it=FALSE,index=pp$fraction,mode="fraction")
       cv.min<-which.min(cv.obj$cv)
       pp<-pp$fit[,cv.min]
+
+      this.brier<-c(this.brier,mean((t(t(pp))-mpparty)^2))
       
       pp[pp<=0.5]<-0
       pp[pp>0.5]<-1
@@ -151,6 +162,7 @@ for(samp.size in c(500)){
                         lambda=cv.lasso$lambda.min)
    
       pp<-predict(lasso.obj,votemat,type="response")
+      this.brier<-c(this.brier,mean((t(t(pp))-mpparty)^2))
    
       pp[pp<=0.5]<-0
       pp[pp>0.5]<-1
@@ -172,6 +184,7 @@ for(samp.size in c(500)){
       gvotemat<-as.data.frame(votemat)
       names(gvotemat)<-letters[1:17]
       pp<-predict(glm.step,gvotemat,type="response")
+      this.brier<-c(this.brier,mean((t(t(pp))-mpparty)^2))
 
       pp[pp<=0.5]<-0
       pp[pp>0.5]<-1
@@ -182,9 +195,12 @@ for(samp.size in c(500)){
       wrong.mat<-rbind(wrong.mat,c(wrongvec,"glm"))
 
       ##################################################
+
+      brier<-rbind(brier,this.brier)
    }
    
    # save some data to file
    write.csv(score.res,file=paste("freesim-gcv-",samp.size,".csv",sep=""))
    write.csv(wrong.mat,file=paste("freesim-misclass-",samp.size,".csv",sep=""))
+   write.csv(brier,file=paste("freesim-brier-",samp.size,".csv",sep=""))
 }
