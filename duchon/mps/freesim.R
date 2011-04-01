@@ -56,21 +56,27 @@ votemat<-votemat[-del.rows,]
 mpparty<-mpparty[-del.rows]
 mpid<-mpid[-del.rows]
 
-
-#samp.size<-200
 n.sims<-200
 
+library(foreach)
+library(doMC)
+registerDoMC()
+options(cores=6)
 
+samp.sizes<-c(200,300,400,500)
 
 #for(samp.size in c(200,300,400,500)){
-for(samp.size in c(300)){
+foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
 
+   ####
+   # things to store
    score.res<-c()
    wrong.mat<-c()
-   retvec<-rep(1,max(mpid))
+   retvec<-rep(NA,max(mpid))
 
-# record the Brier score too
-brier<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
+   brier<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
+   mse<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
+   edf<-data.frame(dsgcv=NA,dsml=NA)
    
    k<-100
    bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
@@ -79,6 +85,7 @@ brier<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
    for(n.sim in 1:n.sims){
 
       this.brier<-c()
+      this.mse<-c()
    
       # create sample and prediction data sets
       samp.ind<-sample(1:dim(votemat)[1],samp.size)
@@ -90,11 +97,16 @@ brier<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
       mpparty.samp<-as.data.frame(mpparty[samp.ind])
       rownames(mpparty.samp)<-mpid[samp.ind]
    
+      this.edf<-c()
+   
       # using both ML and GCV scoring...
       for(method in c("GCV.Cp","ML")){
 
          gam.obj<-gam.mds.fit(mpparty.samp,D.samp,NULL,k,c(2,0.85),
                               family=binomial(link="logit"),method=method)
+
+         # record the EDF
+         this.edf<-c(this.edf,sum(gam.obj$gam$edf))
 
          # record the score
          this.score<-as.data.frame(gam.obj$scores)
@@ -114,66 +126,60 @@ brier<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
          # using code from insert.mds
          
          pred.mds<-insert.mds.generic(mds.obj,pred.dat,samp.dat)
-         
-         # predict back over _all_ MPs
-         pred.grid<-matrix(NA,length(mpid),mds.dim)
-         pred.grid[samp.ind,]<-as.matrix(samp.mds)[,-1]
-         pred.grid[-samp.ind,]<-pred.mds
-         pred.grid<-as.data.frame(pred.grid)
-         attr(pred.grid,"names")<-bigletters[(length(bigletters)-
+         pred.mds<-as.data.frame(pred.mds)
+         attr(pred.mds,"names")<-bigletters[(length(bigletters)-
                                              (dim(samp.mds)[2]-2)):length(bigletters)]
          
-         pr<-predict(b,pred.grid,type="response")
+         pr<-predict(b,pred.mds,type="response")
          
-         this.brier<-c(this.brier,mean((t(t(pr))-mpparty)^2))
+         # calculate the Brier score
+         this.brier<-c(this.brier,mean((t(t(pr))-mpparty[-samp.ind])^2))
 
          pr[pr<=0.5]<-0
          pr[pr>0.5]<-1
+         # and the MSE
+         a.mse<-(t(t(pr))-mpparty[-samp.ind])^2
+         this.mse<-c(this.mse,mean(a.mse))
          
-         wrong.ds<-mpid[(t(t(pr))-mpparty)!=0]
+         # record what was right and what was wrong
+         #  1 - CORRECT
+         #  0 - INCORRECT
+         # NA - IN THE SAMPLE
          wrongvec<-retvec
-         wrongvec[wrong.ds]<-0
-         wrong.mat<-rbind(wrong.mat,c(wrongvec,paste("ds-",method,sep="")))
+         wrongvec[-samp.ind][a.mse==0]<-1
+         wrongvec[-samp.ind][a.mse!=0]<-0
+         wrong.mat<-rbind(wrong.mat,wrongvec)
       }
-      
-      ##################################################
-      ## what about using the Lasso
-      lars.obj<-lars(as.matrix(samp.dat),mpparty[samp.ind])
-      pp<-predict.lars(lars.obj,votemat)
-      cv.obj<-cv.lars(as.matrix(samp.dat),mpparty[samp.ind],plot.it=FALSE,index=pp$fraction,mode="fraction")
-      cv.min<-which.min(cv.obj$cv)
-      pp<-pp$fit[,cv.min]
 
-      this.brier<-c(this.brier,mean((t(t(pp))-mpparty)^2))
-      
-      pp[pp<=0.5]<-0
-      pp[pp>0.5]<-1
-      
-      wrong.lasso<-mpid[(t(t(pp))-mpparty)!=0]
-      wrongvec<-retvec
-      wrongvec[wrong.lasso]<-0
-      wrong.mat<-rbind(wrong.mat,c(wrongvec,"lasso"))
+      # store the EDF
+      edf<-rbind(edf,this.edf)      
+
       ##################################################
-   
-      ##################################################
-      # trying glmnet lasso instead?
+      # glmnet lasso 
       cv.lasso<-cv.glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial")
       lasso.obj<-glmnet(as.matrix(samp.dat),mpparty[samp.ind],family="binomial",
                         lambda=cv.lasso$lambda.min)
    
-      pp<-predict(lasso.obj,votemat,type="response")
-      this.brier<-c(this.brier,mean((t(t(pp))-mpparty)^2))
+      pp<-predict(lasso.obj,votemat[-samp.ind,],type="response")
+
+      # record the Brier score
+      this.brier<-c(this.brier,mean((t(t(pp))-mpparty[-samp.ind])^2))
    
       pp[pp<=0.5]<-0
       pp[pp>0.5]<-1
-   
-      wrong.glmnet<-mpid[(t(t(pp))-mpparty)!=0]
+
+      # record the MSE
+      a.mse<-(t(t(pp))-mpparty[-samp.ind])^2
+      this.mse<-c(this.mse,mean(a.mse))
+
       wrongvec<-retvec
-      wrongvec[wrong.glmnet]<-0
-      wrong.mat<-rbind(wrong.mat,c(wrongvec,"glmnet"))
+      wrongvec[-samp.ind][a.mse==0]<-1
+      wrongvec[-samp.ind][a.mse!=0]<-0
+      wrong.mat<-rbind(wrong.mat,wrongvec)
       ##################################################
 
       ##################################################
+      # plain ole glm
       glm.samp<-as.data.frame(cbind(mpparty[samp.ind],samp.dat))
       names(glm.samp)<-c("response",letters[1:17])
    
@@ -181,26 +187,31 @@ brier<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
                  family=binomial(link="logit"),
                  data=glm.samp)
       glm.step<-step(b.glm,trace=0)
-      gvotemat<-as.data.frame(votemat)
+      gvotemat<-as.data.frame(votemat[-samp.ind,])
       names(gvotemat)<-letters[1:17]
       pp<-predict(glm.step,gvotemat,type="response")
-      this.brier<-c(this.brier,mean((t(t(pp))-mpparty)^2))
+
+      this.brier<-c(this.brier,mean((t(t(pp))-mpparty[-samp.ind])^2))
 
       pp[pp<=0.5]<-0
       pp[pp>0.5]<-1
    
-      wrong.glm<-mpid[(t(t(pp))-mpparty)!=0]
+      a.mse<-(t(t(pp))-mpparty[-samp.ind])^2
+      this.mse<-c(this.mse,mean(a.mse))
+
       wrongvec<-retvec
-      wrongvec[wrong.glm]<-0
-      wrong.mat<-rbind(wrong.mat,c(wrongvec,"glm"))
+      wrongvec[-samp.ind][a.mse==0]<-1
+      wrongvec[-samp.ind][a.mse!=0]<-0
+      wrong.mat<-rbind(wrong.mat,wrongvec)
 
       ##################################################
 
       brier<-rbind(brier,this.brier)
+      mse<-rbind(mse,this.mse)
    }
    
    # save some data to file
-   write.csv(score.res,file=paste("freesim-gcv-",samp.size,".csv",sep=""))
-   write.csv(wrong.mat,file=paste("freesim-misclass-",samp.size,".csv",sep=""))
-   write.csv(brier,file=paste("freesim-brier-",samp.size,".csv",sep=""))
+   save(brier,mse,edf,wrong.mat,file=paste("freesim-",samp.size,".RData",sep=""))
+
+   return(1)
 }
