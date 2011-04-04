@@ -19,7 +19,7 @@
 \usepackage{soul}
 
 % top matter
-\title{breast cancer data analysis}
+\title{Breast cancer data analysis}
 \author{David Lawrence Miller\\Mathematical Sciences\\University of Bath\\\texttt{dave@ninepointeightone.net}}
  
 % Shortcuts
@@ -77,9 +77,11 @@
 
 \maketitle
 
+\section{Introduction}
+Looking at the breast cancer data from Wit and McClure to see if the distances generated from microarray data can be used to smooth using Duchon splines and MDS. This is a Sweave document.
+
 \section{Setting up the data...}
 
-Looking at the breast cancer data from Wit and McClure.
 
 First off, load some packages....
 
@@ -136,13 +138,11 @@ The Nottingham Prognostic Index is defined as:
 \begin{equation}
 \text{NPI} = 0.2(\text{size of index lesion in cm}) + \text{number of lymph nodes} + \text{tumour grade}
 \end{equation}
-see [[refs]] for more information. High values of NPI are bad, identifying those patients with very poor prognoses.
+see [[refs -- two medical papers]] for more information. High values of NPI are bad, identifying those patients with very poor prognoses.
 
 \subsubsection{Tumour grade}
 
-Also look at the tumour grade. This was scored I-III. The same observations had missing values for NPI as had missing values for tumour grade.
-
-
+Also look at the tumour grade. This was scored I-III on a scale of decreasing cell differentiation (ie. large numbers are bad). The same observations had missing values for NPI as had missing values for tumour grade.
 
 \section{EDA}
 
@@ -235,9 +235,7 @@ hist(breast.m$cancer.grade,xlab="Tumour grade",main="")
 
 \section{Model development}
 
-We would like to smooth over all the covariates in the model, both the age at diagnosis and the microarray data. Unfortunately this would lead to a big $p$, small $n$ problem where there are too many covariates for a smooth model to be fit.
-
-So, to get around this problem an MDS+DS approach is used. The idea here is that distances are calculated between patients covariate values, those distances are then used to create a new data set using multidimensional scaling. This new data is in a high dimensional space (although not as high as the original data) so Duchon splines are used to smooth reliably in this new space.
+We would like to smooth over all the columns (WHAT?) in the microarray data. This leads to a model with 27 covariates on only 45 observations. To get around this problem MDS+DS can be used. MDS+DS uses distances calculated between observations' covariate values, those distances are then used to create a new data set using multidimensional scaling. This new data is in a high dimensional space (although not as high as the original data) so Duchon splines are used to smooth reliably in this new space.
 
 Mathematically the model may be written as
 \begin{equation*}
