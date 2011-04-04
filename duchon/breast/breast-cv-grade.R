@@ -25,8 +25,9 @@ for(i in 1:b.rows){
 
    method<-"ds"
    # fit the model
-   b.gcv<-gam.mds.fit(grade.samp,breast.dist,NULL,40,c(2,0.90),
-                  family=quasi(link=power(0.4643001),variance="constant"))
+   b.gcv<-gam.mds.fit(grade.samp,breast.dist,NULL,44,c(2,0.90),
+                  family=quasi(link=power(0.6),variance="constant"))
+#                  family=quasi(link=power(0.4643001),variance="constant"))
    
    # record the GCV score
    this.score<-cbind(as.data.frame(b.gcv$score),
@@ -40,7 +41,7 @@ for(i in 1:b.rows){
    # predict the missing value
    pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
    names(pred.data)<-names(b.gcv$samp.mds)[-1]
-   pp<-predict(b.gcv$gam,pred.data)
+   pp<-predict(b.gcv$gam,pred.data,type="response")
 
    # record the MSE
    ds.mse.cv<-rbind(ds.mse.cv,cbind(as.data.frame(
@@ -62,19 +63,19 @@ ds.mse.cv<-ds.mse.cv$MSE
 
 
 save.image("grade-cv.RData")
+#
+## MSE plot
+plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
+     xlab="CV round",ylab="MSE",type="n")
+lines(1:45,lasso.mse.cv,col="blue")
+points(1:45,lasso.mse.cv,pch=19,col="blue")
+points(1:45,ds.mse.cv,pch=19)
+lines(1:45,ds.mse.cv,pch=19)
 
-# MSE plot
-#plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
-#     xlab="CV round",ylab="MSE",type="n")
-#lines(1:45,lasso.mse.cv,col="blue")
-#points(1:45,lasso.mse.cv,pch=19,col="blue")
-#points(1:45,ds.mse.cv,pch=19)
-#lines(1:45,ds.mse.cv,pch=19)
-#
-#
-## CV score
-#cat("lasso=",mean(lasso.mse.cv),"\n")
-#cat("ds=",mean(ds.mse.cv),"\n")
+
+# CV score
+cat("lasso=",mean(lasso.mse.cv),"\n")
+cat("ds=",mean(ds.mse.cv),"\n")
 #
 ## GCV plot
 #p<-ggplot(as.data.frame(score.cv))

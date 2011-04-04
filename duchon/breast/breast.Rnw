@@ -70,6 +70,9 @@
 
 
 
+
+
+
 \begin{document}
 
 \maketitle
@@ -359,7 +362,7 @@ To check to see what information is left in the residuals, we can fit a model to
 <<>>=
 resid.data<-b.gcv.gamma$samp.mds
 resid.data$response<-b.gcv.gamma$gam$residuals
-b.gcv.resids<-gam(response~s(bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
+b.gcv.resids<-gam(response~s(zw,zx,zy,zz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
 summary(b.gcv.resids)
 @
 This looks okay, not much going on there (same when just plain TPRS is fit to the residuals).
@@ -399,7 +402,7 @@ Checking to see if there is any information left in the residuals,
 <<>>=
 resid.data<-b.gcv.quasi$samp.mds
 resid.data$response<-b.gcv.quasi$gam$residuals
-b.gcv.resids<-gam(response~s(bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
+b.gcv.resids<-gam(response~s(zw,zx,zy,zz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
 summary(b.gcv.resids)
 @
 There doesn't seem to be anything going on there.
@@ -462,37 +465,31 @@ for(i in 1:45){
 \end{figure}
 
 
-\subsection{Leave-one-out cross-validation}
+\subsubsection{Leave-one-out cross-validation}
 \label{npi-cv}
 
-Can use leave-one-out cross-validation to see how sensitive the results are to changes in the data.
+Can use leave-one-out cross-validation to see how sensitive the results are to changes in the data. Using the ``best'' model above, the quasi-likelihood, the results from the leave-one-out cross-validation are not good (CV of about 10 for the MDS+DS and 2 for the lasso) indicating that the model was overfitting to the data. Working back through the models above, the best model appears to be the one with Normal errors.
 
-Algorithm that was used is as follows:
-
+To calculate the CV score, the following algorithm was used:
 \begin{enumerate}
 	\item Fit the model ($f^{(-i)}$, say) to the data with the $i^\text{th}$ datum removed.
 	\item Predict over all the data.
 	\item Calculate and record:
 		\begin{equation}
-		L(f^{(-i)}) = \frac{1}{N} \sum_{i=1}^N (\text{NPI}_i -f^{(-i)}(\mathbf{x}_i))^2
+		L(f^{(-i)}) = (\text{NPI}_i -f^{(-i)}(x_i))^2,
 		\end{equation}
+		(the difference between the left out observation and the model's prediction of that observation).
 \end{enumerate}
 
 The CV score can be then calculated as:
 \begin{equation}
-\text{CV}(f^{(-i)}) = \frac{1}{N} \sum_{i=1}^N L(f^{(-i)})
+\text{CV}(f^{(-i)}) = \frac{1}{N} \sum_{i=1}^N L(f^{(-i)})= \frac{1}{N} \sum_{i=1}^N (\text{NPI}_i -f^{(-i)}.(x_i))^2
 \end{equation}
 
 % see breast-cv-npi.R for the code for this!
-For the lasso model the CV was 46.13 and for the MDS+DS model the CV score was 30.16.
+For the lasso model the CV was 1.56 and for the MDS+DS model the CV score was 2.0.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Tumour grade model}
+\subsection{Tumour grade model}
 
 Now from the start this is going to be harder. The data is effectively multinomial, so need to use quasi-likelihood.
 <<>>=
@@ -525,7 +522,7 @@ Again, checking to see if there is any information left in the residuals:
 <<>>=
 resid.data<-b.gcv.quasi$samp.mds
 resid.data$response<-b.gcv.quasi$gam$residuals
-b.gcv.resids<-gam(response~s(bs,bt,bu,bv,bw,bx,by,bz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
+b.gcv.resids<-gam(response~s(zs,zt,zu,zv,zw,zx,zy,zz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
 summary(b.gcv.resids)
 @
 
@@ -556,10 +553,17 @@ ds.mse
 lasso.mse
 @
 
-\subsection{Leave-one-out cross-validation}
+\subsubsection{Leave-one-out cross-validation}
+
+As in section \ref{npi-cv} we can calculate the CV scores for the two models.
+
+Above, the link function was determined by regressing the residuals onto the fitted values. To check that the link is reasonable, we can run this for each round of a cross-validation and see how the power fluctuates. This showed that over the 45 rounds of cross-validation, the power used in the link function varied between 0.06 and 3.1. The 3.1 appears to be an outlier, so using the mean value with that observation removed yields a link power of about 0.6.
+
+Using this value, MDS+DS yields a CV score of 0.87, while the lasso is slightly better with a score of 0.69.
+
 
 % see breast-cv-grade.R for the code!
-As in section \ref{npi-cv} we can calculate the CV scores for the two models. For the lasso the CV score was 21.76 and for the MDS+DS model the score was 2.27.
+% also breast-cv-regtest-grade.R
  
 
 \end{document}

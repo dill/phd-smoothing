@@ -25,8 +25,10 @@ for(i in 1:b.rows){
 
    # fit the model
    b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
+#                      family=quasi(link="identity"))
+#                      family=Gamma(link="log"))
                       family=quasi(link=power(1/3),variance="mu^3"))
-   
+
    # record the GCV
    this.score<-cbind(as.data.frame(b.gcv$scores),
                      rep(i,length(b.gcv$scores$score)))
@@ -38,7 +40,7 @@ for(i in 1:b.rows){
    # do some prediction
    pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
    names(pred.data)<-names(b.gcv$samp.mds)[-1]
-   pp<-predict(b.gcv$gam,pred.data)
+   pp<-predict(b.gcv$gam,pred.data,type="response")
 
    # record the MSE
    ds.mse.cv<-c(ds.mse.cv,(breast.dat$npi[i]-pp)^2)
@@ -60,18 +62,18 @@ save.image("npi-cv.RData")
 
 
 # MSE plot
-#plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
-#     xlab="CV round",ylab="MSE",type="n")
-#lines(1:45,lasso.mse.cv,col="blue")
-#points(1:45,lasso.mse.cv,pch=19,col="blue")
-#points(1:45,ds.mse.cv,pch=19)
-#lines(1:45,ds.mse.cv,pch=19)
-#
-## CV score
-#cat("lasso=",mean(lasso.mse.cv),"\n")
-#cat("ds=",mean(ds.mse.cv),"\n")
-#
-## GCV plot
+plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
+     xlab="CV round",ylab="MSE",type="n")
+lines(1:45,lasso.mse.cv,col="blue")
+points(1:45,lasso.mse.cv,pch=19,col="blue")
+points(1:45,ds.mse.cv,pch=19)
+lines(1:45,ds.mse.cv,pch=19)
+
+# CV score
+cat("lasso=",mean(lasso.mse.cv),"\n")
+cat("ds=",mean(ds.mse.cv),"\n")
+
+# GCV plot
 #p<-ggplot(as.data.frame(score.cv))
 #p<-p+geom_line(aes(dim,gcv,group=booti))
 #p<-p+stat_smooth(aes(dim,gcv))
