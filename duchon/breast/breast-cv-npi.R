@@ -11,6 +11,13 @@ score.cv<-c()
 ds.mse.cv<-c()
 lasso.mse.cv<-c()
 edf.cv<-c()
+best.dim<-c()
+
+set.seed(1)
+
+# pick the 15 columns most highly correlated with the response...
+#breast.array<-breast.array[,order(cor(breast.dat$npi,breast.array)^2,decreasing=T)[1:10]]
+
 
 for(i in 1:b.rows){
 
@@ -24,9 +31,12 @@ for(i in 1:b.rows){
    breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
 
    # fit the model
-   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
+   #b.gcv<-gam.mds.fit(npi.samp,breast.dist,20,44,NULL,
+   #b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL)
+   #b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85))#,
+   b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL,
 #                      family=quasi(link="identity"))
-#                      family=Gamma(link="log"))
+#                      family=Gamma(link="identity"))
                       family=quasi(link=power(1/3),variance="mu^3"))
 
    # record the GCV
@@ -36,6 +46,8 @@ for(i in 1:b.rows){
    # record the GCV
    this.edf<-c(sum(b.gcv$gam$edf),i)
    edf.cv<-rbind(edf.cv,this.edf)
+   # record the selected MDS dimension
+   best.dim<-c(best.dim,b.gcv$mds.dim)
    
    # do some prediction
    pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
@@ -58,7 +70,7 @@ names(score.cv)<-c("gcv","dim","booti")
 #names(ds.mse.cv)<-c("MSE","method")
 #ds.mse.cv<-ds.mse.cv$MSE
 
-save.image("npi-cv.RData")
+#save.image("npi-cv.RData")
 
 
 # MSE plot

@@ -46,10 +46,27 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
       
          # fit the model
          mds.dim<-test.dim
-         model.list[[i]]<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method)
+
+         gam.obj<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method)
+
+         # did it converge fully? split on outer/magic
+         if(gam.obj$gam$optimizer[1]=="magic"){
+            converged<-gam.obj$gam$mgcv.conv$fully.converged
+         }else{
+            converged<-gam.obj$gam$outer.info$conv=="full convergence"
+         }
+
+         # don't include if we didn't get full convergence
+         if(converged){
+            model.list[[i]]<-gam.obj
       
-         # extract the GCV
-         scores<-c(scores,model.list[[i]]$gam$gcv.ubre)
+            # extract the GCV
+            scores<-c(scores,model.list[[i]]$gam$gcv.ubre)
+         }else{
+            model.list[[i]]<-NULL
+            scores<-c(scores,NA)
+         }
+
          i<-i+1
       }
       

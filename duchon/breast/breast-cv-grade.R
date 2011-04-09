@@ -11,6 +11,7 @@ score.cv<-c()
 ds.mse.cv<-c()
 lasso.mse.cv<-c()
 edf.cv<-c()
+best.dim<-c()
 
 for(i in 1:b.rows){
 
@@ -26,8 +27,8 @@ for(i in 1:b.rows){
    method<-"ds"
    # fit the model
    b.gcv<-gam.mds.fit(grade.samp,breast.dist,NULL,44,c(2,0.90),
-                  family=quasi(link=power(0.6),variance="constant"))
-#                  family=quasi(link=power(0.4643001),variance="constant"))
+#                  family=quasi(link=power(0.6),variance="constant"))
+                  family=quasi(link=power(0.4643001),variance="constant"))
    
    # record the GCV score
    this.score<-cbind(as.data.frame(b.gcv$score),
@@ -37,7 +38,9 @@ for(i in 1:b.rows){
    # record the EDF
    this.edf<-c(sum(b.gcv$gam$edf),i,method)
    edf.cv<-rbind(edf.cv,this.edf)
-   
+   best.dim<-c(best.dim,b.gcv$mds.dim)   
+
+
    # predict the missing value
    pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
    names(pred.data)<-names(b.gcv$samp.mds)[-1]

@@ -82,7 +82,6 @@ Looking at the breast cancer data from Wit and McClure to see if the distances g
 
 \section{Setting up the data...}
 
-
 First off, load some packages....
 
 <<>>=
@@ -138,11 +137,11 @@ The Nottingham Prognostic Index is defined as:
 \begin{equation}
 \text{NPI} = 0.2(\text{size of index lesion in cm}) + \text{number of lymph nodes} + \text{tumour grade}
 \end{equation}
-see [[refs -- two medical papers]] for more information. High values of NPI are bad, identifying those patients with very poor prognoses.
+see Haybittle \textit{et al.} (1982) and Todd \textit{et al.} (1987) for more information. High values of NPI are bad, identifying those patients with very poor prognoses.
 
 \subsubsection{Tumour grade}
 
-Also look at the tumour grade. This was scored I-III on a scale of decreasing cell differentiation (ie. large numbers are bad). The same observations had missing values for NPI as had missing values for tumour grade.
+Can also look at the tumour grade. This was scored I-III (multinomial data) on a scale of decreasing cell differentiation (ie. large numbers are bad). The same observations had missing values for NPI as had missing values for tumour grade.
 
 \section{EDA}
 
@@ -179,7 +178,7 @@ p<-p+labs(x="", y="NPI")
 print(p)
 @
 \end{center}
-\label{npi-vs-time}
+\label{npi-vs-plot}
 \caption{Plotting Nottingham prognostic index against the other non-microarray data. Note that both size and cancer grade have obvious linear relationships with NPI, as they are used in its calculation.}
 \end{figure}
 
@@ -199,23 +198,25 @@ hist(breast.m$npi,xlab="NPI",main="")
 
 \subsection{Tumour grade}
 
-Plotting equivalent plots as for NPI...
+The histogram of tumour grade values is shown in figure \ref{grade-hist}.
 
-\begin{figure}[tb]
-\begin{center}
-<<fig=TRUE,echo=FALSE,cache=true>>=
+%\begin{figure}[tb]
+%\begin{center}
+%<<fig=TRUE,echo=FALSE,cache=true>>=
+<<echo=FALSE>>=
 breast.m<-melt(breast.dat,c("cancer.grade","any.death","cancer.death"))
-p<-ggplot(breast.m)
-p<-p+geom_point(aes(value,cancer.grade))
-p<-p+facet_wrap(~variable,nrow=1,scales="free_x")
-p<-p+labs(x="", y="Tumour grade")
- p<-p+geom_smooth(aes(value,cancer.grade),method="lm")
-print(p)
 @
-\end{center}
-\label{grade-vs-time}
-\caption{WORDS}
-\end{figure}
+%p<-ggplot(breast.m)
+%p<-p+geom_point(aes(value,cancer.grade))
+%p<-p+facet_wrap(~variable,nrow=1,scales="free_x")
+%p<-p+labs(x="", y="Tumour grade")
+% p<-p+geom_smooth(aes(value,cancer.grade),method="lm")
+%print(p)
+%@
+%\end{center}
+%\label{grade-vs-all}
+%\caption{Plots of tumour grade against the other}
+%\end{figure}
 
 \begin{figure}[tb]
 \begin{center}
@@ -231,11 +232,11 @@ hist(breast.m$cancer.grade,xlab="Tumour grade",main="")
 \caption{Histogram of tumour grade.}
 \end{figure}
 
-
-
 \section{Model development}
 
-We would like to smooth over all the columns (WHAT?) in the microarray data. This leads to a model with 27 covariates on only 45 observations. To get around this problem MDS+DS can be used. MDS+DS uses distances calculated between observations' covariate values, those distances are then used to create a new data set using multidimensional scaling. This new data is in a high dimensional space (although not as high as the original data) so Duchon splines are used to smooth reliably in this new space.
+We would like to smooth over all the columns (gene expression profiles) in the microarray data. This leads to a model containing 59 covariates with only 45 observations. To further complicate matters, there may be a high degree of collinearity between genes. Tan \textit{et al.} (2005) suggest using a PCR-type method to select ``eigengenes'' in order to work around the collinearity present in the data.
+
+MDS+DS can also be used in a similar way to get around these problems. MDS+DS uses distances calculated between observations' covariate values, those distances are then used to create a new data set using multidimensional scaling. This new data is in a high dimensional space (although not as high as the original data) so Duchon splines are used to reliably smooth in this new space.
 
 Mathematically the model may be written as
 \begin{equation*}
@@ -245,36 +246,39 @@ where $D$ is some distribution and $x_{1i}, \dots, x_{di}$ is the MDS projection
 
 The dimension to use is chosen by optimising the GCV score, this is done by fitting the model in a number of different dimensions and choosing the dimensionality corresponding to the lowest GCV score. Note that there is no guarantee of the score monotonically decreasing as a function of dimension, so the score is calculated over all dimensions in a set range to ensure a minimum is found.
 
+\subsubsection{Preparing the data}
+
 Before doing the analysis we also drop those columns that contain \texttt{NA} values.
 <<>>=
 col.ind<-colSums(is.na(breast.array))>0
 breast.array<-breast.array[,!col.ind]
 @
+This leaves a 45 by 27 matrix.
 
-Calculating the distance matrix for the microarray data:
+Calculating the distance matrix from this microarray data:
 <<>>=
 breast.dist<-dist(breast.array,diag=TRUE,upper=TRUE)
 @
-this can then be fed to the fitting routine.
 
 \subsection{NPI model}
 
 \subsubsection{Model 1 -- simple}
 
+Starting with the simplest possible MDS+DS model, using normal errors:
 <<>>=
 b.gcv<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85))
 @
 The arguments are as follows:
 \begin{enumerate}
-	\item \texttt{breast.dat\$npi} - the response variable
-	\item \texttt{ddist} - the distance matrix
+	\item \texttt{breast.dat\$npi} - the response variable (Nottingham prognostic index)
+	\item \texttt{ddist} - the distance matrix (distances between patients)
 	\item \texttt{NULL} - the MDS dimension to use, \texttt{NULL} indicates selection by GCV score
 	\item \texttt{45} - the basis dimension to use
 	\item \texttt{c(2,0.9)} - vector of the lower bound for the dimension and upper proportion of variability explained - used for the lower and upper bounds of the MDS dimension search
 \end{enumerate}
 at the moment we are not including age at diagnosis in the model.
 
-The object returned is a list, one of its elements (\texttt{gcvs}) gives the GCV score for each dimension checked. This can be used as a handy diagnostic tool to check for multimodality in the score. Such a plot is shown in figure \ref{gcvscore}.
+The object returned is a list, one of its elements (\texttt{gcvs}) gives the GCV score for each dimension checked. This can be used to check for multiple minima in the score. Such a plot is shown in figure \ref{gcvscore}. The plot shows a clear minima when using a 5-dimensional projection of the data.
 
 \begin{figure}[tb]
 \begin{center}
@@ -286,11 +290,11 @@ plot(b.gcv$scores$dim, b.gcv$scores$score,ylab="GCV score",xlab="MDS dimension",
 \caption{GCV score as a function of MDS projection dimension for model 1.}
 \end{figure}
 
-Performing model checking, we can first look at the results of a \texttt{summary}:
+Performing model checking, we can first look at the results of a \texttt{summary} (the GAM object for the best model is contained in the \texttt{gam} element of the returned list):
 <<>>=
 summary(b.gcv$gam)
 @
-The $R^2$ is rather low and the EDF seems to indicate something strange going on. Using the ``natural'' parametrisation (see Red Book p. 208--210), we can look the EDF of each term and see what's happening.
+The $R^2$ is rather low and the EDF seems to indicate something strange going on. Using the ``natural'' parametrisation (see Wood (2006) p. 208--210), we can look the EDF of each term and see what's happening.
 <<>>=
 X.mm<-model.matrix(b.gcv$gam)
 X.qr.R<-qr.R(qr(X.mm))
@@ -312,19 +316,23 @@ beta.dash.dash<-t(new.pen$vectors)%*%beta.dash
 lambda<-b.gcv$gam$sp
 EDF<-1/(1+lambda*new.pen$values)
 @
-Investigating the per-parameter EDF:
-<<>>=
-EDF
-@
-and the coefficient values
-<<>>=
-as.vector(beta.dash.dash)
-@
-So there's not really any smoothing going on here, these last terms with larger coefficients and EDFs, are those terms in the nullspace of the penalty.
+Figure \ref{coeffplot1} shows the EDFs and coefficient values. It doesn't look like there is any smoothing going on here. The last terms with larger coefficients and EDFs are those terms in the nullspace of the penalty.
 
-Things aren't looking good for this model. 
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+plot(c(1,length(EDF)),c(min(EDF,as.vector(beta.dash.dash)),max(EDF,as.vector(beta.dash.dash))),type="n",xlab="Coefficient number",ylab="EDF/coefficent")
+lines(1:length(EDF),EDF)
+lines(1:length(as.vector(beta.dash.dash)),as.vector(beta.dash.dash),col="red")
+@
+\end{center}
+\label{coeffplot1}
+\caption{The coefficient values (red) and their corresponding EDFs (black) for model 1.}
+\end{figure}
 
-Figure \ref{gamcheck-1} we see that there are too many residuals in the lower tail of the histogram and slightly too few in the middle, this is reflected in the QQ plot. The right side of the plot doesn't suggest anything problematic, although it is rather difficult to see what is going on with such a small sample.
+Figure \ref{gamcheck-1} shows that there are too many residuals in the lower tail of the histogram and slightly too few in the middle, this is reflected in the QQ plot. The right side of the plot doesn't suggest anything problematic, although it is rather difficult to see what is going on with such a small sample. 
+
+The plot doesn't seem to indicate anything drastic going wrong, but the EDF calculations above show that we are not fitting much more than planes to the data.
 
 \begin{figure}[tb]
 \begin{center}
@@ -339,33 +347,12 @@ gam.check(b.gcv$gam)
 
 \subsubsection{Model 2 -- Gamma errors}
 
-Using Gamma errors and an identity link provides a significant increase in the $R^2$.
+Trying Gamma errors and an identity link provides a significant increase in the $R^2$.
 <<>>=
 b.gcv.gamma<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),family=Gamma(link=identity))
 summary(b.gcv.gamma$gam)
 @
-Note also the big decrease in GCV score (see figure \ref{gcvscore2} for a plot of GCV score against MDS projection dimension).
-
-\begin{figure}[tb]
-\begin{center}
-<<fig=TRUE,echo=FALSE,cache=true>>=
-plot(b.gcv.gamma$scores$dim, b.gcv.gamma$scores$score,ylab="GCV score",xlab="MDS dimension",type="l")
-@
-\end{center}
-\label{gcvscore2}
-\caption{GCV score as a function of MDS projection dimension for model 2.}
-\end{figure}
-
-To check to see what information is left in the residuals, we can fit a model to them.
-<<>>=
-resid.data<-b.gcv.gamma$samp.mds
-resid.data$response<-b.gcv.gamma$gam$residuals
-b.gcv.resids<-gam(response~s(zw,zx,zy,zz,bs="ds",m=c(2,1.5),k=45),data=resid.data)
-summary(b.gcv.resids)
-@
-This looks okay, not much going on there (same when just plain TPRS is fit to the residuals).
-
-Figure \ref{gamcheck-2} shows the results of running \texttt{gam.check}. This looks better but the QQ plot and histogram of residuals still don't look quite right.
+The results of running \texttt{gam.check} are shown in figure \ref{gamcheck-2}. The left side plots don't show that using Gamma errors offers an improvement.
 
 \begin{figure}[tb]
 \begin{center}
@@ -405,70 +392,10 @@ summary(b.gcv.resids)
 @
 There doesn't seem to be anything going on there.
 
-\subsubsection{Comparison with lasso}
-
-Comparing the above approach with the lasso [[ref]], provided in the package \texttt{glmnet}. By default all values of the [[blah]] parameter are calculated.
-<<>>=
-library(glmnet)
-b.lasso.full<-glmnet(breast.array,breast.dat$npi)
-@
-A profile of the coefficients in the lasso is shown in figure \ref{lasso-coef}. Selecting an optimal number of parameters via cross validation yields a model with 27 parameters:
-<<>>=
-cvmin.lasso<-cv.glmnet(breast.array,breast.dat$npi)
-b.lasso<-glmnet(breast.array,breast.dat$npi,lambda=cvmin.lasso$lambda.min)
-b.lasso$dim
-@
-
-\begin{figure}[tb]
-\begin{center}
-<<fig=TRUE,echo=FALSE,cache=true>>=
-plot(b.lasso.full)
-@
-\end{center}
-\label{lasso-coef}
-\caption{Profile of lasso coefficients.}
-\end{figure}
-
-Figure \ref{ds-lasso-err} shows the difference between truth and the fitted value per observation for both the quasi-likelihood and lasso model. Lines join the points per observation for the two models, making the plot easier to read. Only 5 lines cross the dashed line, meaning that the the estimated provided by the new model and usually the same sign as the lasso. Looking at this more quantitatively, the mean squared errors are:
-<<>>=
-ds.mse<-sum((breast.dat$npi-fitted(b.gcv.quasi$gam))^2)
-lasso.mse<-sum((breast.dat$npi-predict(b.lasso,breast.array))^2)
-ds.mse
-lasso.mse
-@
-this confirms the idea that the MDS model is performing better than the lasso.
-
-\begin{figure}[tb]
-\begin{center}
-<<fig=TRUE,echo=FALSE,cache=true>>=
-ind<-1:45
-quasi.err<-fitted(b.gcv.quasi$gam)-breast.dat$npi
-lasso.err<-predict(b.lasso,breast.array)-breast.dat$npi
-
-pmax<-max(quasi.err,lasso.err)
-pmin<-min(quasi.err,lasso.err)
-
-plot(seq(pmin,pmax,len=length(ind)),ind,pch=20,type="n",xlab="truth-fitted",ylab="observation")
-points(quasi.err,ind,pch=19,cex=0.5,col="red")
-points(lasso.err,ind,pch=19,cex=0.5,col="blue")
-abline(v=0,lty=2)
-
-for(i in 1:45){
-   lines(c(quasi.err[i],lasso.err[i]),c(i,i))
-}
-@
-\end{center}
-\label{ds-lasso-err}
-\caption{Difference between the truth and the fitted values. Lasso given by blue points, quasi red.}
-\end{figure}
-
-
-\subsubsection{Leave-one-out cross-validation}
+\subsubsection{Assessment via leave-one-out cross-validation}
 \label{npi-cv}
 
-Can use leave-one-out cross-validation to see how sensitive the results are to changes in the data. Using the ``best'' model above, the quasi-likelihood, the results from the leave-one-out cross-validation are not good (CV of about 10 for the MDS+DS and 2 for the lasso) indicating that the model was overfitting to the data. Working back through the models above, the best model appears to be the one with Normal errors.
-
-To calculate the CV score, the following algorithm was used:
+Can use leave-one-out cross-validation (LOOCV) to see how sensitive the results are to changes in the data.  To calculate the CV score, the following algorithm was used:
 \begin{enumerate}
 	\item Fit the model ($f^{(-i)}$, say) to the data with the $i^\text{th}$ datum removed.
 	\item Predict over all the data.
@@ -479,21 +406,41 @@ To calculate the CV score, the following algorithm was used:
 		(the difference between the left out observation and the model's prediction of that observation).
 \end{enumerate}
 
-The CV score can be then calculated as:
+The CV score can then be calculated as:
 \begin{equation}
 \text{CV}(f^{(-i)}) = \frac{1}{N} \sum_{i=1}^N L(f^{(-i)})= \frac{1}{N} \sum_{i=1}^N (\text{NPI}_i -f^{(-i)}.(x_i))^2
 \end{equation}
 
+Both the ``'best'' model (model 3) and the next best, (model 1) were compared with a Lasso (Friedman \textit{et al} (2010)), provided in the package \texttt{glmnet}. 
+
 % see breast-cv-npi.R for the code for this!
-For the lasso model the CV was 1.56 and for the MDS+DS model the CV score was 2.0.
+The CV score for the lasso was 1.43, the normal and quasi-likelihood MDS+DS models scored 1.88 and 2.0 respectively. Looking at the EDFs for each LOOCV round, the normal model tended fit about half of the models as purely unpenalised functions (ie. just hyperplanes), as opposed to the quasi-likelihood model which only fit planes 3 times out of the 45 rounds. The MSE per round was roughly similar for models 1 and 3, with 3 doing slightly better on the larger deviations. Although models 1 and 3 had roughly similar MSEs in each round, the lasso tended to to not fail in the same way.
+
+Figure \ref{mse-edf-npi-plot} shows the relationship between the MSE and EDF for the Normal model per LOOCV round. As one can see from the plot, there is no strong relationship between the two, so it doesn't seem that the model is fitting an overly simplistic model and making very bad predictions with it consistently. In fact, it seems as though the simpler models (in EDF terms) are doing better in MSE terms (there are more points in the lower left of the plot).
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+load("npi-edf-mse.RData")
+plot(edf.mse.plot,xlab="EDF",ylab="MSE")
+@
+\end{center}
+\label{mse-edf-npi-plot}
+\caption{Results of running \texttt{gam.check} for the quasi-likelihood model for the tumour grade model.}
+\end{figure}
+
+Also worth noting is that the most popular MDS projection dimension was 5, agreeing with that selected via GCV with the full data. Re-running the models with MDS projection dimension set to 5 (ie. no GCV search) yielded slightly better LOOCV scores for both models but lead to model 1 (with Normal errors) fitting more models with no penalised components.
+
+Taking all of this into account, it seems that the quasi model is over-fitting slightly. However there is not a huge difference in CV score between the two MDS+DS models. It seems more reasonable to use the simpler, normal model.
+
 
 \subsection{Tumour grade model}
 
-Now from the start this is going to be harder. The data is effectively multinomial, so need to use quasi-likelihood.
+The tumour grade data are effectively multinomial, so need to use quasi-likelihood.
 <<>>=
 b.gcv.quasi<-gam.mds.fit(breast.dat$cancer.grade,breast.dist,NULL,45,c(2,0.85),family=quasi(link=identity,variance="constant"))
 @
-Using the method in the Red Book, p 231--232, we can look at the mean-variance relationship.
+Using the method in the Wood (2006), pp. 231--232, we can look at the mean-variance relationship.
 <<>>=
 e<-b.gcv.quasi$gam$residuals
 fv<-fitted(b.gcv.quasi$gam)
@@ -536,32 +483,41 @@ plot(b.gcv.quasi$scores$dim, b.gcv.quasi$scores$score,ylab="GCV score",xlab="MDS
 \caption{Relationship between the GCV score and the MDS projection dimension for the quasi-likelihood model for the tumour grade model.}
 \end{figure}
 
-\subsubsection{Comparison to lasso}
-
-Again, as above, we can run a multinomial response lasso on the data
-<<>>=
-cvmin.lasso<-cv.glmnet(breast.array,breast.dat$cancer.grade,family="multinomial")
-b.lasso<-glmnet(breast.array,breast.dat$cancer.grade,family="multinomial",lambda=cvmin.lasso$lambda.min)
-@
-and then calculate the MSE:
-<<>>=
-ds.mse<-sum((breast.dat$cancer.grade-round(fitted(b.gcv.quasi$gam),0))^2)
-lasso.mse<-sum((breast.dat$cancer.grade-apply(predict(b.lasso,breast.array,type="response"),1,which.max))^2)
-ds.mse
-lasso.mse
-@
-
 \subsubsection{Leave-one-out cross-validation}
+% see breast-cv-grade.R for the code!
+% also breast-cv-regtest-grade.R
 
 As in section \ref{npi-cv} we can calculate the CV scores for the two models.
 
-Above, the link function was determined by regressing the residuals onto the fitted values. To check that the link is reasonable, we can run this for each round of a cross-validation and see how the power fluctuates. This showed that over the 45 rounds of cross-validation, the power used in the link function varied between 0.06 and 3.1. The 3.1 appears to be an outlier, so using the mean value with that observation removed yields a link power of about 0.6.
+%% mean(link.pow)
+%%[1] 0.703517
+%%> median(link.pow)
+%%[1] 0.6362234
 
-Using this value, MDS+DS yields a CV score of 0.87, while the lasso is slightly better with a score of 0.69.
+Using the link power as determined above, MDS+DS yields a CV score of 0.88, while the lasso is slightly better with a score of 0.7. Changing the link power (for example running the regression to find a power per-LOOCV round) did not significantly effect the score.
+
+Unlike the NPI model, all of the fitted models used a large number of unpenalised functions (the mean EDF being 33).
+
+As with the NPI model, the most popular MDS projection was  the same as the one selected by GCV for the whole data set (8).
 
 
-% see breast-cv-grade.R for the code!
-% also breast-cv-regtest-grade.R
+\section{Concluding remarks}
+
+It looks as though the MDS+DS approach can be used for microarray data and that this gives results not dissimilar to the lasso. Given how long the lasso has been in development, it is very encouraging that results from MDS+DS are rather close. Perhaps given further development the approach can begin to rival that of the lasso for applications where distance between observations rather than the actual value matters. 
  
+\begin{thebibliography}{99}
+
+\bibitem{} Friedman, J, T Hastie, and R Tibshirani. ``Regularization Paths for Generalized Linear Models via Coordinate Descent.'' \textit{Journal of Statistical Software} 33 (1) (2010): 1-22.
+
+\bibitem{} Haybittle, JL, RW Blamey, and CW Elston. ``A prognostic index in primary breast cancer.'' \textit{British Journal of Cancer} (1982).
+ 
+\bibitem{} Tan, Y, S Leming, W Tong, and C Wang. ``Multi-class cancer classification by total principal component regression (TPCR) using microarray gene expression data.'' \textit{Nucleic Acids Research} 33 (1) (2005): 56-65.
+
+\bibitem{} Todd, JH, C Dowle, MR Williams, CW Elston, IO Ellis, CP Hinton, RW Blamey, and JL Haybittle. ``Confirmation of a prognostic index in primary breast cancer.'' \textit{British Journal of Cancer} 56 (4) (1987): 489-492.
+
+\bibitem{} Wood, S. N. (2006). \textit{Generalized Additive Models: An Introduction with R}. London: Chapman \& Hall.
+
+
+\end{thebibliography} 
 
 \end{document}
