@@ -517,7 +517,6 @@ It looks as though the MDS+DS approach can be used for microarray data and that 
 
 \bibitem{} Wood, S. N. (2006). \textit{Generalized Additive Models: An Introduction with R}. London: Chapman \& Hall.
 
-
 \end{thebibliography} 
 
 \end{document}

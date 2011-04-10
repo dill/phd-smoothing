@@ -12,6 +12,7 @@ ds.mse.cv<-c()
 lasso.mse.cv<-c()
 edf.cv<-c()
 best.dim<-c()
+rsq<-c()
 
 set.seed(1)
 
@@ -33,10 +34,11 @@ for(i in 1:b.rows){
    # fit the model
    #b.gcv<-gam.mds.fit(npi.samp,breast.dist,20,44,NULL,
    #b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL)
-   #b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85))#,
-   b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL,
+#   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85))#,
+#   b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL,
 #                      family=quasi(link="identity"))
 #                      family=Gamma(link="identity"))
+   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
                       family=quasi(link=power(1/3),variance="mu^3"))
 
    # record the GCV
@@ -48,7 +50,9 @@ for(i in 1:b.rows){
    edf.cv<-rbind(edf.cv,this.edf)
    # record the selected MDS dimension
    best.dim<-c(best.dim,b.gcv$mds.dim)
-   
+   # record adjusted R^2
+   rsq<-c(rsq,summary(b.gcv$gam)$r.sq)   
+
    # do some prediction
    pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
    names(pred.data)<-names(b.gcv$samp.mds)[-1]
