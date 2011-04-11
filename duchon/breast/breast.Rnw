@@ -379,7 +379,7 @@ Which gives a slightly improved $R^2$, GCV score and percent deviance explained.
 gam.check(b.gcv.quasi$gam)
 @
 \end{center}
-\label{gamcheck-2}
+\label{gamcheck-3}
 \caption{Results of running \texttt{gam.check} on model 3.}
 \end{figure}
 
@@ -416,7 +416,7 @@ Both the ``'best'' model (model 3) and the next best, (model 1) were compared wi
 % see breast-cv-npi.R for the code for this!
 The CV score for the lasso was 1.43, the normal and quasi-likelihood MDS+DS models scored 1.88 and 2.0 respectively. Looking at the EDFs for each LOOCV round, the normal model tended fit about half of the models as purely unpenalised functions (ie. just hyperplanes), as opposed to the quasi-likelihood model which only fit planes 3 times out of the 45 rounds. The MSE per round was roughly similar for models 1 and 3, with 3 doing slightly better on the larger deviations. Although models 1 and 3 had roughly similar MSEs in each round, the lasso tended to to not fail in the same way.
 
-Figure \ref{mse-edf-npi-plot} shows the relationship between the MSE and EDF for the Normal model per LOOCV round. As one can see from the plot, there is no strong relationship between the two, so it doesn't seem that the model is fitting an overly simplistic model and making very bad predictions with it consistently. In fact, it seems as though the simpler models (in EDF terms) are doing better in MSE terms (there are more points in the lower left of the plot).
+Figure \ref{mse-edf-npi-plot} shows the relationship between the MSE and EDF for the normal model per LOOCV round. As one can see from the plot, there is no strong relationship between the two, so it doesn't seem that the model is fitting an overly simplistic model and making very bad predictions with it consistently. In fact, it seems as though the simpler models (in EDF terms) are doing better in MSE terms (there are more points in the lower left of the plot).
 
 \begin{figure}[tb]
 \begin{center}
@@ -426,12 +426,26 @@ plot(edf.mse.plot,xlab="EDF",ylab="MSE")
 @
 \end{center}
 \label{mse-edf-npi-plot}
-\caption{Results of running \texttt{gam.check} for the quasi-likelihood model for the tumour grade model.}
+\caption{Plot of the EDF versus the MSE for the normal model for the NPI.}
 \end{figure}
 
 Also worth noting is that the most popular MDS projection dimension was 5, agreeing with that selected via GCV with the full data. Re-running the models with MDS projection dimension set to 5 (ie. no GCV search) yielded slightly better LOOCV scores for both models but lead to model 1 (with Normal errors) fitting more models with no penalised components.
 
-Taking all of this into account, it seems that the quasi model is over-fitting slightly. However there is not a huge difference in CV score between the two MDS+DS models. It seems more reasonable to use the simpler, normal model.
+Figure \ref{mse-compare-npi-plot} shows a plot of per-round MSE for the quasi model versus that of the normal model. This shows that the models score approximately the same per round.
+
+\begin{figure}[tb]
+\begin{center}
+<<fig=TRUE,echo=FALSE,cache=true>>=
+load("npi-cv-plotmse.RData")
+plot(plot.mse,xlab="Quasi MSE per CV round", ylab="Gaussian MSE per CV round",asp=1)
+abline(0,1)
+@
+\end{center}
+\label{mse-compare-npi-plot}
+\caption{Plot of per-round MSE for the quasi and gaussian models for the NPI. The points follow the line $y=x$, sgowing that the errors are broadly the same each round.}
+\end{figure}
+
+The quasi model is over-fitting slightly. However the Gaussian model is fitting overly simple models (those models with EDFs corresponding to fits involving only planes have consistently lower $R^2$ values, so there is no reason to believe they are fitting simpler models justifiably). There is not a huge difference in CV score between the two MDS+DS models. It therefore seems more reasonable to use the quasi model, even if it sometimes over-fits.
 
 
 \subsection{Tumour grade model}
@@ -494,16 +508,15 @@ As in section \ref{npi-cv} we can calculate the CV scores for the two models.
 %%> median(link.pow)
 %%[1] 0.6362234
 
-Using the link power as determined above, MDS+DS yields a CV score of 0.88, while the lasso is slightly better with a score of 0.7. Changing the link power (for example running the regression to find a power per-LOOCV round) did not significantly effect the score.
+Using the link power as determined above, MDS+DS yields a CV score of 0.88, while the lasso (using \texttt{glmnet} with multinomial errors) is slightly better with a score of 0.7. Changing the link power (for example running the regression to find a power per-LOOCV round) did not significantly effect the score.
 
-Unlike the NPI model, all of the fitted models used a large number of unpenalised functions (the mean EDF being 33).
-
-As with the NPI model, the most popular MDS projection was  the same as the one selected by GCV for the whole data set (8).
-
+Unlike the NPI model, all of the fitted models used a large number of unpenalised functions (the mean EDF being 33). As with the NPI model, the most popular MDS projection was  the same as the one selected by GCV for the whole data set (8).
 
 \section{Concluding remarks}
 
-It looks as though the MDS+DS approach can be used for microarray data and that this gives results not dissimilar to the lasso. Given how long the lasso has been in development, it is very encouraging that results from MDS+DS are rather close. Perhaps given further development the approach can begin to rival that of the lasso for applications where distance between observations rather than the actual value matters. 
+It looks as though the MDS+DS approach can be used for microarray data and that this gives results not dissimilar to the lasso. It looks as though dimension selection (perhaps via variable selection before finding distances) is critical to creating robust models. Using LOOCV to determine the robustness of the models provides a useful way to check for over-fitting. Looking at the EDFs for each LOOCV round also shows when models are under-fitting.
+
+Given how long the lasso has been in development, it is very encouraging that results from MDS+DS are rather close. Perhaps given further development the approach can begin to rival that of the lasso for applications where distance between observations rather than the actual value matters. 
  
 \begin{thebibliography}{99}
 

@@ -16,10 +16,6 @@ rsq<-c()
 
 set.seed(1)
 
-# pick the 15 columns most highly correlated with the response...
-#breast.array<-breast.array[,order(cor(breast.dat$npi,breast.array)^2,decreasing=T)[1:10]]
-
-
 for(i in 1:b.rows){
 
    # do the sampling
@@ -34,12 +30,12 @@ for(i in 1:b.rows){
    # fit the model
    #b.gcv<-gam.mds.fit(npi.samp,breast.dist,20,44,NULL,
    #b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL)
-#   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85))#,
+   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85))
 #   b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL,
 #                      family=quasi(link="identity"))
 #                      family=Gamma(link="identity"))
-   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
-                      family=quasi(link=power(1/3),variance="mu^3"))
+#   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
+#                      family=quasi(link=power(1/3),variance="mu^3"))
 
    # record the GCV
    this.score<-cbind(as.data.frame(b.gcv$scores),
@@ -74,7 +70,7 @@ names(score.cv)<-c("gcv","dim","booti")
 #names(ds.mse.cv)<-c("MSE","method")
 #ds.mse.cv<-ds.mse.cv$MSE
 
-#save.image("npi-cv.RData")
+#save.image(paste("npi-cv-",b.gcv$gam$family$family,".RData",sep=""))
 
 
 # MSE plot

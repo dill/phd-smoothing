@@ -65,7 +65,7 @@ names(ds.mse.cv)<-c("MSE","method")
 ds.mse.cv<-ds.mse.cv$MSE
 
 
-save.image("grade-cv.RData")
+save.image(paste("grade-cv-",b.gcv$gam$family$family,".RData",sep=""))
 #
 ## MSE plot
 plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
