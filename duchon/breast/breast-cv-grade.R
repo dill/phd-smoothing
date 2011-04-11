@@ -26,7 +26,8 @@ for(i in 1:b.rows){
 
    method<-"ds"
    # fit the model
-   b.gcv<-gam.mds.fit(grade.samp,breast.dist,NULL,44,c(2,0.90),
+#   b.gcv<-gam.mds.fit(grade.samp,breast.dist,NULL,44,c(2,0.90),
+   b.gcv<-gam.mds.fit(grade.samp,breast.dist,8,44,NULL,
 #                  family=quasi(link=power(0.6),variance="constant"))
                   family=quasi(link=power(0.4643001),variance="constant"))
    
@@ -65,7 +66,7 @@ names(ds.mse.cv)<-c("MSE","method")
 ds.mse.cv<-ds.mse.cv$MSE
 
 
-save.image(paste("grade-cv-",b.gcv$gam$family$family,".RData",sep=""))
+#save.image(paste("grade-cv-",b.gcv$gam$family$family,".RData",sep=""))
 #
 ## MSE plot
 plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),

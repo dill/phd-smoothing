@@ -516,6 +516,8 @@ Unlike the NPI model, all of the fitted models used a large number of unpenalise
 
 It looks as though the MDS+DS approach can be used for microarray data and that this gives results not dissimilar to the lasso. It looks as though dimension selection (perhaps via variable selection before finding distances) is critical to creating robust models. Using LOOCV to determine the robustness of the models provides a useful way to check for over-fitting. Looking at the EDFs for each LOOCV round also shows when models are under-fitting.
 
+The main pitfall of MDS+DS is highlighted by cross-validation. That being that the results are sensitive to observations (or columns) which are highly variable but not necessarily useful in prediction. The next step is to find a way of finding a projection that maximises the predictive power of the model rather than a projection that minimises the spectral norm of the distances.
+
 Given how long the lasso has been in development, it is very encouraging that results from MDS+DS are rather close. Perhaps given further development the approach can begin to rival that of the lasso for applications where distance between observations rather than the actual value matters. 
  
 \begin{thebibliography}{99}
