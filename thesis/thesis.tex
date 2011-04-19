@@ -80,11 +80,10 @@
 
 \maketitle
 \begin{abstract} 
-This thesis is split into three parts:
+This thesis is split into two parts:
 \begin{enumerate}
 	\item \textbf{Smoothing over complex regions}:
 	\item \textbf{Mixture model detection functions for distance sampling}:
-	\item \textbf{Parallel GAM fitting}:
 \end{enumerate}
 \end{abstract}
 
@@ -116,21 +115,28 @@ This thesis is split into three parts:
 \input{sc/sc}
 
 \chapter{Multidimensional scaling for domain-dependent finite area smoothing}
+\begin{quotation}
+``$X$ would definitely feature heavily in a matrix baby name book'' -- Eleanor
+\end{quotation}
 
 \input{mds/mds}
+
+\chapter{Generalized distance smoothing}
+
+\input{gds/gds}
 
 \chapter{Mixture model distance sampling detection functions}
 % "it's another laser in your intergalactic battle cruiser" - Len Thomas
 
 \input{mix/mix}
 
-\chapter{Parallel QR for additive model fitting}
-
-Using QR update to speed up model fitting for (G)AMs. At the moment the fitting can be done in parallel but not the smoothness selection; this will be the main body of the work.
-
-\chapter{Something else?}
-
-If there is time.
+%\chapter{Parallel QR for additive model fitting}
+%
+%Using QR update to speed up model fitting for (G)AMs. At the moment the fitting can be done in parallel but not the smoothness selection; this will be the main body of the work.
+%
+%\chapter{Something else?}
+%
+%If there is time.
 
 \appendix
 \chapter{Derivatives of the likelihood for mixture model detection functions}
