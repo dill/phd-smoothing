@@ -78,7 +78,8 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
    mse<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
    edf<-data.frame(dsgcv=NA,dsml=NA)
    
-   k<-100
+#   k<-100
+   k<-samp.size
    bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
    
@@ -122,14 +123,10 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
          samp.mds<-as.data.frame(samp.mds)
          
          ### predictions
-         # map the predictions
-         # using code from insert.mds
-         
          pred.mds<-insert.mds.generic(mds.obj,pred.dat,samp.dat)
          pred.mds<-as.data.frame(pred.mds)
          attr(pred.mds,"names")<-bigletters[(length(bigletters)-
                                              (dim(samp.mds)[2]-2)):length(bigletters)]
-         
          pr<-predict(b,pred.mds,type="response")
          
          # calculate the Brier score
