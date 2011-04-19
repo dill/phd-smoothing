@@ -79,7 +79,7 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
    edf<-data.frame(dsgcv=NA,dsml=NA)
    
 #   k<-100
-   k<-samp.size
+   k<-samp.size-100
    bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
    
