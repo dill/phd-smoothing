@@ -57,9 +57,11 @@ for(samp.size in c(200,300,400,500)){
    rm(edf)
 
    # wrong.mat...
-   split.mat<-as.data.frame(split(wrong.mat,rep(1:4,nrow(wrong.mat)/4)))
+   # this makes one matrix per method and then sums over the sims to get
+   # the number of times each MP was misclassified
    for(i in 1:4){
-      per.mp<-colSums(matrix(split.mat[[i]],685),na.rm=T)
+      split.mat<-wrong.mat[seq(i,nrow(wrong.mat),length(method.names)),]
+      per.mp<-200-colSums(split.mat,na.rm=T)
       bwrong.mat<-rbind(bwrong.mat,c(per.mp,samp.size,method.names[i]))
    }
 
@@ -67,7 +69,7 @@ for(samp.size in c(200,300,400,500)){
 
 # mudge wrong.mat
 bwrong.mat<-as.data.frame(bwrong.mat)
-brong.mat<-melt(bwrong.mat,c(201,202))
+bwrong.mat<-melt(bwrong.mat,(ncol(bwrong.mat)-1):ncol(bwrong.mat))
 names(bwrong.mat)<-c("samp.size","method","ignore","score")
 
 # add some column names
@@ -100,61 +102,4 @@ p<-ggplot(bwrong.mat)
 p<-p+geom_histogram(aes(score))
 p<-p+facet_grid(samp.size~method)
 print(p)
-
-
-
-#labbin<-labbin[-del.rows,]
-#lookup<-lookup[-del.rows,]
-#
-##
-#samp.size<-300
-#misclass<-read.csv(file=paste("freesim-misclass-",samp.size,".csv",sep=""))
-#
-#model.names<-misclass[,687]
-#wrong.mat<-misclass[,-c(1,687)]
-#
-## now looking at the errors...
-#res<-wrong.mat
-#res<-matrix(as.numeric(as.matrix(res)),nrow(res),ncol(res))
-#res<-res[,mpid]
-#
-##### per simulation results
-#
-#sim.res<-data.frame(mse=685-rowSums(res),
-#                    model=model.names,
-#                    sim=as.numeric(sapply(1:200,rep,5)))
-#
-#p<-ggplot(sim.res)
-#p<-p+geom_histogram(aes(y=mse,sim,binwidth=1),stat="identity")
-#p<-p+facet_wrap(~model,nrow=1)
-#p<-p+labs(x="Simulation",y="Missclassifications")
-#print(p,vp=subplot(1,1))
-#
-#
-##### per MP simulations
-#
-#ds.mps<-res[seq(1,200*5,5),]
-#dsml.mps<-res[seq(2,200*5,5),]
-#lasso.mps<-res[seq(3,200*5,5),]
-#glmnet.mps<-res[seq(4,200*5,5),]
-#glm.mps<-res[seq(5,200*5,5),]
-#
-#ds.mps<-data.frame(wrong=200-colSums(ds.mps),id=mpid,party=mpparty,model=rep("ds",676))
-#dsml.mps<-data.frame(wrong=200-colSums(dsml.mps),id=mpid,party=mpparty,model=rep("dsml",676))
-#lasso.mps<-data.frame(wrong=200-colSums(lasso.mps),id=mpid,party=mpparty,model=rep("lasso",676))
-#glmnet.mps<-data.frame(wrong=200-colSums(glmnet.mps),id=mpid,party=mpparty,model=rep("glmnet",676))
-#glm.mps<-data.frame(wrong=200-colSums(glm.mps),id=mpid,party=mpparty,model=rep("glm",676))
-#
-#mp.res<-as.data.frame(rbind(ds.mps,dsml.mps,glmnet.mps,lasso.mps,glm.mps))
-#
-#p<-ggplot(mp.res)
-#p<-p+geom_histogram(aes(y=wrong,id,colour=party),stat="identity")
-#p<-p+opts(legend.position="none")
-#p<-p+facet_wrap(~model,nrow=1)
-#p<-p+labs(x="MPs",y="Missclassifications")
-#print(p,vp=subplot(2,1))
-#
-#for(mod in unique(model.names)){
-#   cat(mod,mean(sim.res$mse[sim.res$model==mod]),"\n")
-#}
 
