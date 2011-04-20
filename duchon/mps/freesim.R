@@ -74,12 +74,11 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
    wrong.mat<-c()
    retvec<-rep(NA,max(mpid))
 
-   brier<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
-   mse<-data.frame(dsgcv=NA,dsml=NA,lasso=NA,glmnet=NA,glm=NA)
+   brier<-data.frame(dsgcv=NA,dsml=NA,glmnet=NA,glm=NA)
+   mse<-data.frame(dsgcv=NA,dsml=NA,glmnet=NA,glm=NA)
    edf<-data.frame(dsgcv=NA,dsml=NA)
    
-#   k<-100
-   k<-samp.size-100
+   k<-100
    bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
    
