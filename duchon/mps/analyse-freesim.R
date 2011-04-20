@@ -28,8 +28,18 @@ bwrong.mat<-c()
 for(samp.size in c(200,300,400,500)){
    load(paste("freesim-",samp.size,".RData",sep=""))
 
+   method.names<-c("dsgcv","dsml","glmnet","glm")
+   ### BUG
+   # there was an extra column in the data.frames used to hold the results
+   # to get around this:
+   brier<-brier[,-5]
+   names(brier)<-method.names
+   mse<-mse[,-5]
+   names(mse)<-method.names
+
    # make a frame of Brier scores
    brier<-brier[-1,]
+
    melted.brier<-melt(brier)
    bbrier<-rbind(bbrier,cbind(melted.brier,rep(samp.size,dim(melted.brier)[2])))
    rm(brier)
@@ -40,7 +50,25 @@ for(samp.size in c(200,300,400,500)){
    bmse<-rbind(bmse,cbind(melted.mse,rep(samp.size,dim(melted.mse)[2])))
    rm(mse)
 
+   # and the EDFs
+   edf<-edf[-1,]
+   melted.edf<-melt(edf)
+   bedf<-rbind(bedf,cbind(melted.edf,rep(samp.size,dim(melted.edf)[2])))
+   rm(edf)
+
+   # wrong.mat...
+   split.mat<-as.data.frame(split(wrong.mat,rep(1:4,nrow(wrong.mat)/4)))
+   for(i in 1:4){
+      per.mp<-colSums(matrix(split.mat[[i]],685),na.rm=T)
+      bwrong.mat<-rbind(bwrong.mat,c(per.mp,samp.size,method.names[i]))
+   }
+
 }
+
+# mudge wrong.mat
+bwrong.mat<-as.data.frame(bwrong.mat)
+brong.mat<-melt(bwrong.mat,c(201,202))
+names(bwrong.mat)<-c("samp.size","method","ignore","score")
 
 # add some column names
 names(bbrier)<-c("method","score","samp.size")
@@ -50,13 +78,28 @@ names(bmse)<-c("method","score","samp.size")
 p<-ggplot(bbrier)
 p<-p+geom_boxplot(aes(method,score))
 p<-p+facet_wrap(~samp.size)
+p<-p+labs(y="Brier score")
 print(p,vp=subplot(1,1))
 
 # plot the MSE scores in boxplots
 p<-ggplot(bmse)
 p<-p+geom_boxplot(aes(method,score))
 p<-p+facet_wrap(~samp.size)
+p<-p+labs(y="MSE")
 print(p,vp=subplot(2,1))
+
+
+# now plot the EDFs for GCV and ML
+#quartz()
+#par(mfrow=c(1,2))
+#hist(edf[,1],main="",xlab="EDF") 
+#hist(edf[,2],main="",xlab="EDF") 
+
+quartz()
+p<-ggplot(bwrong.mat)
+p<-p+geom_histogram(aes(score))
+p<-p+facet_grid(samp.size~method)
+print(p)
 
 
 

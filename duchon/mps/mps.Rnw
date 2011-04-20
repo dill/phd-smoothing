@@ -99,9 +99,7 @@ Public Whip\footnote{\url{http://www.publicwhip.org.uk/}.} provide data on the v
 
 \section{The model}
 
-Taking the matrix of votes, Euclidean distances between the MPs (rows) were found and used to form the distance matrix. Multidimensional scaling was then used to project these distances into a GCV-optimal number of dimensions. Smoothing was then performed (using Duchon splines in \texttt{mgcv}) in votespace to predict the party affiliation of the MP using logit link.
-
-In order to stabilise the MDS projection a start grid was used and the samples and prediction points were inserted into this MDS configuration. When this was not used there were numerical issues when fitting the GAM.
+Taking the matrix of votes, Euclidean distances between the MPs (rows) were found and used to form the distance matrix. Multidimensional scaling was then used to project these distances into MDS space (dimension selection was performed by optimizing GCV and ML scores). The party affiliation (Labour versus not Labour) was then predicted using a logit link.
 
 \section{Using free votes to predict party}
 

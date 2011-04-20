@@ -131,13 +131,39 @@ Going back to the Aral sea example from section \ref{aral-sec}, we can fit a mod
 \section{Generalized distance smoothing}
 \label{gds-gds-examples}
 
-\subsection{Software implementation - \mdspack}
+Duchon splines are able to smooth in high dimensions without the usual problems that come from such situations. Multidimensional scaling allows the projection of any arbitrary distance matrix [TKTKTK check] into Euclidean space. The combination of these two methods has been sucessful in the within-area distance case above, but also allows for smoothing using any set of distances.
+
+Data are often collected on scales that are not necessarily physically meaningful (for example in psychological studies or attitude surveys) but the data are used as if the scale was absolute in some sense. In such cases the distances between the observations may be meaningful but not the actualy ordinal values.
+
+Taking data which is either already distances or distances calculated from data, the MDS projection can be found and then a smooth over those data can be used to model some response.
+
+% concrete example of the above
+
+% measurement error
+
+%
+\subsection{Examples}
+
+\textbf{SOME BLURB HERE}
+
+
+\subsubsection{MP data}
+
+
+
+
+\subsubsection{Breast cancer microarrays}
+
+
+
+
+\subsubsection{Leukemia microarrays}
+
+
+
+\section{Software implementation - \mdspack}
 
 The methods detailed in this section, namely the use of Duchon splines along with MDS to perform smoothing are provided in the \textsf{R} package \mdspack\ which is available at A WEBSITE THAT MIGHT BE CRAN.
 
-
-\rule{6in}{1pt}
-
-\rule{6in}{1pt}
 
 
