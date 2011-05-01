@@ -43,7 +43,7 @@ pred.grid<-data.frame(x=gxx[pred.onoff],y=gyy[pred.onoff])
 
 ######################################################################
 # plot setup
-par(mfrow=c(1,2),las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
+par(mfrow=c(2,2),las=1,mgp=c(1.5,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 
 # set the x and y values for the image plot
 aral.lab<-latlong2km(unique(sort(aral$lo)),unique(sort(aral$la)),59.5,45)
@@ -61,34 +61,34 @@ lines(bnd,lwd=2)
 
 #######################################################################
 ##### fit a thin plate model
-#tp.fit<-gam(chl~s(x,y,k=70),data=aral.dat,family=Gamma(link="log"))
-#
-#
-#tp.pred<-predict(tp.fit,newdata=pred.grid,type="response")
-#pred.mat<-matrix(NA,gm,gn)
-#pred.mat[pred.onoff]<-tp.pred
-#image(pred.mat,x=unique(gxx),y=unique(gyy),main="tprs",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
-#contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
-#lines(bnd,lwd=2)
-#
-#######################################################################
-##### soap 
-#s.knots<-make_soap_grid(bnd,c(12,12))
-#
-#soap.fit<-gam(chl~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.knots,
-#            family=Gamma(link="log"),data=aral.dat)
-#
-## prediction
-#soap.pred<-predict(soap.fit,newdata=pred.grid,type="response")
-#pred.mat<-matrix(NA,gm,gn)
-#pred.mat[pred.onoff]<-soap.pred
-#image(pred.mat,x=unique(gxx),y=unique(gyy),xlab="km (East)",ylab="km (North)",main="soap",xlim=xlims,ylim=ylims,asp=1)
-#contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
-#lines(bnd,lwd=2)
-#
-#
-#######################################################################
-##### MDS
+tp.fit<-gam(z~s(x,y,k=70),data=aral.dat,family=Gamma(link="log"))
+
+
+tp.pred<-predict(tp.fit,newdata=pred.grid,type="response")
+pred.mat<-matrix(NA,gm,gn)
+pred.mat[pred.onoff]<-tp.pred
+image(pred.mat,x=unique(gxx),y=unique(gyy),main="tprs",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
+contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
+lines(bnd,lwd=2)
+
+######################################################################
+#### soap 
+s.knots<-make_soap_grid(bnd,c(12,12))
+
+soap.fit<-gam(z~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.knots,
+            family=Gamma(link="log"),data=aral.dat)
+
+# prediction
+soap.pred<-predict(soap.fit,newdata=pred.grid,type="response")
+pred.mat<-matrix(NA,gm,gn)
+pred.mat[pred.onoff]<-soap.pred
+image(pred.mat,x=unique(gxx),y=unique(gyy),xlab="km (East)",ylab="km (North)",main="soap",xlim=xlims,ylim=ylims,asp=1)
+contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
+lines(bnd,lwd=2)
+
+
+######################################################################
+#### MDS
 
 names(aral.dat)<-c("x","y","z")
 

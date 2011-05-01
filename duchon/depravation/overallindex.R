@@ -124,5 +124,5 @@ p<-p+geom_point(aes(score,vote))
 p<-p+facet_wrap(~plotn,nrow=1)
 p<-p+labs(y="Proportion voting for party per constituency",
           x="Median multiple depravation score per constituency\n(Large score == more deprived)")
-p
+print(p)
 
