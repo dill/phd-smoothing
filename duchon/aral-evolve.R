@@ -13,7 +13,8 @@ aral<-read.csv("aral.dat",sep=" ")
 bnd<-read.csv("aralbnd.csv")
 
 #zlims<-c(1.905461, 19.275249)
-zlims<-c(1, 20)
+zlims<-c(1, 17)
+z.levels<-pretty(zlims,15)
 
 # first cut out the crap using inSide
 onoff<-inSide(bnd,aral$lo,aral$la)
@@ -67,8 +68,8 @@ tp.fit<-gam(z~s(x,y,k=70),data=aral.dat,family=Gamma(link="log"))
 tp.pred<-predict(tp.fit,newdata=pred.grid,type="response")
 pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-tp.pred
-image(pred.mat,x=unique(gxx),y=unique(gyy),main="tprs",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1)
-contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
+image(pred.mat,x=unique(gxx),y=unique(gyy),main="tprs",xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1,zlim=zlims)
+contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=z.levels)
 lines(bnd,lwd=2)
 
 ######################################################################
@@ -82,8 +83,8 @@ soap.fit<-gam(z~s(x,y,k=49,bs="so",xt=list(bnd=list(bnd))),knots=s.knots,
 soap.pred<-predict(soap.fit,newdata=pred.grid,type="response")
 pred.mat<-matrix(NA,gm,gn)
 pred.mat[pred.onoff]<-soap.pred
-image(pred.mat,x=unique(gxx),y=unique(gyy),xlab="km (East)",ylab="km (North)",main="soap",xlim=xlims,ylim=ylims,asp=1)
-contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=pretty(zlims,15))
+image(pred.mat,x=unique(gxx),y=unique(gyy),xlab="km (East)",ylab="km (North)",main="soap",xlim=xlims,ylim=ylims,asp=1,zlim=zlims)
+contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,levels=z.levels)
 lines(bnd,lwd=2)
 
 
@@ -98,7 +99,7 @@ plot.it<-function(dat,main.title){
    pred.mat[pred.onoff]<-dat$pred
    image(pred.mat,x=unique(gxx),y=unique(gyy),main=main.title,
          xlab="km (East)",ylab="km (North)",xlim=xlims,ylim=ylims,asp=1,zlim=zlims)
-   contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,zlim=zlims)#,levels=pretty(zlims,15))
+   contour(z=pred.mat,x=unique(gxx),y=unique(gyy),add=TRUE,labcex=0.5,zlim=zlims,levels=z.levels)
    lines(bnd,lwd=2)
 }
 
