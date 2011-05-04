@@ -5,12 +5,10 @@ library(mdspack)
 
 #this.seed<-get(".Random.seed",envir=.GlobalEnv) ## store RNG seed
 
-
 wt2_smooth_test<-function(samp.size=250,noise.level=0.9,plot.it=FALSE){
  
    ## create a boundary...
    bnd <- read.csv("wt2-verts.csv",header=FALSE)
-
    names(bnd)<-c("x","y")
    
    ## Simulate some fitting data, inside boundary...
@@ -46,36 +44,11 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.9,plot.it=FALSE){
                   y=gendata$y[-samp.ind],
                   z=gendata$z[-samp.ind])
 
-   # create the grid
-   my.grid<-create_refgrid(bnd,120)
-
-   ## do the MDS on the grid 
-   # create D
-   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster=0)
- 
-   # perform mds on D
-   grid.mds<-cmdscale(D.grid,eig=TRUE,k=3,x.ret=TRUE)
- 
-   # sample points insertion
-   samp.mds<-insert.mds(gendata.samp,my.grid,grid.mds,bnd,faster=1)
-
-   # prediction points insertion
-   pred.mds<-insert.mds(gendata,my.grid,grid.mds,bnd,faster=1)
-
-   grid.mds<-grid.mds$points
-
    # add noise
    noise<-noise.level*rnorm(length(samp.ind))
    #> summary(gendata$z)
    # Min. 1st Qu. Median Mean 3rd Qu. Max.
    #0.000000 0.000236 0.269300 0.276300 0.479600 0.850000
- 
-   # mapped sample data
-   samp.data<-list(x=c(),y=c(),z=c())
-   samp.data$x<-samp.mds[,1]
-   samp.data$y<-samp.mds[,2]
-   samp.data$w<-samp.mds[,3]
-   samp.data$z<-gendata.samp$z+noise
  
    # non-mapped sample data
    nsamp.data<-list(x=c(),y=c(),z=c())
@@ -85,25 +58,12 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.9,plot.it=FALSE){
  
    ### create prediction data
    # non-mapped prediction data
-   npred.data<-list(x=rep(0,length(gendata$x)+length(samp.data$x)),
-                   y=rep(0,length(gendata$x)+length(samp.data$y)))
+   npred.data<-list(x=rep(0,length(gendata$x)+length(nsamp.data$x)),
+                   y=rep(0,length(gendata$x)+length(nsamp.data$y)))
    npred.data$x[-samp.ind]<-gendata$x
    npred.data$y[-samp.ind]<-gendata$y
    npred.data$x[samp.ind]<-nsamp.data$x
    npred.data$y[samp.ind]<-nsamp.data$y
- 
- 
-   # put this in the correct format
-   plen<-length(gendata$x)+length(samp.data$x)
-   pred.data<-list(x=rep(0,plen),
-                   y=rep(0,plen),
-                   w=rep(0,plen))
-   pred.data$x[-samp.ind]<-pred.mds[,1]
-   pred.data$y[-samp.ind]<-pred.mds[,2]
-   pred.data$w[-samp.ind]<-pred.mds[,3]
-   pred.data$x[samp.ind]<-samp.mds[,1]
-   pred.data$y[samp.ind]<-samp.mds[,2]
-   pred.data$w[samp.ind]<-samp.mds[,3]
  
    ### Now do some fitting and prediction
    # tensor thin plate   
@@ -111,9 +71,11 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.9,plot.it=FALSE){
    #fv.te <- predict(b.mapped.te,newdata=pred.data)
 
    # mapping
-   b.mapped.s<-gam(z~s(x,y,w,k=100,m=c(3,3/2-1),bs="ds"),data=samp.data)
-   fv.s <- predict(b.mapped.s,newdata=pred.data)
-
+   #b.mapped.s<-gam(z~s(x,y,w,k=100,m=c(3,3/2-1),bs="ds"),data=samp.data)
+   #fv.s <- predict(b.mapped.s,newdata=pred.data)
+   b.mds<-gam.mds(nsamp.data,npred.data,bnd,grid.res=c(120))
+   fv.s<-b.mds$pred
+    
    # normal tprs
    b.tprs<-gam(z~s(x,y,k=100),data=nsamp.data)
    fv.tprs <- predict(b.tprs,newdata=npred.data)
@@ -136,16 +98,12 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.9,plot.it=FALSE){
    ind<-ind[na.ind]
    ind<-ind[onoff]
  
- 
    ## plotting
    if(plot.it){
  
       # plot for truth, mds, tprs and soap
-      #par(mfrow=c(2,2))
-      #par(mar=c(3,3,3,3))
       par(mfrow=c(2,2),mar=c(1.8,1.5,1.8,1.5),las=1)
       
-
       # axis scales
       xscale<-seq(min(gendata$x),max(gendata$x),length.out=50)
       yscale<-seq(min(gendata$y),max(gendata$y),length.out=50)
@@ -159,7 +117,9 @@ wt2_smooth_test<-function(samp.size=250,noise.level=0.9,plot.it=FALSE){
       pred.mat<-rep(NA,length(gendata.ind$x))
       pred.mat[ind]<-fv.s
       pred.mat<-matrix(pred.mat,50,50)
-      image(xscale,yscale,pred.mat,main="mds+tprs",asp=1,xlab="",ylab="",col=heat.colors(100),cex.axis=0.5)
+      image(xscale,yscale,pred.mat,
+            main=paste("mds+Duchon ",b.mds$mds.dim,"D",sep=""),
+            asp=1,xlab="",ylab="",col=heat.colors(100),cex.axis=0.5)
       contour(xscale,yscale,pred.mat,add=T,labcex=0.3,lwd=0.5)
       
  #     pred.mat<-rep(NA,length(gendata.ind$x))

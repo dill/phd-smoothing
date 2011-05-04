@@ -101,17 +101,19 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
          # extract the GCV
          gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
          i<-i+1
-         if(i>2){
-            if(gcvs[i-1]>gcvs[i-2]){ 
-               break
-            }
-         }
+         #if(i>2){
+         #   if(gcvs[i-1]>gcvs[i-2]){ 
+         #      break
+         #   }
+         #}
       }
 
       # now that's done, what was the smallest GCV?
       and.the.winner.is<-which.min(gcvs)
 
       fit.ret<-model.list[[and.the.winner.is]]
+
+      fit.ret$gcv.dim<-cbind(mds.bnds,gcvs)
 
    # otherwise, do what the user wants
    }else{
