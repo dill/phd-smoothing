@@ -136,7 +136,9 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
    new.obj$samp.mds<-fit.ret$samp.mds
    new.obj$gam<-fit.ret$gam
    new.obj$D.samp<-fit.ret$D.samp
+   new.obj$gcv.dim<-fit.ret$gcv.dim
    grid.mds<-fit.ret$grid.mds
+
 
    ###########################################################################
    # do the preictions
