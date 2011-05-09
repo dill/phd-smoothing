@@ -5,55 +5,31 @@
 
 \section{Introduction}
 
-The previous chapter makes clear that there are two conflicting issues impeding the utility of this approach to smoothing over complex regions. The first is that the ordering of the points in space must be maintained, but (second) once a sufficiently high dimensional projection of the data has been obtained, the nullspace of the penalty must be kept as small as possible in order to stop a large space of wiggly function from being fit without being penalised.
+The previous chapter makes clear that we face a trade-off in using \mdsap. If the ordering of the points in space must be maintained, a sufficiently high dimensional projection of the data has been obtained. But increasing the projection dimension causes the nullspace of the penalty to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results. 
 
-Facing the interplay of these two factors, the requirement we seek is clear: we wish to smooth in as many dimensions as possible but while doing this we must also limit the nullspace of the penalty. Fortunately, this is possible using the ideas put forth in \cite{duchon77}. The methods detailed there give a generalisation of the thin plate spline basis that allows for the nullspace to be constrained.
+The requirement we seek is clear: we wish to smooth in as many dimensions as possible but while doing this we must also limit the nullspace of the penalty. Fortunately, this is possible using the ideas put forth in \cite{duchon77}. The methods detailed there give a generalisation of the thin plate spline basis that allows for the nullspace to be constrained.
 
 The next section goes into the technical detail of how this approach works. Section \ref{gds-wad-examples} shows how this can be useful in the within-area distance case discussed in chapters \label{chap-sc} and \label{chap-mds}. Section \ref{gds-gds-examples} gives examples of generalized distance smoothing.
 
-\section{Duchon splines}
+\section{From thin plate splines to Duchon splines}
 
 \cite{simonbook} p. 153 gives the formulation for the thin plate penalty in $d$ dimensions with penalty order $m$ as:
 \begin{equation}
 J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f(x_1,\dots,x_d)}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d,
 \label{tprs-pen}
 \end{equation}
-where the summation index can be interpreted as all of the possible combinations of penalty orders such than their sum is still $m$. The restriction $2m>d$ is also imposed. Although $m$ may be as small as $d/2$, as $d$ gets larger, $m$ is still going to be quite big.
+where the summation index can be interpreted as all of the possible combinations of penalty orders such than their sum is still $m$. The technical restriction $2m>d$ is also imposed to ensure that the function $f$ remains continuous.
 
-\cite{duchon77} suggests using the Fourier transform of the derivatives in the penalty, thus penalising those second derivatives that have particularly high frequencies (which one can think of as equivalent to penalising the wiggly parts of the function, as in (\ref{tprs-pen})). Duchon then goes on to suggest putting a weighting factor in the integral. 
-
-The Fourier transform decomposes functions into their frequency domain representations (from $\mathbf{x}$ to $\boldsymbol{\tau}$). The Fourier transform of some function, $g$, is defined in the usual way:
-\begin{equation*}
-\mathfrak{F} g(\boldsymbol{\tau}) = \int \ldots \int_{\mathbb{R}^n} e^{2 \pi \sqrt{-1} \mathbf{x}^\text{T} \boldsymbol{\tau}} g(\mathbf{x}) \text{d}\mathbf{x}.
-\end{equation*}
-Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (an $n$-vector which characterizes the frequencies). More detail on Fourier transforms can be found in (for example) \cite{bracewell}. 
-
-The penalty proposed by Duchon can be written (in the above notation) as:
-\begin{equation*}
-\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^n} \lvert \boldsymbol{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau}.
-\end{equation*}
-Duchon shows that since the Fourier transform is isometric on $\mathcal{L}^2(\mathbb{R}^n)$, $J_{m,d} = \breve{J}_{m,d}$ when $s=0$ (this result is known as Plancherel's theorem). Duchon chooses the weighting function $\lvert \boldsymbol{\tau} \rvert^{2s}$ due to its invariance to translation and rotation (here $\lvert \cdot \rvert$ is the Euclidean norm).
-
-When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$. So, $s$ can be used to allow smoothing in high dimensional spaces, using lower-order penalties whilst still yielding continuous results.
-
-Using the above results it is then possible to use $m=2$ for smoothing in any dimension ($d$) by changing the value of $s$. Indeed, the inequality relating the three quantities can be seen as a guide for choosing $s$, given some fixed values of $d$ and $m$:
-\begin{equation*}
-d/2 -m \leq s,
-\end{equation*}
-so, letting:
+The form of $f$ is:
 \begin{equation}
-s=d/2-2,
-\label{duchon-s}
+f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
+\label{tprs-basis}
 \end{equation}
-does not seem unreasonable. Here $d$ is the dimension of the MDS projection (ie. the dimension in which we are smoothing). 
-
-One can calculate the size of the nullspace of a thin plate spline:
+(\cite{wood2003}) where the first summation is a series of radial basis functions, one per datum and the second summation are the unpenalised terms in the nullspace of the penalty. These are $M$ linearly independent polynomials of degree less than $m$. $M$ is given by:
 \begin{equation*}
-M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix},
+M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}.
 \end{equation*}
-(see \cite{wood2003}, p. 97).
-
-Figure \ref{nullspace-dim} shows a comparison between the nullspace dimension for thin plate regression splines (\textit{a la} \cite{wood2003}) (in blue) and Duchon splines when $s$ is set as in (\ref{duchon-s}) (in red). As can be seen in the graphic, there is a big difference in the nullspace dimension between the two bases even when the smoothing dimension is fairly small.
+In the cases presented so far, $d$ (the MDS projection dimension) is known and $m$ is dictated by $d$. Increasing $d$ increases $m$ (by the continuity condition that $2m>d$) and hence increases $M$ in the manner above. Therefore $M$ increases very quickly with the number of dimensions used; this is shown in figure \ref{nullspace-dim} (blue line). As more functions are included in the nullspace, the more and more complex (because of their linear independence) they are. Having very wiggly functions in the nullspace is certainly undesirable, having many of them will be extremely problematic for model parsimony. 
 
 \begin{figure}
 \centering
@@ -62,6 +38,68 @@ Figure \ref{nullspace-dim} shows a comparison between the nullspace dimension fo
 \label{nullspace-dim}
 % generated by thesis/mds/figs/nullspace-dim.R
 \end{figure}
+
+\cite{duchon77} begins with a much more general penalty than (\ref{tprs-pen}), a much more rigorous treatment is given in that paper; here is a more informal explanation of how from (\ref{tprs-pen}) one can reach the penalty given by Duchon.
+
+
+The usual thin plate regression spline penalty given in (\ref{tprs-pen}) can be thought of as a measure of ``wigglyness'' or ``roughness'', taking higher values when $f$ is particularly rough or wiggly (an indication that the spline is attempting to interpolate). Integrating the square of the derivatives over the whole of $\mathbb{R}^d$ penalises the fitting such that the optimisation alters the parameters in a way that reduces the wigglyness of the whole function (TKTKTK come back and re-write this sentance).
+
+
+Duchon's proposal is to change the penalty so instead of integrating the squared derivatives, the squared Fourier transform of the derivatives is integrated. The Fourier transform decomposes functions defined in space into their frequency domain representations (from $\mathbf{x}$ to $\boldsymbol{\tau}$). This is analogous to finding the Fourier series approximating $g$ (but in the limit such that the sum is no longer approximate). One can also think of the Fourier transform as a change of basis. Mathematically, the Fourier transform of some function, $g$, is defined as:
+\begin{equation*}
+\mathfrak{F} g(\boldsymbol{\tau}) = \int \ldots \int_{\mathbb{R}^n} e^{2 \pi \sqrt{-1} \mathbf{x}^\text{T} \boldsymbol{\tau}} g(\mathbf{x}) \text{d}\mathbf{x}.
+\end{equation*}
+Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (an $n$-vector which characterizes the frequencies). More detail on Fourier transforms can be found in (for example) \cite{bracewell} and \cite{beerends}. 
+
+TKTKTK COME BACK TO THIS!!!
+
+Taking the Fourier transform of the penalty allows us to think of the quantity is calculated in a different way. Rather than thinking about measuring the wigglyness over the whole of $f$, point by point, instead the measure is based on the frequencies of $f$, the higher the frequency components contribute more to the integral than the lower ones. Intuitively this makes sense, since the low frequency components of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more likely to represent $f$ attempting to interpolate parts of the smooth when dissimilar values are close together. (TKTKTK add more here)
+
+Mathematically, this penalty can be written:
+\begin{equation}
+J_{m,d} = \int \ldots \int_{\mathbb{R}^d} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau}.
+\label{tprs-pen-ft}
+\end{equation}
+
+The penalties, (\ref{tprs-pen}) and (\ref{tprs-pen-ft}) are in fact equivalent by the Plancherel theorem (TKTKTK cite Plancherel), so one can take either view and obtain the same results when smoothing. 
+
+Since this alternative, frequency interpretation appears to be inuitive and gives the same results as the conventional penalty, we could extend it to a more general class of penalties by putting a weighting in the integral:
+\begin{equation*}
+\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^d} w(\boldsymbol{\tau}) \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau},
+\end{equation*}
+the function $w$ could then be used to pick out particularly high frequencies and penalise those more than the lower frequency ones. It is also possible to recover (\ref{tprs-pen}) by simply setting $w(\boldsymbol{\tau})=1, \forall \boldsymbol{\tau}$.
+
+Duchon shows that if $w(\boldsymbol{\tau})= \lvert \boldsymbol{\tau} \rvert^{2s}$ is used then the thin plate spline functions in \ref{tprs-basis} arise. In this case the penalty is:
+\begin{equation}
+\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^d} \lvert \boldsymbol{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau},
+\label{duchon-penalty}
+\end{equation}
+again, (\ref{tprs-pen}) can be recovered from this penalty (by setting $s=0$). When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$. So $s$ can be used to allow high dimensional smoothing, while still using lower-order penalties without yielding discontinuous functions. One can therefore think of $s$ as a kind of ``fudge factor'' that allows the conditions on $m$ and $d$ to be relaxed; given some fixed combination of $m$ and $d$, an $s$ can be found (by simply calculating $s=d/2-m$).
+
+Looking back to figure \ref{nullspace-dim} (where the blue line showed the increasing numbers of functions in the nullspace of the conventional thin plate penalty), the red line gives the number of functions in the nullspace of the penalty in (\ref{duchon-penalty}). In this case $m=2$ has been chosen to remain constant as the dimensionality increases.
+
+When using MDS TKTKTK something something manifolds something\ldots 
+\ldots In any small region a 2-dimensional manifold will look like $\mathbb{R}^2$, in the same small region the smoother's behaviour will closely approxiate a regular thin plate regression spline with $m=2$ on the tangent space of the manifold (as the smoothing parameter tends to zero, at least).
+
+
+
+
+\subsection{Duchon-type penalties elsewhere}
+SAY SOMETHING ABOUT \cite{girosi} TKTKTK add page numbers to ref
+
+
+
+
+Sum up
+
+
+
+
+
+
+
+
+
 
 \section{Choosing MDS projection dimension}
 
