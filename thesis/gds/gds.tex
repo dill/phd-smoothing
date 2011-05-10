@@ -47,7 +47,7 @@ The usual thin plate regression spline penalty given in (\ref{tprs-pen}) can be 
 \begin{equation*}
 \mathfrak{F} g(\boldsymbol{\tau}) = \int \ldots \int_{\mathbb{R}^d} e^{2 \pi \sqrt{-1} \mathbf{x}^\text{T} \boldsymbol{\tau}} g(\mathbf{x}) \text{d}\mathbf{x}.
 \end{equation*}
-Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (TKTKTK a $d$-vector which characterizes the frequencies). More detail on Fourier transforms can be found in (for example) \cite{bracewell} and \cite{beerends}. 
+Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (a $d$-vector of continuous frequency spectra). More detail on Fourier transforms can be found in (for example) \cite{bracewell}, \cite{chu-ft} and \cite{beerends}. 
 
 Taking the Fourier transform of the penalty allows us to think of how the penalty is calculated in a different way. Rather than thinking about measuring the wigglyness over the whole of $f$, point by point, instead the measure is based on the frequencies of $f$, the higher the frequency components contribute more to the integral than the lower ones. Intuitively this makes sense, since the low frequency components of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more likely to represent $f$ attempting to interpolate parts of the smooth where consecutive dissimilar values occur.
 
@@ -56,7 +56,7 @@ Taking the Fourier transform of the derivative terms in (\ref{tprs-pen}) yields 
 J_{m,d} = \int \ldots \int_{\mathbb{R}^d} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau}.
 \label{tprs-pen-ft}
 \end{equation}
-The penalties (\ref{tprs-pen}) and (\ref{tprs-pen-ft}) are in fact equivalent by the Plancherel theorem (TKTKTK cite Plancherel), so one can take either view and obtain the same numerical value for the penalty. 
+The penalties (\ref{tprs-pen}) and (\ref{tprs-pen-ft}) are in fact equivalent by Plancherel's theorem (\cite{vretblad} p. 180), so one can take either view and obtain the same numerical value for the penalty. 
 
 We could extend this frequency-based interpretation of the penalty to a more general class of penalties by putting a weighting in the integral:
 \begin{equation*}
@@ -79,7 +79,7 @@ Looking back to figure \ref{nullspace-dim} (where the blue line showed the incre
 
 
 \subsection{Duchon-type penalties elsewhere}
-SAY SOMETHING ABOUT \cite{girosi} TKTKTK add page numbers to ref
+SAY SOMETHING ABOUT \cite{girosi} \cite{elements} p. 168.
 
 
 
