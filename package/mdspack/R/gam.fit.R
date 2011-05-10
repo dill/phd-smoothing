@@ -1,5 +1,5 @@
 # fit a gam to general distance data
-gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gaussian(),method="GCV.Cp",start.grid=NULL,samp.points=NULL){
+gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gaussian(),method="GCV.Cp",start.grid=NULL,samp.points=NULL,dist.metric="euclidean"){
    # Args
    #  response       vector of responses
    #  D              sample distance matrix (maybe generated using dist())
@@ -14,6 +14,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
    #  start.grid     initial grid to use, can be NULL
    #  samp.points    sample points, needed if the above is specified    
    #  method         method= for gam() -- GCV.Cp and ML
+   #  dist.metric    distance metric, anything allowable by dist() + "mahalanobis"
 
    # Return - list
    #  $gam        gamObject of fitted model
@@ -47,7 +48,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
          # fit the model
          mds.dim<-test.dim
 
-         gam.obj<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method)
+         gam.obj<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method,dist.metric)
 
          # did it converge fully? split on outer/magic
          if(gam.obj$gam$optimizer[1]=="magic"){
@@ -80,10 +81,10 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
 
 
    }else if(floor(mds.dim)==mds.dim){
-      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method)
+      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method,dist.metric)
    }else{
       mds.dim<-choose.mds.dim(D,mds.dim)
-      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method)
+      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method,dist.metric)
    }
 
    ret$gam<-fitted$gam
@@ -96,11 +97,10 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
 }
 
 ### actually fit some GAMs
-gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NULL,method){
+gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NULL,method,dist.metric="euclidean"){
    # big set of letters for column names
    bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
-
 
    ### Do the MDS projection
    if(is.null(samp.points) & is.null(grid.points)){
@@ -110,10 +110,14 @@ gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NU
    
    }else if(!is.null(samp.points) & !is.null(grid.points)){
 
-      D.grid<-dist(grid.points,method="euclidean")
+      if(dist.metric=="mahalanobis"){
+         D.grid<-apply(grid.points,1,mahalanobis,x=grid.points,cov=cov(grid.points))
+      }else{
+         D.grid<-dist(grid.points,method=dist.metric)
+      }
 
       mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
-      samp.mds<-insert.mds.generic(mds.obj,samp.points,grid.points,dist.metric="euclidean")
+      samp.mds<-insert.mds.generic(mds.obj,samp.points,grid.points,dist.metric=dist.metric)
 
    }else{
       stop("Neither sample points or distance matrix supplied to gan.fitter\n")

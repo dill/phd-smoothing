@@ -6,7 +6,13 @@ insert.mds.generic<-function(mds.obj,new.points,old.points,dist.metric="euclidea
    ind2<-(nrow(old.points)+1):nrow(big.points)
 
    lambda.inverse<-diag(1/mds.obj$eig[1:dim(mds.obj$points)[2]])
-   new.dist<-as.matrix(dist(big.points,method=dist.metric,diag=T,upper=T))[ind,]
+
+   if(dist.metric=="mahalanobis"){
+      new.dist<-apply(bigpoints,1,mahalanobis,x=bigpoints,cov=cov(bigpoints))[ind,] 
+   }else{ 
+      new.dist<-as.matrix(dist(big.points,method=dist.metric,diag=T,upper=T))[ind,]
+   }
+
    new.dist<-new.dist[,ind2]
    S<- -1/2*mds.obj$x
    d<- -(new.dist^2-diag(S))
