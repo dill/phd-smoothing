@@ -25,7 +25,14 @@ for(i in 1:b.rows){
    ### DS model
 
    # calculate the distance matrix for the microarray data
-   breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
+#   breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
+D<-matrix(0,dim(breast.array)[1],dim(breast.array)[1])
+
+for(i in 1:dim(breast.array)[1]){
+   D[i,]<-mahalanobis(breast.array,breast.array[i,],cov(breast.array))
+}
+
+breast.dist<-D
 
    # fit the model
    #b.gcv<-gam.mds.fit(npi.samp,breast.dist,20,44,NULL,
