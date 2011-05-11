@@ -62,8 +62,7 @@ woodpath<-function(xpoints,ypoints,bnd,start=NA,faster=0,debug=0){
       D<-t(D)
    }
 
-   # load the library
-   #dyn.unload("wood.so")
+   # unload the library
    if(R.version$os=="darwin9.8.0"){
       extraslash<-"/"
    }else{
@@ -71,7 +70,6 @@ woodpath<-function(xpoints,ypoints,bnd,start=NA,faster=0,debug=0){
    }
 
    library.dynam.unload("mdspack",paste(.libPaths()[1],extraslash,"mdspack",sep=""))
-
 
    return(D)
 }
