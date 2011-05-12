@@ -113,7 +113,7 @@ gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NU
       if(dist.metric=="mahalanobis"){
          D.grid<-apply(grid.points,1,mahalanobis,x=grid.points,cov=cov(grid.points))
       }else{
-         D.grid<-dist(grid.points,method=dist.metric)
+         D.grid<-as.matrix(dist(grid.points,method=dist.metric))
       }
 
       mds.obj<-cmdscale(D.grid,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
