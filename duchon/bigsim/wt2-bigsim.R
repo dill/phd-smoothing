@@ -40,52 +40,53 @@ base.fit$bs<-NULL
 base.fit$k<-NULL
 base.fit$D.samp<-NULL
 
-# results
-real.results<-c()
 
 # options (as in mds/wt2-bigsim.R)
 noise.levels<-c(0.35,0.9,1.55)
 sim.size<-2#200
 
+# for both ML and GCV selection of MDS dimension
+for(gam.method in c("ML","GCV.Cp")){
+   # results
+   real.results<-c()
 
-# now run the sim
-for(noise.level in noise.levels){
-result<-c()
-
-   set.seed(1)
-
-   # do each sim
-   for(j in 1:sim.size){
-      # make samples
-      samp.ind<-sample(1:length(gendata$x),samp.size)
-      noise<-noise.level*rnorm(length(samp.ind))
-      gendata.samp<- list(x=gendata$x[samp.ind],
-                          y=gendata$y[samp.ind],
-                          z=gendata$z[samp.ind]+noise)
-
-      # for both ML and GCV selection of MDS dimension
-      for(gam.method in c("ML","GCV.Cp")){
-
-         this.line<-c()
-
-         ind<-c(noise.level,j)
+   # now run the sim
+   for(noise.level in noise.levels){
+   result<-c()
    
+      set.seed(1)
+   
+      # do each sim
+      for(j in 1:sim.size){
+         # make samples
+         samp.ind<-sample(1:length(gendata$x),samp.size)
+         noise<-noise.level*rnorm(length(samp.ind))
+         gendata.samp<- list(x=gendata$x[samp.ind],
+                             y=gendata$y[samp.ind],
+                             z=gendata$z[samp.ind]+noise)
+   
+   
+         this.line<-c()
+   
+         ind<-c(noise.level,j)
+      
          ## run for GCV
          mds.cd.ds<-gam.mds(gendata.samp,gendata,bnd,grid.res=120,
                             old.obj=base.fit,bs="ds",gam.method=gam.method)
          # store some results
          this.line<-rbind(this.line,c(ind,"edf",sum(mds.cd.ds$gam$edf)))
          this.line<-rbind(this.line,c(ind,"mse",sum((mds.cd.ds$pred-gendata$z)^2)))
-   
+      
          result<-rbind(result,this.line)
-      } # end methods
-   } # end sims
+      } # end sims
+   
+      real.results<-rbind(real.results,result)
+   
+   } # end noise
 
-   real.results<-rbind(real.results,result)
+write.csv(real.results,paste("bigresults-",gam.method,".csv",sep=""))
 
-} # end noise
-
-write.csv(real.results,"bigresults.csv")
+} # end methods
 
 #save.image("gcvml.RData")
 
