@@ -14,7 +14,7 @@ edf.cv<-c()
 best.dim<-c()
 rsq<-c()
 
-set.seed(1)
+#set.seed(1)
 
 for(i in 1:b.rows){
 
@@ -25,24 +25,19 @@ for(i in 1:b.rows){
    ### DS model
 
    # calculate the distance matrix for the microarray data
-#   breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
-D<-matrix(0,dim(breast.array)[1],dim(breast.array)[1])
-
-for(i in 1:dim(breast.array)[1]){
-   D[i,]<-mahalanobis(breast.array,breast.array[i,],cov(breast.array))
-}
-
-breast.dist<-D
+#   breast.dist<-as.matrix(dist(breast.samp,diag=TRUE,upper=TRUE))
+   breast.dist<-apply(breast.samp,1,mahalanobis,x=breast.samp,cov=cov(breast.samp))
 
    # fit the model
    #b.gcv<-gam.mds.fit(npi.samp,breast.dist,20,44,NULL,
    #b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL)
-   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85))
+   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),method="P-ML",dist.metric="mahalanobis") # <<< BEST SO FAR
+#   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),dist.metric="mahalanobis") # <<< BEST SO FAR
 #   b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL,
-#                      family=quasi(link="identity"))
-#                      family=Gamma(link="identity"))
-#   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),
-#                      family=quasi(link=power(1/3),variance="mu^3"))
+#                      family=quasi(link="identity"))    # <<< DON'T FIT
+#                      family=Gamma(link="identity"))    # <<<
+   #b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),  
+   #                   family=quasi(link=power(1/3),variance="mu^3"),dist.metric="mahalanobis") # << WORSE
 
    # record the GCV
    this.score<-cbind(as.data.frame(b.gcv$scores),
@@ -57,7 +52,7 @@ breast.dist<-D
    rsq<-c(rsq,summary(b.gcv$gam)$r.sq)   
 
    # do some prediction
-   pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp))
+   pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp),dist.metric="mahalanobis")
    names(pred.data)<-names(b.gcv$samp.mds)[-1]
    pp<-predict(b.gcv$gam,pred.data,type="response")
 

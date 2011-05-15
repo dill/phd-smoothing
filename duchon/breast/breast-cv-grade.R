@@ -22,7 +22,8 @@ for(i in 1:b.rows){
    ### DS model
 
    # calculate the distance matrix for the microarray data
-   breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
+#   breast.dist<-dist(breast.samp,diag=TRUE,upper=TRUE)
+   breast.dist<-apply(breast.samp,1,mahalanobis,x=breast.samp,cov=cov(breast.samp))
 
    method<-"ds"
    # fit the model

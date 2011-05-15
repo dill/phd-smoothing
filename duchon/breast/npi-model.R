@@ -2,6 +2,7 @@ source("getdata.R")
 
 # calculate the distance matrix for the microarray data
 breast.dist<-dist(breast.array,diag=TRUE,upper=TRUE)
+breast.dist<-apply(breast.array,1,mahalanobis,x=breast.array,cov=cov(breast.array))
 
 # fit the model
 b.gcv<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85))

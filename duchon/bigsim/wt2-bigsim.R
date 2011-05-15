@@ -45,7 +45,7 @@ real.results<-c()
 
 # options (as in mds/wt2-bigsim.R)
 noise.levels<-c(0.35,0.9,1.55)
-sim.size<-200
+sim.size<-2#200
 
 
 # now run the sim
@@ -54,8 +54,7 @@ result<-c()
 
    set.seed(1)
 
-   ## parallel
-   #result<-foreach(j = 1:sim.size,.combine=rbind) %dopar% {
+   # do each sim
    for(j in 1:sim.size){
       # make samples
       samp.ind<-sample(1:length(gendata$x),samp.size)
@@ -64,24 +63,27 @@ result<-c()
                           y=gendata$y[samp.ind],
                           z=gendata$z[samp.ind]+noise)
 
-      this.line<-c()
+      # for both ML and GCV selection of MDS dimension
+      for(gam.method in c("ML","GCV.Cp")){
 
-      ind<-c(noise.level,j)
+         this.line<-c()
 
-      ## run for GCV
-      mds.cd.ds<-gam.mds(gendata.samp,gendata,bnd,grid.res=120,
-                         old.obj=base.fit,bs="ds")
-      # store some results
-      this.line<-rbind(this.line,c(ind,"edf",sum(mds.cd.ds$gam$edf)))
-      this.line<-rbind(this.line,c(ind,"mse",sum((mds.cd.ds$pred-gendata$z)^2)))
-
-      result<-rbind(result,this.line)
-   }
-   ## end parallel
+         ind<-c(noise.level,j)
+   
+         ## run for GCV
+         mds.cd.ds<-gam.mds(gendata.samp,gendata,bnd,grid.res=120,
+                            old.obj=base.fit,bs="ds",gam.method=gam.method)
+         # store some results
+         this.line<-rbind(this.line,c(ind,"edf",sum(mds.cd.ds$gam$edf)))
+         this.line<-rbind(this.line,c(ind,"mse",sum((mds.cd.ds$pred-gendata$z)^2)))
+   
+         result<-rbind(result,this.line)
+      } # end methods
+   } # end sims
 
    real.results<-rbind(real.results,result)
 
-}
+} # end noise
 
 write.csv(real.results,"bigresults.csv")
 

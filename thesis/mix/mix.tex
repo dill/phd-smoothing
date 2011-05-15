@@ -142,7 +142,7 @@ So,
 
 \subsection{Probability of detection}
 
-[[ SOMETHING BETTER HERE!!!]]
+(TKTKTK write more here!)
 
 The detection probability, as we have seen, is a central concept in distance sampling. Notably, it can be used as a way of estimating abundance (via Horvitz-Thompson estimators). In this vein, the per-observation detectability is first derived. Next, an estimate of overall average detectability is often useful (and will be used later to asses the performance of the method), so this is also derived. Finally, the variance of the average detectability is also found and as a result of this, an estimator of the coefficient of variation is also given.
 
@@ -158,58 +158,11 @@ so the detectability can now be calculated for each observation.
 
 
 \subsubsection{Average detectability}
-If we wish to calculate the overall average detectability, then we must first find the population mixture proportions and use these in order to calculate the overall average detectability. The estimated population mixture proportions, $\dot{\pi}_j$ (for $j=1\dots J$ are then defined as:
-\begin{equation}
-\dot{\pi}_j = \frac{\hat{\pi}_j/ p_j}{\sum_{j=1}^J p_j},
-\end{equation}
-where the $p_j$s are the per-mixture detection probabilities. Going back to first principles it is easy to see that we can define 
-\begin{align*}
-p_j=\frac{n}{N}.
-\end{align*}
-that is, the ratio of sample to population individuals. Then $N$ can be written as a Horvitz-Thompson estimator,
-\begin{align*}
-N=\sum_{i=1}^n \frac{1}{p_{ij}},
-\end{align*}
-where $p_{ij}$ is the probability of observing individual $i$ according to mixture part $j$.
-For the covariate case, we average over the covariates. For line transects:
-\begin{align*}
-p_{ij} = \frac{1}{w} \int_0^w g_j(x;\sigma_j(\bm{z}_i,\bm{\beta}_j) \text{d}x, 
-\end{align*}
-and point transects:
-\begin{align*}
-p_{ij} = \frac{1}{\pi w^2}  \int_0^w r g_j(r;\sigma_j(\bm{z}_i,\bm{\beta}_j) \text{d}r.
-\end{align*}
-For non-covariate mixtures these obviously reduce to
-\begin{align*}
-p_{ij}=\frac{1}{w} \int_0^w g_j(x;\sigma_j) \text{d}x, 
-\end{align*}
-for line transect and for point transects:
-\begin{align*}
-p_{ij}=\frac{1}{\pi w^2} \int_0^w r g_j(r ;\sigma_j) \text{d}r.
-\end{align*}
-which are identical for all $i$.
-
-Once the $\dot{\pi}_j$s are found, they can be used in place of the $\hat{\pi}_j$s in order to calculate the average detectability, $P_a$, as:
-\begin{equation}
-P_a = \frac{1}{w} \sum_{j=1}^J \dot{\pi}_j \int_0^w g_j(x;\sigma_j(\bm{z}_i,\bm{\beta}_j) \text{d}x,
-\end{equation}
-for line transects and
-\begin{equation}
-P_a = \frac{1}{\pi w^2} \sum_{j=1}^J \dot{\pi}_j \int_0^w r g_j(r;\sigma_j(\bm{z}_i,\bm{\beta}_j) \text{d}r,
-\end{equation}
-for point transects.
-
-[[WHAT ABOUT THE $i$s!!!!]]
-
+(TKTKTK  Fill this in!)
 
 \subsubsection{Variance of $p$}
-why?!?!
-
-
 
 \subsubsection{CV}
-talk about what it is...
-
 
 \subsection{Goodness of fit testing}
 
@@ -221,7 +174,7 @@ talk about what it is...
 \section{Implementation}
 This section gives detail on the implementation of MMDS, particularly those used in the \textsf{R} package \texttt{mmds}.
 
-[[ MORE BLURB ]]
+(TKTKTK more here)
 
 \subsection{Parametrisation of the scale parameters}
 The parametrisation of the $\sigma_j$s given in section \ref{ds-genlik} is not only useful because it simplifies the notation in the likelihood. It also allows for unconstrained optimisation of the scale parameters in all situations. Since $\sigma_j$ must be positive, optimising a set of $\bm{\beta}_j$s on the log scale allows for the $\bm{\beta}_j$s to take values over all of $\mathbb{R}$.
@@ -263,7 +216,7 @@ Thus, it is possible to move between $\pi_j$s and $\alpha_j$s easily.
 \subsection{Fitting}
 It is well known that mixture model likelihoods are notoriously multi-modal (\cite{BDA} PAGES).
 
-[[ MORE BLURB ]]
+(TKTKTK more here)
 
 Three different strategies were used for the optimisation and offered in the \texttt{mmds} package. The justification being that if one method fails to fit a particular model, then perhaps another might be better at tackling that particular problem. The first and simplest of these methods is a straightforward quasi-Newton method, BFGS (\cite{bfgs}) which simply maximises the likelihood with the help of analytic gradients (see appendix \ref{appendix-mmds-derivs}). In testing this method was unsatisfactory so two other procedures were also developed.
 
@@ -275,13 +228,13 @@ In particular, simulated annealing is used for 250 iterations, then unconstraine
 It is worth noting that the method may appear to fail to converge for all attempts, however this does not necessarily indicate that the model will never converge. The stochastic nature of simulated annealing means that it is entirely possible that further runs may yield a useful result.
 
 \subsection{Expectation-Maximisation Algorithm}
-A common (CITE SOME PAPERS) way of fitting mixture models is to use the Expectation-Maximisation (EM) algorithm of \cite{em}. [[WHY?]]
+A common (TKTKTK cite!) way of fitting mixture models is to use the Expectation-Maximisation (EM) algorithm of \cite{em}. (TKTKTK WHY?!)
 
-[[BLURB]]
 
 \subsubsection{Overview}
 
-[[ RE-WRITE !!! ]]
+(TKTKTK Re-write this)
+
 Considering each of the observations as coming from one of the $J$ mixture components, we arrive at a latent variable interpretation of the mixture model. Given this latent variable view, it is possible to then evaluate the probability that each observation is from a particular mixture component. The mixture proportions can then we calculated by taking the expectation over the observations of these ``weights'' for a given mixture component. Once the mixture proportions are calculated, the scale parameters can be found using a some optimisation procedure (such as BFGS) keeping the mixture proportions constant within BFGS. This yields a new set of scale parameters, so the mixture proportions are then recalculated. EM switches between these two stages (expectation and maximisation) until the values for the mixture proportions and the scale parameters have converged.
 
 \subsubsection{EM steps}
@@ -320,8 +273,8 @@ For the $\alpha_j$s, a set of $\pi_j$ are generated as $1/k$ and then transforme
 
 
 \subsection{Derivatives}
-[[Maybe this is better as an appendix?]]
 
+\textbf{SIMON}: I was going to do this as an appendix, since otherwise there's just a massive chunk of maths in the middle of this chapter.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Testing}
@@ -337,12 +290,13 @@ In order to assess model fit, two metrics are used. The first metric is paramete
 
 [!!!! Both mean squared error and bias are calculated for these quantities (along with related standard errors).] MSE AND BIAS FOR PA??
 
-For each set of parameters for each of the model classes, 200 realisations were generated at each of 5 sample sizes (30, 60, 120, 480, 960). Samples were drawn, according to their proportions from the appropriate half-normal distributions using the \texttt{rtnorm()} function in the \texttt{msm} package. Where the proportions did not provide integer divisions of the sample sizes residual sampling [[CITE]] was used. The truncation distance in each case was set to 1 for simplicity.
+(TKTKTK This is wrong!)
+For each set of parameters for each of the model classes, 200 realisations were generated at each of 5 sample sizes (30, 60, 120, 480, 960). Samples were drawn, according to their proportions from the appropriate half-normal distributions using the \texttt{rtnorm()} function in the \texttt{msm} package. Where the proportions did not provide integer divisions of the sample sizes residual sampling (TKTKTK cite Baker 1985) was used. The truncation distance in each case was set to 1 for simplicity.
 
-
+(TKTKTK
 TODO IN THIS SECTION:
 	re-gen the mixture detection function plots!
-	re-gen ggplot plots with crappy graphics theme
+	re-gen ggplot plots with crappy graphics theme)
 
 
 
@@ -363,7 +317,7 @@ Sim no. & $\sigma_1$ & $\sigma_2$ & $\pi_1$ & $\pi_2$\\
 5 & 0.01  &  0.8  &  0.29 & \\
 \end{tabular}
 \label{mmds-nocov-simtable}
-\caption{Simulation parameters for the non-covariate simulations. (In $\sigma$ and $\pi$ parametrisation). [[MAKE SURE THIS HAD THE SAME ORDERING AS THE RESULTS TABLE]]}
+\caption{Simulation parameters for the non-covariate simulations. (In $\sigma$ and $\pi$ parametrisation). (TKTKTK MAKE SURE THIS HAD THE SAME ORDERING AS THE RESULTS TABLE)}
 \end{table}
 
 The first three simulations give relatively simple scenarios with the same scale parameters but varying the mixture proportions, these check behaviour under ``easy'' conditions. The fourth checks to see what happens when one of the mixtures is essentially too big to be identified (it starts to decrease after the truncation distance so the parameter value could be 10, 100 or even 1000). Finally the fifth example gives and extremely spiked detection function.
@@ -400,7 +354,7 @@ Scenario 4 was deliberately set up to see if, when one of the parameters is unid
 
 Scenario 5 consists of one spiked function and one wide function, the mixture proportion is (0.29,0.71). As such about 30\% of the observations lie in the spike and 70\% in the wider function; since there is such a large difference in the two functions, the model is actually easier to fit that the others. When the sample size is low, there are many outliers, however when the optimisation does not go catastrophically wrong, it tends to do very well, as can be seen from the low variability. This probably indicates that there is a well defined maxima in the likelihood.
 
-[[ Put in some of the extra plots here and discuss?]]
+(TKTKTK Put in some of the extra plots here and discuss?)
 
 
 Table \ref{mmds-nocov-pa-table} shows the mean squared error and bias in the estimates of $P_a$ for each of the fitting methods. Note that there is not a particularly big difference between the methods, as can be seen in figures \ref{mmds-nocov-boxplots} and \ref{mmds-nocov-pa-boxplots}.
@@ -490,9 +444,9 @@ Just source in the .tex from the vignette?
 \section{Conclusion}
 
 
-\section{Acknowledgements}
-
-I would like to thank David Borchers for his comments on my MMath thesis, on which this work was based, as well as the parametrisation for the mixture proportions. I would also like to thank Jeff Laake and Steve Buckland for interesting discussions about the topic. Finally I would like to thank Len Thomas my co-author.
-
-Outline of the EM algorithm is taken from the very helpful set of notes by \cite{piater}.
+%\section{Acknowledgements}
+%
+%I would like to thank David Borchers for his comments on my MMath thesis, on which this work was based, as well as the parametrisation for the mixture proportions. I would also like to thank Jeff Laake and Steve Buckland for interesting discussions about the topic. Finally I would like to thank Len Thomas my co-author.
+%
+%Outline of the EM algorithm is taken from the very helpful set of notes by \cite{piater}.
 
