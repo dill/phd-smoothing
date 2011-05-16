@@ -43,7 +43,7 @@ base.fit$D.samp<-NULL
 
 # options (as in mds/wt2-bigsim.R)
 noise.levels<-c(0.35,0.9,1.55)
-sim.size<-2#200
+sim.size<-200
 
 # for both ML and GCV selection of MDS dimension
 for(gam.method in c("ML","GCV.Cp")){
