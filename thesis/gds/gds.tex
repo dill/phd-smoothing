@@ -161,17 +161,19 @@ Duchon splines are able to smooth in high dimensions without the usual problems 
 
 Data are often collected on scales that are not necessarily physically meaningful (for example in psychological studies or attitude surveys) but the data are used as if the scale was absolute in some sense (\cite{cox2007}, \cite{torgerson}). In such cases the distances between the observations may be meaningful but the actual ordinal values may not be.
 
-Taking data which is either already distances or distances calculated from data, the MDS projection can be found and then a smooth over those data can be used to model some response.
+Taking data which is either already distances or distances calculated from data, the MDS projection can be found and then a smooth over those data can be used to model some response. Situations where \mdsds might be useful fall into three classes: 
+\begin{enumerate}
+\item Those in which distances are intrinsically meaningful, where distances between the subjects in a study represent some obviously meaningful physical quantity (for example geographical distance in kilometers between observations of whales.
+\item Those in which the combinations of variables in the MDS configuration are not meaningful physically but come together to give a measure of dissimilarity between subjects (similar to constructed indices used by econometricians from a series of socio-economic variables).
+\item Situations where there are too many variables to be reasonably used in a conventional additive model and therefore using MDS to reduce the number of variables is a reasonable alternative.
+\end{enumerate}
+The latter two situations pose two interrelated problems. First is that of measurement error: if there are large errors in the variables which are used in the MDS projection, these could unduly influence the result. For example if there is one very large (erroneous) observation in one of the variables, this could dominate the eigenvalues and cause the variable to have undue prominence in the MDS projection. A thorough treatment of measurement error for non-parametric models is given in (TKTKTK Ciprian's book). Second is the issue of variable selection; since all variables are used in finding the distances, we have made the assumption that they all affect the response in some way and that the degree to which they have an effect is somehow related to the degree of their variation (or rather, their contribution to the eigenvalues). This is, of course, an unfounded assumption.
 
-TKTKTK Two types of problem:
-data with natural distances,
-data where distances might summarise or reduce complexity - gene expression, better than lasso ? do we want to include colinear effects anyway??!
+TKTKTK absence of prior info? maybe GCV deals with it?
+
 
 
 % concrete example of the above
-
-TKTKTK measurement error
-TKTKTK variable selection?
 
 \subsection{Examples}
 
@@ -180,11 +182,8 @@ Data where distances between observations are meaningful can come from many diff
 
 \subsubsection{MP data}
 
-TKTKTK  how many labour MPs   -- 429/678
-TKTKTK confounding with Plaid/SDLP etc
 
 The website Public Whip (\url{http://www.publicwhip.org.uk/}) provide data from the Hansard on the votes of 676 MPs in the 1997--2001 Westminster parliament. During this time the House took 1273 divisions. Each vote is coded according to table \ref{voting-code}. Also available from Public Whip are the party allegiances of each MP. 
-
 
 \begin{table}  
 \begin{centering}
@@ -275,6 +274,17 @@ Figures \ref{gds-mps-mse} and \ref{gds-mps-brier} show boxplots of the MSE and B
 (TKTKTK see what happens!!)
 
 Interestingly, using the ML score rather than the GCV score for the MDS projection dimension yields better results.
+How many dimensions?!
+
+
+
+TKTKTK  how many labour MPs   -- 429/678
+TKTKTK confounding with Plaid/SDLP etc
+
+
+
+
+
 
 \subsubsection{Breast cancer microarrays}
 

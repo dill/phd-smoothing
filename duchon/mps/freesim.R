@@ -65,7 +65,7 @@ options(cores=6)
 
 samp.sizes<-c(200,300,400,500)
 
-#for(samp.size in c(200,300,400,500)){
+#for(samp.size in samp.sizes){
 foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
 
    ####
@@ -73,6 +73,8 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
    score.res<-c()
    wrong.mat<-c()
    retvec<-rep(NA,max(mpid))
+   # store the MDS dimension selection info
+   mds.dim.sel<-c()
 
    brier<-data.frame(dsgcv=NA,dsml=NA,glmnet=NA,glm=NA)
    mse<-data.frame(dsgcv=NA,dsml=NA,glmnet=NA,glm=NA)
@@ -145,6 +147,17 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
          wrongvec[-samp.ind][a.mse==0]<-1
          wrongvec[-samp.ind][a.mse!=0]<-0
          wrong.mat<-rbind(wrong.mat,wrongvec)
+
+         # store the MDS dimension selection info
+         tmp<-gam.obj$scores
+         ntmp<-nrow(tmp)
+         mds.dim.sel<-rbind(mds.dim.sel,
+                            cbind(tmp,
+                                  rep(method,ntmp),
+                                  rep(samp.size,ntmp),
+                                  rep(n.sim,ntmp)
+                                 ))
+         rm(tmp)
       }
 
       # store the EDF
@@ -207,7 +220,7 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
    }
    
    # save some data to file
-   save(brier,mse,edf,wrong.mat,file=paste("freesim-",samp.size,".RData",sep=""))
+   save(brier,mse,edf,wrong.mat,mds.dim.sel,file=paste("freesim-",samp.size,".RData",sep=""))
 
    return(1)
 }
