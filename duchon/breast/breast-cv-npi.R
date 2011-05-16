@@ -59,6 +59,9 @@ for(i in 1:b.rows){
    # record the MSE
    ds.mse.cv<-c(ds.mse.cv,(breast.dat$npi[i]-pp)^2)
 
+
+
+
    #################################################################
    ### lasso model
    cvmin.lasso<-cv.glmnet(breast.array[-i,],breast.dat$npi[-i])
