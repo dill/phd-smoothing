@@ -10,16 +10,22 @@ par(cex.axis=0.75,las=1,mgp=c(2,0.75,0),mar=c(2,3,1,1))
 mses<-matrix(NA,100,0)
 
 # model names
-#mod.names<-c("tprs","mds+tp","mds+cr","mds 3D","mds+adj","soap")
-mod.names<-c("tprs","mds+tp","soap","mds+ds")
+mod.names<-c("tprs","mds+tp","soap","mds+ds\n (GCV)","mds+ds\n (ML)")
 
-# duchon data
-ddat<-read.csv(file="bigresults.csv")
+# duchon data - GCV.Cp
+ddat<-read.csv(file="bigresults-GCV.Cp.csv")
 names(ddat)<-c("n","noise","sim","name","dat")
 ddat$noise<-as.factor(ddat$noise)
 ddat$dat<-ddat$dat/1300
 ddat.mse<-ddat$dat[ddat$name=="mse"]
 ddat.noise<-ddat$noise[ddat$name=="mse"]
+# duchon data - GCV.Cp
+ddat.ML<-read.csv(file="bigresults-ML.csv")
+names(ddat.ML)<-c("n","noise","sim","name","dat")
+ddat.ML$noise<-as.factor(ddat.ML$noise)
+ddat.ML$dat<-ddat.ML$dat/1300
+ddat.ML.mse<-ddat.ML$dat[ddat.ML$name=="mse"]
+ddat.ML.noise<-ddat.ML$noise[ddat.ML$name=="mse"]
 
 # push the data into the right shape
 for(err.lev in c("0.35","0.9","1.55")){
@@ -28,17 +34,22 @@ for(err.lev in c("0.35","0.9","1.55")){
 
    mse<-read.csv(paste("../../mds/sim/wt2-mse-250-",err.lev,".csv",sep=""))
    mse<-mse[,-1]
-   mse<-mse[1:100,]
+   mse<-mse[1:200,]
    mse<-mse[,-c(3,4,5)]
    # add in Duchon
    tmp<-ddat.mse[ddat.noise==err.lev]
    mse<-cbind(mse,tmp)
+#spurious<-c(111,135,157)
+#mse<-mse[-spurious,]
+   tmp<-ddat.ML.mse[ddat.ML.noise==err.lev]
+   mse<-cbind(mse,tmp)
+# 3 spurious soap results, remove them
 spurious<-c(111,135,157)
 mse<-mse[-spurious,]
 
    # extra Wilcoxon test stuff
    test.against<-3
-   for(i in 1:4){
+   for(i in 1:5){
       if(i!=test.against){
          pv<-wilcox.test(mse[,test.against],mse[,i],paired=TRUE)$p.value
          med<-median(mse[,i]-mse[,test.against])
@@ -66,7 +77,6 @@ mse<-mse[-spurious,]
 }
 
 
-# 3 spurious soap results, remove them
 
 
 # log the results
