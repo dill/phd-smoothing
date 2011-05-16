@@ -82,12 +82,12 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
       # min is 2; max is whatever gives 95% variation
       mds.bnds<-seq(2,choose.mds.dim(D.grid,0.95),by=1)
       
-      gcvs<-c() # store GCV scores
+      scores<-c() # store GCV/ML scores
       model.list<-list()
       i<-1 # counter
 
       for(test.dim in mds.bnds){
-      #while(gcvs[i-1]<=gcvs[i-2]){
+      #while(scores[i-1]<=scores[i-2]){
       
          # fit the model
          model.list[[i]]<-run.gam(samp.data,D.grid,test.dim,my.grid,bnd,
@@ -106,25 +106,25 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
          #           projection + 1 (should be the choose(...) but this is faster
          if(gam.method == "ML"){
             ml.score<- model.list[[i]]$gam$gcv.ubre + (test.dim+1)
-            gcvs<-c(gcvs,ml.score)
+            scores<-c(scores,ml.score)
          }else{
             # extract the GCV
-            gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
+            scores<-c(scores,model.list[[i]]$gam$gcv.ubre)
          }
          i<-i+1
          #if(i>2){
-         #   if(gcvs[i-1]>gcvs[i-2]){ 
+         #   if(scores[i-1]>scores[i-2]){ 
          #      break
          #   }
          #}
       }
 
       # now that's done, what was the smallest GCV?
-      and.the.winner.is<-which.min(gcvs)
+      and.the.winner.is<-which.min(scores)
 
       fit.ret<-model.list[[and.the.winner.is]]
 
-      fit.ret$gcv.dim<-cbind(mds.bnds,gcvs)
+      fit.ret$gcv.dim<-cbind(mds.bnds,scores)
 
    # otherwise, do what the user wants
    }else{
