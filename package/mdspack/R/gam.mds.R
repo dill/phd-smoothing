@@ -1,7 +1,7 @@
 gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
                   bs="ds",k=100,m=NULL,family=gaussian(),old.obj=NULL,
                   gam.method="GCV.Cp"){
-   ### general wrapper function for mds gam stuff
+   ### general wrapper function for mds gam stuff - WAD version
    # Args:
    #  samp.data    the data we actually want to do the smoothing over
    #  predp        prediction points (if we want to do prediction)
@@ -98,8 +98,19 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
          if(is.null(D.samp)){
             D.samp<-model.list[[i]]$D.samp
          }
-         # extract the GCV
-         gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
+
+         # if using the ML score then add an extra penalty
+         # score is now
+         #     2(-l) + (dim+1)
+         # that is twice the -ve log likelihood + dimension of the MDS
+         #           projection + 1 (should be the choose(...) but this is faster
+         if(gam.method == "ML"){
+            ml.score<- model.list[[i]]$gam$gcv.ubre + (test.dim+1)
+            gcvs<-c(gcvs,ml.score)
+         }else{
+            # extract the GCV
+            gcvs<-c(gcvs,model.list[[i]]$gam$gcv.ubre)
+         }
          i<-i+1
          #if(i>2){
          #   if(gcvs[i-1]>gcvs[i-2]){ 
