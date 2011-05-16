@@ -79,9 +79,9 @@ Looking back to figure \ref{nullspace-dim} (where the blue line showed the incre
 \cite{girosi} discusses the connections between neural networks and GAMs with the more general form of this type of penalty (ie. (\ref{duchon-penalty-general})) (see also \cite{elements} p. 168).
 
 
-\subsection{Duchon splines with \mdsap -- \mdsds}
+\subsection{Duchon splines with \mdsap\ -- \mdsds}
 
-With the addition of Duchon splines to the \mdsap we are now in a position to project data into any number of dimensions and smooth over the response without having to worry about the nullspace of the penalty causing problems.
+With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into any number of dimensions and smooth over the response without having to worry about the nullspace of the penalty causing problems.
 
 
 
@@ -107,7 +107,7 @@ Since fitting a GAM with a Duchon spline basis is relatively cheap compared to t
 
 In particular, starting from a 2-dimensional projection, the dimensionality is increased  and models fitted, until there is an increase in GCV score. The upper bound is the number of dimensions that explain 95\% of the variation in the distance matrix of the initial grid (see section \ref{mds-prac}).  This favours simpler models (in dimensionality terms), although of course a full search can be performed if there is some prior belief that the dimensionality should be higher (indeed there is no reason to believe that the GCV score should be unimodal in dimension). It might be considered preferable to take the first minima in the score anyway as we ould generally prefer a simpler model. Simulations show that the minima in the GCV score and MSE are in agreement.
 
-Figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared error for 60 simulations from the peninsula domain, for each of the 60 realisations a \mdsds was fitted using a 2 through 20 dimensional projection. The boxplots are grouped according to the dimension of the MDS projection used. The graph shows that there is a minima in the score when the dimension is four which corresponds with the minimum MSE.
+Figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared error for 60 simulations from the peninsula domain, for each of the 60 realisations a \mdsds\ was fitted using a 2 through 20 dimensional projection. The boxplots are grouped according to the dimension of the MDS projection used. The graph shows that there is a minima in the score when the dimension is four which corresponds with the minimum MSE.
 
 \begin{figure}
 \centering
@@ -127,7 +127,7 @@ There is, of course, no guarantee that there will always be a minimum to find an
 
 Returning to the simulation study in section \ref{wt2bigsim}, the same set of simulations (250 samples at three error levels) was re-run but now using the Duchon splines, selecting MDS dimension based on GCV score (maximum basis dimension was set at 100). The results are shown for the original simulations along side those for the new model.
 
-Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds with GCV dimension selection does better than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels.
+Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds\ with GCV dimension selection does better than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels.
 
 \begin{figure}
 \centering
@@ -161,7 +161,7 @@ Duchon splines are able to smooth in high dimensions without the usual problems 
 
 Data are often collected on scales that are not necessarily physically meaningful (for example in psychological studies or attitude surveys) but the data are used as if the scale was absolute in some sense (\cite{cox2007}, \cite{torgerson}). In such cases the distances between the observations may be meaningful but the actual ordinal values may not be.
 
-Taking data which is either already distances or distances calculated from data, the MDS projection can be found and then a smooth over those data can be used to model some response. Situations where \mdsds might be useful fall into three classes: 
+Taking data which is either already distances or distances calculated from data, the MDS projection can be found and then a smooth over those data can be used to model some response. Situations where \mdsds\ might be useful fall into three classes: 
 \begin{enumerate}
 \item Those in which distances are intrinsically meaningful, where distances between the subjects in a study represent some obviously meaningful physical quantity (for example geographical distance in kilometers between observations of whales.
 \item Those in which the combinations of variables in the MDS configuration are not meaningful physically but come together to give a measure of dissimilarity between subjects. In this case all of the variables could be of the same ``kind'' (for example, a repeated measure like voting) or could be combinations of measurements of different phenomena (similar to constructed indices used by econometricians from a series of socio-economic variables (household income, education, state benefits, etc)).
@@ -238,8 +238,8 @@ The usual approach for such problems would be to use either a linear model or a 
 The four models tested were:
 
 \begin{enumerate}
-	\item \mdsds (GCV): MDS projection of the data, selected by minimum GCV score over the full range of 2 to the number of dimensions that account for 85\% of the variation in the sample. Spline basis size maximum was 100.
-	\item \mdsds (ML): as previous model but using ML score to select the MDS projection dimension. 
+	\item \mdsds\ (GCV): MDS projection of the data, selected by minimum GCV score over the full range of 2 to the number of dimensions that account for 85\% of the variation in the sample. Spline basis size maximum was 100.
+	\item \mdsds\: (ML): as previous model but using ML score to select the MDS projection dimension. 
 	\item Lasso: as implemented in \texttt{glmnet}, cross-validation (using deviance as a loss function) was used to select amount of shrinkage per realisation.
 	\item GLM: as implemented in \texttt{glm()}.
 \end{enumerate}
