@@ -34,7 +34,7 @@ for(i in 1:b.rows){
    ### GCV
    # fit the model
    b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),method="GCV.Cp",
-                      dist.metric="mahalanobis",fam=quasi(link=power(0.5),variance="mu^2"))
+                      dist.metric="mahalanobis")#,fam=quasi(link=power(0.5),variance="mu^2"))
 
    #,fam=quasi(link=power(0.5),variance="mu^2")
    # record the GCV
@@ -55,7 +55,7 @@ for(i in 1:b.rows){
    ### P-ML
    # fit the model
    b.ml<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),method="P-ML",
-                      dist.metric="mahalanobis",quasi(link=power(0.5),variance="mu^2")) 
+                      dist.metric="mahalanobis")#,quasi(link=power(0.5),variance="mu^2")) 
 
    # record the score
    this.score<-cbind(as.data.frame(b.ml$scores),
