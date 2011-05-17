@@ -1,7 +1,7 @@
 source("getdata.R")
 
 # calculate the distance matrix for the microarray data
-breast.dist<-dist(breast.array,diag=TRUE,upper=TRUE)
+#breast.dist<-dist(breast.array,diag=TRUE,upper=TRUE)
 breast.dist<-apply(breast.array,1,mahalanobis,x=breast.array,cov=cov(breast.array))
 
 # fit the model
@@ -38,12 +38,13 @@ EDF<-1/(1+lambda*new.pen$values)
 
 
 ## Gamma model - identity link
-b.gcv.gamma<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=Gamma(link=identity))
-summary(b.gcv.gamma$gam)
+# not very good!
+#b.gcv.gamma<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=Gamma(link=identity))
+#summary(b.gcv.gamma$gam)
 
 
-# quasi? -  messing about gives this as best R^2...
-b.gcv.quasi<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=power(1/3),variance="mu^3"))
+# quasi? -  messing about gives this as best residual distribution 
+b.gcv.quasi<-gam.mds.fit(breast.dat$npi,breast.dist,NULL,45,c(2,0.85),fam=quasi(link=power(0.5),variance="mu^2"))
 summary(b.gcv.quasi$gam)
 
 ## resid model

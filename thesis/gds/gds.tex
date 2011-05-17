@@ -100,12 +100,11 @@ With Duchon's basis in mind, it is now possible to smooth a space of any dimensi
 
 It is clear that as higher and higher projections are used, a larger and larger proportion of the variation in the distance matrix is explained. It therefore seems reasonable to base the choice of dimension on the proportion of the variation explained in the initial grid. However, what proportion should be used? 80\%? 90\%? 99\%? There is no reason to choose any one of these over the others. Setting the proportion of variation to be explained generally is surely a bad idea, since what works for one domain may well be a disaster for another.
 
-
-\subsection{Using GCV scores}
+\subsection{Using scores}
 
 Since fitting a GAM with a Duchon spline basis is relatively cheap compared to the cost of finding the within-area distances, the GCV score can be used to find an optimal dimension for the MDS projection. So, using this to our advantage, a series of projections can be tried, their GCV scores calculated, and the best selected as the projection to use for the model.
 
-In particular, starting from a 2-dimensional projection, the dimensionality is increased  and models fitted, until there is an increase in GCV score. The upper bound is the number of dimensions that explain 95\% of the variation in the distance matrix of the initial grid (see section \ref{mds-prac}).  This favours simpler models (in dimensionality terms), although of course a full search can be performed if there is some prior belief that the dimensionality should be higher (indeed there is no reason to believe that the GCV score should be unimodal in dimension). It might be considered preferable to take the first minima in the score anyway as we ould generally prefer a simpler model. Simulations show that the minima in the GCV score and MSE are in agreement.
+In particular, starting from a 2-dimensional projection, the dimensionality is increased  and models fitted, until there is an increase in GCV score. The upper bound is the number of dimensions that explain 95\% of the variation in the distance matrix of the initial grid (see section \ref{grids}).  This favours simpler models (in dimensionality terms), although of course a full search can be performed if there is some prior belief that the dimensionality should be higher (indeed there is no reason to believe that the GCV score should be unimodal in dimension). It might be considered preferable to take the first minima in the score anyway as we ould generally prefer a simpler model. Simulations show that the minima in the GCV score and MSE are in agreement.
 
 Figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared error for 60 simulations from the peninsula domain, for each of the 60 realisations a \mdsds\ was fitted using a 2 through 20 dimensional projection. The boxplots are grouped according to the dimension of the MDS projection used. The graph shows that there is a minima in the score when the dimension is four which corresponds with the minimum MSE.
 
@@ -119,17 +118,17 @@ Figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared 
 
 The ML score (\cite{remlpaper}), can be adapted into an AIC-like score to be used in place of the GCV score, provided there is appropriate penalisation to take into account the increase in the dimension of the projection space. Following score was used:
 \begin{equation*}
-\text{ML} = -2 \hat{\mathcal{l}} + 2P
+\text{ML}_p = -2 \hat{l} + 2P
 \end{equation*}
-where $\hat{\mathcal{l}}$ is the log-likelihood at the MLE and $P$ is a penalty which is the nullspace dimension (ie. $M$ from above with $m=2$ and $d$ set to the MDS projection dimension):
+where $\hat{l}$ is the log-likelihood at the MLE and $P$ is a penalty which is the nullspace dimension (ie. $M$ from above with $m=2$ and $d$ set to the MDS projection dimension):
 \begin{align*}
-P =& \begin{pmatrix} 2+d-1 \\ d  \end{pmatrix},
-=& \begin{pmatrix} d+1 \\ d  \end{pmatrix},
+P =& \begin{pmatrix} 2+d-1 \\ d  \end{pmatrix},\\
+=& \begin{pmatrix} d+1 \\ d  \end{pmatrix},\\
 =& d+1.
 \end{align*}
 So the score used to select dimension is:
 \begin{equation*}
-\text{ML} = -2 \hat{\mathcal{l}} + d+1
+\text{ML}_p = -2 \hat{l} + d+1
 \end{equation*}
 Since the maximum basis is kept constant, but the dimension of the problem changes, this penalty attempts to stop small increases in the likelihood by increasing dimension. This allows the ML score to be used to fit each individual GAM and then comparisons to be made between models of different dimensions. 
 
@@ -139,7 +138,9 @@ There is, of course, no guarantee that there will always be a minimum to find an
 \label{gds-wad-examples}
 \subsection{Simulations}
 
-Returning to the simulation study in section \ref{wt2bigsim}, the same set of simulations (250 samples at three error levels) was re-run but now using the Duchon splines, selecting MDS dimension based on GCV score (maximum basis dimension was set at 100). The results are shown for the original simulations along side those for the new model.
+Returning to the simulation study in section \ref{wt2bigsim}, the same set of simulations (250 samples at three error levels) was re-run but now using the Duchon splines, selecting MDS dimension based on both GCV and $\text{ML}_p$ scores (maximum spline basis dimension was set at 100). The results are shown for the original simulations along side those for the new model.
+
+TKTKTK talk about ML score stuff too!!!
 
 Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds\ with GCV dimension selection does better than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels.
 
@@ -151,7 +152,7 @@ Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds
 % generated by mds/duchon/bigsim/boxplot-wt2.R
 \end{figure}
 
-\textbf{SIMON}: do you think I should put some more examples in here? Perhaps a new set of simulations?
+\textbf{SIMON}: do you think I should put some more examples in here? Perhaps a new set of simulations (based on the ``comb'' in section 3.7.2, fig 3-24)?
 
 
 \subsection{Revisiting the Aral sea}
@@ -335,4 +336,8 @@ It seems reasonable, given This data lends itself to analysis using \mdsds, sinc
 The methods detailed in this section, namely the use of Duchon splines along with MDS to perform smoothing are provided in the \textsf{R} package \mdspack\ which is available at\ldots
 
 
+
+\section{Conclusion}
+
+TKTKTK sum up, say what else could be done. Show path SC->MDS+RS->MSG, improvements along the way.
 
