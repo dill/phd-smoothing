@@ -7,12 +7,14 @@ library(glmnet)
 
 # general setup
 b.rows<-nrow(breast.array)
-score.cv<-c()
-ds.mse.cv<-c()
+ml.score.cv<-c()
+gcv.score.cv<-c()
+dsml.mse.cv<-c()
+dsgcv.mse.cv<-c()
 lasso.mse.cv<-c()
-edf.cv<-c()
-best.dim<-c()
-rsq<-c()
+#edf.cv<-c()
+ml.best.dim<-c()
+gcv.best.dim<-c()
 
 #set.seed(1)
 
@@ -28,26 +30,19 @@ for(i in 1:b.rows){
 #   breast.dist<-as.matrix(dist(breast.samp,diag=TRUE,upper=TRUE))
    breast.dist<-apply(breast.samp,1,mahalanobis,x=breast.samp,cov=cov(breast.samp))
 
+   ### for both GCV and ML dimension selection
+   ### GCV
    # fit the model
-   #b.gcv<-gam.mds.fit(npi.samp,breast.dist,20,44,NULL,
-   #b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL)
-   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),method="P-ML",dist.metric="mahalanobis") # <<< BEST SO FAR
-#   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),dist.metric="mahalanobis") # <<< BEST SO FAR
-#   b.gcv<-gam.mds.fit(npi.samp,breast.dist,5,44,NULL,
-#                      family=quasi(link="identity"))    # <<< DON'T FIT
-#                      family=Gamma(link="identity"))    # <<<
-   #b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),  
-   #                   family=quasi(link=power(1/3),variance="mu^3"),dist.metric="mahalanobis") # << WORSE
+   b.gcv<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),method="GCV.Cp",
+                      dist.metric="mahalanobis",fam=quasi(link=power(0.5),variance="mu^2"))
 
+   #,fam=quasi(link=power(0.5),variance="mu^2")
    # record the GCV
    this.score<-cbind(as.data.frame(b.gcv$scores),
                      rep(i,length(b.gcv$scores$score)))
-   score.cv<-rbind(score.cv,this.score)
-   # record the GCV
-   this.edf<-c(sum(b.gcv$gam$edf),i)
-   edf.cv<-rbind(edf.cv,this.edf)
+   gcv.score.cv<-rbind(gcv.score.cv,this.score)
    # record the selected MDS dimension
-   best.dim<-c(best.dim,b.gcv$mds.dim)
+   gcv.best.dim<-c(gcv.best.dim,b.gcv$mds.dim)
 
    # do some prediction
    pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp),dist.metric="mahalanobis")
@@ -55,10 +50,27 @@ for(i in 1:b.rows){
    pp<-predict(b.gcv$gam,pred.data,type="response")
 
    # record the MSE
-   ds.mse.cv<-c(ds.mse.cv,(breast.dat$npi[i]-pp)^2)
+   dsgcv.mse.cv<-c(dsgcv.mse.cv,(breast.dat$npi[i]-pp)^2)
 
+   ### P-ML
+   # fit the model
+   b.ml<-gam.mds.fit(npi.samp,breast.dist,NULL,44,c(2,0.85),method="P-ML",
+                      dist.metric="mahalanobis",quasi(link=power(0.5),variance="mu^2")) 
 
+   # record the score
+   this.score<-cbind(as.data.frame(b.ml$scores),
+                     rep(i,length(b.ml$scores$score)))
+   ml.score.cv<-rbind(ml.score.cv,this.score)
+   # record the selected MDS dimension
+   ml.best.dim<-c(ml.best.dim,b.ml$mds.dim)
 
+   # do some prediction
+   pred.data<-as.data.frame(insert.mds.generic(b.ml$mds.obj,breast.array[i,],breast.samp),dist.metric="mahalanobis")
+   names(pred.data)<-names(b.ml$samp.mds)[-1]
+   pp<-predict(b.ml$gam,pred.data,type="response")
+
+   # record the MSE
+   dsml.mse.cv<-c(dsml.mse.cv,(breast.dat$npi[i]-pp)^2)
 
    #################################################################
    ### lasso model
@@ -69,7 +81,8 @@ for(i in 1:b.rows){
 
 }
 
-names(score.cv)<-c("gcv","dim","booti")
+names(gcv.score.cv)<-c("dim","gcv","booti")
+names(ml.score.cv)<-c("dim","score","booti")
 #names(ds.mse.cv)<-c("MSE","method")
 #ds.mse.cv<-ds.mse.cv$MSE
 
@@ -77,19 +90,30 @@ names(score.cv)<-c("gcv","dim","booti")
 
 
 # MSE plot
-plot(1:45,seq(min(lasso.mse.cv,ds.mse.cv),max(lasso.mse.cv,ds.mse.cv),len=45),
+plot(1:45,seq(min(lasso.mse.cv,dsml.mse.cv,dsgcv.mse.cv),
+              max(lasso.mse.cv,dsml.mse.cv,dsgcv.mse.cv),len=45),
      xlab="CV round",ylab="MSE",type="n")
 lines(1:45,lasso.mse.cv,col="blue")
 points(1:45,lasso.mse.cv,pch=19,col="blue")
-points(1:45,ds.mse.cv,pch=19)
-lines(1:45,ds.mse.cv,pch=19)
+points(1:45,dsml.mse.cv,pch=19)
+lines(1:45,dsml.mse.cv,pch=19)
+points(1:45,dsgcv.mse.cv,pch=19,col="red")
+lines(1:45,dsgcv.mse.cv,pch=19,col="red")
 
 # CV score
 cat("lasso=",mean(lasso.mse.cv),"\n")
-cat("ds=",mean(ds.mse.cv),"\n")
+cat("ds ML=",mean(dsml.mse.cv),"\n")
+cat("ds GCV=",mean(dsgcv.mse.cv),"\n")
 
 # GCV plot
-#p<-ggplot(as.data.frame(score.cv))
-#p<-p+geom_line(aes(dim,gcv,group=booti))
-#p<-p+stat_smooth(aes(dim,gcv))
-#print(p)
+library(ggplot2)
+quartz()
+p<-ggplot(as.data.frame(gcv.score.cv))
+p<-p+geom_line(aes(dim,gcv,group=booti))
+p<-p+stat_smooth(aes(dim,gcv))
+print(p)
+quartz()
+p<-ggplot(as.data.frame(ml.score.cv))
+p<-p+geom_line(aes(dim,score,group=booti))
+p<-p+stat_smooth(aes(dim,score))
+print(p)

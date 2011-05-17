@@ -103,7 +103,7 @@ plot.it<-function(dat,main.title){
    lines(bnd,lwd=2)
 }
 
-mds.fit<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),family=Gamma(link="log"),gam.method="ML") 
+mds.fit<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),family=Gamma(link="log"),gam.method="GCV.Cp") 
 plot.it(mds.fit,paste("mds ",mds.fit$mds.dim,"D",sep=""))
 
 #mds2<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20))
