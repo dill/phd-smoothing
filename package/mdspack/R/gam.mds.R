@@ -105,7 +105,7 @@ gam.mds<-function(samp.data,predp=NULL,bnd,mds.dim=NULL,grid.res=c(50,50),
          # that is twice the -ve log likelihood + dimension of the MDS
          #           projection + 1 (should be the choose(...) but this is faster
          if(gam.method == "ML"){
-            ml.score<- model.list[[i]]$gam$gcv.ubre + (test.dim+1)
+            ml.score<- 2*(model.list[[i]]$gam$gcv.ubre + (test.dim+1))
             scores<-c(scores,ml.score)
          }else{
             # extract the GCV

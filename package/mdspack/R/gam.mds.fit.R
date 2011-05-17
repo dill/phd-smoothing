@@ -63,7 +63,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
       
 #####
             if(method == "ML" | method == "P-ML"){
-               ml.score<- model.list[[i]]$gam$gcv.ubre + (test.dim+1)
+               ml.score<- 2*(model.list[[i]]$gam$gcv.ubre + (test.dim+1))
                scores<-c(scores,ml.score)
             }else{
             # extract the GCV
