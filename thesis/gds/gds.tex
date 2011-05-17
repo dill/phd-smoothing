@@ -79,9 +79,9 @@ Looking back to figure \ref{nullspace-dim} (where the blue line showed the incre
 \cite{girosi} discusses the connections between neural networks and GAMs with the more general form of this type of penalty (ie. (\ref{duchon-penalty-general})) (see also \cite{elements} p. 168).
 
 
-\subsection{Duchon splines with \mdsap -- \mdsds}
+\subsection{Duchon splines with \mdsap\ -- \mdsds}
 
-With the addition of Duchon splines to the \mdsap we are now in a position to project data into any number of dimensions and smooth over the response without having to worry about the nullspace of the penalty causing problems.
+With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into any number of dimensions and smooth over the response without having to worry about the nullspace of the penalty causing problems.
 
 
 
@@ -107,7 +107,7 @@ Since fitting a GAM with a Duchon spline basis is relatively cheap compared to t
 
 In particular, starting from a 2-dimensional projection, the dimensionality is increased  and models fitted, until there is an increase in GCV score. The upper bound is the number of dimensions that explain 95\% of the variation in the distance matrix of the initial grid (see section \ref{mds-prac}).  This favours simpler models (in dimensionality terms), although of course a full search can be performed if there is some prior belief that the dimensionality should be higher (indeed there is no reason to believe that the GCV score should be unimodal in dimension). It might be considered preferable to take the first minima in the score anyway as we ould generally prefer a simpler model. Simulations show that the minima in the GCV score and MSE are in agreement.
 
-Figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared error for 60 simulations from the peninsula domain, for each of the 60 realisations a \mdsds was fitted using a 2 through 20 dimensional projection. The boxplots are grouped according to the dimension of the MDS projection used. The graph shows that there is a minima in the score when the dimension is four which corresponds with the minimum MSE.
+Figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared error for 60 simulations from the peninsula domain, for each of the 60 realisations a \mdsds\ was fitted using a 2 through 20 dimensional projection. The boxplots are grouped according to the dimension of the MDS projection used. The graph shows that there is a minima in the score when the dimension is four which corresponds with the minimum MSE.
 
 \begin{figure}
 \centering
@@ -127,7 +127,7 @@ There is, of course, no guarantee that there will always be a minimum to find an
 
 Returning to the simulation study in section \ref{wt2bigsim}, the same set of simulations (250 samples at three error levels) was re-run but now using the Duchon splines, selecting MDS dimension based on GCV score (maximum basis dimension was set at 100). The results are shown for the original simulations along side those for the new model.
 
-Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds with GCV dimension selection does better than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels.
+Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds\ with GCV dimension selection does better than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels.
 
 \begin{figure}
 \centering
@@ -161,19 +161,16 @@ Duchon splines are able to smooth in high dimensions without the usual problems 
 
 Data are often collected on scales that are not necessarily physically meaningful (for example in psychological studies or attitude surveys) but the data are used as if the scale was absolute in some sense (\cite{cox2007}, \cite{torgerson}). In such cases the distances between the observations may be meaningful but the actual ordinal values may not be.
 
-Taking data which is either already distances or distances calculated from data, the MDS projection can be found and then a smooth over those data can be used to model some response. Situations where \mdsds might be useful fall into three classes: 
+Taking data which is either already distances or distances calculated from data, the MDS projection can be found and then a smooth over those data can be used to model some response. Situations where \mdsds\ might be useful fall into three classes: 
 \begin{enumerate}
 \item Those in which distances are intrinsically meaningful, where distances between the subjects in a study represent some obviously meaningful physical quantity (for example geographical distance in kilometers between observations of whales.
-\item Those in which the combinations of variables in the MDS configuration are not meaningful physically but come together to give a measure of dissimilarity between subjects (similar to constructed indices used by econometricians from a series of socio-economic variables).
-\item Situations where there are too many variables to be reasonably used in a conventional additive model and therefore using MDS to reduce the number of variables is a reasonable alternative.
+\item Those in which the combinations of variables in the MDS configuration are not meaningful physically but come together to give a measure of dissimilarity between subjects. In this case all of the variables could be of the same ``kind'' (for example, a repeated measure like voting) or could be combinations of measurements of different phenomena (similar to constructed indices used by econometricians from a series of socio-economic variables (household income, education, state benefits, etc)).
+\item Finally, similar to the above class, situations where there are too many variables to be reasonably used in a conventional additive model and therefore using MDS could be used as a variable ``reduction'' technique similar to principle components regression (\cite{elements}, p. 79--80).
 \end{enumerate}
-The latter two situations pose two interrelated problems. First is that of measurement error: if there are large errors in the variables which are used in the MDS projection, these could unduly influence the result. For example if there is one very large (erroneous) observation in one of the variables, this could dominate the eigenvalues and cause the variable to have undue prominence in the MDS projection. A thorough treatment of measurement error for non-parametric models is given in (TKTKTK Ciprian's book). Second is the issue of variable selection; since all variables are used in finding the distances, we have made the assumption that they all affect the response in some way and that the degree to which they have an effect is somehow related to the degree of their variation (or rather, their contribution to the eigenvalues). This is, of course, an unfounded assumption.
+The latter two situations pose two interrelated problems. First is that of measurement error: if there are large errors in the variables which are used in the MDS projection, these could unduly influence the result (we usually assume that geographical locations are accurate). For example if there is one very large (erroneous) observation in one of the variables, this could dominate the eigenvalues and cause the variable to have undue prominence in the MDS projection. A thorough treatment of measurement error in non-linear models is given in \cite{measurementerror}. Second is the issue of variable selection; since all variables are used in finding the distances, we have made the assumption that they all affect the response in some way and that the degree to which they have an effect is somehow related to the degree of their variation (or rather, their contribution to the eigenvalues). This is, of course, an unfounded assumption.
 
 TKTKTK absence of prior info? maybe GCV deals with it?
 
-
-
-% concrete example of the above
 
 \subsection{Examples}
 
@@ -241,8 +238,8 @@ The usual approach for such problems would be to use either a linear model or a 
 The four models tested were:
 
 \begin{enumerate}
-	\item \mdsds (GCV): MDS projection of the data, selected by minimum GCV score over the full range of 2 to the number of dimensions that account for 85\% of the variation in the sample. Spline basis size maximum was 100.
-	\item \mdsds (ML): as previous model but using ML score to select the MDS projection dimension. 
+	\item \mdsds\ (GCV): MDS projection of the data, selected by minimum GCV score over the full range of 2 to the number of dimensions that account for 85\% of the variation in the sample. Spline basis size maximum was 100.
+	\item \mdsds\: (ML): as previous model but using ML score to select the MDS projection dimension. 
 	\item Lasso: as implemented in \texttt{glmnet}, cross-validation (using deviance as a loss function) was used to select amount of shrinkage per realisation.
 	\item GLM: as implemented in \texttt{glm()}.
 \end{enumerate}
@@ -264,7 +261,7 @@ where subscript $p$ indicates the probability, rather than the prediction on the
 \begin{figure}
 \centering
 \includegraphics[width=6in]{gds/figs/mp-brier.pdf} \\
-\caption{Boxplot of Brier per model for the free vote data set at varying sample sizes.}
+\caption{Boxplot of Brier score per model for the free vote data set at varying sample sizes.}
 \label{gds-mps-brier}
 % generated by duchon/mps/analyse-mps.R
 \end{figure}
@@ -272,6 +269,10 @@ where subscript $p$ indicates the probability, rather than the prediction on the
 Figures \ref{gds-mps-mse} and \ref{gds-mps-brier} show boxplots of the MSE and Brier scores respectively at the varying sample sizes. The picture painted by the results is consistent across sample sizes, that is that the lasso out-performs other methods.
 
 (TKTKTK see what happens!!)
+
+TKTKTK want to see what the adjusted penalty does !
+      also want to see what the score vs. dimension plots look like (with and without score adjustment)
+
 
 Interestingly, using the ML score rather than the GCV score for the MDS projection dimension yields better results.
 How many dimensions?!
@@ -290,20 +291,34 @@ TKTKTK confounding with Plaid/SDLP etc
 
 Say something about what microarrays are
 
-\cite{ernstbook} descibe a data set where both microarray (TKTKTK cite) and non-genetic data were collected on X patients with breast cancer. The microarray consists of a matrix with BLAH patients (rows) and BLAH genes.
+Microarrays consist of small silicone or glass chips on which thousands of strands of RNA (which can be thought of as carrying instructions from DNA about how to create proteins) are stuck. These strands are known as \textit{targets} or \textit{probes}. When RNA from the sample comes into contact with that on the chip \textit{hybridisation} occurs (hydrogen bonds between matching parts). The targets are have a fluorescent die applied to them before hybridisation and can be scanned afterward to quantify the number of strands from the sample which have attached themselves to the chip, this is known as the \textit{expression level}.
+
+\cite{ernstbook} (pp. 7--9) descibe a data set where both microarray (TKTKTK explain not usual setup, using DNA instead!) and non-genetic data were collected on 62 patients with breast cancer. The microarray contains expression data on 59 genes. Among the non-genetic data collected was the Nottingham Prognostic Index (NPI) (\cite{Haybittle1982} and \cite{Todd1987}), thought to be a good general measure of prognosis for patients with primary breast cancer (ie. cancer that has not spread beyond the breast). The NPI combines 3 pieces of information in a simple equation
+\begin{equation}
+\text{NPI} = 0.2(\text{size of index lesion in cm}) + \text{number of lymph nodes} + \text{tumour grade}.
+\end{equation}
+Further information can be found in the references above. It suffices to say that high values of NPI are bad, identifying those patients with very poor prognoses.
+
+TKTKTK
+   science says it's reasonable that gene -> NPI link
+   want to include all information
+   want to avoid large deviations -- Mahalanobis
+   why do single genes matter? (is lasso a bad model?) -- READ THINGS
+
+
+It seems reasonable, given This data lends itself to analysis using \mdsds, since it
 
 
 
 
 
-
-\subsubsection{Leukemia microarrays}
+%\subsubsection{Leukemia microarrays}
 
 
 
 \section{Software implementation - \mdspack}
 
-The methods detailed in this section, namely the use of Duchon splines along with MDS to perform smoothing are provided in the \textsf{R} package \mdspack\ which is available at A WEBSITE THAT MIGHT BE CRAN.
+The methods detailed in this section, namely the use of Duchon splines along with MDS to perform smoothing are provided in the \textsf{R} package \mdspack\ which is available at\ldots
 
 
 

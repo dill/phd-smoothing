@@ -48,8 +48,6 @@ for(i in 1:b.rows){
    edf.cv<-rbind(edf.cv,this.edf)
    # record the selected MDS dimension
    best.dim<-c(best.dim,b.gcv$mds.dim)
-   # record adjusted R^2
-   rsq<-c(rsq,summary(b.gcv$gam)$r.sq)   
 
    # do some prediction
    pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,breast.array[i,],breast.samp),dist.metric="mahalanobis")
@@ -58,6 +56,9 @@ for(i in 1:b.rows){
 
    # record the MSE
    ds.mse.cv<-c(ds.mse.cv,(breast.dat$npi[i]-pp)^2)
+
+
+
 
    #################################################################
    ### lasso model
