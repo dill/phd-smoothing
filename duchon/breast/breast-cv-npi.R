@@ -86,32 +86,3 @@ names(ml.score.cv)<-c("dim","score","booti")
 
 save.image(paste("npi-cv-",b.gcv$gam$family$family,".RData",sep=""))
 
-
-# MSE plot
-#plot(1:45,seq(min(lasso.mse.cv,dsml.mse.cv,dsgcv.mse.cv),
-#              max(lasso.mse.cv,dsml.mse.cv,dsgcv.mse.cv),len=45),
-#     xlab="CV round",ylab="MSE",type="n")
-#lines(1:45,lasso.mse.cv,col="blue")
-#points(1:45,lasso.mse.cv,pch=19,col="blue")
-#points(1:45,dsml.mse.cv,pch=19)
-#lines(1:45,dsml.mse.cv,pch=19)
-#points(1:45,dsgcv.mse.cv,pch=19,col="red")
-#lines(1:45,dsgcv.mse.cv,pch=19,col="red")
-#
-## CV score
-#cat("lasso=",mean(lasso.mse.cv),"\n")
-#cat("ds ML=",mean(dsml.mse.cv),"\n")
-#cat("ds GCV=",mean(dsgcv.mse.cv),"\n")
-#
-## GCV plot
-#library(ggplot2)
-#quartz()
-#p<-ggplot(as.data.frame(gcv.score.cv))
-#p<-p+geom_line(aes(dim,gcv,group=booti))
-#p<-p+stat_smooth(aes(dim,gcv))
-#print(p)
-#quartz()
-#p<-ggplot(as.data.frame(ml.score.cv))
-#p<-p+geom_line(aes(dim,score,group=booti))
-#p<-p+stat_smooth(aes(dim,score))
-#print(p)

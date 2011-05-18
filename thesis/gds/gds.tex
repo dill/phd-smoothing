@@ -348,24 +348,21 @@ Since the sample size is rather small, it was not possible to reasonably split t
 
 \begin{table}  
 \begin{centering}
-\begin{tabular}{ccc}
-    Model & CV score \\ 
+\begin{tabular}{cccc}
+    Model & mean & median & se \\ 
     \hline
+\mdsds (GCV) - normal & 1.41  & 0.695  & 1.759 \\
+\mdsds (ML) - normal  & 1.426 & 0.629  & 1.873 \\
+\mdsds (GCV) - quasi  & 1.427 & 0.654  & 1.739 \\
+\mdsds (ML) - quasi   & 1.419 & 0.575  & 1.857 \\
+lasso                 & 1.67  & 1.021  & 1.837 \\
   \end{tabular}
 \caption{}
 \end{centering}
 \label{breast-cancer-cv-results}
 \end{table}
 
-%quasi(power(1/2), variance = mu^2)
-%lasso= 1.475949 
-%ds ML= 1.418823 
-%ds GCV= 1.426787 
-%
-%Normal
-%lasso= 1.421593 
-%ds ML= 1.425892 
-%ds GCV= 1.410288 
+
 
 
 %\subsubsection{Leukemia microarrays}
