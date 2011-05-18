@@ -1,4 +1,6 @@
 # what happened in the free votes sim?
+# plot: brier and mse score per model 
+#       2x2 lattice for sample size
 library(ggplot2)
 
 
@@ -25,7 +27,7 @@ bedf<-c()
 bmse<-c()
 bwrong.mat<-c()
 
-for(samp.size in c(200,300,400,500)){
+for(samp.size in c(200,300,400)){#,500)){
    load(paste("freesim-",samp.size,".RData",sep=""))
 
    method.names<-c("dsgcv","dsml","glmnet","glm")
