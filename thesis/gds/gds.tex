@@ -77,19 +77,9 @@ Looking back to figure \ref{nullspace-dim} (where the blue line showed the incre
 
 \cite{girosi} discusses the connections between neural networks and GAMs with the more general form of this type of penalty (ie. (\ref{duchon-penalty-general})) (see also \cite{elements} p. 168).
 
-
 \subsection{Duchon splines with \mdsap\ -- \mdsds}
 
 With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into any number of dimensions and smooth over the response without having to worry about the nullspace of the penalty causing problems.
-
-
-
-
-
-
-
-
-
 
 \section{Choosing MDS projection dimension}
 
@@ -131,7 +121,7 @@ So the score used to select dimension is:
 \end{equation*}
 Since the maximum basis is kept constant, but the dimension of the problem changes, this penalty attempts to stop small increases in the likelihood by increasing dimension. This allows the ML score to be used to fit each individual GAM and then comparisons to be made between models of different dimensions. Note the similarity to the AIC.
 
-There is, of course, no guarantee that there will always be a minimum to find and as with all automated methods, practitioners should be mindfull of what could potentially go wrong. However, in the situations tested (see below for examples), both of these methods appeared to be satisfactory.
+There is, of course, no guarantee that there will always be a minimum to find and as with all automated methods, practitioners should be mindful of what could potentially go wrong. However, in the situations tested (see below for examples), both of these methods appeared to be satisfactory.
 
 \section{Within-area distance examples}
 \label{gds-wad-examples}
@@ -187,7 +177,7 @@ Using the $\text{ML}_p$ statistic to select the MDS projection dimension resulte
 \section{Generalized distance smoothing}
 \label{gds-gds-examples}
 
-Duchon splines are able to smooth in high dimensions without the usual problems that come from such situations. Multidimensional scaling allows the projection of any arbitrary distance matrix into Euclidean space. The combination of these two methods has been sucessful in the within-area distance case above, but also allows for smoothing using any set of distances.
+Duchon splines are able to smooth in high dimensions without the usual problems that come from such situations. Multidimensional scaling allows the projection of any arbitrary distance matrix into Euclidean space. The combination of these two methods has been successful in the within-area distance case above, but also allows for smoothing using any set of distances.
 
 Data are often collected on scales that are not necessarily physically meaningful (for example in psychological studies or attitude surveys) but the data are used as if the scale was absolute in some sense (\cite{cox2007}, \cite{torgerson}). In such cases the distances between the observations may be meaningful but the actual ordinal values may not be.
 
@@ -311,7 +301,7 @@ Figures \ref{gds-mps-mse} and \ref{gds-mps-brier} show boxplots of the MSE and B
 
 Microarrays consist of small silicone or glass chips on which thousands of strands of RNA (which can be thought of as carrying instructions from DNA about how to create proteins) are stuck. These strands are known as \textit{targets} or \textit{probes}. When RNA from the sample comes into contact with that on the chip \textit{hybridisation} occurs (hydrogen bonds between matching parts). The targets are have a fluorescent die applied to them before hybridisation and can be scanned afterward to quantify the number of strands from the sample which have attached themselves to the chip, this is known as the \textit{expression level}.
 
-\cite{ernstbook} (pp. 7--9) descibe a data set where both microarray and non-genetic data were collected on 62 patients with breast cancer. Rather than using RNA on the microarray, the experiment used DNA and measured the differences between the genomic DNA of patients with breast cancer as compared to controls; the theory predicting that cancer causes loss of genetic material or additonal copies of genes to be obtained. The microarray contains expression data on 59 genes. Among the non-genetic data collected was the Nottingham Prognostic Index (NPI) (\cite{Haybittle1982} and \cite{Todd1987}), thought to be a good general measure of prognosis for patients with primary breast cancer (ie. cancer that has not spread beyond the breast). The NPI combines 3 pieces of information in a simple equation
+\cite{ernstbook} (pp. 7--9) describe a data set where both microarray and non-genetic data were collected on 62 patients with breast cancer. Rather than using RNA on the microarray, the experiment used DNA and measured the differences between the genomic DNA of patients with breast cancer as compared to controls; the theory predicting that cancer causes loss of genetic material or additonal copies of genes to be obtained. The microarray contains expression data on 59 genes. Among the non-genetic data collected was the Nottingham Prognostic Index (NPI) (\cite{Haybittle1982} and \cite{Todd1987}), thought to be a good general measure of prognosis for patients with primary breast cancer (ie. cancer that has not spread beyond the breast). The NPI combines 3 pieces of information in a simple equation
 \begin{equation}
 \text{NPI} = 0.2(\text{size of index lesion in cm}) + \text{number of lymph nodes} + \text{tumour grade}.
 \end{equation}
@@ -333,7 +323,7 @@ Plugging the Mahalanobis distance into the MDS procedure produces a projection i
 
 Of the 62 patients in the study, 45 had non-missing values for NPI and out of the 59 genes in the microarray, 27 did not have missing values. This lead to a vector of 45 NPI measurements and a 62 by 27 matrix for the microarray data. A number of different \mdsds\ models were fitted, with various error distributions. Using standard checks (eg. \texttt{gam.check()} in \texttt{mgcv}, fitting to residuals etc) two were deemed most promising. Those were a model with normal errors and ine using a quasi-likelihood (\cite{quasi}, \cite{wood2008}) with a square root link function and variance proportional to the square of the mean. For comparison the lasso (as provided in the \textsf{R} package \texttt{glmnet}) was used. The implementation of the lasso does not allow for quasi-likelihood error distributions to be used, so the normal model for \mdsds\ is a fairer comparison. 
 
-Since the sample size is rather small, it was not possible to reasonably split the data into training and validation sets as with the MP data. Instead, leave-one-out cross-validation (LOOCV) (see section \ref{DEFN-LOOCV}) was used to assess the sensitivity of the models to changes in the data, as well as overall prediction. Table \ref{breast-cancer-cv-results} and figure \ref{breast-cancer-cv-plot} show the results. Both the table and plot show that although \mdsds\ has a lower CV score than the lasso accross the board, the variability in the models is about the same.
+Since the sample size is rather small, it was not possible to reasonably split the data into training and validation sets as with the MP data. Instead, leave-one-out cross-validation (LOOCV) (see section \ref{DEFN-LOOCV}) was used to assess the sensitivity of the models to changes in the data, as well as overall prediction. Table \ref{breast-cancer-cv-results} and figure \ref{breast-cancer-cv-plot} show the results. Both the table and plot show that although \mdsds\ has a lower CV score than the lasso across the board, the variability in the models is about the same.
 
 \begin{table}  
 \begin{centering}
@@ -360,7 +350,7 @@ lasso                 & 1.67  & 1.021  & 1.837 \\
 % generated by duchon/breast/analyse-cv-plot.R
 \end{figure}
 
-Looking within the \mdsds\ models, we can again look at plots of the MDS projection dimension selection. These are show in figure \ref{breastcancer-dimselect}, where each line represents one round of cross-validation (some lines are broken due to convergence failure in the GAM), red dots indicate minima in the score per simulation (the selected projection dimensions) and the blue lines are smooths through the full data set to give a general idea of what is going on (with green confidence bands). Both error distributions show a similar relationship between dimension and score, however the $\text{ML}_p$ appears again to select high dimensional solutions (infact all selections were either 19 or 20 dimensions). The GCV score appears to have a fairly clearly defined minima. 
+Looking within the \mdsds\ models, we can again look at plots of the MDS projection dimension selection. These are show in figure \ref{breastcancer-dimselect}, where each line represents one round of cross-validation (some lines are broken due to convergence failure in the GAM), red dots indicate minima in the score per simulation (the selected projection dimensions) and the blue lines are smooths through the full data set to give a general idea of what is going on (with green confidence bands). Both error distributions show a similar relationship between dimension and score, however the $\text{ML}_p$ appears again to select high dimensional solutions (in fact all selections were either 19 or 20 dimensions). The GCV score appears to have a fairly clearly defined minima. 
 
 \begin{figure}
 \centering
