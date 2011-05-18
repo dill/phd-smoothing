@@ -55,6 +55,7 @@ mds.score.min<-mds.score.minn
 
 names(mds.score.dim)[3]<-"sim"
 
+pdf(file="breastcancer-dimselect.pdf",height=7,width=7)
 
 # do silly things with viewports to get the plot working...
 plot.rows<-1
@@ -95,8 +96,8 @@ p<-p+labs(x="MDS projection dimension",y="Score")
 p<-p+facet_grid(method~model,scales="free")
 print(p,vp=subplot(1,2))
 
-### ggsave!
-ggsave("breastcancer-dimselect.pdf")
+# can't use ggsave(), using viewport!
 
 
+dev.off()
 
