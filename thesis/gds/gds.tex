@@ -6,11 +6,12 @@
 
 The previous chapter makes clear that we face a trade-off in using \mdsap. If the ordering of the points in space is to be maintained, a sufficiently high dimensional projection of the data must be obtained. But increasing the projection dimension causes the nullspace of the penalty to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results. 
 
-The requirement we seek is clear: we wish to smooth in as many dimensions as possible; but while doing this we must also limit the nullspace of the penalty. Fortunately, this is possible using the ideas put forth in \cite{duchon77}. The methods detailed there give a generalisation of the thin plate spline that allows for a smaller nullspace to be used.
+The requirement we seek is clear: we wish to smooth in as many dimensions as necessary; but while doing this we must also limit the nullspace of the penalty. Fortunately, this is possible using the ideas put forth in \cite{duchon77}. The methods detailed there give a generalisation of the thin plate spline that allows for a smaller nullspace to be used.
 
-The next section goes into the technical detail of how this approach works. Section \ref{gds-wad-examples} shows how this can be useful in the within-area distance case discussed in chapters \label{chap-sc} and \label{chap-mds}. Section \ref{gds-gds-examples} gives examples of generalized distance smoothing.
+The next section goes into the technical detail of how this approach works. Section \ref{gds-wad-examples} shows how this can be useful in the within-area distance case discussed in chapters \ref{chap-sc} and \ref{chap-mds}. Section \ref{gds-gds-examples} gives examples of generalized distance smoothing.
 
 \section{From thin plate splines to Duchon splines}
+\label{gds-tprstoduchon}
 
 \cite{simonbook} p. 153 gives the formulation for the thin plate penalty in $d$ dimensions with penalty order $m$ as:
 \begin{equation}
@@ -19,12 +20,12 @@ J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m
 \end{equation}
 where the summation index generates all of the possible combinations of penalty orders such than their sum is still $m$ (thereby finding all the correct cross-terms). The technical restriction $2m>d$ is also imposed to ensure that $f$ remains continuous.
 
-The form of $f$ is:
+The form of $f$ is then:
 \begin{equation}
 f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
 \label{tprs-basis}
 \end{equation}
-(\cite{wood2003}) where the first summation is a series of radial basis functions, one per datum and the second sums the unpenalised terms in the nullspace of the penalty. These are $M$ linearly independent polynomials of degree less than $m$. $M$ is given by:
+where the first summation is a series of radial basis functions, one per datum and the second sums the unpenalised terms in the nullspace of the penalty (\cite{wood2003}). These are $M$ linearly independent polynomials of degree less than $m$. $M$ is given by:
 \begin{equation*}
 M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}.
 \end{equation*}
@@ -55,7 +56,7 @@ Taking the Fourier transform of the derivative terms in (\ref{tprs-pen}) yields 
 J_{m,d} = \int \ldots \int_{\mathbb{R}^d} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau}.
 \label{tprs-pen-ft}
 \end{equation}
-The penalties (\ref{tprs-pen}) and (\ref{tprs-pen-ft}) are in fact equivalent by Plancherel's theorem (\cite{vretblad} p. 180), so one can take either view and obtain the same numerical value for the penalty. 
+The penalties (\ref{tprs-pen}) and (\ref{tprs-pen-ft}) are in fact equivalent by Plancherel's theorem (\cite{vretblad}, p. 180), so one can take either view and obtain the same numerical value for the penalty. 
 
 We could extend this frequency-based interpretation of the penalty to a more general class of penalties by putting a weighting in the integral:
 \begin{equation}
@@ -79,23 +80,23 @@ Looking back to figure \ref{nullspace-dim} (where the blue line showed the incre
 
 \subsection{Duchon splines with \mdsap\ -- \mdsds}
 
-With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into any number of dimensions and smooth over the response without having to worry about the nullspace of the penalty causing problems.
+With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into any number of dimensions and smooth over the response without having to worry about the nullspace of the penalty causing problems. The use of Duchon splines along with \mdsap\ and the projection dimension selection techniques below will be known as \mdsds\ from here on.
 
 \section{Choosing MDS projection dimension}
 
-With Duchon's basis in mind, it is now possible to smooth a space of any dimension using a second order derivative penalty, simply by picking $s$ appropriately. Picking the dimension of the MDS projection is now a concern since there is no reason to believe that simply going to higher and higher dimensions will yield better and better results. Keeping in mind the desire for a parsimony, it would be preferable to keep the dimension of the projection as small as possible.
+With Duchon's basis, it is now possible to smooth a space of any dimension using a second order derivative penalty, simply by picking $s$ appropriately. Picking the dimension of the MDS projection is now a concern since there is no reason to believe that simply going to higher and higher dimensions will yield better and better results. Keeping in mind the desire for a parsimony, it would be preferable to keep the dimension of the projection as small as possible, whilst avoiding leakage.
 
 \subsection{Using proportion of variation explained}
 
-It is clear that as higher and higher projections are used, a larger and larger proportion of the variation in the distance matrix is explained. It therefore seems reasonable to base the choice of dimension on the proportion of the variation explained in the initial grid. However, what proportion should be used? 80\%? 90\%? 99\%? There is no reason to choose any one of these over the others. Setting the proportion of variation to be explained generally is surely a bad idea, since what works for one domain may well be a disaster for another.
+It is clear that as higher and higher projections are used, a larger and larger proportion of the variation in the distance matrix is explained. It therefore seems reasonable to base the choice of dimension on the proportion of the variation explained in the initial grid. However, what proportion should be used? 80\%? 90\%? 99\%? There is no reason to choose any one of these over the others. Setting the proportion of variation to be explained generally is surely a bad idea, since what works for one domain may well be a disaster for another (see also \secref{nohigherdim}).
 
 \subsection{Using scores}
 
-Since fitting a GAM with a Duchon spline basis is relatively cheap compared to the cost of finding the within-area distances, the GCV score can be used to find an optimal dimension for the MDS projection. So, using this to our advantage, a series of projections can be tried, their GCV scores calculated, and the best selected as the projection to use for the model.
+Since fitting a GAM with a Duchon spline basis is relatively cheap compared to the cost of finding the within-area distances, the GCV score can be used to find an optimal dimension for the MDS projection. A series of (increasing dimensional) projections can be tried, their GCV scores calculated, and the best selected as the projection to use for the model.
 
-In particular, starting from a 2-dimensional projection, the dimensionality is increased  and models fitted, until there is an increase in GCV score. The upper bound is the number of dimensions that explain 95\% of the variation in the distance matrix of the initial grid (see section \ref{grids}).  This favours simpler models (in dimensionality terms), although of course a full search can be performed if there is some prior belief that the dimensionality should be higher (indeed there is no reason to believe that the GCV score should be unimodal in dimension). It might be considered preferable to take the first minima in the score anyway as we ould generally prefer a simpler model. Simulations show that the minima in the GCV score and MSE are in agreement.
+In particular, starting from a 2-dimensional projection, the dimensionality is increased and models fitted, until there is an increase in GCV score. The upper bound is the number of dimensions that explain 95\% (say) of the variation in the distance matrix of the initial grid (see section \ref{grids}).  This favours simpler models (in dimensionality terms), although of course a larger set of dimensions could be considered if there is some prior belief that the dimensionality should be higher or that no clear minima has been found (indeed there is no reason to believe that the GCV score should be unimodal in dimension). It might be considered preferable to take the first minima in the score anyway as we would generally prefer a simpler model. Throughout the following all dimensions between the limits given are assessed to avoid any problems with local optima.
 
-Figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared error for 60 simulations from the peninsula domain, for each of the 60 realisations a \mdsds\ was fitted using a 2 through 20 dimensional projection. The boxplots are grouped according to the dimension of the MDS projection used. The graph shows that there is a minima in the score when the dimension is four which corresponds with the minimum MSE.
+Simulations show that the minima in the GCV score and MSE are in agreement. Figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared error for 60 simulations from the peninsula domain, for each of the 60 realisations \mdsds\ was fitted using a 2 through 20 dimensional projection. The boxplots are grouped according to the dimension of the MDS projection used. The graph shows that there is a minima in the score when the dimension is four which corresponds with the minimum MSE.
 
 \begin{figure}
 \centering
@@ -127,7 +128,7 @@ There is, of course, no guarantee that there will always be a minimum to find an
 \label{gds-wad-examples}
 \subsection{Simulations}
 
-Returning to the simulation study in section \ref{wt2bigsim}, the same set of simulations (250 samples at three error levels) was re-run but now using the Duchon splines, selecting MDS dimension based on both GCV and $\text{ML}_p$ scores (maximum spline basis dimension was set at 100). The results are shown for the original simulations (for thin plate splines and the soap film smoother) along side those for the new model.
+Returning to the simulation study in section \ref{wt2bigsim}, the same set of simulations (250 samples at three error levels) was re-run using \mdsds, selecting MDS dimension based on both GCV and $\text{ML}_p$ scores (maximum spline basis dimension was set at 100). The results are shown for the original simulations (for thin plate splines and the soap film smoother) along side those for the new model.
 
 Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds\ with GCV dimension selection does better than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels. Using $\text{ML}_p$ gave roughly similar results, becoming significantly different from the soap film smoother at high noise levels.
 
@@ -139,21 +140,20 @@ Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds
 % generated by mds/duchon/bigsim/boxplot-wt2.R
 \end{figure}
 
-\textbf{SIMON}: do you think I should put some more examples in here? Perhaps a new set of simulations (based on the ``comb'' in section 3.7.2, fig 3-24)?
 
 \subsection{Revisiting the Aral sea}
 
-Going back to the Aral sea example from section \ref{aral-sec}, we can fit a model using the optimal (in a GCV score sense) dimension. Figure \ref{mds-aral-5d-duchon} shows the raw data and a smoothed version, using a 5-dimensional projection (given by minimising the GCV score). The plot does not contain any of the artefacts that were present in the previous smooths of the data.
+Going back to the Aral sea example from section \ref{aral-sec}, we can fit a model using the optimal dimension. Figure \ref{mds-aral-5d-duchon} shows the raw data and a smoothed version, using a 5-dimensional projection (given by minimising the GCV score). The plot does not contain any of the artefacts that were present in the previous smooths of the data.
 
 \begin{figure}
 \centering
 \includegraphics[width=6in]{mds/figs/aral-5d-duchon.pdf} \\
-\caption{The Aral sea chlorophyl levels smoothed using Duchon splines, when a 5-dimensional MDS projection is employed. Note the lack of artefacts in comparison to previous \mdsap\ models.}
+\caption{The Aral sea chlorophyl levels smoothed using \mdsds, when a 5-dimensional MDS projection is employed. Note the lack of artefacts in comparison to previous \mdsap\ models.}
 \label{mds-aral-5d-duchon}
 % generated by duchon/aral-evolve.R
 \end{figure}
 
-Using the $\text{ML}_p$ statistic to select the MDS projection dimension resulted in a 19 dimensional smooth, significantly greater than the dimension selected by GCV. An image plot is shown in figure \ref{gds-aral-19d}; the produced plot does not look that different from the GCV selected on in figure \ref{mds-aral-5d-duchon}, although it perhaps overfits to the data slightly (for example in the $(-50,100)$ and $(80,-20)$ areas). Figure \ref{gds-aral-dim-select} shows plots of score (both GCV and $\text{ML}_p$) against MDS projection dimension. The GCV plot shows a clear minima where as $\text{ML}_p$ does not. Given this plot and the marginally worse performance in the simulations above, it doesn't seem like $\text{ML}_p$ is a particularly good choice for projection dimension selection for \mdsds\ when using within-area distances.
+Using the $\text{ML}_p$ statistic to select the MDS projection dimension resulted in a 19-dimensional smooth, significantly greater than the dimension selected by GCV. An image plot is shown in figure \ref{gds-aral-19d}; the produced plot does not look that different from the GCV selected on in figure \ref{mds-aral-5d-duchon}, although it perhaps overfits to the data slightly (for example in the $(-50,100)$ and $(80,-20)$ areas). Figure \ref{gds-aral-dim-select} shows plots of score (both GCV and $\text{ML}_p$) against MDS projection dimension. The GCV plot shows a clear minima where as $\text{ML}_p$ does not. Given this plot and the marginally worse performance in the simulations above, it doesn't seem like $\text{ML}_p$ is a particularly good choice for projection dimension selection when using within-area distances.
 
 
 \begin{figure}
@@ -173,6 +173,7 @@ Using the $\text{ML}_p$ statistic to select the MDS projection dimension resulte
 % generated by duchon/aral-scoreplots.R
 \end{figure}
 
+\textbf{SIMON}: do you think I should put some more examples in here? Perhaps a new set of simulations (based on the ``comb'' in section 3.7.2, fig 3-24)?
 
 \section{Generalized distance smoothing}
 \label{gds-gds-examples}
@@ -183,17 +184,17 @@ Data are often collected on scales that are not necessarily physically meaningfu
 
 Taking data which is either already distances or distances calculated from data, the MDS projection can be found and then a smooth over those data can be used to model some response. Situations where \mdsds\ might be useful fall into three classes: 
 \begin{enumerate}
-\item Those in which distances are intrinsically meaningful, where distances between the subjects in a study represent some obviously meaningful physical quantity (for example geographical distance in kilometers between observations of whales.
-\item Those in which the combinations of variables in the MDS configuration are not meaningful physically but come together to give a measure of dissimilarity between subjects. In this case all of the variables could be of the same ``kind'' (for example, a repeated measure like voting) or could be combinations of measurements of different phenomena (similar to constructed indices used by econometricians from a series of socio-economic variables (household income, education, state benefits, etc)).
+\item Those in which distances are intrinsically meaningful, where distances between the subjects in a study represent some obviously meaningful physical quantity (for example within-area distances in kilometers between observations of whales).
+\item Those in which the combinations of variables in the MDS configuration are not meaningful physically but come together to give a measure of dissimilarity between subjects. In this case all of the variables could be of the same ``kind'' (for example, a repeated measure like voting) or could be combinations of measurements of different phenomena (similar to constructed indices used by econometricians from a series of socio-economic variables (household income, education level, state benefit elligability, etc)).
 \item Finally, similar to the above class, situations where there are too many variables to be reasonably used in a conventional additive model and therefore using MDS could be used as a variable ``reduction'' technique similar to principle components regression (\cite{elements}, p. 79--80).
 \end{enumerate}
 The latter two situations pose two interrelated problems. First is that of measurement error: if there are large errors in the variables which are used in the MDS projection, these could unduly influence the result (we usually assume that geographical locations are accurate). For example if there is one very large (erroneous) observation in one of the variables, this could dominate the eigenvalues and cause the variable to have undue prominence in the MDS projection. A thorough treatment of measurement error in non-linear models is given in \cite{measurementerror}. Second is the issue of variable selection; since all variables are used in finding the distances, we have made the assumption that they all affect the response in some way and that the degree to which they have an effect is somehow related to the degree of their variation (or rather, their contribution to the eigenvalues). This is, of course, an unfounded assumption.
 
-All that can be hoped for is that a combination of appropriate distance metric, projection dimension selection and usual model checking will work around the above issues.
+Below, the hope is that a combination of appropriate distance metric, projection dimension selection and usual model checking will work around the above issues.
 
 \subsection{Examples}
 
-Data where distances between observations are meaningful can come from many different disciplines. Here two (TKTKTK three?!) examples are given, one from political science and one from biology, however the choice of data here does not indicate any limitation of fields of study to which \mdsds\ can be applied, any discipline in which distances can be measured or calculated \textit{a posteriori} may well benefit from this approach.
+Data where distances between observations are meaningful can come from many different disciplines. Here two (TKTKTK more?!) examples are given, one from political science and one from biology, however the choice of data here does not indicate any limitation of fields of study to which \mdsds\ can be applied, any discipline in which distances can be measured or calculated \textit{a posteriori} may well benefit from this approach.
 
 
 \subsubsection{MP data}
@@ -220,7 +221,7 @@ The website Public Whip (\url{http://www.publicwhip.org.uk/}) provide data from 
 
 Taking the matrix of votes, Euclidean distances between the MPs (rows) were found and used to form the distance matrix. Multidimensional scaling was then used to project these distances into MDS space (dimension selection was performed by optimizing the GCV or $\text{ML}_p$ score). The party affiliation (simplified to Labour party versus not Labour party) was then predicted using a logit link.
 
-Of the 1273 divisions in the 1997--2001 parliament, 17 of them were declared  as ``free votes'' (\cite{freevotes}), where MPs are not ``whipped'' (pressured to take the party line). Predicting affiliation based on whipped votes is relatively easy since MPs are likely to vote along party lines (since they presumably want to keep their leaders happy). Using free votes makes the classification much more difficult. The free votes are summarised in table \ref{free-vote-description}; most of these are ``conscience'' votes.
+Of the 1273 divisions in the 1997--2001 parliament, 17 of them were declared  as ``free votes'' (\cite{freevotes}), where MPs were not ``whipped'' (pressured to take the party line). Predicting affiliation based on whipped votes is relatively easy since MPs are likely to vote along party lines (since they presumably want to keep their leaders happy). Using free votes makes the classification much more difficult. The free votes are summarised in table \ref{free-vote-description}; most of these are ``conscience'' votes.
 
 \begin{table}  
 \begin{centering}
@@ -250,24 +251,24 @@ Of the 1273 divisions in the 1997--2001 parliament, 17 of them were declared  as
 
 Using these votes, MPs were selected at random, the model fit to the data and the party affiliation was predicted for those MPs not in the sample. This was repeated for 200 realisations with sample sizes of 200, 300, 400 and 500.
 
-The usual approach for such problems would be to use either a linear model or a variation on the linear model such as the lasso (\cite{elements} pp. 68--69) with a logistic link function. The built-in function \texttt{glm()} is suitable in the first case and the \textsf{R} package \texttt{glmnet} provides a lasso implementation for the latter.
+The usual approach for such problems would be to use either a linear model or a variation on the linear model such as the lasso (\cite{elements} pp. 68--69) both using logistic link functions. The built-in function \texttt{glm()} is suitable in the first case and the \textsf{R} package \texttt{glmnet} provides a lasso implementation for the latter.
 
 \textbf{SIMON}: Need to add more detail on the lasso?
 
 The four models tested were:
 \begin{enumerate}
 	\item \mdsds\ (GCV): MDS projection of the data, selected by minimum GCV score over the full range of 2 to the number of dimensions that account for 85\% of the variation in the sample. Spline basis size maximum was 100.
-	\item \mdsds\: ($\text{ML}_p$): as previous model but using $\text{ML}_p$ score to select the MDS projection dimension.
+	\item \mdsds\: ($\text{ML}_p$): as above but using $\text{ML}_p$ score to select the MDS projection dimension.
 	\item Lasso: as implemented in \texttt{glmnet}, cross-validation (using deviance as a loss function) was used to select amount of shrinkage per realisation.
 	\item GLM: as implemented in \texttt{glm()}.
 \end{enumerate}
 For all models the error distribution was binomial and a logit link was used.
 
-To compare the results two metrics were used. First the MSE, as defined in section \ref{DEFN-MSE} and second the Brier score (\cite{brier50}). The Brier score is defined as:
+To compare the results two metrics were used. First the MSE (as defined in \secref{DEFN-MSE}) and second the Brier score (\cite{brier50}). The Brier score is defined as:
 \begin{equation}
 \text{BS} = \frac{1}{N} \sum_{i=1}^N (\hat{f}_p(\mathbf{x})-y_i)^2
 \end{equation}
-where subscript $p$ indicates the probability, rather than the prediction on the response scale. The Brier score therefore has the advantage of offering a more granular measure of the accuracy of a method.
+where subscript $p$ indicates the probability, rather than the prediction on the response scale. The Brier score therefore has the advantage of offering a more granular measure of the accuracy of a model.
 
 \begin{figure}
 \centering
@@ -295,13 +296,13 @@ Figures \ref{gds-mps-mse} and \ref{gds-mps-brier} show boxplots of the MSE and B
 % generated by duchon/mps/analyse-scoredim.R
 \end{figure}
 
-\mdsds\ does not appear to be useful in predicting MPs allegiance using the free vote data. This may be due to there not being enough information in the distances to predict the party; since the data were trinary (votes were coded only $-1$, $0$ or $1$) there would be many distances that were similar. This theory is supported by looking at distance matrix for all MPs for the free votes, in that matrix there are only 63 unique values out of a possible 228150 ($(676*676)-676)/2$ since the matrix is symmetric). Also worth noting is potential confounding between Labour MPs (which made up 429 out of the 676) and other ideologically similar parties (such as Plaid Cymru, SDLP and the Liberal Democrats (at that time)) which might cause potential problems when classifying. This, second, theory is less likely (give how well the lasso and GLM do) but in combination with the first seems plausible.
+\mdsds\ does not appear to be useful in predicting MPs allegiance using the free vote data. This may be due to there not being enough information in the distances to predict the party; since the data were trinary (votes were coded only $-1$, $0$ or $1$) there would be many distances that were similar. This theory is supported by looking at distance matrix for all MPs for the free votes, in that matrix there are only 63 unique values out of a possible 228150 ($(676*676)-676)/2$ since the matrix is symmetric). Also worth noting is potential confounding between Labour MPs (which made up 429 out of the 676) and other ideologically similar parties (such as Plaid Cymru, SDLP and the Liberal Democrats (at that time)) which might cause potential problems when classifying. This, second, theory is less likely (given how well the lasso and GLM do) but in combination with the first seems plausible.
 
 \subsubsection{Breast cancer microarrays}
 
 Microarrays consist of small silicone or glass chips on which thousands of strands of RNA (which can be thought of as carrying instructions from DNA about how to create proteins) are stuck. These strands are known as \textit{targets} or \textit{probes}. When RNA from the sample comes into contact with that on the chip \textit{hybridisation} occurs (hydrogen bonds between matching parts). The targets are have a fluorescent die applied to them before hybridisation and can be scanned afterward to quantify the number of strands from the sample which have attached themselves to the chip, this is known as the \textit{expression level}.
 
-\cite{ernstbook} (pp. 7--9) describe a data set where both microarray and non-genetic data were collected on 62 patients with breast cancer. Rather than using RNA on the microarray, the experiment used DNA and measured the differences between the genomic DNA of patients with breast cancer as compared to controls; the theory predicting that cancer causes loss of genetic material or additonal copies of genes to be obtained. The microarray contains expression data on 59 genes. Among the non-genetic data collected was the Nottingham Prognostic Index (NPI) (\cite{Haybittle1982} and \cite{Todd1987}), thought to be a good general measure of prognosis for patients with primary breast cancer (ie. cancer that has not spread beyond the breast). The NPI combines 3 pieces of information in a simple equation
+\cite{ernstbook} (pp. 7--9) describe a data set where both microarray and non-genetic data were collected on 62 patients with breast cancer. Rather than using RNA on the microarray, the experiment used DNA from cancer tissue and measured the differences between the genomic DNA of patients with breast cancer as compared to controls; the theory predicting that cancer causes loss of genetic material or additonal copies of genes to be obtained. The microarray contains expression data on 59 genes. Among the non-genetic data collected was the Nottingham Prognostic Index (NPI) (\cite{Haybittle1982} and \cite{Todd1987}), thought to be a good general measure of prognosis for patients with primary breast cancer (ie. cancer that has not spread beyond the breast). The NPI combines 3 pieces of information in a simple equation
 \begin{equation}
 \text{NPI} = 0.2(\text{size of index lesion in cm}) + \text{number of lymph nodes} + \text{tumour grade}.
 \end{equation}
@@ -309,19 +310,19 @@ Further information can be found in the references above; it suffices to say tha
 
 \cite{ernstbook} (pp. 240-245) attempt to predict survival based on microarray data, controlling for other factors. Instead here the NPI is to be predicted based on the microarray data. This is not an unreasonable proposal since if one believes that there is some genetic mechanism behind breast cancer (or at least an individuals vulnerability/resistance to it) then the factors making up the NPI could be considered proxies. 
 
-\cite{spang2002} propose that rather that considering a large number individual genes, combinations are used. \cite{spang2002} use a singular value decomposition of the microarray data to perform dimension reduction. The quantities resulting being referred to as ``super-genes''. In a similar way, using distances between patients and then taking the MDS projection of microarray data, we can consider ``eigen-genes''.
+\cite{spang2002} propose that rather that considering a large number individual genes, combinations are used. \cite{spang2002} use a singular value decomposition of the microarray data to perform dimension reduction. The quantities resulting being referred to as ``super-genes''. In a similar way, using distances between patients and then taking the MDS projection, we can consider ``eigen-genes''.
 
 In section \ref{gds-gds-examples}, above, it was noted that both errors and non-standardised columns in the data matrix can cause issues with MDS since those variables with the greatest degree of variation do not necessarily inform the model the most. One can easily imagine the case in which a completely unrelated gene was measured with huge error and then made up a huge proportion of the first eigenvalue in the decomposition of the distance matrix, this would dominate the projection but contain no information about the prediction (see also \cite{ernstbook} pp. 220-221). To get around this problem, rather than use the Euclidean distance between patients, the Mahalanobis distance (\cite{mahalanobis}) can be used.
 
-The Mahalanobis distance is easily calculated in the following way. If $x_{i.}$ is a single row from the microarray matrix $X$, this represents a single subject. Imagining that subjects are drawn from some multivariate distribution some mean and covariance matrix $\Sigma$, the Mahalanobis distance $D_m$, between subjects $i$ and $j$ is then defined as:
+The Mahalanobis distance is easily calculated in the following way. If $x_{i.}$ is a single row from the microarray matrix $X$, this represents a single subject. Imagining that subjects are drawn from some multivariate distribution some mean and covariance matrix $\Sigma$, the Mahalanobis distance $d_m$, between subjects $i$ and $j$ is then defined as:
 \begin{equation}
-D_m = (x_{i.} - x_{j.})^\text{T} \Sigma^{-1} (x_{i.} - x_{j.}),
+d_m = (x_{i.} - x_{j.})^\text{T} \Sigma^{-1} (x_{i.} - x_{j.}),
 \end{equation}
 where $\Sigma^{-1}$ is replaced with the inverse of the sample covariance matrix of $X$. The calculated distance takes into account that the data may be more variable in some directions than in others. \cite{gentleman2005} suggest using the Mahalanobis distance in a microarray setting.
 
-Plugging the Mahalanobis distance into the MDS procedure produces a projection in the same way as a set of within-area distances or Euclidean distances would.
+Calculating the Mahalanobis distance for each pair of patients and putting this into a distance matrix, we can then obtain the MDS projection in the same way as we would with a set of within-area or Euclidean distances.
 
-Of the 62 patients in the study, 45 had non-missing values for NPI and out of the 59 genes in the microarray, 27 did not have missing values. This lead to a vector of 45 NPI measurements and a 62 by 27 matrix for the microarray data. A number of different \mdsds\ models were fitted, with various error distributions. Using standard checks (eg. \texttt{gam.check()} in \texttt{mgcv}, fitting to residuals etc) two were deemed most promising. Those were a model with normal errors and ine using a quasi-likelihood (\cite{quasi}, \cite{wood2008}) with a square root link function and variance proportional to the square of the mean. For comparison the lasso (as provided in the \textsf{R} package \texttt{glmnet}) was used. The implementation of the lasso does not allow for quasi-likelihood error distributions to be used, so the normal model for \mdsds\ is a fairer comparison. 
+Of the 62 patients in the study, 45 had non-missing values for NPI and out of the 59 genes in the microarray, 27 did not have missing values. This lead to a vector of 45 NPI measurements and a 45 by 27 matrix for the microarray data. A number of different \mdsds\ models were fitted, with various error distributions. Using standard checks (eg. \texttt{gam.check()} in \texttt{mgcv}, fitting to residuals etc) two were deemed most promising. Those were a model with normal errors and one using a quasi-likelihood (\cite{quasi}, \cite{wood2008}) with a square root link function and variance proportional to the square of the mean. For comparison the lasso (as provided in the \textsf{R} package \texttt{glmnet}) was used. The implementation of the lasso does not allow for quasi-likelihood error distributions to be used, so the normal model for \mdsds\ is a fairer comparison. 
 
 Since the sample size is rather small, it was not possible to reasonably split the data into training and validation sets as with the MP data. Instead, leave-one-out cross-validation (LOOCV) (see section \ref{DEFN-LOOCV}) was used to assess the sensitivity of the models to changes in the data, as well as overall prediction. Table \ref{breast-cancer-cv-results} and figure \ref{breast-cancer-cv-plot} show the results. Both the table and plot show that although \mdsds\ has a lower CV score than the lasso across the board, the variability in the models is about the same.
 
