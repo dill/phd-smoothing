@@ -31,6 +31,7 @@ res<-cbind(as.data.frame(res),mod.names,method.names)
 names(res)<-c("CV","model","method")
 
 library(ggplot2)
+theme_set(theme_bw())
 p<-ggplot(res)
 p<-p+geom_histogram(aes(CV))
 p<-p+facet_grid(model~.)

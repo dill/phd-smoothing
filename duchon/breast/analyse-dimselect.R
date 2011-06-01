@@ -80,6 +80,7 @@ quasi.dim<-mds.score.dim[(nrow(mds.score.dim)/2+1):nrow(mds.score.dim),]
 quasi.min<-mds.score.min[(nrow(mds.score.min)/2+1):nrow(mds.score.min),]
 
 # plot!
+theme_set(theme_bw())
 p<-ggplot(gaussian.dim)
 p<-p+geom_line(aes(x=dim,y=score,group=sim),alpha=0.3)
 p<-p+stat_smooth(aes(x=dim,y=score),alpha=0.3,fill="green",method="gam",formula=y~s(x))

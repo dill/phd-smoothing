@@ -23,7 +23,7 @@ theme_set(theme_bw())
 bigdat<-c()
 big.mins<-c()
 
-for(samp.size in c(200,300,400)){#,500)){
+for(samp.size in c(200,300,400,500)){
    load(paste("freesim-",samp.size,".RData",sep=""))
 
 
