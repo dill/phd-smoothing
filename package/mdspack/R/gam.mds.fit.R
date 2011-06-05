@@ -109,7 +109,7 @@ gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NU
    bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
 
-   ### Do the MDS projection
+   ### Do the MDS projection 
    if(is.null(samp.points) & is.null(grid.points)){
 
       mds.obj<-cmdscale(D,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
@@ -127,12 +127,11 @@ gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NU
       samp.mds<-insert.mds.generic(mds.obj,samp.points,grid.points,dist.metric=dist.metric)
 
    }else{
-      stop("Neither sample points or distance matrix supplied to gan.fitter\n")
+      stop("Neither sample points or distance matrix supplied to gam.fitter\n")
    }
 
    samp.mds<-as.data.frame(cbind(response,samp.mds))
    colnames(samp.mds)<-c("response",bigletters[(bl.len-(dim(samp.mds)[2]-2)):bl.len])
-   #attr(samp.mds,"dimnames")[[1]]<-mpid[samp.ind]
    samp.mds<-as.data.frame(samp.mds)
    
    # model setup
