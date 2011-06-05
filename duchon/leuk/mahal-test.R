@@ -24,18 +24,19 @@ nz<-xc.svd$d>sqrt(.Machine$double.eps)*xc.svd$d[1]
 #         (xc.svd$u[,nz]%*%diag(xc.svd$d[nz])^2%*%t(xc.svd$u[,nz]))/(n-1) # TICK
 
 # check that the inverses are the same
-
 cov.inv<-xc.svd$u[,nz]%*%(((1/xc.svd$d[nz])^2)*t(xc.svd$u[,nz]))*(n-1)
 #cov.inv<-xc.svd$u[,nz]%*%((((n-1)/xc.svd$d[nz])^2)*t(xc.svd$u[,nz]))
 invd<-ginv(cov(x))-cov.inv
 
-
+# check the mahalanobis distances
+y <- sweep(x, 2, x[1,])# = (x - center)
+y<-t(y)
 
 
 
 mah1<-stats::mahalanobis(x,x[1,],ginv(cov(x)),inverted=TRUE)
-source("ginv-leuk.R")
-mah2<-mahal2(x,x[1,])
+#source("mah.R")
+mah2<-mahalanobis(x,x[1,])
 
 
 

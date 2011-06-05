@@ -29,17 +29,18 @@ mahalanobis<-function (x, center, cov=NULL, inverted = FALSE, xc.svd=NULL, ...){
       nz<-xc.svd$d > (sqrt(.Machine$double.eps) * xc.svd$d[1])
 
       # calculate the inverse of the covariance matrix
-      #cov.inv<-xc.svd$u[,nz]%*%(((1/xc.svd$d[nz])^2)*t(xc.svd$u[,nz]))*(n-1)
+      cov.inv<-xc.svd$u[,nz]%*%(((1/xc.svd$d[nz])^2)*t(xc.svd$u[,nz]))*(n-1)
       # calculate the Mahalanobis distance
-      #res<-t(y)%*%cov.inv%*%y
-      #res<-colMeans(res)
+      res<-rowSums((t(y)%*%cov.inv)*t(y))
 
       # quick way of doing the above
-      Z<-t(y)%*%xc.svd$u[,nz]%*%diag(sqrt(n-1)/xc.svd$d[nz])
-      res<-colSums(Z%*%t(Z))
+      #Z<-t(y)%*%xc.svd$u[,nz]%*%diag(sqrt(n-1)/xc.svd$d[nz])
+      #Z<-t(y)%*%xc.svd$u[,nz]%*%diag(1/xc.svd$d[nz])
+      #res<-rowMeans(Z%*%t(Z)*(n-1))
 
       # attach the svd to the result, to save time later
       attr(res,"xc.svd")<-xc.svd
+      attr(res,"cov.inv")<-cov.inv
    }
    return(res)
 }
