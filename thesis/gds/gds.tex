@@ -45,21 +45,19 @@ Beginning with a recap of the physical analogy of the thin plate spline penalty 
 \subsection{From thin plate splines to Duchon splines}
 \label{gds-tprstoduchon}
 
-
-
-\cite{simonbook} p. 153 gives the formulation for the thin plate penalty in $d$ dimensions with penalty order $m$ as:
+Going back to the general GAM objective function given in \secref{GAMobjfcn}, we can examine the penalty term. The thin plate penalty in $d$ dimensions with penalty order $m$ is given as:
 \begin{equation}
 J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f(x_1,\dots,x_d)}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d,
 \label{tprs-pen}
 \end{equation}
-where the summation index generates all of the possible combinations of penalty orders such than their sum is still $m$ (thereby finding all the correct cross-terms). The technical restriction $2m>d$ is also imposed to ensure that $f$ remains continuous.
+where the summation index generates all of the possible combinations of derivative orders such than their sum is still $m$ (thereby finding all the correct cross-terms). The technical restriction $2m>d$ is also imposed to ensure that $f$ remains continuous.
 
 The form of $f$ is then:
 \begin{equation}
 f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
 \label{tprs-basis}
 \end{equation}
-where the first summation is a series of radial basis functions, one per datum and the second sums the unpenalised terms in the nullspace of the penalty (\cite{wood2003}). These are $M$ linearly independent polynomials of degree less than $m$. $M$ is given by:
+where the first summation is a series of radial basis functions ($i$ indexing the $n$ data), one per datum and the second sums the unpenalised terms in the nullspace of the penalty (\cite{wood2003}). These are $M$ linearly independent polynomials of degree less than $m$. $M$ is given by:
 \begin{equation*}
 M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}.
 \end{equation*}
@@ -75,7 +73,7 @@ In the cases presented so far, $d$ (the MDS projection dimension) is known and $
 
 A top-down rigorous proof and treatment of Duchon splines is given in \cite{duchon77}; below is an informal explanation of how from (\ref{tprs-pen}) one can reach the penalty given by Duchon. 
 
-The usual thin plate regression spline penalty given in (\ref{tprs-pen}) can be thought of as a measure of ``wigglyness'' or ``roughness'', taking higher values when $f$ is particularly rough or wiggly (the penalty prevents the spline from interpolating). Integrating the square of the derivatives over the whole of $\mathbb{R}^d$ allows us to consider the GAM fitting procedure as minimizing the objective function in such a way that reduces the wigglyness across the whole of $f$ whilst being as close to the data as possible. 
+The usual thin plate regression spline penalty given in (\ref{tprs-pen}) can be thought of as a measure of ``wigglyness'' or ``roughness'', taking higher values when $f$ is particularly rough or wiggly (the penalty prevents the spline from interpolating). Integrating the square of the derivatives over the whole of $\mathbb{R}^d$ allows us to consider the fitting procedure as minimizing the objective function in such a way that reduces the wigglyness across the whole of $f$ whilst being as close to the data as possible. 
 
 \cite{duchon77} proposes a penalty that is more general than (\ref{tprs-pen}), the first step from (\ref{tprs-pen}) is to consider taking the Fourier transform of the derivatives before squaring and integrating them. The Fourier transform allows us to consider the penalty as an infinite sum of frequencies; decomposing functions defined in space into their frequency domain representations. Mathematically, the Fourier transform of some function of $d$-dimensional space ($\mathbf{x}$), $g$, is defined as:
 \begin{equation*}

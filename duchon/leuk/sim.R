@@ -9,24 +9,25 @@ leuk.type<-as.numeric(as.numeric(leuk.type)==9)#10)
 
 # pull out the 40 genes that best classify ALL
 # according to chisq
-#ALL<-read.csv(file="T-ALL-chisq-genes.csv",header=FALSE)
-#ALL<-as.matrix(as.character(levels(as.factor(ALL[,1]))))
-#ALL.cols<-as.matrix(apply(ALL,1,grep,x=colnames(leuk)))
-#
-## some of those turned up 2 results, fix that
-#ALL.cols[3,]<-116
-#ALL.cols[4,]<-263
-#ALL.cols[6,]<-1271
-#
-#ALL.cols<-as.integer(ALL.cols)
-#
-#leuk<-leuk[,ALL.cols]
+ALL<-read.csv(file="T-ALL-chisq-genes.csv",header=FALSE)
+ALL<-as.matrix(as.character(levels(as.factor(ALL[,1]))))
+ALL.cols<-as.matrix(apply(ALL,1,grep,x=colnames(leuk)))
+
+# some of those turned up 2 results, fix that
+ALL.cols[3,]<-116
+ALL.cols[4,]<-263
+ALL.cols[6,]<-1271
+
+ALL.cols<-as.integer(ALL.cols)
+
+leuk<-leuk[,ALL.cols]
 
 # general setup
-n.sims<-1#nrow(leuk)
+n.sims<-100
 ml.score.cv<-c()
 gcv.score.cv<-c()
 dsml.mse.cv<-c()
+dsml.brier.cv<-c()
 dsgcv.mse.cv<-c()
 lasso.mse.cv<-c()
 #edf.cv<-c()
@@ -50,8 +51,10 @@ for(i in 1:n.sims){
    ### DS model
 
    # calculate the distance matrix for the microarray data
-   dd.start<-mahalanobis(leuk.samp, leuk.samp[1,])
-   dd<-apply(leuk.samp,1,mahalanobis,x=leuk.samp,cov=attr(dd.start,"cov.inv"))
+   #dd.start<-mahalanobis(leuk.samp, leuk.samp[1,])
+   #dd<-apply(leuk.samp,1,mahalanobis,x=leuk.samp,cov=attr(dd.start,"cov.inv"))
+   dd.cov.inv<-solve(cov(leuk.samp))
+   dd<-apply(leuk.samp,1,mahalanobis,x=leuk.samp,cov=dd.cov.inv,inverted=TRUE)
 
 
    #### for both GCV and ML dimension selection
@@ -77,7 +80,7 @@ for(i in 1:n.sims){
 
    ### P-ML
    # fit the model
-   b.ml<-gam.mds.fit(type.samp,dd,NULL,k=300,mds.dim.bnds=c(2,.8),
+   b.ml<-gam.mds.fit(type.samp,dd,NULL,k=100,mds.dim.bnds=c(2,.8),
                dist.metric="mahalanobis",fam=binomial,method="ML")
 
    # record the score
@@ -88,16 +91,16 @@ for(i in 1:n.sims){
    ml.best.dim<-c(ml.best.dim,b.ml$mds.dim)
 
    # do some prediction
-   pred.data<-as.data.frame(insert.mds.generic(b.ml$mds.obj,leuk[-samp.ind,],leuk.samp),dist.metric="mahalanobis")
+   pred.data<-as.data.frame(insert.mds.generic(b.ml$mds.obj,leuk[-samp.ind,],leuk.samp,dist.metric="mahalanobis"))
    names(pred.data)<-names(b.ml$samp.mds)[-1]
    pp<-predict(b.ml$gam,pred.data,type="response")
 
    # record the MSE
-   dsml.mse.cv<-c(dsml.mse.cv,(leuk.type[i]-pp)^2)
+   dsml.mse.cv<-c(dsml.mse.cv,sum((leuk.type[-samp.ind]-pp)^2))
 
    # record the brier score
    pp.l<-predict(b.ml$gam,pred.data)
-   dsml.mse.cv<-c(dsml.mse.cv,(leuk.type[i]-pp.l)^2)
+   dsml.brier.cv<-c(dsml.brier.cv,sum((leuk.type[-samp.ind]-pp.l)^2))
 
    #################################################################
    ### lasso model
@@ -109,5 +112,5 @@ for(i in 1:n.sims){
 }
 
 
-save.image(paste("simtest-",b.gcv$gam$family$family,".RData",sep=""))
+save.image("simtest-ALL.RData")
 

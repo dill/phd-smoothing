@@ -14,22 +14,28 @@ leuk.type<-as.numeric(as.numeric(leuk.type)==9)#10)
 # pull out the 40 genes that best classify ALL
 # according to chisq
 
-#ALL<-read.csv(file="T-ALL-chisq-genes.csv",header=FALSE)
-#ALL<-as.matrix(as.character(levels(as.factor(ALL[,1]))))
-#ALL.cols<-as.matrix(apply(ALL,1,grep,x=colnames(leuk)))
-#
-## some of those turned up 2 results, fix that
-#ALL.cols[3,]<-116
-#ALL.cols[4,]<-263
-#ALL.cols[6,]<-1271
-#
-#ALL.cols<-as.integer(ALL.cols)
-#
-#leuk<-leuk[,ALL.cols]
+ALL<-read.csv(file="T-ALL-chisq-genes.csv",header=FALSE)
+ALL<-as.matrix(as.character(levels(as.factor(ALL[,1]))))
+ALL.cols<-as.matrix(apply(ALL,1,grep,x=colnames(leuk)))
+
+# some of those turned up 2 results, fix that
+ALL.cols[3,]<-116
+ALL.cols[4,]<-263
+ALL.cols[6,]<-1271
+
+ALL.cols<-as.integer(ALL.cols)
+
+leuk<-leuk[,ALL.cols]
 
 
-dd.start<-mahalanobis(leuk, leuk[1,])
-dd<-apply(leuk,1,mahalanobis,x=leuk,cov.inv=attr(dd.start,"cov.inv"))
+#dd.start<-mahalanobis(leuk, leuk[1,])
+#leuk.cov.inv<-ginv(cov(leuk))
+#dd<-apply(leuk,1,mahalanobis,x=leuk,cov.inv=attr(dd.start,"cov.inv"))
+
+leuk.cov.inv<-solve(cov(leuk))
+dd<-apply(leuk,1,mahalanobis,x=leuk,cov=leuk.cov.inv)
+
+
 
 # how does the proportion of variation explained increase with dimension?
 dims<-c()

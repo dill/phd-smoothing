@@ -8,12 +8,13 @@ insert.mds.generic<-function(mds.obj,new.points,old.points,dist.metric="euclidea
    lambda.inverse<-diag(1/mds.obj$eig[1:dim(mds.obj$points)[2]])
 
    if(dist.metric=="mahalanobis"){
-      new.dist.start<-mahalanobis(big.points, big.points[1,])
-      new.dist<-apply(big.points,1,mahalanobis,x=big.points,
-                      cov=attr(new.dist.start,"cov.inv"))[ind,]
-
+#      new.dist.start<-mahalanobis(big.points, big.points[1,])
 #      new.dist<-apply(big.points,1,mahalanobis,x=big.points,
-#                      cov=cov(big.points))[ind,]
+#                      cov=attr(new.dist.start,"cov.inv"))[ind,]
+
+      cov.mat<-solve(cov(big.points))
+      new.dist<-apply(big.points,1,mahalanobis,x=big.points,
+                      cov=cov.mat,inverted=TRUE)[ind,]
    }else{ 
       new.dist<-as.matrix(dist(big.points,method=dist.metric,diag=T,upper=T))[ind,]
    }

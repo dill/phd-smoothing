@@ -57,6 +57,11 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
             converged<-gam.obj$gam$outer.info$conv=="full convergence"
          }
 
+         # if the model is just linear, then discard it
+         if(abs(as.double(length(attr(gam.obj$gam$terms,"variables")))-sum(gam.obj$gam$edf)) < sqrt(.Machine$double.eps)){
+            converged<-FALSE
+         }
+
          # don't include if we didn't get full convergence
          if(converged){
             model.list[[i]]<-gam.obj
@@ -76,6 +81,12 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
          }
 
          i<-i+1
+      }
+
+      # if none of the models fit
+      if(all(is.na(scores))){
+         cat("No models fit!\n")
+         return(NULL)
       }
       
       # now that's done, what was the smallest GCV?

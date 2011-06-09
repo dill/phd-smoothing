@@ -16,8 +16,6 @@ Some general remarks about stat ecol perhaps.
 %\ei
 
 
-\section{Some notational conventions}
-If necessary!
 
 \section{Generalized Additive Models}
 
@@ -28,16 +26,51 @@ A large class of statistical problems can thought of as finding the relationship
 Z_i = \beta_0 + \beta_1x_i + \epsilon_i
 \label{intro-linearreg}
 \end{equation}
-where $\epsilon_i$ is a zero mean random variable. This relationship dictates that a unit increase in $x_i$ leads to an increase in $z_i$ proportional to $\beta_1$. One can easily think of an obvious extension to such a model by adding further predictor variables (for example TKTKTK). The linear model is well covered in (quite literally) thousands of books (TKTKTK good ones) so only relevant parts of the theory are covered here. If we wish to estimate $\beta_0$ and $\beta_1$ (and any further coefficients that are introduced by adding further covariates into the model) we can use an ordinary least squares (OLS) estimation procedure. This simply minimizes the sum of squared distances between the regression line and the observed values:
+where $\epsilon_i$ is a zero mean random variable representing the error. This relationship dictates that a unit increase in $x_i$ leads to an increase in $z_i$ proportional to $\beta_1$ (with some constant intercept $\beta_0$). One can easily think of an obvious extension to such a model by adding further predictor variables (for example TKTKTK). The linear model is well covered in (quite literally) thousands of books (TKTKTK good ones) so only relevant parts of the theory are covered here. If we wish to estimate $\beta_0$ and $\beta_1$ (and any further coefficients that are introduced by adding further covariates into the model) we can use an ordinary least squares (OLS) estimation procedure. This simply minimizes the sum of squared distances between the regression line and the observed values:
 \begin{equation}
 \sum_{i=1}^n ((\beta_0+\beta_1x_i)-y_i)^2.
 \label{intro-OLSobjfcn}
 \end{equation}
-This objective function is a recurring theme in.. .. . TKTKTK figure here
+Variations on this objective function will be adressed throughout the following chapters; for now it serves to think of it as a measure of how close the model is to the data.
 
-An obvious limitation of linear regression is the assumption that the covariates (predictors) have a linear effect on the response. Modelling non-linear response using linear regression would give extremely misleading results.
+TKTKTK have to put something about GLMs here to get GAMs next, error distns - probably have to talk about IRLS
 
-There are many ways to model data where the response is a non-linear function of the covariates (for example TKTKTK refs for kriging, kernel density, MORE), however (in the author's view at least) the simplest extension of linear regression is the generalized additive model (GAM) 
+An obvious limitation of linear models is the assumption that the covariates (predictors) have a linear effect on the response. Modelling non-linear response using linear regression would give extremely misleading results.
+
+There are many ways to model data where the response is a non-linear function of the covariates (for example TKTKTK refs for kriging, kernel density, MORE), however (in the author's view at least) the simplest extension of linear regression is the generalized additive model (GAM). In a GAM we can consider simply adding smooth functions to (\ref{intro-linearreg}), so we have: 
+\begin{equation}
+Z_i = \beta_0 + \beta_1x_i + f(x_i) + \epsilon_i,
+\end{equation}
+absorbing the linear and intercept terms into $f$, we have:
+\begin{equation}
+Z_i = f(x_i) + \epsilon_i.
+\end{equation}
+Now the question is: what is the form of $f$? 
+
+In order to make $f$ flexible and at the same time think about estimating coefficients rather than functions, we can think of $f$ as a sum of basis functions:
+\begin{equation}
+f(x_i) = \sum_{j=1}^J \beta_j b_k(x_i).
+\end{equation}
+Now we are left with the task of chosing the $b_j$s. A simple (and perhaps obvious) choice would be to use the polynomials up to order $J$ (ie. $1, x_i, x_i^2, x_i^3,\cdots, x_i^J$) or some other set of orthogonal polynomials (Hermite, Legendre etc), and then estimate the $\beta_j$s. The problem with using polynomials alone is that they act globally; adding further high order terms may improve the fit at a particular point (reducing the sum of squares) but that may have a negative effect elsewhere. Since we are usually interested in the relationship between $x_i$ and $z_i$, knowing that $f$ is a good approximation to $z_i$ at a single point is not useful. 
+
+So, we can instead consider a different set of functions for the $b_j$s; these functions are known as \textit{splines}. Working locally, splines are made of of sections of other functions (polynomials, say) which are stuck together ensuring that both the values and derivatives (up to some limit) are continuous. The points at which the functions join are called \textit{knots}. One of the simplest spline bases is the \textit{cubic spline basis} (TKTKTK cite).
+
+TKTKTK diagram of splines
+
+If we simply wanted to have the $f$ pass through the data ($x_i,z_i$ pairs) and didn't care about the values that $f$ takes elsewhere, we could just minimize the OLS objective function, (\ref{intro-OLSobjfcn}). This interpolating behaviour is not desirable if we believe that there is error in the observed values of the response. To control the \textit{smoothness} (or \textit{roughness} (\cite{rwc}) or \textit{wigglyness} \cite{simonbook}) of $f$ (and hence stop it from interpolating) we can adjust the least squares objective function, adding a penalty:
+\begin{equation}
+\sum_{i=1}^n (f(x_i)-z_i)^2 + \lambda \int \frac{\partial^2 f(x)}{\partial x^2} \text{d}x,
+\end{equation}
+the integral here gives a measure of the wigglyness of $f$. The influence of the penalty is controlled by $\lambda$: as $\lambda\rightarrow\infty$ then we get the linear model (since the intercept and linear terms have zero second derivative) and as $\lambda\rightarrow 0$ $f$ interpolates the data. Automatically choosing $\lambda$ is a topic that has be extensively covered, as we shall see in the next section.
+
+
+TKTKTK Sum up here
+
+\subsection{Fitting GAMs}
+
+Now we have covered the functional form of $f$ it is necessary to discuss how to find the $\beta_j$s.
+
+
 
 General GAM setup. The is will mostly be taken from \cite{simonbook}, \cite{rwc} and \cite{marraradice2010}.
 
@@ -53,6 +86,7 @@ General GAM setup. The is will mostly be taken from \cite{simonbook}, \cite{rwc}
 \item tensor products
 \label{GAMtensor}
 \item fitting - GCV REML etc
+\label{GAMfitting}
 \item Leave-one-out cross-validation $\rightarrow$ link to GCV
 \label{DEFN-LOOCV}
 \label{GAMGCV}
