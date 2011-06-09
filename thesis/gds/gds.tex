@@ -37,11 +37,15 @@ The next section goes into the technical detail of how Duchon splines work and h
 
 \section{Using Duchon splines for reliable high dimensional smoothing}
 
-As mentioned above\ldots
+As mentioned above \cite{duchon77} initially proposed a more general version of the thin plate spline penalty and the thin plate spline is just one example of a resulting interpolator. Given that up to this point we have mainly concerned ourselves with thin plate splines and that \secref{GAMtprs} gives explanation of how the thin plate spline works, the following explanation of how Duchon splines operate works from the thin plate spline back to the more general version of the penalty given in \cite{duchon77}. For a more rigorous technical explanation of the construction of such splines, Duchon's paper is recommended.
+
+Beginning with a recap of the physical analogy of the thin plate spline penalty working up to the Duchon spline, the section continues to show how (once reliable high dimensional smoothing can be performed) the size of the MDS projection dimension can be selected.
 
 
 \subsection{From thin plate splines to Duchon splines}
 \label{gds-tprstoduchon}
+
+
 
 \cite{simonbook} p. 153 gives the formulation for the thin plate penalty in $d$ dimensions with penalty order $m$ as:
 \begin{equation}

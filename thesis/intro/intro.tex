@@ -1,4 +1,4 @@
-This introduction is split into three parts, corresponding to the three major themes of the thesis. This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled in the thesis proper.
+This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled in the thesis proper.
 
 \section{Statistical Ecology}
 
@@ -20,6 +20,24 @@ Some general remarks about stat ecol perhaps.
 If necessary!
 
 \section{Generalized Additive Models}
+
+\subsection{From the linear model to generalized additive models}
+
+A large class of statistical problems can thought of as finding the relationship between observations of a response (denoted $z_i$) and a predictor ($x_i$). The $z_i$ is a realization of some random variable $Z$. The most basic ase of this is the linear or regression model, which can be written:
+\begin{equation}
+Z_i = \beta_0 + \beta_1x_i + \epsilon_i
+\label{intro-linearreg}
+\end{equation}
+where $\epsilon_i$ is a zero mean random variable. This relationship dictates that a unit increase in $x_i$ leads to an increase in $z_i$ proportional to $\beta_1$. One can easily think of an obvious extension to such a model by adding further predictor variables (for example TKTKTK). The linear model is well covered in (quite literally) thousands of books (TKTKTK good ones) so only relevant parts of the theory are covered here. If we wish to estimate $\beta_0$ and $\beta_1$ (and any further coefficients that are introduced by adding further covariates into the model) we can use an ordinary least squares (OLS) estimation procedure. This simply minimizes the sum of squared distances between the regression line and the observed values:
+\begin{equation}
+\sum_{i=1}^n ((\beta_0+\beta_1x_i)-y_i)^2.
+\label{intro-OLSobjfcn}
+\end{equation}
+This objective function is a recurring theme in.. .. . TKTKTK figure here
+
+An obvious limitation of linear regression is the assumption that the covariates (predictors) have a linear effect on the response. Modelling non-linear response using linear regression would give extremely misleading results.
+
+There are many ways to model data where the response is a non-linear function of the covariates (for example TKTKTK refs for kriging, kernel density, MORE), however (in the author's view at least) the simplest extension of linear regression is the generalized additive model (GAM) 
 
 General GAM setup. The is will mostly be taken from \cite{simonbook}, \cite{rwc} and \cite{marraradice2010}.
 
