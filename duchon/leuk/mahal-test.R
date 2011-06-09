@@ -5,12 +5,12 @@ library(mdspack)
 library(MASS)
 
 x<-c()
-for(i in 1:10){
-   x<-cbind(x,rnorm(12,sd=10*runif(1),mean=i))
+for(i in 1:100){
+   x<-cbind(x,rnorm(40,sd=10*runif(1),mean=10*runif(1)))
 }
 
 
-xc<-t(sweep(x,2,colMeans(x)))
+xc<-sweep(t(x),2,colMeans(t(x)))
 n<-nrow(x)
 
 # check that the covariance is calculated the same way
@@ -25,17 +25,18 @@ nz<-xc.svd$d>sqrt(.Machine$double.eps)*xc.svd$d[1]
 
 # check that the inverses are the same
 cov.inv<-xc.svd$u[,nz]%*%(((1/xc.svd$d[nz])^2)*t(xc.svd$u[,nz]))*(n-1)
-#cov.inv<-xc.svd$u[,nz]%*%((((n-1)/xc.svd$d[nz])^2)*t(xc.svd$u[,nz]))
-invd<-ginv(cov(x))-cov.inv
+#invd<-ginv(cov(x))-cov.inv
 
 # check the mahalanobis distances
 y <- sweep(x, 2, x[1,])# = (x - center)
 y<-t(y)
 
+m<-rowSums((t(y)%*%cov.inv)*t(y))
 
-
+t(x[1,]-x[2,])%*%ginv(cov(x))%*%(x[1,]-x[2,])
+#
 mah1<-stats::mahalanobis(x,x[1,],ginv(cov(x)),inverted=TRUE)
-#source("mah.R")
+##source("mah.R")
 mah2<-mahalanobis(x,x[1,])
 
 

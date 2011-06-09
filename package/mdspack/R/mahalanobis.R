@@ -19,6 +19,7 @@ mahalanobis<-function (x, center, cov=NULL, inverted = FALSE, cov.inv=NULL, ...)
 
       # column centred t(x) 
       xc<-t(sweep(x,2,colMeans(x)))
+      #xc<-sweep(x,2,colMeans(x))
       
       y <- sweep(x, 2, center)# = (x - center)
       y<-t(y)
@@ -36,10 +37,12 @@ mahalanobis<-function (x, center, cov=NULL, inverted = FALSE, cov.inv=NULL, ...)
 
          # calculate the inverse of the covariance matrix
          cov.inv<-xc.svd$u[,nz]%*%(((1/xc.svd$d[nz])^2)*t(xc.svd$u[,nz]))*(n-1)
+         #cov.inv<-xc.svd$v[,nz]%*%(((1/xc.svd$d[nz])^2)*t(xc.svd$v[,nz]))*(n-1)
       }
 
       # calculate the Mahalanobis distance
       res<-rowSums((t(y)%*%cov.inv)*t(y))
+      #res<-rowSums((y%*%cov.inv)*y)
 
       # quick way of doing the above
       #Z<-t(y)%*%xc.svd$u[,nz]%*%diag(sqrt(n-1)/xc.svd$d[nz])

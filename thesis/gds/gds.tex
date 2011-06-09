@@ -4,13 +4,43 @@
 
 \section{Introduction}
 
-The previous chapter makes clear that we face a trade-off in using \mdsap. If the ordering of the points in space is to be maintained, a sufficiently high dimensional projection of the data must be obtained. But increasing the projection dimension causes the nullspace of the penalty to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results. 
 
-The requirement we seek is clear: we wish to smooth in as many dimensions as necessary; but while doing this we must also limit the nullspace of the penalty. Fortunately, this is possible using the ideas put forth in \cite{duchon77}. The methods detailed there give a generalisation of the thin plate spline that allows for a smaller nullspace to be used.
+   what the problems are
+   why do it this way (why not use other smoothers)
+   
 
-The next section goes into the technical detail of how this approach works. Section \ref{gds-wad-examples} shows how this can be useful in the within-area distance case discussed in chapters \ref{chap-sc} and \ref{chap-mds}. Section \ref{gds-gds-examples} gives examples of generalized distance smoothing.
+In the previous chapter multidimensional scaling was used to project the points within some geographical area into a new space in which smoothing can be performed without the problem of leakage. However, it has become clear that we face a trade-off in using this method: if the ordering of the points in space is to be maintained (\secref{pensuck}), a sufficiently high dimensional projection of the data must be obtained. Increasing the projection dimension causes the nullspace of the thin plate spline penalty (\secref{GAMtprspenalty}) to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results (\secref{nohigherdim}). To resolve this issue a smoother which can deal with high dimensional data must be used. 
 
-\section{From thin plate splines to Duchon splines}
+Smoothing reliably in high dimensions is a difficult problem, however it has been approached in several different ways previously. It is worth quickly covering here other smoothers that could be used to solve this problem and their relative advantages and disadvantages.
+
+WHY DO THESE METHODS SUCK?
+\begin{itemize}
+   \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of cubic or P-splines could be combined using a tensor product to create a mutlidimensional smooth in the requisite number of dimensions. Although this approach is appealing conceptually, in practice several problems arise. First is the problem of knot placement (which the thin plate spline neatly avoids, see \secref{GAMtprs}), TKTKTK more here. Second is that tensor product smooths are non-isotropic so the ammount of smoothing in each direction is variable, mutliple smoothing paramater estimation adds further computational burden to the fitting process (TKTKTK cite). Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to require many evaluations.
+   \item Rather than using a fixed basis, one could use LOESS (TKTKTK cite Cleveland 79) which smooths the data using a low-degree local polynomial. 
+         as above, in multidimensional case: expensive 
+         backfitting only way to integrate with other smoothers
+         smoothing selection
+   \item GSS
+         ???
+   \item kriging ???
+         covariance matrix stuff -- curriero
+   \item kernel smoothing ???
+\end{itemize}
+
+
+
+If thin plate splines are to continue to be used, the requirement we seek is clear: we wish to smooth in as many dimensions as necessary; but while doing this we must also limit the nullspace of the penalty in order to avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
+
+In the paper in which thin plate splines are proposed for the first time (\cite{duchon77}) a much more general set of interpolation methods are proposed, of which thin plate splines are a particular example. This chapter illustrates how a more general version of the thin plate spline (henceforth referred to as Duchon splines) can be used for high dimensional smoothing whilst avoiding an overly big penalty nullspace.
+
+The next section goes into the technical detail of how Duchon splines work and how they can be used in the finite area smoothing case. \Secref{gds-wad-examples} shows how this can be useful in the within-area distance case discussed in chapters \ref{chap-sc} and \ref{chap-mds}. \Secref{gds-gds-examples} expands the methodology to look at any problems where distances can be considered, taking the MDS projection of these distances and then smoothing in the projected space. \Secref{gds-software} illustrates the software implementation of these methods. Finally, \secref{gds-conclusion} concludes the chapter.
+
+\section{Using Duchon splines for reliable high dimensional smoothing}
+
+As mentioned above\ldots
+
+
+\subsection{From thin plate splines to Duchon splines}
 \label{gds-tprstoduchon}
 
 \cite{simonbook} p. 153 gives the formulation for the thin plate penalty in $d$ dimensions with penalty order $m$ as:
@@ -82,15 +112,15 @@ Looking back to figure \ref{nullspace-dim} (where the blue line showed the incre
 
 With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into any number of dimensions and smooth over the response without having to worry about the nullspace of the penalty causing problems. The use of Duchon splines along with \mdsap\ and the projection dimension selection techniques below will be known as \mdsds\ from here on.
 
-\section{Choosing MDS projection dimension}
+\subsection{Choosing MDS projection dimension}
 
 With Duchon's basis, it is now possible to smooth a space of any dimension using a second order derivative penalty, simply by picking $s$ appropriately. Picking the dimension of the MDS projection is now a concern since there is no reason to believe that simply going to higher and higher dimensions will yield better and better results. Keeping in mind the desire for a parsimony, it would be preferable to keep the dimension of the projection as small as possible, whilst avoiding leakage.
 
-\subsection{Using proportion of variation explained}
+\subsubsection{Using proportion of variation explained}
 
 It is clear that as higher and higher projections are used, a larger and larger proportion of the variation in the distance matrix is explained. It therefore seems reasonable to base the choice of dimension on the proportion of the variation explained in the initial grid. However, what proportion should be used? 80\%? 90\%? 99\%? There is no reason to choose any one of these over the others. Setting the proportion of variation to be explained generally is surely a bad idea, since what works for one domain may well be a disaster for another (see also \secref{nohigherdim}).
 
-\subsection{Using scores}
+\subsubsection{Using scores}
 
 Since fitting a GAM with a Duchon spline basis is relatively cheap compared to the cost of finding the within-area distances, the GCV score can be used to find an optimal dimension for the MDS projection. A series of (increasing dimensional) projections can be tried, their GCV scores calculated, and the best selected as the projection to use for the model.
 
@@ -368,6 +398,7 @@ In this example we have seen that \mdsds\ is capable of being used for generaliz
 TKTKTK Worth doing this if it's a logit/binary prediction, can work out whether ML/GCV conflict is due to distance metric used or binary vs. normal models.
 
 \section{Software implementation - \mdspack}
+\label{gds-software}
 
 The methods detailed in this section, namely the use of Duchon splines along with MDS to perform smoothing are provided in the \textsf{R} package \mdspack\ which is available at\ldots
 
@@ -377,6 +408,7 @@ TKTKTK write documentation in the package
 
 
 \section{Conclusion}
+\label{gds-conclusion}
 
 TKTKTK sum up, say what else could be done. Show path SC->MDS+RS->MSG, improvements along the way.
 
