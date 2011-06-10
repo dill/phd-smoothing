@@ -83,7 +83,7 @@ for(i in 1:n.sims){
    b.ml<-try(gam.mds.fit(type.samp,dd,NULL,k=100,mds.dim.bnds=c(2,.8),
                dist.metric="mahalanobis",fam=binomial,method="ML"))
 
-   if(!is.null(b.ml) & (class(b.ml)!="try-error"){
+   if(!is.null(b.ml) & (class(b.ml)!="try-error")){
       # record the score
       this.score<-cbind(as.data.frame(b.ml$scores),
                         rep(i,length(b.ml$scores$score)))
