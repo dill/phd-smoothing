@@ -19,6 +19,9 @@ Some general remarks about stat ecol perhaps.
 
 \section{Generalized Additive Models}
 
+This section gives a very brief introduction to generalized additive models with the emphasis on moving from the linear and generalized linear model to additive and generalized additive models. The outline here only touches on the surface of what is a vast literature. Excellent complete introductions to the topic are given in \cite{simonbook} and \cite{rwc}.
+
+
 \subsection{From the linear model to generalized additive models}
 
 A large class of statistical problems can thought of as finding the relationship between observations of a response (denoted $z_i$) and a predictor ($x_i$). The $z_i$ is a realization of some random variable $Z$. The most basic ase of this is the linear or regression model, which can be written:
@@ -26,12 +29,19 @@ A large class of statistical problems can thought of as finding the relationship
 Z_i = \beta_0 + \beta_1x_i + \epsilon_i
 \label{intro-linearreg}
 \end{equation}
-where $\epsilon_i$ is a zero mean random variable representing the error. This relationship dictates that a unit increase in $x_i$ leads to an increase in $z_i$ proportional to $\beta_1$ (with some constant intercept $\beta_0$). One can easily think of an obvious extension to such a model by adding further predictor variables (for example TKTKTK). The linear model is well covered in (quite literally) thousands of books (TKTKTK good ones) so only relevant parts of the theory are covered here. If we wish to estimate $\beta_0$ and $\beta_1$ (and any further coefficients that are introduced by adding further covariates into the model) we can use an ordinary least squares (OLS) estimation procedure. This simply minimizes the sum of squared distances between the regression line and the observed values:
+where $\epsilon_i$ is a zero mean normally distributed random variable representing the error. This relationship dictates that a unit increase in $x_i$ leads to an increase in $z_i$ proportional to $\beta_1$ (with some constant intercept $\beta_0$). One can easily think of an obvious extension to such a model by adding further ($p$, say) predictor variables  (for example TKTKTK). If we take $X$ to be the $n\cross p$ matrix of the predictor (if there are $n$ data measured on $p$ covariates) and $\mathbf{z}$ to be the $n$-vector of responses, we can form a $p$-vector of the coefficients $\mathbf{\beta}$ and an error vector $\mathbf{\epsilon}$ of length $n$, giving:
 \begin{equation}
-\sum_{i=1}^n ((\beta_0+\beta_1x_i)-y_i)^2.
+\mathbf{Z_i} = \boldsymbol{\beta}X + \mathbf{\epsilon}_i
+\label{intro-linearreg-vector}
+\end{equation}
+The linear model is well covered in (quite literally) thousands of books (TKTKTK good ones) so only relevant parts of the theory are covered here. If we wish to estimate $\beta_0$ and $\beta_1$ (and any further coefficients that are introduced by adding further covariates into the model) we can use an ordinary least squares (OLS) estimation procedure. This simply minimizes the sum of squared distances between the regression line and the observed values:
+\begin{equation}
+\sum_{i=1}^n (\boldsymbol{\beta}X-z_i)^2.
 \label{intro-OLSobjfcn}
 \end{equation}
-Variations on this objective function will be adressed throughout the following chapters; for now it serves to think of it as a measure of how close the model is to the data.
+Variations on this objective function will be adressed throughout the following chapters. One can think of (\ref{intro-OLSobjfcn}) as a measure of how close the model is to the data.
+
+If we wish to analyse data with different error distributions (for example binomial or Poisson data), we can change the distribution of $\epsilon_i$ and then define a \textit{link function} that maps $X\boldsymbol{\beta}$ to the appropriate scale (for example $(0,1)$ for probabilities).
 
 TKTKTK have to put something about GLMs here to get GAMs next, error distns - probably have to talk about IRLS
 
@@ -50,10 +60,11 @@ Now the question is: what is the form of $f$?
 In order to make $f$ flexible and at the same time think about estimating coefficients rather than functions, we can think of $f$ as a sum of basis functions:
 \begin{equation}
 f(x_i) = \sum_{j=1}^J \beta_j b_k(x_i).
+\label{intro-basisdecomp}
 \end{equation}
 Now we are left with the task of chosing the $b_j$s. A simple (and perhaps obvious) choice would be to use the polynomials up to order $J$ (ie. $1, x_i, x_i^2, x_i^3,\cdots, x_i^J$) or some other set of orthogonal polynomials (Hermite, Legendre etc), and then estimate the $\beta_j$s. The problem with using polynomials alone is that they act globally; adding further high order terms may improve the fit at a particular point (reducing the sum of squares) but that may have a negative effect elsewhere. Since we are usually interested in the relationship between $x_i$ and $z_i$, knowing that $f$ is a good approximation to $z_i$ at a single point is not useful. 
 
-So, we can instead consider a different set of functions for the $b_j$s; these functions are known as \textit{splines}. Working locally, splines are made of of sections of other functions (polynomials, say) which are stuck together ensuring that both the values and derivatives (up to some limit) are continuous. The points at which the functions join are called \textit{knots}. One of the simplest spline bases is the \textit{cubic spline basis} (TKTKTK cite).
+So, we can instead consider a different set of functions for the $b_j$s; these functions are known as \textit{splines}. Working locally, splines are made of of sections of other functions (polynomials, say) which are stuck together ensuring that both the values and derivatives (up to some limit) are continuous. The points at which the functions join are called \textit{knots}. One of the simplest spline bases is the \textit{cubic spline basis} (\cite{rwc}, pp. 71--72).
 
 TKTKTK diagram of splines
 
@@ -66,34 +77,77 @@ the integral here gives a measure of the wigglyness of $f$. The influence of the
 
 TKTKTK Sum up here
 
-\subsection{Fitting GAMs}
+\subsection{Spline bases}
 
-Now we have covered the functional form of $f$ it is necessary to discuss how to find the $\beta_j$s.
+So far only the cubic spline basis has been discussed. There are many possible spline bases, two are covered in detail here as they will be relevant later. These bases also show two different ways of addressing the flexibility of splines: knot-based and eigen-based approaches. 
+
+Much discussion has been devoted to the problem of knot placement (see rwc p 255, \ldots TKTKTK MORE). A simplistic approach would be to evenly space the knots across the range of the data. In the univariate case this seems rather easy and yields reasonable results, however often the majority of the knots are wasted since they do not affect the final smooth since some data points may be very close or identical. To avoid wasting knots one might consider putting knots at only unique observed values or at the quantiles of the data. The final model will be sensitive to the placement of the knots, meaning to ensure the model robustness many knot placements may have to be considered.
+
+Discuss eigen- vs. knot-based splines
 
 
-
-General GAM setup. The is will mostly be taken from \cite{simonbook}, \cite{rwc} and \cite{marraradice2010}.
-
-\bi
-\item Splines
-\item objective function
-\label{GAMobjfcn}
-\item penalties
-\label{GAMpenalties}
-\item bases - TPRS (and maybe P-splines?)
+\subsubsection{Thin plate regression splines}
 \label{GAMtprs}
 \label{GAMtprspenalty}
-\item tensor products
+
+In (\ref{intro-basisdecomp}) the function $f$ was decomposed into a sum of basis functions. For the \textit{thin plate spline}, two summations are used: one for some global functions that act over the whole of the data and one for a set of local functions, one per datum. Thinking in the univariate case, the global functions is a straight line (as with a lienar regression) and the local, \textit{radial basis functions} are  Mathematically $f$ is written as:
+\begin{equation}
+f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
+\label{tprs-basis} 
+\end{equation}
+where the radial basis functions $\eta_{md}(x)$ are defined as
+\begin{align}
+\eta_{md} =\begin{cases} \frac{(-1)^{m+1+d/2}}{2^{2m-1}\pi^{d/2}(m-1)!(m-d/2)!} r^{2m-d} \log(r) &\quad{\text{$d$ even}}\\
+\frac{\Gamma(d/2-m)}{2^{2m}\pi^{d/2}(m-1)!} r^{2m-d} &\quad{\text{$d$ odd.}}
+\end{cases}
+\end{align}
+
+
+\subsubsection{P-splines}
+
+\subsubsection{Tensor product splines}
 \label{GAMtensor}
-\item fitting - GCV REML etc
+
+The definitions of thin plate and P-splines show an important difference between the two, the thin plate spline is defined over as many dimensions as the data lie in, however the P-spline is only defined in one dimension. This leads to the obvious question of how to smooth in multiple dimensions using P-splines (or any other unidimensional spline basis). This is easily addressed by considering a unidimensional spline basis as a marginal basis of a higher-dimensional basis. By taking tensor products of many marginal bases (which do not necessarily have to be of the same kind) one can construct a high dimensional smooth.
+
+TKTKTK italy paper
+
+\subsection{Fitting GAMs}
 \label{GAMfitting}
-\item Leave-one-out cross-validation $\rightarrow$ link to GCV
+
+Keeping in mind the functional form of $f$, that it is made up of some set of fixed basis functions which are multiplied by coefficients and then summed, the next topic to discuss is how those coefficients are estimated.
+
+   What are we optimising?
+
+   objective function
+\label{GAMobjfcn}
+   penalties
+\label{GAMpenalties}
+
+
+\subsubsection{Cross-validation}
+
 \label{DEFN-LOOCV}
+
+\subsubsection{Generalized cross validation}
 \label{GAMGCV}
-% see p. 122 RWC here GCV vs REML -> same MSE but different tradeoffs in Var and Bias
-\item other stuff - MSE, EDF etc
+
+Talk about prediction error etc
+
+CV to GCV and then REML/ML
+
+\subsubsection{Maximum likelihood and restricted maximum likelihood}
+
+\subsubsection{General comments on GCV vs. REML/ML}
+
+\cite{rwc} pp. 120--123 provide an interesting insight into automatic smoothing parameter selection. In particular they cite work showing that as the number of data increases ($n\rightarrow\infty$), GCV slowly converges to finding the optimum smoothing parameter, this leads to the variability of the smoothing parameter to be quite high. In general GCV tends to select more complicated functions (higher EDFs) than likelihood based methods leading to overfitting to the data (\cite{remlpaper}). REML and ML on the other hand will tend to fit smoother functions. However, it is important to note that this is a manifestation of the variance--bias trade-off. GCV will lead to less biased but more variable fits whereas REML and ML will be less variable but more biased (\cite{rwc}, p. 122).
+
+
+\subsection{Other useful stuff}
 \label{DEFN-MSE}
-\item \texttt{mgcv}
+
+EDF etc
+
 %	\bi
 %	\item MSE
 %	Mean squared error is... (look at HTF)
@@ -107,7 +161,16 @@ General GAM setup. The is will mostly be taken from \cite{simonbook}, \cite{rwc}
 %The estimated degrees of freedom gives an measure of the complexity of the model that was fit to the data. The higher the EDF, the more basis functions were used and  the more complex the model.  Since the models used here are penalised, it is the penalty term that controls the overall ``wigglyness'' of the spline and hence the EDF. Although the basis dimension is set in the model, this is just an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite{simonbook}, p. 161.) 
 %
 %	\ei
-\ei
+
+\subsection{GAMs in practise - \texttt{mgcv}}
+
+General GAM setup. The is will mostly be taken from \cite{simonbook}, \cite{rwc} and \cite{marraradice2010}.
+
+
+Say something about GAMs vs. AMs vs smoothing vs. splines
+
+How we don't usually just want to smooth in xy but that just mops up the autocorrelation\ldots etc
+
 
 \section{Finite area smoothing}
 
@@ -131,6 +194,8 @@ Leakage occurs when a smoother inappropriately links two pats of a domain (\cite
 The problem of leakage arises because of the way in which the smoother defines how near objects are to one another. Most smoothing techniques use the Euclidean metric to measure the distance between data. Clearly though, this approach is a flawed: biological populations do not conform to Euclidean geometry in their movement patterns and hence their observed positions will reflect this. Just as whales no not uniformly distribute themselves across sea and glacier, fish do not lay their eggs on land. Natural and man-made barriers carve up the landscape (and seascape), partitioning biological populations; our models should take this into account.
 
 The distribution of the population may be smooth, just not necessarily over $\mathbb{R}^2$ (\cite{wangranalli}). Instead the structure of the domain that is under investigation must be modelled (implicitly or explicitly) for the correct inference to be drawn.
+
+It is worth noting at this point that spatial smooths are usually used in combination with other terms in a model and that the spatial smooth is often seen as a way of ``mopping up'' unaccounted for spatial correllation in the data. For example one would like to know how environmental factors such as temperature, prey abundance and weather conditions have an effect on a particular species, however when looking at the data, much of the pattern is dependent on the spatial coordinates of where the data was collected. A spatial smooth through the data can remove this dependence allowing the investigator to look at the other contributing factors. In order to avoid confounding the methods developed here, only spatial smooths are considered and not any extra variables. Since the models considered here are additive in nature any method addressing spatial smooths proposed can be integrated into a GAM along with smooths of other variables. Since leakage is caused by the smoother's inability to respect the boundary of the area, non-geographic variables do not need to be considered.
 
 \subsection{Ramsay's horseshoe function as a benchmark for finite area smoothing}
 
