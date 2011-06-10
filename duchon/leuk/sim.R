@@ -83,32 +83,34 @@ for(i in 1:n.sims){
    b.ml<-gam.mds.fit(type.samp,dd,NULL,k=100,mds.dim.bnds=c(2,.8),
                dist.metric="mahalanobis",fam=binomial,method="ML")
 
-   # record the score
-   this.score<-cbind(as.data.frame(b.ml$scores),
-                     rep(i,length(b.ml$scores$score)))
-   ml.score.cv<-rbind(ml.score.cv,this.score)
-   # record the selected MDS dimension
-   ml.best.dim<-c(ml.best.dim,b.ml$mds.dim)
+   if(!is.null(b.ml)){
+      # record the score
+      this.score<-cbind(as.data.frame(b.ml$scores),
+                        rep(i,length(b.ml$scores$score)))
+      ml.score.cv<-rbind(ml.score.cv,this.score)
+      # record the selected MDS dimension
+      ml.best.dim<-c(ml.best.dim,b.ml$mds.dim)
 
-   # do some prediction
-   pred.data<-as.data.frame(insert.mds.generic(b.ml$mds.obj,leuk[-samp.ind,],leuk.samp,dist.metric="mahalanobis"))
-   names(pred.data)<-names(b.ml$samp.mds)[-1]
-   pp<-predict(b.ml$gam,pred.data,type="response")
+      # do some prediction
+      pred.data<-as.data.frame(insert.mds.generic(b.ml$mds.obj,leuk[-samp.ind,],leuk.samp,dist.metric="mahalanobis"))
+      names(pred.data)<-names(b.ml$samp.mds)[-1]
+      pp<-predict(b.ml$gam,pred.data,type="response")
 
-   # record the MSE
-   dsml.mse.cv<-c(dsml.mse.cv,sum((leuk.type[-samp.ind]-pp)^2))
+      # record the MSE
+      dsml.mse.cv<-c(dsml.mse.cv,sum((leuk.type[-samp.ind]-pp)^2))
 
-   # record the brier score
-   pp.l<-predict(b.ml$gam,pred.data)
-   dsml.brier.cv<-c(dsml.brier.cv,sum((leuk.type[-samp.ind]-pp.l)^2))
+      # record the brier score
+      pp.l<-predict(b.ml$gam,pred.data)
+      dsml.brier.cv<-c(dsml.brier.cv,sum((leuk.type[-samp.ind]-pp.l)^2))
 
-   #################################################################
-   ### lasso model
-   #cvmin.lasso<-cv.glmnet(leuk.samp,type.samp)
-   #b.lasso<-glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min)
-   #lasso.mse.cv<-c(lasso.mse.cv,(leuk.type[i]-
-   #                              predict(b.lasso,as.matrix(t(leuk[i,]))))^2)
+      #################################################################
+      ### lasso model
+      #cvmin.lasso<-cv.glmnet(leuk.samp,type.samp)
+      #b.lasso<-glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min)
+      #lasso.mse.cv<-c(lasso.mse.cv,(leuk.type[i]-
+      #                              predict(b.lasso,as.matrix(t(leuk[i,]))))^2)
 
+   }
 }
 
 

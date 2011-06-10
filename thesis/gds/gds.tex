@@ -52,12 +52,12 @@ J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m
 \end{equation}
 where the summation index generates all of the possible combinations of derivative orders such than their sum is still $m$ (thereby finding all the correct cross-terms). The technical restriction $2m>d$ is also imposed to ensure that $f$ remains continuous.
 
-The form of $f$ is then:
+The thin plate spline is then split into two sets of bases:
 \begin{equation}
 f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
 \label{tprs-basis}
 \end{equation}
-where the first summation is a series of radial basis functions ($i$ indexing the $n$ data), one per datum and the second sums the unpenalised terms in the nullspace of the penalty (\cite{wood2003}). These are $M$ linearly independent polynomials of degree less than $m$. $M$ is given by:
+where the first summation is a series of (local) radial basis functions ($i$ indexing the $n$ data) and the second summation are a set of (global) linearly independent polynomials of degree less than $m$. The terms in the second summation are unpenalised and therefore like in the nullspace of the penalty (\cite{wood2003}). There are $M$ of these polynomials where $M$ is given by:
 \begin{equation*}
 M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}.
 \end{equation*}
