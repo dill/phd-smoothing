@@ -87,6 +87,11 @@ p<-p+stat_smooth(aes(x=dim,y=score),alpha=0.3,fill="green",method="gam",formula=
 p<-p+geom_point(aes(x=dim,y=score),size=1.5,colour="red",data=gaussian.min)
 p<-p+labs(x="MDS projection dimension",y="Score")
 p<-p+facet_grid(method~model,scales="free")
+p<-p+opts(panel.grid.major=theme_blank(),
+          panel.grid.minor=theme_blank(),
+          legend.background=theme_blank(),
+          legend.key=theme_blank(),
+          panel.background=theme_rect())
 print(p,vp=subplot(1,1))
 
 p<-ggplot(quasi.dim)
@@ -95,6 +100,11 @@ p<-p+stat_smooth(aes(x=dim,y=score),alpha=0.3,fill="green",method="gam",formula=
 p<-p+geom_point(aes(x=dim,y=score),size=1.5,colour="red",data=quasi.min)
 p<-p+labs(x="MDS projection dimension",y="Score")
 p<-p+facet_grid(method~model,scales="free")
+p<-p+opts(panel.grid.major=theme_blank(),
+          panel.grid.minor=theme_blank(),
+          legend.background=theme_blank(),
+          legend.key=theme_blank(),
+          panel.background=theme_rect())
 print(p,vp=subplot(1,2))
 
 # can't use ggsave(), using viewport!

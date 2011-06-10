@@ -79,18 +79,18 @@ The penalty in (\ref{tprs-pen}) is only one example of a more general kind of pe
 \begin{equation*}
 \mathfrak{F} g(\boldsymbol{\tau}) = \int \ldots \int_{\mathbb{R}^d} e^{2 \pi \sqrt{-1} \mathbf{x}^\text{T} \boldsymbol{\tau}} g(\mathbf{x}) \text{d}\mathbf{x}.
 \end{equation*}
-Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (a $d$-vector of continuous frequency spectra). More detail on Fourier transforms can be found in (for example) \cite{bracewell}, \cite{chu-ft} and \cite{beerends}. 
+Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (a $d$-vector of continuous frequencies). More detail on Fourier transforms can be found in (for example) \cite{bracewell}, \cite{chu-ft} and \cite{beerends}. 
 
-Taking the Fourier transform of the penalty allows us to think of how the penalty is calculated in a different way. Rather than thinking about measuring the wigglyness over the whole of $f$, point by point, instead the measure is based on the frequencies of $f$, the higher the frequency components contribute more to the integral than the lower ones. Intuitively this makes sense, since the low frequency components of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more likely to represent $f$ attempting to interpolate parts of the smooth where consecutive dissimilar values occur.
+Taking the Fourier transform of the penalty allows us to think of how the penalty is calculated in a different way. Rather than thinking about measuring the wigglyness over the whole of $f$, point by point, instead the measure is based on the frequencies of $f$, the higher the frequency components contribute more to the integral than the lower ones. Intuitively this makes sense, since the low frequency components of the derivatives of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more likely to represent $f$ attempting to interpolate parts of the smooth where consecutive dissimilar values occur.
 
 Taking the Fourier transform of the derivative terms in (\ref{tprs-pen}) yields the following penalty:
 \begin{equation}
 J_{m,d} = \int \ldots \int_{\mathbb{R}^d} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau}.
 \label{tprs-pen-ft}
 \end{equation}
-The penalties (\ref{tprs-pen}) and (\ref{tprs-pen-ft}) are in fact equivalent by Plancherel's theorem (\cite{vretblad}, p. 180), so one can take either view and obtain the same numerical value for the penalty. 
+The penalties (\ref{tprs-pen}) and (\ref{tprs-pen-ft}) are in fact equivalent by Plancherel's theorem (\cite{vretblad}, p. 180), so one can take either view and obtain the same numerical value for the penalty.
 
-We could extend this frequency-based interpretation of the penalty to a more general class of penalties by putting a weighting in the integral:
+Since taking the Fourier transform of the derivatives has allowed us to think of the derivatives as made up of frequencies, it then follows to exploit this interpretation by introduing a weighting into the penalty: 
 \begin{equation}
 \int \ldots \int_{\mathbb{R}^d} w(\boldsymbol{\tau}) \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau},
 \label{duchon-penalty-general}
@@ -104,15 +104,17 @@ Duchon shows that if $w(\boldsymbol{\tau})= \lvert \boldsymbol{\tau} \rvert^{2s}
 \end{equation}
 Again, (\ref{tprs-pen}) can be recovered from this penalty (by setting $s=0$). When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$. So $s$ can be used to allow high dimensional smoothing, while still using lower-order penalties without yielding discontinuous functions. One can therefore think of $s$ as a kind of ``fudge factor'' that allows the conditions on $m$ and $d$ to be relaxed; given some fixed combination of $m$ and $d$, an $s$ can be found (by simply calculating $s=d/2-m$).
 
+In a sense, the new penalty allows the radial basis functions in (\ref{tprs-basis}) to fill the gaps left by using a reduced set of global polynomials. Using such a penalty allows us to avoid the problem of having too many complex functions in the nullspace of the penalty while not sacrificing the continuity of $f$. 
+
 Looking back to figure \ref{nullspace-dim} (where the blue line showed the increasing numbers of functions in the nullspace of the conventional thin plate penalty), the red line gives the number of functions in penalty (\ref{duchon-penalty}). In this case $m=2$ has been chosen to remain constant as the dimensionality increases, leading to a linear increase in nullspace size with the smoothing dimension.
 
 \textbf{SIMON} : If I can construct some kind of proof that the MDS projection of within-area distances always leads to a manifold then I'll say something here about how that leads to the following \ldots In any small region a 2-dimensional manifold will look like $\mathbb{R}^2$, in the same small region the smoother's behaviour will closely approximate a regular thin plate regression spline with $m=2$ on the tangent space of the manifold (as the smoothing parameter tends to zero, at least).
 
-\cite{girosi} discusses the connections between neural networks and GAMs with the more general form of this type of penalty (ie. (\ref{duchon-penalty-general})) (see also \cite{elements} p. 168).
+These splines have been largly neglected in statistical smoothing literature with the exception of \cite{girosi} which discusses the connections between neural networks and GAMs with the more general form of this type of penalty (ie. (\ref{duchon-penalty-general})). \cite{elements} p. 168 also discuss Girosi's work briefly.
 
 \subsection{Duchon splines with \mdsap\ -- \mdsds}
 
-With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into any number of dimensions and smooth over the response without having to worry about the nullspace of the penalty causing problems. The use of Duchon splines along with \mdsap\ and the projection dimension selection techniques below will be known as \mdsds\ from here on.
+With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into larger numbers of dimensions and smooth over the response without having to worry about the high dimensional nullspaces causing problems. The use of Duchon splines along with \mdsap\ and the projection dimension selection techniques below will be known as \mdsds\ (Multidimensional Scaling for GAMs) from here on.
 
 \subsection{Choosing MDS projection dimension}
 

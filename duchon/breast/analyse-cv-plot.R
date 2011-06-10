@@ -36,7 +36,12 @@ p<-ggplot(res)
 p<-p+geom_histogram(aes(CV))
 p<-p+facet_grid(model~.)
 p<-p+labs(y="Frequency",x="Cross-validation score")
+p<-p+opts(panel.grid.major=theme_blank(),
+          panel.grid.minor=theme_blank(),
+          legend.background=theme_blank(),
+          legend.key=theme_blank(),
+          panel.background=theme_rect())
 
 print(p)
 
-
+ggsave("breastcancer-cv-plot.pdf",width=6.3,height=7.75)

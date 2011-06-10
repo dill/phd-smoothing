@@ -79,6 +79,11 @@ p<-ggplot(bbrier)
 p<-p+geom_boxplot(aes(method,score))
 p<-p+facet_wrap(~samp.size)
 p<-p+labs(y="Brier score")
+p<-p+opts(panel.grid.major=theme_blank(),
+          panel.grid.minor=theme_blank(),
+          legend.background=theme_blank(),
+          legend.key=theme_blank(),
+          panel.background=theme_rect())
 #print(p,vp=subplot(1,1))
 print(p)
 
@@ -90,6 +95,11 @@ p<-ggplot(bmse)
 p<-p+geom_boxplot(aes(method,score))
 p<-p+facet_wrap(~samp.size)
 p<-p+labs(y="MSE")
+p<-p+opts(panel.grid.major=theme_blank(),
+          panel.grid.minor=theme_blank(),
+          legend.background=theme_blank(),
+          legend.key=theme_blank(),
+          panel.background=theme_rect())
 #print(p,vp=subplot(2,1))
 print(p)
 ggsave("mp-mse.pdf")
