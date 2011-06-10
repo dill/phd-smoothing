@@ -111,8 +111,8 @@ for(i in 1:n.sims){
       #                              predict(b.lasso,as.matrix(t(leuk[i,]))))^2)
 
    }
+save.image("simtest-ALL.RData")
 }
 
 
-save.image("simtest-ALL.RData")
 

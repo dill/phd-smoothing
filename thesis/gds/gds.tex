@@ -61,7 +61,7 @@ where the first summation is a series of (local) radial basis functions ($i$ ind
 \begin{equation*}
 M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}.
 \end{equation*}
-In the cases presented so far, $d$ (the MDS projection dimension) is known and $m$ is dictated by $d$. Increasing $d$ increases $m$ (by the continuity condition that $2m>d$) and hence increases $M$ in the manner above. Therefore $M$ increases very quickly with the number of dimensions used; this is shown in figure \ref{nullspace-dim} (blue line). As more functions are included in the nullspace, the more and more complex (because of their linear independence) the functions are. Having very wiggly functions in the nullspace is certainly undesirable, having many of them will be extremely problematic for model parsimony. 
+In the cases presented so far, $d$ (in our the MDS projection dimension) is known and $m$ is dictated by $d$. Increasing $d$ increases $m$ (by the continuity condition that $2m>d$) and hence increases $M$ in the manner above. Therefore $M$ increases very quickly with the number of dimensions used; this is shown in figure \ref{nullspace-dim} (blue line). As more functions are included in the nullspace, the more and more complex (because of their linear independence) the functions are. Having very wiggly functions in the nullspace is certainly undesirable, having many of them will be extremely problematic for model parsimony. 
 
 \begin{figure}
 \centering
@@ -75,7 +75,7 @@ A top-down rigorous proof and treatment of Duchon splines is given in \cite{duch
 
 The usual thin plate regression spline penalty given in (\ref{tprs-pen}) can be thought of as a measure of ``wigglyness'' or ``roughness'', taking higher values when $f$ is particularly rough or wiggly (the penalty prevents the spline from interpolating). Integrating the square of the derivatives over the whole of $\mathbb{R}^d$ allows us to consider the fitting procedure as minimizing the objective function in such a way that reduces the wigglyness across the whole of $f$ whilst being as close to the data as possible. 
 
-\cite{duchon77} proposes a penalty that is more general than (\ref{tprs-pen}), the first step from (\ref{tprs-pen}) is to consider taking the Fourier transform of the derivatives before squaring and integrating them. The Fourier transform allows us to consider the penalty as an infinite sum of frequencies; decomposing functions defined in space into their frequency domain representations. Mathematically, the Fourier transform of some function of $d$-dimensional space ($\mathbf{x}$), $g$, is defined as:
+The penalty in (\ref{tprs-pen}) is only one example of a more general kind of penalty proposed in \cite{duchon77}. Starting from (\ref{tprs-pen}), the first step toward this more general penalty is to consider taking the Fourier transform of the derivatives before squaring and integrating them. The Fourier transform allows us to consider the penalty as an infinite sum of frequencies; decomposing functions defined in space into their frequency domain representations. Mathematically, the Fourier transform of some function of $d$-dimensional space ($\mathbf{x}$), $g$, is defined as:
 \begin{equation*}
 \mathfrak{F} g(\boldsymbol{\tau}) = \int \ldots \int_{\mathbb{R}^d} e^{2 \pi \sqrt{-1} \mathbf{x}^\text{T} \boldsymbol{\tau}} g(\mathbf{x}) \text{d}\mathbf{x}.
 \end{equation*}
