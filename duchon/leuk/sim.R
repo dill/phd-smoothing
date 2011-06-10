@@ -1,6 +1,7 @@
 
 load("leuk.RData")
 library(mdspack)
+library(glmnet)
 
 leuk.type<-leuk[,length(leuk)]
 leuk<-leuk[,-length(leuk)]
@@ -29,6 +30,7 @@ gcv.score.cv<-c()
 dsml.mse.cv<-c()
 dsml.brier.cv<-c()
 dsgcv.mse.cv<-c()
+lasso.brier.cv<-c()
 lasso.mse.cv<-c()
 #edf.cv<-c()
 ml.best.dim<-c()
@@ -105,10 +107,15 @@ for(i in 1:n.sims){
 
       #################################################################
       ### lasso model
-      #cvmin.lasso<-cv.glmnet(leuk.samp,type.samp)
-      #b.lasso<-glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min)
-      #lasso.mse.cv<-c(lasso.mse.cv,(leuk.type[i]-
-      #                              predict(b.lasso,as.matrix(t(leuk[i,]))))^2)
+      leuk.samp<-as.matrix(leuk.samp)
+      cvmin.lasso<-cv.glmnet(leuk.samp,type.samp)
+      b.lasso<-glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min,family="binomial")
+      lasso.mse.cv<-c(lasso.mse.cv,sum((leuk.type[-samp.ind]-
+                                    round(predict(b.lasso,as.matrix(leuk[-samp.ind,],type="response"))))^2))
+
+      lasso.brier.cv<-c(lasso.brier.cv,sum((leuk.type[-samp.ind]-
+                                   predict(b.lasso,as.matrix(leuk[-samp.ind,])))^2))
+ 
 
    }
 save.image("simtest-ALL.RData")
