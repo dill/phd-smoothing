@@ -399,27 +399,19 @@ In this example we have seen that \mdsds\ is capable of being used for generaliz
 
 \subsubsection{Leukemia microarrays}
 
-\cite{yeoh2002} investigate expression data from 327 patients with acute lymphoblastic leukemia (ALL), collected on 12626 genes. The orginal purpose of the study was attempting to classify patients into one of ten prognostically important ALL subtypes (since treatment is dependent on subtype), based on looking at the expression data. \cite{yeoh2002} used heirarchical clustering to find groupings of genes in the data and then found those groups corresponded to particular ALL subtypes (by looking at correlations). To simply the analysis here, a binary response was used (of a particular subtype versus not that subtype), 
+\cite{yeoh2002} investigate expression data from 327 patients with acute lymphoblastic leukemia (ALL), collected on 12626 genes. The orginal purpose of the study was attempting to classify patients into one of ten prognostically important ALL subtypes (since treatment is dependent on subtype), based on looking at the expression data. \cite{yeoh2002} used heirarchical clustering to find groupings of genes in the data and then found those groups corresponded to particular ALL subtypes (by looking at correlations). 
 
-two data sets ALL and TEL
+To simply the analysis here, a binary response was used (of a particular subtype versus not that subtype). Two subtypes were used in the simulation, TEL (the largest group, with 79 patients) and T-ALL (a smaller group with 43 patients). For each subtype two simulations were ran, one using the 40 genes selected by $\Chi^2$ (TKTKTK paper ref), and a second that used an additional 500 genes which were chosen at random (but were kept the same over realisations). The two scenarios show the difference between an idealised situation where the best predictors are already know versus a more realistic situation in which there is a lot of noise from non-relevant genes. In each of the simulations 100 realisations were generated and in each of these 100 samples were taken and models fit using their data. Models were then used to predict the classes of the remaining patients, Brier scores and MSEs were recorded. Models using both ML and GCV dimension selection were used and as above, the lasso was used for comparison using the same settings as in the MP example. 
 
-two simulations run
+
 one with just the 40 genes found by chisq
-one with 500 extra random confounding genes added (constant accross whole sim)
-
-From that 100 samples taken, predict back over the rest
 
 
-Selection using ML and GCV
+RESULTS
 
-
-Lasso used for comparison
-
-MSE and Brier scores calculated
-
-
-
-
+TKTKTK OTHER STUFF
+   unlikely given that using correlations alone 96\% accuracy ! that's just linear
+   remove linear models
 
 
 \section{Software implementation - \mdspack}
@@ -437,5 +429,6 @@ TKTKTK write documentation in the package
 
 TKTKTK sum up, say what else could be done. Show path SC->MDS+RS->MSG, improvements along the way.
 
-TKTKTK write about interpretability of GDS results, mainly data mining rather than inference (cite Breiman two cultures paper?).
+TKTKTK write about interpretability of GDS results, mainly data mining rather than inference (cite Breiman two cultures paper?). IS IT EVEN GOOD AT THIS??!
+\end{verse}<++>
 
