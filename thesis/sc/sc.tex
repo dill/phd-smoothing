@@ -2,6 +2,8 @@
 \label{chap-sc}
 \section{Introduction}
 
+As discussed in \secref{intro-FAS}, leakage can be problematic for spatial smoothing. Since leakage is caused by the smooth not respecting the boundary of the domain of interest, one way of approaching this would be to change the boundary in such a way that the new boundary is easier for the smoother to deal with (for example reducing the number and/or severity of peninsulae) and therefore the ammount of leakage is reduced.
+
 This chapter investigates the efficacy of using a conformal mapping to transform the domain in which we wish to perform smoothing. The mapping takes points in the domain of the data ($W$) to a domain on which it is easier to smooth ($W^*$). In particular the utility of the \sch\ transform is examined (elaborating on \cite{eilerstalk}).
 
 Given some region that it is difficult to smooth over, one approach is to transform the domain in which the problem resides. So, for example, one could transform a region into a rectangle, circle or other familiar shape to avoid the problems such as leakage. In this spirit, we wish to find some mapping such as $\phi$ in \fig{simpledia}.
@@ -486,7 +488,7 @@ Looking at the realisations in \fig{sc-wigglytop2-real}, it is easy to see that 
 \end{figure}
 
 
-\Fig{wigglytop2-boxplots} also shows the results of using the simpler bounding polygon shown in \fig{wigglytop2-bbox-numbered} with the \sch\ mapping (again mapping to the rectangle) as  an attempt to reduce the distortions seen in \fig{sc-wigglytop2-real}. There is no significant increase in performance by attempting to use the bounding polygon. Although this ironed out some of the artifacts in the smooth, \fig{wigglytop2-bbox-real} shows that new features appear. Patently, there is no advantage in using the \sch\ transform in this situation.
+\Fig{wigglytop2-boxplots} also shows the results of using the simpler bounding polygon shown in \fig{wigglytop2-bbox-numbered} with the \sch\ mapping (again mapping to the rectangle) as  an attempt to reduce the distortions seen in \fig{sc-wigglytop2-real}. Although the median $\log(\text{MSE})$ was reduced, there was a massive increase in variability; there is no significant increase in performance by attempting to use the bounding polygon. Although this ironed out some of the artifacts in the smooth, \fig{wigglytop2-bbox-real} shows that new features appear. Patently, there is no advantage in using the \sch\ transform in this situation.
 
 
 
