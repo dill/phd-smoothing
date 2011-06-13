@@ -399,7 +399,28 @@ In this example we have seen that \mdsds\ is capable of being used for generaliz
 
 \subsubsection{Leukemia microarrays}
 
-TKTKTK Worth doing this if it's a logit/binary prediction, can work out whether ML/GCV conflict is due to distance metric used or binary vs. normal models.
+\cite{yeoh2002} investigate expression data from 327 patients with acute lymphoblastic leukemia (ALL), collected on 12626 genes. The orginal purpose of the study was attempting to classify patients into one of ten prognostically important ALL subtypes (since treatment is dependent on subtype), based on looking at the expression data. \cite{yeoh2002} used heirarchical clustering to find groupings of genes in the data and then found those groups corresponded to particular ALL subtypes (by looking at correlations). To simply the analysis here, a binary response was used (of a particular subtype versus not that subtype), 
+
+two data sets ALL and TEL
+
+two simulations run
+one with just the 40 genes found by chisq
+one with 500 extra random confounding genes added (constant accross whole sim)
+
+From that 100 samples taken, predict back over the rest
+
+
+Selection using ML and GCV
+
+
+Lasso used for comparison
+
+MSE and Brier scores calculated
+
+
+
+
+
 
 \section{Software implementation - \mdspack}
 \label{gds-software}
