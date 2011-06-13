@@ -24,7 +24,7 @@ ALL.cols<-as.integer(ALL.cols)
 leuk<-leuk[,ALL.cols]
 
 # general setup
-n.sims<-100
+n.sims<-1#00
 ml.score.cv<-c()
 gcv.score.cv<-c()
 dsml.mse.cv<-c()
@@ -94,16 +94,17 @@ for(i in 1:n.sims){
       ml.best.dim<-c(ml.best.dim,b.ml$mds.dim)
 
       # do some prediction
-      pred.data<-as.data.frame(insert.mds.generic(b.ml$mds.obj,leuk[-samp.ind,],leuk.samp,dist.metric="mahalanobis"))
+      pred.data<-as.data.frame(insert.mds.generic(b.ml$mds.obj,
+                                 leuk[-samp.ind,],
+                                 leuk.samp,dist.metric="mahalanobis"))
       names(pred.data)<-names(b.ml$samp.mds)[-1]
       pp<-predict(b.ml$gam,pred.data,type="response")
 
       # record the MSE
-      dsml.mse.cv<-c(dsml.mse.cv,sum((leuk.type[-samp.ind]-pp)^2))
+      dsml.mse.cv<-c(dsml.mse.cv,sum((leuk.type[-samp.ind]-round(pp))^2))
 
       # record the brier score
-      pp.l<-predict(b.ml$gam,pred.data)
-      dsml.brier.cv<-c(dsml.brier.cv,sum((leuk.type[-samp.ind]-pp.l)^2))
+      dsml.brier.cv<-c(dsml.brier.cv,sum((leuk.type[-samp.ind]-pp)^2))
 
       #################################################################
       ### lasso model
