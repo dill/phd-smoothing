@@ -209,7 +209,18 @@ In conclusion, the mapping can be both reliable and also produces a smooth confi
 
 \section{Finding the within-area distances}
 \label{mdsdist}
-In order to perform multidimensional scaling the matrix of distances must be found. This section describes a novel algorithm to find the within-area distances.
+In order to perform multidimensional scaling the matrix of distances must be found. Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled by the objects residing in the domain of interest.
+
+There are several methods available to calculate within-area distances
+
+A* -- grid based need critique
+
+graph-based -- don't necessarily respect the boundary, computationally expensive
+
+
+
+
+This section describes a novel algorithm to find the within-area distances.
 
 Let the domain boundary be some polygon, $\Gamma$. Given that there is no direct path within the domain between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path (ie. an ordered set of edges and vertices), $\mathcal{P}$:
 
