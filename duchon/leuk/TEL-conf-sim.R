@@ -26,8 +26,6 @@ TEL.cols[40,]<-12442
 
 TEL.cols<-as.integer(TEL.cols)
 
-leuk<-leuk[,TEL.cols]
-
 total.cols<-1:ncol(leuk)
 total.cols<-total.cols[-TEL.cols]
 
