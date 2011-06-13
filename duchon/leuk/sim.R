@@ -24,7 +24,7 @@ ALL.cols<-as.integer(ALL.cols)
 leuk<-leuk[,ALL.cols]
 
 # general setup
-n.sims<-1#00
+n.sims<-100
 ml.score.cv<-c()
 gcv.score.cv<-c()
 dsml.mse.cv<-c()
