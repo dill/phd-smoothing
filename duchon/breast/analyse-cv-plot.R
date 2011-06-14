@@ -13,16 +13,11 @@ load("npi-cv-quasi.RData")
 res<-rbind(res,cbind(dsgcv.mse.cv),cbind(dsml.mse.cv),cbind(lasso.mse.cv))
 rownames(res)<-NULL
 
-mod.names<-c(rep("mdsds\n (GCV, normal)",45),
-             rep("mdsds\n (ML, normal)",45),
-             rep("mdsds\n (GCV, quasi)",45),
-             rep("mdsds\n (ML, quasi)",45),
+mod.names<-c(rep("msg\n (GCV, normal)",45),
+             rep("msg\n (ML, normal)",45),
+             rep("msg\n (GCV, quasi)",45),
+             rep("msg\n (ML, quasi)",45),
              rep("lasso",45))
-#mod.names<-c(rep("mdsds (GCV)",45),
-#             rep("mdsds (ML)",45),
-#             rep("mdsds (GCV)",45),
-#             rep("mdsds (ML)",45),
-#             rep("lasso",45))
 method.names<-c(rep("normal",90),
                 rep("quasi",90),
                 rep("lasso",45))
