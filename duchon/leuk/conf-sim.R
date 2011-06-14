@@ -125,23 +125,28 @@ for(i in 1:n.sims){
          #################################################################
          ### lasso model
          leuk.samp<-as.matrix(leuk.samp)
+
          cvmin.lasso<-cv.glmnet(leuk.samp,type.samp,family="binomial")
-         b.lasso<-glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min,family="binomial")
 
-         # predict the classes for the rest of the data
-         pp.lasso<-predict(b.lasso,as.matrix(leuk[-samp.ind,]),type="class")
-         pp.lasso[pp.lasso==1]<-0
-         pp.lasso[pp.lasso==2]<-1
+         if(class(cvmin.lasso)!="try-error"){
+            b.lasso<-glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min,
+                            family="binomial")
 
-         lasso.mse.cv<-c(lasso.mse.cv,
-                         sum((leuk.type[-samp.ind]-pp.lasso)^2))
+            if(class(b.lasso)!="try-error"){
+               # predict the classes for the rest of the data
+               pp.lasso<-predict(b.lasso,as.matrix(leuk[-samp.ind,]),type="class")
+               pp.lasso[pp.lasso==1]<-0
+               pp.lasso[pp.lasso==2]<-1
 
-         # predict the probabilities of being in the classes
-         pp.lasso.p<-predict(b.lasso,as.matrix(leuk[-samp.ind,]),type="response")
-         lasso.brier.cv<-c(lasso.brier.cv,
-                           sum((leuk.type[-samp.ind]-pp.lasso.p)^2))
- 
+               lasso.mse.cv<-c(lasso.mse.cv,
+                               sum((leuk.type[-samp.ind]-pp.lasso)^2))
 
+               # predict the probabilities of being in the classes
+               pp.lasso.p<-predict(b.lasso,as.matrix(leuk[-samp.ind,]),type="response")
+               lasso.brier.cv<-c(lasso.brier.cv,
+                                 sum((leuk.type[-samp.ind]-pp.lasso.p)^2))
+            }
+         }
       }
    }
 save.image("conf-simtest-ALL.RData")
