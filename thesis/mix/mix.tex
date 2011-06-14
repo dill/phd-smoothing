@@ -282,22 +282,16 @@ The models detailed above were run on both real and simulated data to test their
 
 \subsection{Simulations}
 
-Four classes of models are tested here, this should give a good indication of how well the models do at the ``easy'' task of fitting to data which has the same functional form as the model. These classes are: non-covariate 2-point mixtures for line transect data, non-covariate mixtures for point transect data, non-covariate 3-point mixtures for line transect data and finally covariate mixtures for line transect data.
+Four classes of models were tested, giving a range of easy and hard problems over possible sampling scenarios. The classes were:
+\begin{itemize}
+	\item Non-covariate 2-point mixtures for line transect data.
+	\item Non-covariate mixtures for point transect data.
+	\item Non-covariate 3-point mixtures for line transect data.
+	\item Covariate mixtures for line transect data.
+\end{itemize}
+In order to assess how well the models performed, two metrics were used. The first metric is parameter estimates returned from the optimisation procedure -- this should highlight that the optimisation is working numerically and can successfully recover the parameters. The second metric is the abundance estimate ($\hat{N}$). The latter measure may be important as changes in the parameters may give (approximately) equal values of $\hat{N}$, since the parameter estimates are not usually of interest (the ultimate output being the abundance or density estimate in a distance sampling analysis), it makes sense to look at $\hat{N}$.
 
-In order to assess model fit, two metrics are used. The first metric is parameter estimates that are returned from the optimisation procedure -- this should highlight that the optimisation is working numerically and can successfully recover the parameters. The second metric is the average detectability ($P_a$), to ensure that density and abundance estimates are calculated correctly. The latter measure may be important as changes in the parameters may give (approximately) equal values of $P_a$, since the parameters are only a step on the way to the density estimates, we do not really care about them as much, hence it makes sense to use a metric which actually reflects the quantity that we care about. 
-
-
-[!!!! Both mean squared error and bias are calculated for these quantities (along with related standard errors).] MSE AND BIAS FOR PA??
-
-(TKTKTK This is wrong!)
-For each set of parameters for each of the model classes, 200 realisations were generated at each of 5 sample sizes (30, 60, 120, 480, 960). Samples were drawn, according to their proportions from the appropriate half-normal distributions using the \texttt{rtnorm()} function in the \texttt{msm} package. Where the proportions did not provide integer divisions of the sample sizes residual sampling (TKTKTK cite Baker 1985) was used. The truncation distance in each case was set to 1 for simplicity.
-
-(TKTKTK
-TODO IN THIS SECTION:
-	re-gen the mixture detection function plots!
-	re-gen ggplot plots with crappy graphics theme)
-
-
+For each set of parameters for each of the model classes, 500 realisations were generated at each of 5 sample sizes (30, 60, 120, 480, 960). Samples were drawn, according to their proportions from the appropriate half-normal distributions using the \texttt{rtnorm()} function in the \texttt{msm} package in \textsf{R}. Where the proportions did not provide integer divisions of the sample sizes residual sampling (TKTKTK cite Baker 1985) was used. The truncation distance in each case was set to 1 in all cases and the parameters selected such that $g(1)\approx 0.15$.
 
 \subsubsection{Non-covariate 2-point mixtures for line transect data}
 
@@ -305,18 +299,18 @@ Five parameter combinations were used to test non-covariate 2-point mixtures the
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{c c c c c}
-Sim no. & $\sigma_1$ & $\sigma_2$ & $\pi_1$ & $\pi_2$\\
+\begin{tabular}{c c c c}
+Sim no. & $\sigma_1$ & $\sigma_2$ & $\pi_1$\\
 \hline
 \hline
-1 & 0.2  &  0.8  &  0.36 & \\
-2 & 0.8  &  0.2  &  0.44 & \\
-3 & 0.2  &  0.8  &  0.18 & \\
-4 & 10  &  0.2  &  0.44 & \\
-5 & 0.01  &  0.8  &  0.29 & \\
+1 & 0.2 & 0.8 &  0.36\\
+2 & 0.8 & 0.2 & 0.44\\
+3 & 0.2 & 0.8 & 0.18\\
+4 & 10  & 0.2 & 0.44\\
+5 & 0.01&  0.8 & 0.29\\
 \end{tabular}
 \label{mmds-nocov-simtable}
-\caption{Simulation parameters for the non-covariate simulations. (In $\sigma$ and $\pi$ parametrisation). (TKTKTK MAKE SURE THIS HAD THE SAME ORDERING AS THE RESULTS TABLE)}
+\caption{Simulation parameters for the non-covariate simulations. (In $\sigma$ and $\pi$ parametrisation).}
 \end{table}
 
 The first three simulations give relatively simple scenarios with the same scale parameters but varying the mixture proportions, these check behaviour under ``easy'' conditions. The fourth checks to see what happens when one of the mixtures is essentially too big to be identified (it starts to decrease after the truncation distance so the parameter value could be 10, 100 or even 1000). Finally the fifth example gives and extremely spiked detection function.
@@ -329,6 +323,7 @@ The first three simulations give relatively simple scenarios with the same scale
 \label{mmds-nocov-funcs}
 \end{figure}
 
+TKTKTK
 Figure \ref{mmds-nocov-boxplots} shows boxplots of the parameter estimates (for $\sigma_1$, $\sigma_2$, $\pi_1$ and $\pi_2$, top to bottom) for scenarios 1 through 5 (left to right), the boxes are colour coded according to the optimisation method. The first three scenarios show a rather nice pattern, gradually getting closer to the truth with less uncertainty as the sample size increases. Scenarios 4 and 5 however deserve more attention.
 
 % big boxplots of par estimates
