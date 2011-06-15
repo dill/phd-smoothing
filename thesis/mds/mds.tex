@@ -266,10 +266,9 @@ The word triangle here is used to refer to the case in which three points, $(v_i
 The algorithm terminates
 The condition to be fulfilled for the algorithm to terminate is that in two consecutive runs the path does not change, so the first step is to check that it is possible for this to happen, then to move on to show that it always happens. 
 Since the ALTER step can act as (a less efficient) DELETE step (since $\mathcal{P}_{ID}$ could just be the straight line between two points, the DELETE substep just removing all of the uneeded vertices and $(v_i,v_{i+1},v_{i+2})$ is then replaced with $(v_i,v_{i+2})$), we only need to consider the ALTER step.
-For the algorithm to fail to terminate, the ALTER step would have to create a situation in which one ALTER step would take the path $\mathcal{P_1^*}$ (say) and alter it to be $\mathcal{P_2^*}$ such that the next ALTER step would revert $\mathcal{P_2^*}$ back to $\mathcal{P_1^*}$, these two steps would continue infinitely.
-This cannot happen since in the ALTER step the $\mathcal{P}_{ID}$ must be shorter than $(v_i,v_{i+1},v_{i+2})$, otherwise it is not picked. If the length of $\mathcal{P}_{ID}$ is the same as that of $(v_i,v_{i+1},v_{i+2})$ it is not picked and therefore the total path length after the ALTER step must be either equal or less than the total path length before the ALTER step.
-
-Clearly the algorithm cannot continue shortening the path forever, at some point there will be no more shorter routes proposed by the ALTER step.
+For the algorithm to fail to terminate, the ALTER step would have to create a situation in which one ALTER step would take the path $\mathcal{P_1^*}$ (say) and alter it to be $\mathcal{P_2}^*$ such that the next ALTER step would revert $\mathcal{P_2}^*$ back to $\mathcal{P_1}^*$, these two steps would continue infinitely.
+If this were to happen it would imply that both $\mathcal{P_2}^*$ was shorter than $\mathcal{P_1}^*$ and $\mathcal{P_1}^*$ was shorter than $\mathcal{P_2}^*$ and since in the ALTER step the $\mathcal{P}_{ID}$ must be shorter than $(v_i,v_{i+1},v_{i+2})$ (not equal in length) then this cannot happen.
+Clearly the algorithm cannot continue shortening the path forever, at some point there will be no more shorter routes proposed by the ALTER step and hence it will terminate.
 
 
 
