@@ -1,0 +1,276 @@
+% mixture derivatives!
+% error function
+\newcommand{\erf}{\text{Erf}}
+% derivative shortcuts
+\newcommand{\palphaj}{\frac{\partial}{\partial \alpha_{j*}}}
+\newcommand{\pbetajk}{\frac{\partial}{\partial \beta_{j*k*}}}
+%nu_j shortcut + starred
+\newcommand{\nuj}{\nu_j(\bm{z}^{(j)})}
+\newcommand{\nujs}{\nu_{j*}(\bm{z}^{(j*)})}
+% z_ik^j shortcut + with starts
+\newcommand{\zijk}{z_{ik}^{(j)}}
+\newcommand{\zijkss}{z_{ik*}^{(j*)}}
+% z^(j) shortcut + with starts
+\newcommand{\zj}{\bm{z}_j}
+\newcommand{\zjs}{\bm{z}_{j*}}
+% z^(J) shortcut + with starts
+\newcommand{\zJ}{\bm{z}_J}
+
+\section{Line transects - likelihood and derivatives}
+
+The likelihood and its derivatives for the covariate case are derived fully below, along with summary results for the non-covariate case (since this is just a special case of the covariate model anyway).
+
+\subsection{The likelihood}
+
+In its full ``natural'' parameterisation (i.e. in terms of $\sigma$s and $\pi$s) the likelihood is given as:
+\begin{align*}
+\mathcal{L}(\bm{\sigma},\bm{\pi}; \bm{x}, Z) &= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{g_j(x_i; \sigma_j(Z;\bm{\beta}_j))}{\mu_j(Z)}.
+\end{align*}
+That is, the product of the PDF evaluated at each datum, where the PDF is a scaled sum of detection functions divided by the effective strip width (see below). 
+
+The $\log$-likelihood is then:
+\begin{align*}
+l(\bm{\sigma},\bm{\pi}; \bm{x}, Z) &= \sum_{i=1}^n \log\Big(\sum_{j=1}^J \pi_j \frac{g_j(x_i;\sigma_j(Z;\bm{\beta}_j))}{\mu_j(Z)}\Big)
+\end{align*}
+The effective strip (half-)width, $\mu_j(\bm{z})$, is defined as:
+\begin{align*}
+\mu_j(\bm{z})=& \int_0^w g_j(x;\sigma_j(\bm{z};\bm{\beta}_j)) \text{d}x.
+\end{align*}
+where $w$ is the truncation distance (after which recorded distances are discarded). $\mu_j(\bm{z})$ is an $n$-vector. In the case where there are no covariates we can write:
+\begin{align*}
+\mu_j=& \int_0^w g_j(x;\sigma_j) \text{d}x.
+\end{align*}
+$\mu_j$ is a scalar.
+In order to be as general as possible, the covariate case is considered throughout.
+
+As mentioned above, we consider the case in which we only have one observation and associates covariates. We can then write the $\log$-likelihood as:
+\begin{align*}
+l(\bm{\sigma},\bm{\pi}; x, \bm{z}) &= \log\Big(\sum_{j=1}^J \pi_j \frac{g_j(x;\sigma_j(\bm{z};\bm{\beta}_j))}{\mu_j(\bm{z})}\Big),
+\end{align*}
+using exactly the same notation as above. This is used as the starting point for all derivative calculations below.
+
+
+\subsubsection{Mixture proportions}
+
+
+To find the derivatives with respect to the mixture proportions, first reparameterise in terms of $\alpha_j$s (for simplicity $\bm{\sigma}$ is left as-is). The derivative of $l(\bm{\sigma},\bm{\alpha};x, \bm{z})$ with respect to some $\alpha_{j*}$ is given as
+\begin{align*}
+\frac{\partial l(\bm{\sigma},\bm{\alpha}; x, \bm{z})}{\partial \alpha_{j*}} &= \palphaj \log\Big(\sum_{j=1}^J \pi_j \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})}\Big),\\
+&= \frac{\palphaj \Big(\sum_{j=1}^J \pi_j \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})}\Big)}{\Big(\sum_{j=1}^J \pi_j \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})}\Big)}.
+\end{align*}
+Letting
+\begin{align*}
+\mathcal{F}(x, \bm{z};\bm{\sigma},\bm{\pi})=\sum_{j=1}^J \pi_j \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})}
+\end{align*}
+we can write:
+\begin{align*}
+\frac{\partial l(\bm{\sigma},\bm{\alpha};x,\bm{z})}{\partial \alpha_{j*}} &= \frac{1}{\mathcal{F}(x,\bm{z} ;\bm{\sigma},\bm{\alpha})} \palphaj \Big(\sum_{j=1}^J \pi_j \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})}\Big)\\
+&= \frac{1}{\mathcal{F}(x, \bm{z};\bm{\sigma},\bm{\alpha})} \palphaj \Big( \sum_{j=1}^{J-1}\pi_j \frac{g_j(x; \sigma_j)}{\mu_j(\bm{z})} + \Big(1-\sum_{j=1}^{J-1}\pi_j \Big) \frac{g_J(x;\sigma_J)}{\mu_J(\bm{z})}\Big)
+\end{align*}
+Now, we know that the relation between $\pi_{j*}$ and $\alpha_{j*}$ is
+\begin{align*}
+\pi_j = F(\sum_{k=1}^j e^{\alpha_k}) - F(\sum_{k=1}^{j-1} e^{\alpha_k}),
+\end{align*}
+so, substituting this in we obtain
+\begin{align*}
+\frac{\partial l(\bm{\sigma},\bm{\alpha};x,\bm{z})}{\partial \alpha_{j*}} &= \frac{1}{\mathcal{F}(x, \bm{z};\bm{\sigma},\bm{\alpha})} \palphaj \Big\{ \sum_{j=1}^{J-1} [F(\sum_{k=1}^j e^{\alpha_k}) - F(\sum_{k=1}^{j-1} e^{\alpha_k})] \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})} +\\
+& \qquad \Big[1-\sum_{j=1}^{J-1}(F(\sum_{k=1}^j e^{\alpha_k}) - F(\sum_{k=1}^{j-1} e^{\alpha_k})) \Big] \frac{g_J(x_i;\sigma_J)}{\mu_J(\bm{z})}\Big\}\\
+&= \sum_{i=1}^n \frac{1}{\mathcal{F}(x, \bm{z};\bm{\sigma},\bm{\alpha})} \Big\{ \sum_{j=1}^{J-1} \Big[\palphaj F(\sum_{k=1}^j e^{\alpha_k}) - \palphaj F(\sum_{k=1}^{j-1} e^{\alpha_k})\Big] \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})} \\
+&\qquad -\Big[\sum_{j=1}^{J-1} (\palphaj F(\sum_{k=1}^j e^{\alpha_k}) - \palphaj F(\sum_{k=1}^{j-1} e^{\alpha_k})\Big] \frac{g_J(x;\sigma_J)}{\mu_J(\bm{z})}\Big\}.
+\end{align*}
+Looking at the derivative terms in the above expression:
+\begin{equation*}
+\palphaj F(\sum_{k=1}^j e^{\alpha_k})=A_{j}=\begin{cases}
+e^{\alpha_{j*}}f(\sum_{k=1}^j e^{\alpha_k})& \text{for $j\geq j*$},\\
+0 & \text{for $j<j*$}.
+\end{cases}
+\end{equation*}
+and
+\begin{equation*}
+\palphaj F(\sum_{k=1}^{j-1} e^{\alpha_k})=A_{(j-1)}=\begin{cases}
+e^{\alpha_{j*}}f(\sum_{k=1}^{j-1} e^{\alpha_k})& \text{for $j-1\geq j*$},\\
+0 & \text{for $j-1<j*$}.
+\end{cases}
+\end{equation*}
+\begin{align*}
+\frac{\partial l(\bm{\sigma},\bm{\alpha}; x,\bm{z})}{\partial \alpha_{j*}} &= \frac{1}{\mathcal{F}(x, \bm{z};\bm{\sigma},\bm{\alpha})} \Big\{ \Big[\sum_{j=1}^{J-1} (A_{j}-A_{(j-1)}) \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})}\Big] - \sum_{j=1}^{J-1}\Big[ (A_{j}-A_{(j-1)})\frac{g_J(x;\sigma_J)}{\mu_J(\bm{z})} \Big]\Big\},\\%.
+&= \frac{1}{\mathcal{F}(x, \bm{z};\bm{\sigma},\bm{\alpha})} \sum_{j=1}^{J-1} (A_{j}-A_{(j-1)}) \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})}-(A_{j}-A_{(j-1)})\frac{g_J(x;\sigma_J)}{\mu_J(\bm{z})},\\
+&= \frac{1}{\mathcal{F}(x, \bm{z};\bm{\sigma},\bm{\alpha})} \sum_{j=1}^{J-1} (A_{j}-A_{(j-1)}) \Big(\frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})}-\frac{g_J(x;\sigma_J)}{\mu_J(\bm{z})} \Big).
+\end{align*}
+Finally, when there are multiple observations (summing over $i$) and writing out the likelihood in full, we have:
+\begin{align*}
+\frac{\partial l(\bm{\sigma},\bm{\alpha}; \bm{x},Z)}{\partial \alpha_{j*}} &= \sum_{i=1}^n \frac{1}{\mathcal{F}(x_i, Z;\bm{\sigma},\bm{\alpha})} \sum_{j=1}^{J-1} (A_{j}-A_{(j-1)}) \Big( \frac{g_j(x_i;\sigma_j(Z;\bm{\beta_j}))}{\mu_j(Z)} - \frac{g_J(x_i;\sigma_J(Z;\bm{\beta_J}))}{\mu_J(Z)} \Big).
+\end{align*}
+
+Note that we never take derivatives with respect to $\alpha_J$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Detection function parameters}
+
+Now to find derivatives with respect to $\beta_{j*k*}$, using the expression for the log-likelihood and adopting the same approach of not using the parametrisation until absolutely necessary, as above...
+\begin{align*}
+\frac{\partial l(\bm{\sigma},\bm{\pi};x, \bm{z})}{\partial \beta_{j*k*}} &= \pbetajk \log\Big(\sum_{j=1}^J \pi_j \frac{g_j(x;\sigma_j)}{\mu_j(\bm{z})}\Big),\\
+&= \frac{1}{\mathcal{F}(x,\bm{z};\bm{\sigma},\bm{\pi})} \pbetajk \sum_{j=1}^J \pi_j \frac{g_j(x;\sigma_{j})}{\mu_j(\bm{z})},\\
+&= \frac{1}{\mathcal{F}(x,\bm{z};\bm{\sigma},\bm{\pi})} \pbetajk \pi_{j*} \frac{g_{j*}(x;\sigma_{j*})}{\mu_{j^*}(\bm{z})},\\
+&= \frac{\pi_{j*}}{\mathcal{F}(x,\bm{z};\bm{\sigma},\bm{\pi})} \frac{\pbetajk g_{j*}(x,\bm{z};\sigma_{j*}) \mu_{j^*}(\bm{z}) - g_{j*}(x;\sigma_{j*}) \pbetajk \mu_{j^*}(\bm{z})}{[\mu_{j^*}(\bm{z})]^2}.\\
+\end{align*}
+Taking this expression bit-by-bit and finding the derivative terms that we need, first: $\frac{\partial g_{j*}(x;\sigma_{j*})}{\partial \beta_{j*k*}}$:
+\begin{align*}
+\frac{\partial g_{j*}(x;\sigma_{j*})}{\partial \beta_{j*k*}} &= \pbetajk \exp\Big( -\frac{x_i^2}{2\sigma_{j*}^2} \Big)
+\end{align*}
+Applying the chain rule, since $\sigma_{j*}$ is a function of the $\beta_{jk}$s:
+\begin{align*}
+\frac{\partial \sigma_{j*}(\bm{z};\bm{\beta}_{j*})}{\partial \beta_{j*k*}} &= \pbetajk\exp \Big( \beta_{0j} + \sum_{k\in K_j} z_k \beta_{j*k}\Big),\\
+&= z_{k*} \exp \Big( \beta_{0j} + \sum_{k \in K_j} z_{k} \beta_{j*k}\Big),\\
+&= z_{k*}\sigma_{j*}(\bm{z};\bm{\beta}_{j*}) = z^{(j*)}_{ik*}\sigma_{j*}.
+\end{align*}
+Hence:
+\begin{align*}
+ \frac{\partial}{\partial \beta_{j*k*}} \exp\Big( -\frac{x^2}{2\sigma_{j*}^2} \Big) &=  \pbetajk \exp\Big( -\frac{x^2}{2\sigma_{j*}^2} \Big)  \frac{\partial \sigma_{j*}}{\partial \beta_{j*k*}}\\
+&= z_{k*} \Big( \frac{x}{\sigma_{j*}}\Big)^2 \exp \Big(-\frac{x^2}{2 \sigma_{j*}^2}\Big) 
+\end{align*}
+$\mu_{j*}(\bm{z})$ can be expressed in terms of the error function...
+\begin{align*}
+\frac{\partial \mu_{j*}(\bm{z})}{\partial \beta_{j*k*}} &=\pbetajk \Big( \sqrt{\frac{\pi}{2}} \sigma_{j*} \erf\Big(\frac{w}{\sqrt{2\sigma_{j*}^2}}\Big) \Big)\\
+&= \erf\Big(\frac{w}{\sqrt{2\sigma_{j*}^2}}\Big) \pbetajk \Big( \sqrt{\frac{\pi}{2}} \sigma_{j*} \Big) + \sqrt{\frac{\pi}{2}} \sigma_{j*} \pbetajk \Big(\erf\Big(\frac{w}{\sqrt{2\sigma_{j*}^2}}\Big) \Big)
+\end{align*}
+To find $\frac{\partial}{\partial \beta_{j*k*}} \erf\Big(\frac{w}{\sqrt{2\sigma_{j*}^2}}\Big)$, note that we can write:
+\begin{align*}
+\frac{\partial}{\partial \beta_{j*k*}} \erf\Big(\frac{w}{\sqrt{2\sigma_{j*}^2}}\Big) = \frac{\partial}{\partial \beta_{j*k*}} S(u(\sigma_{j*}(\bm{z};\bm{\beta}_{j*})))
+\end{align*}
+where $\bm{\beta}_{j*}$ contains all the necessary coefficients for that mixture part. Turning the handle on the chain rule sausage machine gives:
+\begin{align*}
+\frac{\partial}{\partial \beta_{j*k*}} S(u(\sigma_{j*}(\bm{z};\bm{\beta}_{j*}))) = \frac{\partial S(u)}{\partial u} \frac{\partial u(\sigma_{j*})}{\partial \sigma_{j*} } \frac{\partial \sigma_{j*}(\bm{z};\bm{\beta}_{j*})}{\partial \beta_{j*k*}}
+\end{align*}
+where 
+\begin{align*}
+S(u) = \int_0^{u} \exp(-t^2) \text{d}t \quad \text{and} \quad u(\sigma_{j*})=\frac{w}{\sqrt{2\sigma_{j*}^2}}.
+\end{align*}
+Their derivatives being
+\begin{align*}
+\frac{\partial S(u)}{\partial u} = \frac{2}{\sqrt{\pi}} \exp(-u^2) \text{,} \quad \frac{\partial u(\sigma_{j*})}{\partial \sigma_{j*}} = -\frac{w}{\sqrt{2}}\sigma_{j*}^{-2},
+\end{align*}
+and $\frac{\partial \sigma_{j*}}{\partial \beta_{j*k*}}$ from above.
+
+Given these terms, it's just a case of multiplying them:
+\begin{align*}
+\frac{\partial S(u)}{\partial u} \frac{\partial u(\sigma_{j*})}{\partial \sigma_{j*} } \frac{\partial \sigma_{j*}(\bm{\beta}_{j*})}{\partial \beta_{j*k*}} = - \sqrt{\frac{2}{\pi}} \frac{w z_{k*}}{\sigma_{j*}} \exp\Big( -\frac{w^2}{2\sigma_{j*}^2} \Big)
+\end{align*}
+Rolling that up:
+\begin{align*}
+\frac{\partial \mu_{j*}(\bm{z})}{\partial \beta_{j*k*}} &= \sqrt{\frac{\pi}{2}} \erf\Big(\frac{w}{\sqrt{2\sigma_{j*}^2}}\Big) z_{k*} \sigma_{j*}  +  \Big( - \frac{w z_{k*} }{\sigma_{j*}} \exp\Big( -\frac{w^2}{2\sigma_{j*}^2} \Big) \Big)\\
+&= \mu_{j*}(\bm{z}) z_{k*} - w z_{k*} \exp\Big( -\frac{w^2}{2\sigma_{j*}^2} \Big)\\
+&= z_{k*} \Big(\mu_{j*}(\bm{z}) - w \exp\Big( -\frac{w^2}{2\sigma_{j*}^2} \Big)\Big)
+\end{align*}
+Finally, putting that all back into the quotient rule,
+\begin{align*}
+\frac{\partial l(\bm{\sigma},\bm{\pi}; x, \bm{z})}{\partial \beta_{j*k*}} &= \frac{\pi_{j*}}{\mathcal{F}(x,\bm{z};\bm{\sigma},\bm{\pi})} \frac{\frac{\partial}{\partial \beta_{j*k*}} g_{j*}(x;\sigma_{j*}) \mu_{j^*}(\bm{z}) - g_{j*}(x;\sigma_{j*})\frac{\partial}{\partial \beta_{j*k*}} \mu_{j^*}(\bm{z})}{(\mu_{j^*}(\bm{z}))^2},\\
+&= \frac{\pi_{j*}}{\mathcal{F}(x,\bm{z};\bm{\sigma},\bm{\pi})} \frac{ z_{k*} \Big( \frac{x}{\sigma_{j*}}\Big)^2 \exp \Big(-\frac{x^2}{2 \sigma_{j*}^2}\Big)  \mu_{j^*}(\bm{z}) - \exp \Big(-\frac{x^2}{2 \sigma_{j*}^2}\Big) z_{k*} \Big(\mu_{j*}(\bm{z}) - w \exp\Big( -\frac{w^2}{2\sigma_{j*}^2} \Big)\Big) }{(\mu_{j^*}(\bm{z}))^2},\\
+&= \frac{\pi_{j*} z_{k*}}{(\mu_{j^*}(\bm{z}))^2\mathcal{F}(x,\bm{z};\bm{\sigma},\bm{\pi})} \exp \Big(-\frac{x^2}{2 \sigma_{j*}^2}\Big) \Big[\Big( \frac{x}{\sigma_{j*}}\Big)^2 \mu_{j^*}(\bm{z}) - \mu_{j*}(\bm{z}) + w \exp\Big( -\frac{w^2}{2\sigma_{j*}^2}\Big)\Big],\\
+&= \frac{\pi_{j*} z_{k*}}{\mu_{j^*}(\bm{z})\mathcal{F}(x,\bm{z};\bm{\sigma},\bm{\pi})} \exp \Big(-\frac{x^2}{2 \sigma_{j*}^2}\Big) \Big[\Big( \frac{x}{\sigma_{j*}}\Big)^2  + \frac{w}{\mu_{j^*}(\bm{z})} \exp\Big( -\frac{w^2}{2\sigma_{j*}^2}\Big) -1\Big].
+\end{align*}
+
+Now writing this out in full, for multiple observations, as in the mixture proportion case:
+\begin{align*}
+\frac{\partial l(\bm{\sigma},\bm{\pi}; \bm{x}, Z)}{\partial \beta_{j*k*}} &= \sum_{i=1}^n \frac{\pi_{j*} z_{ik*}}{\mu_{j^*}(Z)\mathcal{F}(x_i,Z;\bm{\sigma},\bm{\pi})} \exp \Big(-\frac{x_i^2}{2 \sigma_{j*}(Z,\bm{\beta}_{j*})^2}\Big) \Big[\Big( \frac{x_i}{\sigma_{j*}(Z,\bm{\beta_}{j*})}\Big)^2\\
+&  + \frac{w}{\mu_{j^*}(Z)} \exp\Big( -\frac{w^2}{2\sigma_{j*}(Z,\bm{\beta}_{j*})^2}\Big) -1\Big].
+\end{align*}
+
+Note that for the non-covariate case, $z_{ik*}=1 \text{ } \forall i, k^*=1$ and $\mu_{j^*}(\bm{z})$ is replaced with $\mu_{j^*}$. Other than that, the expressions are identical.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Point transects - likelihood and derivatives}
+
+As above, the likelihood and its derivatives for the covariate case are derived fully below, along with summary results for the non-covariate case (since this is just a special case of the covariate model anyway).
+
+\subsection{The likelihood}
+
+Again looking at the likelihood in its ``natural'' parameterisation, we have:
+\begin{align*}
+\mathcal{L}(\bm{r}, \bm{z} ;\bm{\sigma},\bm{\pi}) &= \prod_{i=1}^n \sum_{j=1}^J \pi_j \frac{2 \pi r_i g_j(r_i, \zijk;\sigma_j)}{\nuj}.
+\end{align*}
+So, the $\log$-likelihood is:
+\begin{align*}
+l(\bm{r}, \bm{z};\bm{\sigma},\bm{\pi}) &= \sum_{i=1}^n \log\Big(\sum_{j=1}^J \pi_j \frac{r_i g_j(r_i,\zijk;\sigma_j)}{\nuj}\Big)
+\end{align*}
+Again,the $\bm{\sigma}$ and $\bm{\pi}$ vectors are only proxies for $\bm{\beta}$ and $\bm{\alpha}$, used in the optimisation parameterisation.
+
+Here $\nuj$ is defined similarly to $\mu_j(\bm{z}^{(j)})$, above,
+\begin{align*}
+\nuj=& \int_0^w 2 \pi r g_j(r,\bm{z}^{(j)};\sigma_j) \text{d}r,\\
+&= 2 \pi \sigma_j^2 \Big[1-\exp\Big( -\frac{w^2}{2\sigma_j^2}\Big)\Big],
+\end{align*}
+
+Note that the likelihood is essentially the same as the line transect case, but the detection function is multiplied by a factor of $2 \pi r$.
+
+
+\subsubsection{Mixture proportions}
+
+The derivatives with respect to the mixture proportions, are exactly as above, aside from the additional $r_i$ term as above.
+
+
+\subsubsection{Detection function parameters}
+
+As above, assume that we have a covariate model and that the non-covariate case is just a special case of that.
+\begin{align*}
+\frac{\partial l(\bm{r}, \bm{z};\bm{\theta},\bm{\pi})}{\partial \beta_{j*k*}} &= \pbetajk \sum_{i=1}^n \log\Big(\sum_{j=1}^J \pi_j \frac{2 \pi r_i g_j(r_i,\zj;\sigma_j)}{\nuj}\Big),\\
+&= \sum_{i=1}^n \pbetajk \log\Big(\sum_{j=1}^J \pi_j \frac{2 \pi  r_i g_j(r_i,\zj;\sigma_j)}{\nuj}\Big),\\
+&= \sum_{i=1}^n \frac{1}{\mathcal{F}(r_i,\bm{z};\bm{\sigma},\bm{\pi})} \pbetajk \sum_{j=1}^J \pi_j \frac{2 \pi r_i g_j(r_i,\zj;\sigma_{j*})}{\nuj},\\
+&= \sum_{i=1}^n \frac{2 \pi  \pi_{j*}}{\mathcal{F}(r_i,\bm{z};\bm{\sigma},\bm{\pi})} \pbetajk \frac{r_i g_{j*}(r_i,\zjs;\sigma_{j*})}{\nujs},\\
+\end{align*}
+since there is a closed form for $\nuj$ we can write:
+\begin{align*}
+\frac{\partial l(\bm{r}, \bm{z};\bm{\theta},\bm{\pi})}{\partial \beta_{j*k*}} &= \sum_{i=1}^n \frac{2 \pi \pi_{j*}}{\mathcal{F}(r_i,\bm{z};\bm{\sigma},\bm{\pi})} \pbetajk \frac{r_i \exp( -\frac{r_i^2}{2\sigma_{j*}^2})}{2 \pi \sigma_{j*}^2 (1-\exp( -\frac{w}{2\sigma_{j*}^2}))}.\\
+\end{align*}
+Then using the quotient rule:
+\begin{align*}
+\frac{\partial l(\bm{r}, \bm{z};\bm{\theta},\bm{\pi})}{\partial \beta_{j*k*}} &= \sum_{i=1}^n \frac{2 \pi \pi_{j*}}{\mathcal{F}(r_i,\bm{z};\bm{\sigma},\bm{\pi})}\frac{1}{(\nujs)^2} \Big\{  [2 \pi\sigma_{j*}^2(1-\exp( -\frac{w^2}{2\sigma_{j*}^2}))] \pbetajk (r_i \exp( -\frac{r_i^2}{2\sigma_{j*}^2}))\\
+&\qquad -r_i \exp( -\frac{r_i^2}{2\sigma_{j*}^2}) \pbetajk [2 \pi\sigma_{j*}^2(1-\exp( -\frac{w^2}{2\sigma_{j*}^2}))]\Big\}.\\
+\end{align*}
+Taking this bit-by-bit...
+\begin{align*}
+\pbetajk (r_i \exp( -\frac{r_i^2}{2\sigma_{j*}^2}))&= r_i \exp( -\frac{r_i^2}{2\sigma_{j*}^2})\pbetajk \Big(-\frac{r_i^2}{2\sigma_{j*}^2} \Big),\\
+&= r_i \exp( -\frac{r_i^2}{2\sigma_{j*}^2}) \Big(-\frac{r_i^2}{2} \Big) \pbetajk \sigma_{j*}^{-2}.
+\end{align*}
+Since we are assuming that we can decompose the scale parameter as $\sigma_j = \exp ( \sum_{k=0}^{K} z^{(j)}_{ik} \beta_{jk})$, 
+\begin{align*}
+\pbetajk \sigma_{j*}^{-2} &= \pbetajk \Big(\exp ( \sum_{k=0}^{K} \zijk \beta_{j*k})\Big)^{-2},\\
+&= -2 \zijkss \Big(\exp ( \sum_{k=0}^{K} \zijk \beta_{j*k})\Big)^{-2},\\
+&= -2 \zijkss \sigma_{j*}^{-2}.\\
+\end{align*}
+So,
+\begin{equation*}
+\pbetajk (r_i \exp\Big( -\frac{r_i^2}{2\sigma_{j*}^2} \Big)) = \zijkss \frac{r_i^3}{\sigma_{j*}^2} \exp\Big( -\frac{r_i^2}{2\sigma_{j*}^2} \Big).
+\end{equation*}
+Next, $\pbetajk (2 \pi \sigma_{j*}^2(1-\exp( -\frac{w^2}{2\sigma_{j*}^2})))$. Using the product rule,
+\begin{equation*}
+2 \pi \pbetajk \Big( \sigma_{j*}^2(1-\exp( -\frac{w^2}{2\sigma_{j*}^2})) \Big) = 2\pi \Big[(1-\exp( -\frac{w^2}{2\sigma_{j*}^2}))\pbetajk \sigma_{j*}^2 +  \sigma_{j*}^2 \pbetajk (1-\exp( -\frac{w^2}{2\sigma_{j*}^2}))\Big]
+\end{equation*}
+Then,
+\begin{equation*}
+\pbetajk \sigma_{j*}^2=2 \zijkss \sigma_{j*}^2,
+\end{equation*}
+and the other bit:
+\begin{align*}
+\pbetajk (1-\exp( -\frac{w^2}{2\sigma_{j*}^2}))&= - \pbetajk \exp( -\frac{w^2}{2\sigma_{j*}^2})\\
+&= - \exp( -\frac{w^2}{2\sigma_{j*}^2}) \pbetajk \Big( -\frac{w^2}{2\sigma_{j*}^2}\Big)\\
+&= z_{ik*} \Big(\frac{w}{\sigma_{j*}}\Big)^2 \exp( -\frac{w^2}{2\sigma_{j*}^2})
+\end{align*}
+Putting it all together:
+\begin{align*}
+2\pi \pbetajk (\sigma_{j*}^2(1-\exp( -\frac{w^2}{2\sigma_{j*}^2})))&= 2\pi \Big[(1-\exp( -\frac{w^2}{2\sigma_{j*}^2})) 2 \zijkss \sigma_{j*}^2 +  \sigma_{j*}^2 \zijk \Big(\frac{w}{\sigma_{j*}}\Big)^2 \exp( -\frac{w^2}{2\sigma_{j*}^2})\Big]\\
+&=\zijkss \Big( 2  \nujs +  2\pi w^2 \exp( -\frac{w^2}{2\sigma_{j*}^2})\Big)\\
+\end{align*}
+Putting all that into the quotient rule:
+\begin{align*}
+\pbetajk \frac{r_i \exp( -\frac{r_i}{2\sigma_{j*}^2} )}{\sigma_{j*}^2(1-\exp\{ -\frac{w^2}{2\sigma_{j*}^2}\})} &= \frac{1}{[\nujs]^2} \Big\{  \Big[ 2 \pi\sigma_{j*}^2(1-\exp( -\frac{w^2}{2\sigma_{j*}^2}))\Big] \zijkss \frac{r_i^3}{\sigma_{j*}^2} \exp( -\frac{r_i^2}{2\sigma_{j*}^2} )\\
+&\qquad -r_i \exp( -\frac{r_i^2}{2\sigma_{j*}^2}) \zijkss \Big[ 2  \nujs +  2\pi w^2 \exp( -\frac{w^2}{2\sigma_{j*}^2})\Big]\Big\},\\
+&= \frac{\zijkss r_i \exp(-\frac{r_i^2}{2\sigma_{j*}^2})}{[\nujs]^2} \Big(  \nujs \Big(\frac{r_i}{\sigma_{j*}}\Big)^2 - 2  \nujs +  2\pi w^2 \exp( -\frac{w^2}{2\sigma_{j*}^2})\Big)\\
+&= \frac{\zijkss r_i \exp\{ -\frac{r_i^2}{2\sigma_{j*}^2}\}}{\nujs} \Big[ \Big(\frac{r_i}{\sigma_{j*}}\Big)^2 - 2 +  2\pi \frac{w^2}{\nujs} \exp( -\frac{w^2}{2\sigma_{j*}^2})\Big].
+\end{align*}
+Finally obtaining:
+\begin{align*}
+\frac{\partial l(\bm{r}, \bm{z};\bm{\sigma},\bm{\pi})}{\partial \beta_{j*k*}} &= \sum_{i=1}^n \frac{2 \pi \pi_{j*}}{\mathcal{F}(r_i,\bm{z};\bm{\sigma},\bm{\pi})} \frac{\zijkss r_i \exp( -\frac{r_i^2}{2\sigma_{j*}^2})}{\nujs} \Big[ \Big(\frac{r_i}{\sigma_{j*}}\Big)^2 - 2 +  2\pi \frac{w^2}{\nujs} \exp( -\frac{w^2}{2\sigma_{j*}^2})\Big].
+\end{align*}
