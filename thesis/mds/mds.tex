@@ -273,13 +273,6 @@ Clearly the algorithm cannot continue shortening the path forever, at some point
 
 
 
-
-
-
-The alter step had a DELETE substep (to create $\mathcal{P}_{ID}$), the path inserted by ALTER will not contain any triangles and the previous path will not contain any triangles sicne DELETE has just been run on it. That only leaves triangles in the join between the new and old partial paths. Take $\mathcal{P}_{ID}=(v_i,v_{i+1}^1, v_{i+1}^2,\cdots,v_{i+1}^k,v_{i+2})$, we must check that  $(v_{i-1}, v_i, v_{i+1}^1)$ and $(v_{i+1}^k, v_{i+2}, v_{i+3})$ are not triangles.
-
-
-
 %%%%%%%%% This should be a subsection
 \label{app-unique-sp}
 There is one, unique shortest path:
@@ -302,9 +295,11 @@ TKTKTK diagram
 
 The shortest path along the cave's walls can always be found in a series of DELETE steps: if the polygon consisting of only the cave is taken a triangulation can always be found (TKTKTK cite), since a triangulation exists, the DELETE step will always be able to remove all of the caves vertices, leaving a path over the top of the cave.
 
-Mountains can be though of inverted caves, in that they are convex features that the path must ``climb''. Mountains may contain embedded caves, however we consider the case in which there are no embedded caves (having assumed that they have been removed by a previous DELETE step), we therefore consider mountains to be strictly convex shapes in the path. To find the shortest path around a convex shape, we only need to find the convex hull around that shape. If the mountain is convex then the path tracing the boundary is already the shortest path. The only thing it remains to consider is the points at which the convex segment joins the rest of the path, these may be shortened by using the DELETE step if necessary.
+Mountains can be though of inverted caves, in that they are convex features that the path must ``climb''. Mountains may contain embedded caves, however we consider the case in which there are no embedded caves (having assumed that they have been removed from the by a previous DELETE step), we therefore consider mountains to be strictly convex shapes in the path. To find the shortest path around a convex shape, we only need to find the convex hull around that shape. If the mountain is convex then the path tracing the boundary is already the shortest path. The only thing it remains to consider is the points at which the convex segment joins the rest of the path, these may be shortened by using the DELETE step if necessary.
 
+Given that the initial path many consist of only these two elements and that they are removed by the consecutive steps of DELETE and ALTER (obviously there may need to be micro steps of these within each step due to the aforementioned embeddding of caves-within-mountains and mountains-within-caves) we can conclude that the path is the shortest path.
 
+CAN WE?!?!?!?!?!
 
 %%%%%%%%% This should be a subsection
 The computational complexity of the algorithm.
