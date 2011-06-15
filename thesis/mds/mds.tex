@@ -211,16 +211,11 @@ In conclusion, the mapping can be both reliable and also produces a smooth confi
 \label{mdsdist}
 In order to perform multidimensional scaling the matrix of distances must be found. Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled by the objects residing in the domain of interest.
 
-There are several methods available to calculate within-area distances
+Note that we are only considering paths between point pairs in simple polygons (ie. those polygons without holes). Domains with holes cannot be addressed using MDS since the MDS projection of the points would require a tear at some point which would lead to discontinuities. Although this is a limits the types of domains that can be addressed it does make the shortest path algorithm simpler since the shortest path is unique (see \secref{app-unique-sp}).
 
-A* -- grid based need critique
+There are several methods available to calculate within-area distances, however given that the domain of interest is any arbitrary polygon (provided that there are no holes in the polygon) this limits the number of applicable. The two most promising possibilities were the geodesic methods used by \cite{wangranalli} (see also \secref{intro-leakageapproaches}) and the $\text{A}^*$ algorithm (TKTKTK cite) which is a generalisation of Djkstra's algorithm (TKTKTK cite). However, both of these algorithms rely on the discretization of the domain of interest. As stated in \secref{intro-leakageapproaches}, this discretization of the domain is undesirable since the results then become dependent on the resolution of the discretization of the domain, even if a high enough resolution can be used the computational cost becomes prohibitively expensive for such methods. It would be preferable to have an elementary (ie. not relying on complex structures or theory) algorithm for finding the shortest path within the polygon.
 
-graph-based -- don't necessarily respect the boundary, computationally expensive
-
-
-
-
-This section describes a novel algorithm to find the within-area distances.
+This section describes (what the author believes to be) novel algorithm to find the within-area distances.
 
 Let the domain boundary be some polygon, $\Gamma$. Given that there is no direct path within the domain between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path (ie. an ordered set of edges and vertices), $\mathcal{P}$:
 
@@ -252,6 +247,72 @@ For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the 
 \end{sidewaysfigure}
 
 Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean distance between the points can be used.
+
+
+
+
+
+Some properties of the algorithm:
+
+(Put these in the appendix)
+
+%%%%%%%%% This should be a subsection
+Terminology
+
+The word triangle here is used to refer to the case in which three points, $(v_i,v_{i+1},v_{i+2})$ are vertices of a triangle all the adges of which lie within $\Gamma$. These are the cases in which the DELETE would simplify $(v_i,v_{i+1},v_{i+2})$ to $(v_i,v_{i+2})$.
+
+
+%%%%%%%%% This should be a subsection
+The algorithm terminates
+The condition to be fulfilled for the algorithm to terminate is that in two consecutive runs the path does not change, so the first step is to check that it is possible for this to happen, then to move on to show that it always happens. 
+Since the ALTER step can act as (a less efficient) DELETE step (since $\mathcal{P}_{ID}$ could just be the straight line between two points, the DELETE substep just removing all of the uneeded vertices and $(v_i,v_{i+1},v_{i+2})$ is then replaced with $(v_i,v_{i+2})$), we only need to consider the ALTER step.
+For the algorithm to fail to terminate, the ALTER step would have to create a situation in which one ALTER step would take the path $\mathcal{P_1^*}$ (say) and alter it to be $\mathcal{P_2^*}$ such that the next ALTER step would revert $\mathcal{P_2^*}$ back to $\mathcal{P_1^*}$, these two steps would continue infinitely.
+This cannot happen since in the ALTER step the $\mathcal{P}_{ID}$ must be shorter than $(v_i,v_{i+1},v_{i+2})$, otherwise it is not picked. If the length of $\mathcal{P}_{ID}$ is the same as that of $(v_i,v_{i+1},v_{i+2})$ it is not picked and therefore the total path length after the ALTER step must be either equal or less than the total path length before the ALTER step.
+
+Clearly the algorithm cannot continue shortening the path forever, at some point there will be no more shorter routes proposed by the ALTER step.
+
+
+
+
+
+
+
+The alter step had a DELETE substep (to create $\mathcal{P}_{ID}$), the path inserted by ALTER will not contain any triangles and the previous path will not contain any triangles sicne DELETE has just been run on it. That only leaves triangles in the join between the new and old partial paths. Take $\mathcal{P}_{ID}=(v_i,v_{i+1}^1, v_{i+1}^2,\cdots,v_{i+1}^k,v_{i+2})$, we must check that  $(v_{i-1}, v_i, v_{i+1}^1)$ and $(v_{i+1}^k, v_{i+2}, v_{i+3})$ are not triangles.
+
+
+
+%%%%%%%%% This should be a subsection
+\label{app-unique-sp}
+There is one, unique shortest path:
+This is always the case as long as there are no holes in the polygon.
+This is simple to see since if the shortest path were non-unique then there would exist $\mathcal{P}_1$ and  $\mathcal{P}_2$ which were both shortest paths between $p_1$ and $p_2$, say. It would then be the case there there would be two points $v_1^*$ and $v_2^*$ say where the paths started to differ and ended differing (these could be $p_1$ and $p_2$): the points at which $\mathcal{P}_1$ and  $\mathcal{P}_2$ become disjoint. Call the two paths that lie between $v_1^*$ and $v_2^*$ $\mathcal{S}_{12}$ and $\mathcal{S}_{21}$. 
+
+Joining up $\mathcal{S}_{12}$ and $\mathcal{S}_{21}$ at $v_1^*$ and $v_2^*$ forms a loop, $\mathcal{L}$, say. There is nothing in the middle of $\mathcal{L}$ (since $\Gamma$ has no holes), in which case there must be a kink in at least one of the paths (since they are not identical at least one of them must not be a straight line between $v_1^*$ and $v_2^*$), this means that there is a triangle in (at least) one of the paths, which can be straightened (there is nothing in the middle of the loopi stopping this) so the path is not a shortest path and so can be shortened. This is a contradiction, therefore the shortest path must be unique.
+
+This proof was adapted from the one given in lecture notes by Leonidas Guibas available at \url{http://graphics.stanford.edu/courses/cs268-09-winter/}.
+
+
+%%%%%%%%% This should be a subsection
+The algorithm terminates at the shortest path:
+
+Consider the path following the boundary, $\mathcal{P}_1$ or $\mathcal{P}_2$ above.
+
+Start by noting that there are two kinds of obstacle : ``caves'' and ``mountains''. Caves are concave, the path will trace the boundary along a feature and then re-emerge close to the point at which it left, these features are characterised by the shortest path through them effectively consists of going over the top.
+
+TKTKTK diagram
+
+The shortest path along the cave's walls can always be found in a series of DELETE steps: if the polygon consisting of only the cave is taken a triangulation can always be found (TKTKTK cite), since a triangulation exists, the DELETE step will always be able to remove all of the caves vertices, leaving a path over the top of the cave.
+
+Mountains can be though of inverted caves, in that they are convex features that the path must ``climb''. Mountains may contain embedded caves, however we consider the case in which there are no embedded caves (having assumed that they have been removed by a previous DELETE step), we therefore consider mountains to be strictly convex shapes in the path. To find the shortest path around a convex shape, we only need to find the convex hull around that shape. If the mountain is convex then the path tracing the boundary is already the shortest path. The only thing it remains to consider is the points at which the convex segment joins the rest of the path, these may be shortened by using the DELETE step if necessary.
+
+
+
+%%%%%%%%% This should be a subsection
+The computational complexity of the algorithm.
+
+
+
+
 
 \section{Simulation experiments}
 \label{mdssims}
@@ -509,7 +570,7 @@ The higher MSEs shown in \tabref{wt2resultstable} at lower noise levels might be
 
 \cite{wood2000} shows that given some transform of a variable, $y$ say, such that $y_i^\prime=y_i/k$, then $f(x,y^\prime k)$ will give the same fit as $f(x,y)$ (ie. the fit will be the same under the new coordinates). In this case the penalty will change to:
 \begin{equation}
-\int\int_\Omega \Big( \frac{\partial^2 f}{\partial x^2} \Big)^2 + 2k\Big( \frac{\partial^2 f}{\partial x \partial y} \Big)^2 + k^3\Big( \frac{\partial^2 f}{\partial y^2} \Big)^2 \text{d}x \text{d}y,
+\int\int_\Gamma \Big( \frac{\partial^2 f}{\partial x^2} \Big)^2 + 2k\Big( \frac{\partial^2 f}{\partial x \partial y} \Big)^2 + k^3\Big( \frac{\partial^2 f}{\partial y^2} \Big)^2 \text{d}x \text{d}y,
 \label{adjustedintegral}
 \end{equation}
 from the usual \tprs\ penalty (see \secref{GAMtprspenalty}).
@@ -520,10 +581,10 @@ Such a function should allow the smoothness to be adapted according to the degre
 
 Given that the function $\mathcal{L}^*(x,y)$ is known, the penalty is given as:
 \begin{equation}
-\int\int_\Omega \mathcal{L}^*(x,y) \Big( \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial x \partial y}\Big)^2 + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2\Big) \text{d}x\text{d}y.
+\int\int_\Gamma \mathcal{L}^*(x,y) \Big( \Big(\frac{\partial^2 f(x,y)}{\partial x^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x,y)}{\partial x \partial y}\Big)^2 + \Big(\frac{\partial^2 f(x,y)}{\partial y^2}\Big)^2\Big) \text{d}x\text{d}y.
 \label{kdeadjust}
 \end{equation}
-Note the change of integration domain from $\mathbb{R}^2$ to $\Omega$ (the transformed domain), as well as the pre-multiplication by the density function.
+Note the change of integration domain from $\mathbb{R}^2$ to $\Gamma$ (the transformed domain), as well as the pre-multiplication by the density function.
 
 \subsection{Penalty adjustments in one dimension}
 
@@ -593,7 +654,7 @@ In this example $\mathcal{L}^*(x)$ was simply calculated using the inverse of th
 
 Using a similar procedures as for one dimension, the two dimensional case can be addressed. Again looking at the $ij^\text{th}$ element of $S$, for the two dimensional case we have:
 \begin{equation}
-S_{ij}=\int\int_\Omega \mathcal{L}^*(x,y) \Big( \frac{\partial^2 b_i(x,y)}{\partial x^2}\frac{\partial^2 b_j(x,y)}{\partial x^2}+2\frac{\partial^2 b_i(x,y)}{\partial x \partial y}\frac{\partial^2 b_j(x,y)}{\partial x \partial y}+\frac{\partial^2 b_i(x,y)}{\partial y^2}\frac{\partial^2 b_j(x,y)}{\partial y^2} \Big) \text{d}x\text{d}y.
+S_{ij}=\int\int_\Gamma \mathcal{L}^*(x,y) \Big( \frac{\partial^2 b_i(x,y)}{\partial x^2}\frac{\partial^2 b_j(x,y)}{\partial x^2}+2\frac{\partial^2 b_i(x,y)}{\partial x \partial y}\frac{\partial^2 b_j(x,y)}{\partial x \partial y}+\frac{\partial^2 b_i(x,y)}{\partial y^2}\frac{\partial^2 b_j(x,y)}{\partial y^2} \Big) \text{d}x\text{d}y.
 \end{equation}
 Matrices analogous to \eqn{oneDD} can be constructed using the finite differences from \eqn{bfinitediff} for differentials $x$ and $y$ individually and
 \be
