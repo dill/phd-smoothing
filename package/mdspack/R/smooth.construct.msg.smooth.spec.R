@@ -1,58 +1,105 @@
-# thin plate spline with squash
-# taken from smooth.r in mgcv
+smooth.construct.msg.smooth.spec<-function(object,data,knots){
 
-# 2D version!
+   # this is the msg smooth.spec file
+   # this does most of the work
 
-## The constructor for a tprs basis object with MDS modifications.
-smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
+   # for now TODO:
+   #  just get spatial smoothing working
+   #     do the clever stuff with previous objects as in gam.mds.R
+   # THEN:
+   #  if no bnd supplied do the general thing
+   #  also do the s(.) thing
+   
+
+
+   # extract the boundary
+   bnd<-object$xt$bnd
+
+   if(!is.null(old.obj)){
+      # object to store all the results for later
+      new.obj<-old.obj
+
+      # pull out the grid D matrix
+      D.grid<-old.obj$D
+      my.grid<-old.obj$grid
+
+      # also the pred and sample D matrices if
+      # they are there
+      if(!is.null(old.obj$D.samp)){
+         D.samp<-old.obj$D.samp
+      }else{
+         D.samp<-NULL
+      }
+      if(!is.null(old.obj$D.pred)){
+         D.pred<-old.obj$D.pred
+      }else{
+         D.pred<-NULL
+      }
+
+      if(!is.null(old.obj$m)){
+         m<-old.obj$m
+      }
+      if(!is.null(old.obj$bs)){
+         bs<-old.obj$bs
+      }
+      if(!is.null(old.obj$k)){
+         k<-old.obj$k
+      }
+
+      if(!is.null(old.obj$mds.dim)){
+         mds.dim<-old.obj$mds.dim
+      }
+
+   }else{
+      # object to store all the results for later
+      new.obj<-list()
+
+      # create the grid
+      #grid.obj<-calc.grid(bnd,grid.res)
+      grid.obj<-create_refgrid(bnd,grid.res)
+      D.grid<-create_distance_matrix(grid.obj$x,grid.obj$y,bnd)
+      grid.obj<-list(D=D.grid,grid=list(x=grid.obj$x,y=grid.obj$y))
+
+      D.grid<-grid.obj$D
+      my.grid<-grid.obj$grid
+      # store!
+      new.obj$D<-D.grid
+      new.obj$grid<-my.grid
+
+      D.samp<-NULL
+      D.pred<-NULL
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    if(length(names(data))!=2){
-      cat("mdstp can only be used with 2D smooths!\n")
+      cat("msg can only be used with 2D smooths!\n")
       return(1)
    }
 
-   # set true to create thesis diagram
-   # REMOVE in production version :)
-   dia.densmap<-FALSE
-   dia.densmap<-TRUE
-
-   #first do the MDS stuff
-   # NOT TESTED YET!!
-   # set up some objects and throw some errors if we need to
-
-#   if(object$xt$bnd){
-#      bnd<-object$xt$bnd
-#   }else{
-#      stop("No boundary supplied!\n")
-#   }
-#
-#   if(is.na(object$xt$refgrid.n){
-#      refgridsize<-120
-#   }else{
-#      refgridsize<-object$xt$refgrid.n
-#   }
-#
-#   if(object$xt$faster){
-#      faster<-object$xt$faster
-#   }else{
-#      faster<-1
-#   }
-#
-#   # create the grid
-#   my.grid<-create_refgrid(bnd,120)
-#   
-#   ## do the MDS on the grid 
-#   # create D
-#   D.grid<-create_distance_matrix(my.grid$x,my.grid$y,bnd,faster)
-#   
-#   # perform mds on D
-#   grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
-#   
-#   # sample points insertion
-#   datanames<-names(data)
-#   names(data)<-c("x","y")
-#   samp.mds<-insert.mds(data,my.grid,grid.mds,bnd,faster)
-#   names(data)<-datanames
 
    # make the tprs object as usual
    object<-smooth.construct.tp.smooth.spec(object,data,knots)
@@ -66,33 +113,8 @@ smooth.construct.mdstp.smooth.spec<-function(object,data,knots){
 
    N<-100
 
-   ### first need to create the mesh we want to integrate over
-   # mesh function
-   mesh <- function(x,d,w=1/length(x)+x*0) { 
-      n <- length(x) 
-      W <- X <- matrix(0,n^d,d) 
-      for (i in 1:d) {
-         X[,i] <- x;W[,i] <- w
-         x<- rep(x,rep(n,length(x))) 
-         w <- rep(w,rep(n,length(w)))
-      } 
-      w <- exp(rowSums(log(W))) ## column product of W gives weights 
-      list(X=X,w=w) ## each row of X gives co-ordinates of a node
-   }
-
-   # take the boundary
-   # map it into the space
-   bnd<-object$xt$bnd
    int.bnd<-bnd
 
-   # interpolate the boundary
-   # weird things happen here
-   #xb<-matrix(c(bnd$x,bnd$x[c(2:length(bnd$x),1)]),length(bnd$x),2)[-length(bnd$x),] 
-   #xb<-xb[-dim(xb),]
-   #yb<-matrix(c(bnd$y,bnd$y[c(2:length(bnd$y),1)]),length(bnd$y),2)[-length(bnd$y),] 
-   #yb<-yb[-dim(yb),]
-   #int.bnd<-list(x=vecseq(xb,10),
-   #              y=vecseq(yb,10))
 
    bnd.mds<-insert.mds(int.bnd,object$xt$op,object$xt$mds.obj,bnd,faster=0)#,debug=1)
    bnd.mds<-data.frame(x=bnd.mds[,1],y=bnd.mds[,2])

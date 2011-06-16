@@ -209,13 +209,14 @@ In conclusion, the mapping can be both reliable and also produces a smooth confi
 
 \section{Finding the within-area distances}
 \label{mdsdist}
+
+So far we have assumed that the matrix of distances $D$ is known, this section describes (what the author believes to be) novel algorithm to find the within-area distances.
+
 In order to perform multidimensional scaling the matrix of distances must be found. Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled by the objects residing in the domain of interest.
 
 Note that we are only considering paths between point pairs in simple polygons (ie. those polygons without holes). Domains with holes cannot be addressed using MDS since the MDS projection of the points would require a tear at some point which would lead to discontinuities. Although this is a limits the types of domains that can be addressed it does make the shortest path algorithm simpler since the shortest path is unique (see \secref{app-unique-sp}).
 
 There are several methods available to calculate within-area distances, however given that the domain of interest is any arbitrary polygon (provided that there are no holes in the polygon) this limits the number of applicable. The two most promising possibilities were the geodesic methods used by \cite{wangranalli} (see also \secref{intro-leakageapproaches}) and the $\text{A}^*$ algorithm (TKTKTK cite) which is a generalisation of Djkstra's algorithm (TKTKTK cite). However, both of these algorithms rely on the discretization of the domain of interest. As stated in \secref{intro-leakageapproaches}, this discretization of the domain is undesirable since the results then become dependent on the resolution of the discretization of the domain, even if a high enough resolution can be used the computational cost becomes prohibitively expensive for such methods. It would be preferable to have an elementary (ie. not relying on complex structures or theory) algorithm for finding the shortest path within the polygon.
-
-This section describes (what the author believes to be) novel algorithm to find the within-area distances.
 
 Let the domain boundary be some polygon, $\Gamma$. Given that there is no direct path within the domain between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path (ie. an ordered set of edges and vertices), $\mathcal{P}$:
 
@@ -228,11 +229,11 @@ In \fig{wdia}, ($iii$), $\mathcal{P}_1$ is marked in green and is chosen to form
 
 For example in \fig{wdia} ($iii$), $v_2$ is deleted from $\mathcal{P}$ because the path straight between $v_1$ and $v_3$ is shorter, and within $\Gamma$.
 
-\item (ALTER) Given a triple of vertices $(v_i, v_{i+1}, v_{i+2}) \in \mathcal{P}$, if the path $\mathcal{P}_{ID}$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ then replace $(v_i, v_{i+1}, v_{i+2})$ with $\mathcal{P}_{ID}$ (\fig{wdia}, ($v$)). The candidate replacement path, $\mathcal{P}_{ID}$, is calculated by running INIT with $p_1$ and $p_2$ replaced by $v_i$ and $v_{i+2}$, producing $\mathcal{P}_I$, and then using DELETE on $\mathcal{P}_I$ to remove superfluous vertices, giving $\mathcal{P}_{ID}$.
+\item (ALTER) Given a triple of vertices $(v_i, v_{i+1}, v_{i+2}) \in \mathcal{P}$, if the candidate replacement path $\mathcal{P}_{ID}$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ then replace $(v_i, v_{i+1}, v_{i+2})$ with $\mathcal{P}_{ID}$ (\fig{wdia}, ($v$)). The candidate replacement path, $\mathcal{P}_{ID}$, is calculated by running INIT with $p_1$ and $p_2$ replaced by $v_i$ and $v_{i+2}$, producing $\mathcal{P}_I$, and then using DELETE on $\mathcal{P}_I$ to remove superfluous vertices, giving $\mathcal{P}_{ID}$.
 
 For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the path $\mathcal{P}_{ID}=(v_1, v^1_2, v_3)$ (green dashed line in ($iv$)) so the former is replaced with the latter in $\mathcal{P}$. The path created by INIT is marked as $\mathcal{P}_{I}$ in  ($iv$) in red.
 
-\item (ITER) We then iterate further DELETE and ALTER steps until there has been no change in $\mathcal{P}$ from one run to the next (ie. convergence) (\fig{wdia}, ($vi$)).
+\item (ITER) We then iterate further DELETE and ALTER steps (in pairs) until there has been no change in $\mathcal{P}$ from one run to the next (ie. convergence) (\fig{wdia}, ($vi$)).
 \end{enumerate}
 
 % diagram for finding the shortest path in W
@@ -248,70 +249,12 @@ For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the 
 
 Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean distance between the points can be used.
 
-
-
-
-
-Some properties of the algorithm:
-
-(Put these in the appendix)
-
-%%%%%%%%% This should be a subsection
-Terminology
-
-The word triangle here is used to refer to the case in which three points, $(v_i,v_{i+1},v_{i+2})$ are vertices of a triangle all the adges of which lie within $\Gamma$. These are the cases in which the DELETE would simplify $(v_i,v_{i+1},v_{i+2})$ to $(v_i,v_{i+2})$.
-
-
-%%%%%%%%% This should be a subsection
-The algorithm terminates
-The condition to be fulfilled for the algorithm to terminate is that in two consecutive runs the path does not change, so the first step is to check that it is possible for this to happen, then to move on to show that it always happens. 
-Since the ALTER step can act as (a less efficient) DELETE step (since $\mathcal{P}_{ID}$ could just be the straight line between two points, the DELETE substep just removing all of the uneeded vertices and $(v_i,v_{i+1},v_{i+2})$ is then replaced with $(v_i,v_{i+2})$), we only need to consider the ALTER step.
-For the algorithm to fail to terminate, the ALTER step would have to create a situation in which one ALTER step would take the path $\mathcal{P_1^*}$ (say) and alter it to be $\mathcal{P_2}^*$ such that the next ALTER step would revert $\mathcal{P_2}^*$ back to $\mathcal{P_1}^*$, these two steps would continue infinitely.
-If this were to happen it would imply that both $\mathcal{P_2}^*$ was shorter than $\mathcal{P_1}^*$ and $\mathcal{P_1}^*$ was shorter than $\mathcal{P_2}^*$ and since in the ALTER step the $\mathcal{P}_{ID}$ must be shorter than $(v_i,v_{i+1},v_{i+2})$ (not equal in length) then this cannot happen.
-Clearly the algorithm cannot continue shortening the path forever, at some point there will be no more shorter routes proposed by the ALTER step and hence it will terminate.
-
-
-
-
-%%%%%%%%% This should be a subsection
-\label{app-unique-sp}
-There is one, unique shortest path:
-This is always the case as long as there are no holes in the polygon.
-This is simple to see since if the shortest path were non-unique then there would exist $\mathcal{P}_1$ and  $\mathcal{P}_2$ which were both shortest paths between $p_1$ and $p_2$, say. It would then be the case there there would be two points $v_1^*$ and $v_2^*$ say where the paths started to differ and ended differing (these could be $p_1$ and $p_2$): the points at which $\mathcal{P}_1$ and  $\mathcal{P}_2$ become disjoint. Call the two paths that lie between $v_1^*$ and $v_2^*$ $\mathcal{S}_{12}$ and $\mathcal{S}_{21}$. 
-
-Joining up $\mathcal{S}_{12}$ and $\mathcal{S}_{21}$ at $v_1^*$ and $v_2^*$ forms a loop, $\mathcal{L}$, say. There is nothing in the middle of $\mathcal{L}$ (since $\Gamma$ has no holes), in which case there must be a kink in at least one of the paths (since they are not identical at least one of them must not be a straight line between $v_1^*$ and $v_2^*$), this means that there is a triangle in (at least) one of the paths, which can be straightened (there is nothing in the middle of the loopi stopping this) so the path is not a shortest path and so can be shortened. This is a contradiction, therefore the shortest path must be unique.
-
-This proof was adapted from the one given in lecture notes by Leonidas Guibas available at \url{http://graphics.stanford.edu/courses/cs268-09-winter/}.
-
-
-%%%%%%%%% This should be a subsection
-The algorithm terminates at the shortest path:
-
-Consider the path following the boundary, $\mathcal{P}_1$ or $\mathcal{P}_2$ above.
-
-Start by noting that there are two kinds of obstacle : ``caves'' and ``mountains''. Caves are concave, the path will trace the boundary along a feature and then re-emerge close to the point at which it left, these features are characterised by the shortest path through them effectively consists of going over the top.
-
-TKTKTK diagram
-
-The shortest path along the cave's walls can always be found in a series of DELETE steps: if the polygon consisting of only the cave is taken a triangulation can always be found (TKTKTK cite), since a triangulation exists, the DELETE step will always be able to remove all of the caves vertices, leaving a path over the top of the cave.
-
-Mountains can be though of inverted caves, in that they are convex features that the path must ``climb''. Mountains may contain embedded caves, however we consider the case in which there are no embedded caves (having assumed that they have been removed from the by a previous DELETE step), we therefore consider mountains to be strictly convex shapes in the path. To find the shortest path around a convex shape, we only need to find the convex hull around that shape. If the mountain is convex then the path tracing the boundary is already the shortest path. The only thing it remains to consider is the points at which the convex segment joins the rest of the path, these may be shortened by using the DELETE step if necessary.
-
-Given that the initial path many consist of only these two elements and that they are removed by the consecutive steps of DELETE and ALTER (obviously there may need to be micro steps of these within each step due to the aforementioned embeddding of caves-within-mountains and mountains-within-caves) we can conclude that the path is the shortest path.
-
-CAN WE?!?!?!?!?!
-
-%%%%%%%%% This should be a subsection
-The computational complexity of the algorithm.
-
-
-
-
+Further theoretical properties of this algorithm can be found in \appref{app-WAD}.
 
 \section{Simulation experiments}
 \label{mdssims}
 
-In order to investigate the efficacy of \mdsap, a series of simulation experiments were performed. In all cases the results for \mdsap\ were compared to those of the current best method (the soap film smoother) and the standard approach of a {\tprs\} was used (which will not account for leakage).
+In order to investigate the efficacy of \mdsap, a series of simulation experiments were performed. In all cases the results for \mdsap\ were compared to those of the current best method (the soap film smoother) and the standard approach of a \tprs\ was used (which will not account for leakage).
 
 The \textsf{R} packages \texttt{mgcv} and \texttt{soap} with additional bespoke software for finding the within-area distances were used. In all cases smoothing parameter estimation was performed using GCV (see \secref{GAMGCV}).
 
@@ -557,7 +500,7 @@ Prediction & 155.4004 & 53.5105 & 29.3946 & 0.1249\\
 \end{table}
 
 
-\section{Penalty adjustments}
+\section{Using penalty adjustments to correct for squashing}
 \label{mds-penadjust}
 
 The higher MSEs shown in \tabref{wt2resultstable} at lower noise levels might be explained by the change in density of points in the domain after it has been transformed into MDS space and the way in this changes the measure of smoothness. In this case it makes sense to adjust the penalty in order to take into account the change in point density in MDS space.
