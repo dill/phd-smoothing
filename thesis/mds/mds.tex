@@ -878,7 +878,9 @@ The simulations show that when using \mdsap\ there is no big advantage of using 
 
 An explanation for why the penalty adjustment doesn't offer much improvement can be found by investigating the good performance of the 3-D projection model. 
 
-Looking at the plots of the prediction points in MDS space for the peninsulae domain (\fig{wt2-2d-proj} and \fig{wt2-3d-proj}) it is easy to see that in two dimensions, the first peninsula has been squashed to a line. This is a result of the truncation performed to $\tilde{X}^*$ in the MDS procedure (see \secref{MDStechdet}); when we look at the 3-D projection, the peninsula clearly has width, just when projected into two dimensions. The adjusted penalty attempts to account for this squashing by allowing a more flexible model to be fit in that area. However, what is not taken into account is that some of the points in the peninsula are projected on top of (or on the wrong side of) one another. In other words, the 2-D MDS projection makes the points lose their ordering. 
+Looking at the plots of the prediction points in MDS space for the peninsulae domain (\fig{wt2-2d-proj} and \fig{wt2-3d-proj}) it is easy to see that in two dimensions, the first peninsula has been squashed to a line. 
+
+By truncating $\tilde{X}^*$ in the MDS procedure (\secref{MDStechdet}) the information in $D$ relating to thhe width of the peninsula has been lost. Projecting into higher dimensions reduces the truncation (smaller eigenvalues of $D$ and their corresponding eigenvectors are use to construct $\tilde{X}^*$) and as such more information about the relative positions of the points is introduced (this can be seen for the peninsula domain in \fig{wt2-3d-proj}). The adjusted penalty attempts to account for this squashing by allowing a more flexible model to be fit in that area. However, what is not taken into account is that some of the points in the peninsula are projected on top of (or on the wrong side of) one another. In other words, the 2-D MDS projection makes the points lose their ordering. 
 
 As a simple, unidimensional example, take three points, $a, b, \text{and}\ c$ in the top line of \fig{linedia}. The projection could squash them in the way shown on the second line, in this case the penalty adjustments as described in \cite{wood2000} could be used to correct the model. However, with MDS the situation shown in the bottom line of \fig{linedia} (changing the order of $a, b, \text{and}\ c$) can occur. This phenomena is also mentioned in \cite{elements}, pp. 572--573.
 
@@ -898,6 +900,9 @@ In the MDS projection we can see this happening in the peninsula described above
 
 \subsection{Why moving to higher dimensions is not the solution}
 \label{nohigherdim}
+
+TKTKTK rewrite all of this!!!
+
 
 In the two cases above, moving into three dimensions allowed \mdsap\ to more accurately reproduce the true function. Counteracting the phenomenon above (where the ordering of the points is lost), the extra dimension allows us to see the ``width'' of parts of the domain that we take a side view of in the 2-D projection.
 
