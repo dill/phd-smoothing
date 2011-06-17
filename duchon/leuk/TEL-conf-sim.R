@@ -29,7 +29,7 @@ TEL.cols<-as.integer(TEL.cols)
 total.cols<-1:ncol(leuk)
 total.cols<-total.cols[-TEL.cols]
 
-selected.cols<-c(TEL.cols,sample(total.cols,500))
+selected.cols<-c(TEL.cols,sample(total.cols,100))
 
 leuk<-leuk[,selected.cols]
 
@@ -129,7 +129,7 @@ for(i in 1:n.sims){
 
          if(class(cvmin.lasso)!="try-error"){
 
-            b.lasso<-glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min,family="binomial")
+            b.lasso<-try(glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min,family="binomial"))
 
             if(class(b.lasso)!="try-error"){
                # predict the classes for the rest of the data
