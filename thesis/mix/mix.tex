@@ -293,7 +293,7 @@ Four classes of models were tested, giving a range of easy and hard problems ove
 \end{itemize}
 In order to assess how well the models performed, two metrics were used. The first metric is parameter estimates returned from the optimisation procedure -- this should highlight that the optimisation is working numerically and can successfully recover the parameters. The second metric is the abundance estimate ($\hat{N}$). The latter measure may be important as changes in the parameters may give (approximately) equal values of $\hat{N}$, since the parameter estimates are not usually of interest (the ultimate output being the abundance or density estimate in a distance sampling analysis), it makes sense to look at $\hat{N}$.
 
-For each set of parameters for each of the model classes, 500 realisations were generated at each of 5 sample sizes (30, 60, 120, 480, 960). Samples were drawn, according to their proportions from the appropriate half-normal distributions using the \texttt{rtnorm()} function in the \texttt{msm} package in \textsf{R}. Where the proportions did not provide integer divisions of the sample sizes residual sampling (TKTKTK cite Baker 1985) was used. The truncation distance in each case was set to 1 in all cases and the parameters selected such that $g(1)\approx 0.15$.
+For each set of parameters for each of the model classes, 500 realisations were generated at each of 5 sample sizes (30, 60, 120, 480, 960). Samples were drawn, according to their proportions from the appropriate half-normal distributions using the \texttt{rtnorm()} function in the \texttt{msm} package in \textsf{R}. Where the proportions did not provide integer divisions of the sample sizes residual sampling (TKTKTK cite Baker 1985) was used. The truncation distance in each case was set to 1 in all cases and the parameters selected such that $g(1)\approx 0.15$. The data generation process is given in detail in each section.
 
 \subsubsection{Non-covariate 2-point mixtures for line transect data}
 
@@ -320,14 +320,14 @@ The first three simulations give relatively simple scenarios with the same scale
 % detection functions for nocov
 \begin{figure}
 \centering
-\includegraphics[width=6in]{mix/figs/nocovsims.pdf}
+\includegraphics[width=6in]{mix/figs/nocov-detfcts.pdf}
 \caption{Detection functions used for the non-covariate 2-point mixture simulations for line transects.}
 \label{mmds-nocov-funcs}
 \end{figure}
 
 The data was generated using the following procedure:
 \begin{enumerate}
-	\item For a set sample size $n$, calculate the size of samples from each part of the mixture, $n_j = n \pi_j$ for $j=1\cdots,J$.
+	\item For a set sample size $n$, calculate the size of samples from each part of the mixture, $n_j = n \pi_j$ for $j=1\cdots,J$i (here $J=2$).
 	\item Calculate the remainder of the samples $r = n-\sum_j n_j $ (if $r>0$) and use residual sampling to calculate the allocation of the remaining $r$ samples:
 	\begin{enumerate}
 		\item Calculate the residual probabilities $\pi_j^\dagger = \pi_j - n_j/n$ for $j=1,\cdots,J$.
@@ -363,16 +363,33 @@ Figure \ref{mmds-nocov-N-boxplots} also shows a reduction in variability and con
 
 \subsubsection{Non-covariate 3-point mixtures for line transect data}
 
-Two scenarios were used to test 3-point mixtures. The parameters are given in table [PAR TABLE] and the corresponding detection functions are given in figure [DETFCT FIG]. Data was generated from these models in the same manner as above and both 3-point and 2-point mixture models were fit. It is possible that 2-point mixtures may be flexible enough in most situations that 3-point mixtures are not necessary. Simulating data from a model that truly a 3-point mixture and fitting a 2-point mixture to it should highlight if this is the case.
+Two scenarios were used to test 3-point mixtures. The parameters are given in table [PAR TABLE] and the corresponding detection functions are given in figure [DETFCT FIG]. Data was generated using the same process as for the 2-point mixtures but with $J$ set to $3$.
+
+As well as fitting 3-point mixture models to the data, 2-point models were also fit. This was to investigate the flexibility 2-point mixtures.
 
 
-TKTKTK [[ PAR TABLE HERE]]
+% Table of parameters
+\begin{table}[ht]
+\centering
+\begin{tabular}{c c c c c}
+Sim no. & $\beta_{10}$ & $\beta_{20}$ & $\beta_1$ & $\pi_1$\\
+\hline
+\hline
+1 & -0.22 & -0.69 & -2.30 & 1/3 & 1/3 \\ 
+2 &  2.71 & -1.39 & -3 & 0.1 & 0.4 \\
+\end{tabular}
+\label{mmds-3pt-simtable}
+\caption{}
+\end{table}
 
-TKTKTK [[DETFCT FIG HERE]]
+% detection functions for 3point
+\begin{figure}
+\centering
+\includegraphics[width=6in]{mix/figs/3pt-detfcts.pdf}
+\caption{Detection functions used for the non-covariate 3-point mixture simulations for line transects.}
+\label{mmds-3pt-funcs}
+\end{figure}
 
-TKTKTK [[ looks like the 3rd par is really big. Is this because it wants to fit a 2-point mixture instead? ]]
-
-TKTKTK [[ does very badly on the sigma=15 par, this par has pi=0.1, so do the pis matter more than the sigmas? --- maybe, this is what seems to be indicated in 2 point case, but need to look into it more]]
 
 
 
@@ -388,7 +405,7 @@ In one model $z_{i1}$ was a dichotomous factor variable and in the other $z_{i1}
 
 The data generation process was similar to that of the non-covariate line transect models:
 \begin{enumerate}
-   \item Generate a set of covariate values $z_{ik}$ for $i=1,\cdots,n, k=1,\cdots,K$.
+   \item Generate a set of covariate values $z_{ik}$ for $i=1,\cdots,n$ and $k=1,\cdots,K$ (here $K=1$). 
 	\item For a set sample size $n$, generate a set of $n$ multinomial random deviates, with probabilities $\pi_j$ for $j=1,\ldots J$. These are the mixture parts that the observations will belong to.
    \item Calculate the parameter for each of the observations using the formula in (\ref{mmds-test-covar-formula}), the mixture-appropriate parameters and the corresponding covariate values.
 	\item Generate $n$ deviates from a truncated normal distribution, with the corresponding $\sigma_j(z_{ik})$ as it's scale parameter and mean zero.
@@ -396,7 +413,21 @@ The data generation process was similar to that of the non-covariate line transe
 \end{enumerate}
 
 
-Table of parameters
+% Table of parameters
+\begin{table}[ht]
+\centering
+\begin{tabular}{c c c c c}
+Sim no. & $\beta_{10}$ & $\beta_{20}$ & $\beta_1$ & $\pi_1$\\
+\hline
+\hline
+1 & -2.30 &  0.69 &  1.1  & 0.4 \\
+2 & -1.61 & -0.22 & -0.92 & 0.4 \\
+\end{tabular}
+\label{mmds-cov-simtable}
+\caption{}
+\end{table}
+
+
 
 Plots of parameters
 
