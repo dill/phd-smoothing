@@ -15,6 +15,15 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
    # extract the boundary
    bnd<-object$xt$bnd
 
+   grid.res<-object$xt$mds.grid.res
+   if(is.null(grid.res)){
+      # pick a grid size...
+   }
+
+   # if there was an old object in the extra stuff, use it
+   #old.obj<-object$xt$old.obj
+   old.obj<-NULL
+
    if(!is.null(old.obj)){
       # object to store all the results for later
       new.obj<-old.obj
@@ -55,7 +64,6 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
       new.obj<-list()
 
       # create the grid
-      #grid.obj<-calc.grid(bnd,grid.res)
       grid.obj<-create_refgrid(bnd,grid.res)
       D.grid<-create_distance_matrix(grid.obj$x,grid.obj$y,bnd)
       grid.obj<-list(D=D.grid,grid=list(x=grid.obj$x,y=grid.obj$y))
