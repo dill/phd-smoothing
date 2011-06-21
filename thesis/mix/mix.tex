@@ -289,7 +289,12 @@ Four classes of models were tested, giving a range of easy and hard problems ove
 	\item Non-covariate 3-point mixtures for line transect data.
 	\item Covariate mixtures for line transect data.
 \end{itemize}
-In order to assess how well the models performed, two metrics were used. The first metric is parameter estimates returned from the optimisation procedure -- this should highlight that the optimisation is working numerically and can successfully recover the parameters. The second metric is the abundance estimate ($\hat{N}$). The latter measure may be important as changes in the parameters may give (approximately) equal values of $\hat{N}$, since the parameter estimates are not usually of interest (the ultimate output being the abundance or density estimate in a distance sampling analysis), it makes sense to look at $\hat{N}$.
+In order to assess how well the models performed, two metrics were used. The first metric is parameter estimates returned from the optimisation procedure -- this should highlight that the optimisation is working numerically and can successfully recover the parameters. The second metric is the abundance estimate ($\hat{N}$). The latter measure may be important as changes in the parameters may give (approximately) equal values of $\hat{N}$, since the parameter estimates are not usually of interest (the ultimate output being the abundance or density estimate in a distance sampling analysis), it makes sense to look at $\hat{N}$. In particular we look at:
+\begin{itemize}
+   \item Boxplots of the difference between true and estimated parameters. This allows the zero line to be used to see how close a parmeter is to its true value.
+   \item Boxplots of difference between true and estimated abundance rescaled by true abundance (ie. $(N-\hat{N})/N$). True abundance is not fixed across sample sizes, so if the differences between $N$ and $\hat{N}$ are not rescaled it is not easy to gauge if the estimates are getting better with increasing information.
+   \item Tables of relative percentage bias in $\hat{N}$ (ie. $(N-\mathbb{E}[\hat{N}])/N \cross 100$). Percentage bias in the estimated abundance allows us to compare the bias at different sample sizes (and hence different true $N$s). 
+\end{itemize}
 
 For each set of parameters for each of the model classes, 500 realisations were generated at each of 5 sample sizes (30, 60, 120, 480, 960). The data generation process is given in detail in each section.
 
@@ -300,7 +305,7 @@ Five parameter combinations were used to test non-covariate 2-point mixtures the
 \begin{table}[ht]
 \centering
 \begin{tabular}{c c c c}
-Sim no. & $\sigma_1$ & $\sigma_2$ & $\pi_1$\\
+Scenario & $\sigma_1$ & $\sigma_2$ & $\pi_1$\\
 \hline
 \hline
 1 & 0.2 & 0.8 &  0.36\\
@@ -313,7 +318,7 @@ Sim no. & $\sigma_1$ & $\sigma_2$ & $\pi_1$\\
 \caption{Simulation parameters for the non-covariate simulations. (In $\sigma$ and $\pi$ parametrisation).}
 \end{table}
 
-The first three simulations give relatively simple scenarios with the same scale parameters but varying the mixture proportions, these check behaviour under ``easy'' conditions. The fourth checks to see what happens when one of the mixtures is essentially too big to be identified (it starts to decrease after the truncation distance so the parameter value could be 10, 100 or even 1000). Finally the fifth example gives and extremely spiked detection function.
+The first three simulations give relatively simple scenarios with the same scale parameters but varying the mixture proportions, these check behaviour under ``easy'' conditions. The fourth checks to see what happens when one of the mixtures is essentially too big to be identified (the function starts to decrease after the truncation distance, so the parameter value could be 10, 100 or even 1000). Finally the fifth example gives and extremely spiked detection function.
 
 % detection functions for nocov
 \begin{figure}
@@ -325,19 +330,13 @@ The first three simulations give relatively simple scenarios with the same scale
 
 The data was generated using the following procedure:
 \begin{enumerate}
-	\item For a set sample size $n$, calculate the size of samples from each part of the mixture, $n_j = n \pi_j$ for $j=1\cdots,J$i (here $J=2$).
-	\item Calculate the remainder of the samples $r = n-\sum_j n_j $ (if $r>0$) and use residual (or remainder) resampling (\cite{baker1985}) to calculate the allocation of the remaining $r$ samples:
-	\begin{enumerate}
-		\item Calculate the residual probabilities $\pi_j^\dagger = \pi_j - n_j/n$ for $j=1,\cdots,J$.
-		\item Generate $r$ multinomial deviates with probabilities $\pi_j^\dagger$.
-		\item Add these to the $n_j$s as appropriate.
-	\end{enumerate}
+	\item For a set sample size $n$, generate a set of $n$ multinomial random deviates, with probabilities $\pi_j$ for $j=1,\ldots, J$ (here $J=2$). These are the mixture parts that the observations will be generated from.
 	\item Generate $n_j$ deviates from a truncated normal distribution (truncation set to $w$, which is $1$ here), with the corresponding $\sigma_j$ as it's scale parameter and mean zero.
 	\item Calculate the true abundance via the Horvitz-Thompson-like estimator $N=n/p$.
 \end{enumerate}
 Note that we do not have to generate from a half-normal distribution, since we can simply take the absolute value of the truncated normal deviates. This is implemented in \texttt{sim.mix.nocov()} function in \texttt{mmds}.
 
-Figure \ref{mmds-nocov-boxplots} shows boxplots of the differences parameter estimates  and the true parameters on the $\beta$ and $\alpha$ scale (the columns of the plot). Each row corresponds to one of the scenarios in table \ref{mmds-nocov-simtable} and the colour indicates the optimisation method used. Overall we can see a nice pattern of decreasing variability and convergence towards zero as the sample size increases.
+Figure \ref{mmds-nocov-boxplots} shows boxplots of the differences parameter estimates and the true parameters on the $\beta$ and $\alpha$ scale (the columns of the plot). Each row corresponds to one of the scenarios in table \ref{mmds-nocov-simtable} and the colour indicates the optimisation method used. Overall we can see a nice pattern of decreasing variability and convergence towards zero as the sample size increases. The only real issue is that, as was expected, the larger parameter in scenario 4 proved difficult to identify. Finally, note that the EM algorithm does not appear to be performing as well as BFGS+SANN in terms of both bias and variability.
 
 % big boxplots of par estimates
 \begin{figure}[hp]
@@ -348,46 +347,43 @@ Figure \ref{mmds-nocov-boxplots} shows boxplots of the differences parameter est
 \end{figure}
 % generated by mmds/paper/papersims/nocov/analyse.R
 
-Figure \ref{mmds-nocov-N-boxplots} also shows a reduction in variability and convergence toward zero as sample size increases. In these plots the differences between estimated and true abundance are rescaled by the true abundance since at larger sample sizes the true population is larger and they must be adjusted (see the final step in the data generation procedure, above). Table \ref{mmds-nocov-N-boxplots} shows the bias in the estimates of abundance. 
+Figure \ref{mmds-nocov-N-boxplots} shows the differences between estimated and true abundance rescaled by the true abundance since at larger sample sizes the true population is larger and they must be adjusted (see the final step in the data generation procedure, above). Again, there is a decrease in variability as sample size increases, table \ref{mmds-nocov-N-table} shows the percent relative bias in the estimates of abundance reflects this too. Note again that the EM algorithm appears more biased than BFGS+SANN, especially at larger sample sizes. TKTKTK WHY?! As in the parmeter estimates, we can see that scenario 4 also causes a problem for estimating $\hat{N}$.
+
+An additional simulation was run on scenario 4 to test if a 1-point mixture would give a better fit
 
 % boxplots of N
 \begin{figure}
 \centering
 \includegraphics[width=6in]{mix/figs/nocov-N.pdf}
-\caption{Boxplots of the difference between estimated abundance and true abundance divided by true abundance for each of the non-covariate line transect simulations with colour-coded fitting method. Division by the true abundance rescales to take into account at larger sample sizes the true population size is larger.}
+\caption{Boxplots of the difference between estimated abundance and true abundance divided by true abundance for each of the non-covariate line transect simulations with colour-coded fitting method, each column gives the results for one scenario (1--5). Division by the true abundance rescales to take into account at larger sample sizes the true population size is larger.}
 \label{mmds-nocov-N-boxplots}
 \end{figure}
 % generated by mmds/paper/papersims/nocov/N-analyse.R
 
-%\begin{sidewaystable}[ht]
 \begin{table}[ht]
 \begin{tabular}{c || c c | c c | c c | c c | c c}\\
 Sample size & \multicolumn{2}{c |}{30} & \multicolumn{2}{c |}{60} & \multicolumn{2}{c |}{120} & \multicolumn{2}{c |}{480} & \multicolumn{2}{c}{960}\\ 
-%Simulation & BFGS+SANN & EM & BFGS+SANN & EM & BFGS+SANN & EM & BFGS+SANN & EM & BFGS+SANN & EM\\
 & BFGS &  & BFGS &  & BFGS &  & BFGS &  & BFGS & \\
-Simulation & +SANN & EM & +SANN & EM & +SANN & EM & +SANN & EM & +SANN & EM\\
+Scenario & +SANN & EM & +SANN & EM & +SANN & EM & +SANN & EM & +SANN & EM\\
 \hline
 \hline
-1 & -2.02  & -2.055  & -1.539  & -1.483  & -0.984  & -1.172  & 3.989  & 6.377  & 2.647  & 2.501\\
-2 & -2.777  & -3.595  & -3.627  & -5.941  & -1.304  & -5.884  & 2.334  & -11.115  & -0.249  & -32.08\\
-3 & -1.414  & -1.265  & -0.96  & 0.192  & -0.294  & 9.266  & 4.562  & 13.858  & -0.058  & 36.264\\
-4 & -4.929  & -5.423  & -7.237  & -8.753  & -10.029  & -12.629  & -16.262  & -25.028  & -29.387  & -51.107\\
-5 & -2.207  & -2.16  & -1.538  & -1.514  & -0.382  & -0.382  & 0.831  & 0.831  & -1.064  & -1.064
+1 & 3.82 \% & 3.69 \% & 2.81 \% & 2.98 \% & 0.6 \% & 0.97 \% & -0.41 \% & -0.86 \% & -0.03 \% & -0.05 \%\\
+2 & 6.19 \% & 7.76 \% & 2.45 \% & 4.21 \% & 1.27 \% & 2.85 \% & 0.07 \% & 1.38 \% & -0.07 \% & 1.84 \%\\
+3 & 1.58 \% & 1.54 \% & 1.65 \% & 0.94 \% & -0.68 \% & -0.75 \% & -0.53 \% & -1.21 \% & -0.26 \% & -0.82 \%\\
+4 & 12.8 \% & 14.31 \% & 6.24 \% & 7.71 \% & 6.3 \% & 7.59 \% & 2.22 \% & 3.59 \% & 1.68 \% & 3.39 \%\\
+5 & 7.11 \% & 6.94 \% & 2.82 \% & 2.6 \% & 0.33 \% & 0.27 \% & 0.33 \% & 0.33 \% & 0.43 \% & 0.43 \%\\
 \end{tabular}
-\label{mmds-nocov-N-boxplots}
-\caption{Bias in estimates of $\hat{N}$ for the non-covariate 2-point line transect simulations.}
-% generated by /mmds/paper/papersims/nocov/N-table.R 
-%\end{sidewaystable}
+\label{mmds-nocov-N-table}
+\caption{Percent relative bias in estimates of $\hat{N}$ for the non-covariate 2-point line transect simulations.}
 \end{table}
-
-
+% generated by /mmds/paper/papersims/nocov/N-table.R 
 
 
 \subsubsection{Non-covariate 3-point mixtures for line transect data}
 
-Two scenarios were used to test 3-point mixtures. The parameters are given in table \ref{mmds-3pt-simtable} and the corresponding detection functions are given in figure \ref{mmds-3pt-funcs}. Data was generated using the same process as for the 2-point mixtures but with $J$ set to $3$.
+Two scenarios were used to test 3-point mixtures. The parameters are given in table \ref{mmds-3pt-simtable} and the corresponding detection functions are given in figure \ref{mmds-3pt-funcs}. The first scenario is supposed to be fairly easy with well separated parameters, the second is analogous to scenario 4 for the non-covariate data, but with two easier to identify paramters and one non-identifiable one. Data was generated using the same process as for the 2-point mixtures but with $J$ set to $3$.
 
-As well as fitting 3-point mixture models to the data, 2-point models were also fit. This was to investigate the flexibility 2-point mixtures.
+As well as fitting 3-point mixture models to the data, 2-point models were also fit. This was to investigate the flexibility 2-point mixtures. TKTKTK more here
 
 % Table of parameters
 \begin{table}[h]
@@ -411,9 +407,51 @@ Sim no. & $\beta_{10}$ & $\beta_{20}$ & $\beta_1$ & $\pi_1$ & $\pi_2$\\
 \label{mmds-3pt-funcs}
 \end{figure}
 
-Figure BLAH shows the boxplots of the differences between the parameter estimates and the true parameters for when the 3-point mixtures were fit to the 3-point data.
+Figure \ref{mmds-3point-boxplots} shows the boxplots of the differences between the parameter estimates and the true parameters for when the 3-point mixtures were fit to the 3-point data. These results look less impressive than those in figure \ref{mmds-nocov-boxplots}, the parameter estimates seem much more variable and there is less evidence of convergence toward zero. This is not surprising given that there are potentially many $(\beta_1, \beta_2, \beta_3, \alpha_1, \alpha_2)$ combinations that yield similar curves and equally good fits.
 
-For the 2-point fits, we can only compare the estimates of $\hat{N}$. These are shown along with the boxplots for the 3-point models in figure BLAH
+% boxplots of par estimates
+\begin{sidewaysfigure}[hp]
+\centering
+\includegraphics[width=7in]{mix/figs/3point-boxplots.pdf}
+\caption{Boxplots of difference between estimated and true parameter for the non-covariate 3-point line transect simulations. Rows correspond to the simulation numbers given in \ref{mmds-3pt-simtable}, columns correspond to parameters. Colours encode the fitting algorithm used.}
+\label{mmds-3point-boxplots}
+\end{sidewaysfigure}
+% generated by mmds/paper/papersims/3point/analyse.R
+
+Turning to abundance estimation, we can now compare the results for fitting the ``true'' 3-point model to the data versus the 2-point model and see how this effects the results. Boxplots of $(N-\hat{N})/N$ are shown in figure \ref{mmds-3point-N-boxplots}. The first column of plots corresponds to the 3-point models where we can see a clear failure of the EM algorithm; although there is a reduction in variability with increasing sample size, there is no clear convergence towards the zero line, as can be observed with BFGS+SANN. The 2-point models fair well and in particular the EM algorithm appears to do significantly better. 
+
+TKTKTK does this mean that EM is no good with >2 mixtures?
+
+Table \ref{mmds-3point-N-table} shows the percent relative bias in $\hat{N}$ for both the 2-point adn 3-point fits to the data. As expected (and reflected in \ref{mmds-3point-N-boxplots}), the second scenario was much harder than the first. However, even with small sample sizes the bias never rose above 10\%.
+
+
+% boxplots of N
+\begin{figure}
+\centering
+\includegraphics[width=6in]{mix/figs/3point-N.pdf}
+\caption{}
+\label{mmds-3point-N-boxplots}
+\end{figure}
+% generated by mmds/paper/papersims/3point/N-analyse.R
+
+\begin{sidewaystable}[ht]
+\begin{tabular}{c || c c | c c | c c | c c | c c}\\
+Sample size & \multicolumn{2}{c |}{30} & \multicolumn{2}{c |}{60} & \multicolumn{2}{c |}{120} & \multicolumn{2}{c |}{480} & \multicolumn{2}{c}{960}\\ 
+& BFGS &  & BFGS &  & BFGS &  & BFGS &  & BFGS & \\
+Scenario & +SANN & EM & +SANN & EM & +SANN & EM & +SANN & EM & +SANN & EM\\
+\hline
+\hline
+1 (3-point) & 4.01\% & -1.62\% & -0.97\% & -5.02\% & 0.5\% & -7.09\% & -0.44\% & -7.47\% & -0.55\% & -14.98\% \\
+1 (2-point) & 4.42\% & 5.02\% & 0.87\% & 1.06\% & 1.33\% & 1.24\% & 0.83\% & 0.83\% & 0.6\% & 0.63\% \\
+2 (3-point) & 9.91\% & 9.46\% & 8.65\% & 8.9\% & 4.98\% & 3.68\% & 1.04\% & 9.71\% & 0.71\% & 3.21\% \\
+2 (2-point) & 8.97\% & 4.07\% & 6.98\% & 7.27\% & 5.93\% & 5.55\% & 5.4\% & 3.99\% & 5.26\% & -3.35\% \\
+\end{tabular}
+\label{mmds-3point-N-table}
+\caption{Percent relative bias in estimates of $\hat{N}$ for the non-covariate 3-point line transect simulations for both the 3-point and 2-point models.}
+\end{sidewaystable}
+% generated by /mmds/paper/papersims/3point/N-table.R 
+
+
 
 
 
