@@ -8,6 +8,8 @@ for(ltype in c("ALL","TEL")){
 
    load(paste("simtest-",ltype,".RData",sep=""))
    
+   if(ltype=="ALL") ltype<-"T-ALL"
+   
    
    # MSE
    res<-rbind(res,cbind(dsml.mse.cv,

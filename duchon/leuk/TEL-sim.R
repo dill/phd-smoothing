@@ -47,7 +47,7 @@ set.seed(11242)
 
 for(i in 1:n.sims){
 
-   samp.ind<-sample(1:nrow(leuk),150)
+   samp.ind<-sample(1:nrow(leuk),215)
 
    # do the sampling
    leuk.samp<-leuk[samp.ind,]

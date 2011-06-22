@@ -1,7 +1,11 @@
+# simulation again, same as sim.R but with extra confounding columns
+
+set.seed(11242)
 
 load("leuk.RData")
 library(mdspack)
 library(glmnet)
+library(MASS)
 
 leuk.type<-leuk[,length(leuk)]
 leuk<-leuk[,-length(leuk)]
@@ -21,7 +25,13 @@ ALL.cols[6,]<-1271
 
 ALL.cols<-as.integer(ALL.cols)
 
-leuk<-leuk[,ALL.cols]
+
+total.cols<-1:ncol(leuk)
+total.cols<-total.cols[-ALL.cols]
+
+selected.cols<-c(ALL.cols,sample(total.cols,100))
+
+leuk<-leuk[,selected.cols]
 
 # general setup
 n.sims<-100
@@ -37,7 +47,7 @@ lasso.mse.cv<-c()
 ml.best.dim<-c()
 gcv.best.dim<-c()
 
-set.seed(11242)
+source("insert.mds.generic.R")
 
 
 # result vector 
@@ -45,7 +55,7 @@ set.seed(11242)
 
 for(i in 1:n.sims){
 
-   samp.ind<-sample(1:nrow(leuk),150)
+   samp.ind<-sample(1:nrow(leuk),215)
 
    # do the sampling
    leuk.samp<-leuk[samp.ind,]
@@ -56,7 +66,7 @@ for(i in 1:n.sims){
    # calculate the distance matrix for the microarray data
    #dd.start<-mahalanobis(leuk.samp, leuk.samp[1,])
    #dd<-apply(leuk.samp,1,mahalanobis,x=leuk.samp,cov=attr(dd.start,"cov.inv"))
-   dd.cov.inv<-solve(cov(leuk.samp))
+   dd.cov.inv<-ginv(cov(leuk.samp))
    dd<-apply(leuk.samp,1,mahalanobis,x=leuk.samp,cov=dd.cov.inv,inverted=TRUE)
 
 
@@ -115,26 +125,31 @@ for(i in 1:n.sims){
          #################################################################
          ### lasso model
          leuk.samp<-as.matrix(leuk.samp)
-         cvmin.lasso<-cv.glmnet(leuk.samp,type.samp,family="binomial")
-         b.lasso<-glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min,family="binomial")
 
-         # predict the classes for the rest of the data
-         pp.lasso<-predict(b.lasso,as.matrix(leuk[-samp.ind,]),type="class")
-         pp.lasso[pp.lasso==1]<-0
-         pp.lasso[pp.lasso==2]<-1
+         cvmin.lasso<-try(cv.glmnet(leuk.samp,type.samp,family="binomial"))
 
-         lasso.mse.cv<-c(lasso.mse.cv,
-                         sum((leuk.type[-samp.ind]-pp.lasso)^2))
+         if(class(cvmin.lasso)!="try-error"){
+            b.lasso<-try(glmnet(leuk.samp,type.samp,lambda=cvmin.lasso$lambda.min,
+                            family="binomial"))
 
-         # predict the probabilities of being in the classes
-         pp.lasso.p<-predict(b.lasso,as.matrix(leuk[-samp.ind,]),type="response")
-         lasso.brier.cv<-c(lasso.brier.cv,
-                           sum((leuk.type[-samp.ind]-pp.lasso.p)^2))
- 
+            if(class(b.lasso)!="try-error"){
+               # predict the classes for the rest of the data
+               pp.lasso<-predict(b.lasso,as.matrix(leuk[-samp.ind,]),type="class")
+               pp.lasso[pp.lasso==1]<-0
+               pp.lasso[pp.lasso==2]<-1
 
+               lasso.mse.cv<-c(lasso.mse.cv,
+                               sum((leuk.type[-samp.ind]-pp.lasso)^2))
+
+               # predict the probabilities of being in the classes
+               pp.lasso.p<-predict(b.lasso,as.matrix(leuk[-samp.ind,]),type="response")
+               lasso.brier.cv<-c(lasso.brier.cv,
+                                 sum((leuk.type[-samp.ind]-pp.lasso.p)^2))
+            }
+         }
       }
    }
-save.image("simtest-ALL.RData")
+save.image("conf-simtest-ALL.RData")
 }
 
 
