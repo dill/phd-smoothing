@@ -9,6 +9,7 @@ for(ltype in c("ALL","TEL")){
    load(paste("simtest-",ltype,".RData",sep=""))
    
    if(ltype=="ALL") ltype<-"T-ALL"
+   if(ltype=="TEL") ltype<-"TEL-AML1"
    
    
    # MSE
