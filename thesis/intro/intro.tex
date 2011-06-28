@@ -25,61 +25,70 @@ Some general remarks about stat ecol perhaps.
 
 This section gives a very brief introduction to generalized additive models with the emphasis on moving from the linear and generalized linear model to additive and generalized additive models. The outline here only touches on the surface of what is a vast literature. Excellent complete introductions to the topic are given in \cite{simonbook} and \cite{rwc}.
 
-
-\subsection{From the linear model to generalized additive models}
-
-A large class of statistical problems can thought of as finding the relationship between observations of a response (denoted $z_i$) and a predictor ($x_i$). The $z_i$ is a realization of some random variable $Z$. The most basic ase of this is the linear or regression model, which can be written:
+A generalized additive model (GAM) is a generalized linear model (GLM) with extra terms which are smooth functions of the data. Typically such a model takes the form:
 \begin{equation}
-Z_i = \beta_0 + \beta_1x_i + \epsilon_i
-\label{intro-linearreg}
+g(\mu_i) = X^*_i\bm{\beta} + \sum_{j=1}^J s_j(x_{ji}) \quad \text{for } i=1,\cdots,n,
 \end{equation}
-where $\epsilon_i$ is a zero mean normally distributed random variable representing the error. This relationship dictates that a unit increase in $x_i$ leads to an increase in $z_i$ proportional to $\beta_1$ (with some constant intercept $\beta_0$). One can easily think of an obvious extension to such a model by adding further ($p$, say) predictor variables  (for example TKTKTK). If we take $X$ to be the $n\cross p$ matrix of the predictor (if there are $n$ data measured on $p$ covariates) and $\mathbf{z}$ to be the $n$-vector of responses, we can form a $p$-vector of the coefficients $\mathbf{\beta}$ and an error vector $\mathbf{\epsilon}$ of length $n$, giving:
-\begin{equation}
-\mathbf{Z_i} = \boldsymbol{\beta}X + \mathbf{\epsilon}_i
-\label{intro-linearreg-vector}
-\end{equation}
-The linear model is well covered in (quite literally) thousands of books (TKTKTK good ones) so only relevant parts of the theory are covered here. If we wish to estimate $\beta_0$ and $\beta_1$ (and any further coefficients that are introduced by adding further covariates into the model) we can use an ordinary least squares (OLS) estimation procedure. This simply minimizes the sum of squared distances between the regression line and the observed values:
-\begin{equation}
-\sum_{i=1}^n (\boldsymbol{\beta}X-z_i)^2.
-\label{intro-OLSobjfcn}
-\end{equation}
-Variations on this objective function will be adressed throughout the following chapters. One can think of (\ref{intro-OLSobjfcn}) as a measure of how close the model is to the data.
-
-If we wish to analyse data with different error distributions (for example binomial or Poisson data), we can change the distribution of $\epsilon_i$ and then define a \textit{link function} that maps $X\boldsymbol{\beta}$ to the appropriate scale (for example $(0,1)$ for probabilities).
-
-TKTKTK have to put something about GLMs here to get GAMs next, error distns - probably have to talk about IRLS
-
-An obvious limitation of linear models is the assumption that the covariates (predictors) have a linear effect on the response. Modelling non-linear response using linear regression would give extremely misleading results.
-
-There are many ways to model data where the response is a non-linear function of the covariates (for example TKTKTK refs for kriging, kernel density, MORE), however (in the author's view at least) the simplest extension of linear regression is the generalized additive model (GAM). In a GAM we can consider simply adding smooth functions to (\ref{intro-linearreg}), so we have: 
-\begin{equation}
-Z_i = \beta_0 + \beta_1x_i + f(x_i) + \epsilon_i,
-\end{equation}
-absorbing the linear and intercept terms into $f$, we have:
-\begin{equation}
-Z_i = f(x_i) + \epsilon_i.
-\end{equation}
-Now the question is: what is the form of $f$? 
-
-In order to make $f$ flexible and at the same time think about estimating coefficients rather than functions, we can think of $f$ as a sum of basis functions:
-\begin{equation}
-f(x_i) = \sum_{j=1}^J \beta_j b_k(x_i).
-\label{intro-basisdecomp}
-\end{equation}
-Now we are left with the task of chosing the $b_j$s. A simple (and perhaps obvious) choice would be to use the polynomials up to order $J$ (ie. $1, x_i, x_i^2, x_i^3,\cdots, x_i^J$) or some other set of orthogonal polynomials (Hermite, Legendre etc), and then estimate the $\beta_j$s. The problem with using polynomials alone is that they act globally; adding further high order terms may improve the fit at a particular point (reducing the sum of squares) but that may have a negative effect elsewhere. Since we are usually interested in the relationship between $x_i$ and $z_i$, knowing that $f$ is a good approximation to $z_i$ at a single point is not useful. 
-
-So, we can instead consider a different set of functions for the $b_j$s; these functions are known as \textit{splines}. Working locally, splines are made of of sections of other functions (polynomials, say) which are stuck together ensuring that both the values and derivatives (up to some limit) are continuous. The points at which the functions join are called \textit{knots}. One of the simplest spline bases is the \textit{cubic spline basis} (\cite{rwc}, pp. 71--72).
-
-TKTKTK diagram of splines
-
-If we simply wanted to have the $f$ pass through the data ($x_i,z_i$ pairs) and didn't care about the values that $f$ takes elsewhere, we could just minimize the OLS objective function, (\ref{intro-OLSobjfcn}). This interpolating behaviour is not desirable if we believe that there is error in the observed values of the response. To control the \textit{smoothness} (or \textit{roughness} (\cite{rwc}) or \textit{wigglyness} \cite{simonbook}) of $f$ (and hence stop it from interpolating) we can adjust the least squares objective function, adding a penalty:
-\begin{equation}
-\sum_{i=1}^n (f(x_i)-z_i)^2 + \lambda \int \frac{\partial^2 f(x)}{\partial x^2} \text{d}x,
-\end{equation}
-the integral here gives a measure of the wigglyness of $f$. The influence of the penalty is controlled by $\lambda$: as $\lambda\rightarrow\infty$ then we get the linear model (since the intercept and linear terms have zero second derivative) and as $\lambda\rightarrow 0$ $f$ interpolates the data. Automatically choosing $\lambda$ is a topic that has be extensively covered, as we shall see in the next section.
+where $g$ is a link function (as in the GLM case), such that $\mu_i = \mathbb{E}[Y_i]$ (where $Y_i$ is a response variable with an exponential family distribution). $X^*_i$ is a row of the matrix $X^*$ which contains the covariates which enter the model in a linear way. The $s_{j}$s are smooth functions (see below) and the $x_{ji}$ are covariates which are related to the response in some non-linear way.
 
 
-TKTKTK Sum up here
+TKTKTK EXPAND THIS
+
+
+%\subsection{From the linear model to generalized additive models}
+
+%A large class of statistical problems can thought of as finding the relationship between observations of a response (denoted $z_i$) and a predictor ($x_i$). The $z_i$ is a realization of some random variable $Z$. The most basic case of this is the linear or regression model, which can be written:
+%\begin{equation}
+%Z_i = \beta_0 + \beta_1x_i + \epsilon_i
+%\label{intro-linearreg}
+%\end{equation}
+%where $\epsilon_i$ is a zero mean normally distributed random variable representing the error. This relationship dictates that a unit increase in $x_i$ leads to an increase in $z_i$ proportional to $\beta_1$ (with some constant intercept $\beta_0$). One can easily think of an obvious extension to such a model by adding further ($p$, say) predictor variables  (for example TKTKTK). If we take $X$ to be the $n\cross p$ matrix of the predictor (if there are $n$ data measured on $p$ covariates) and $\mathbf{z}$ to be the $n$-vector of responses, we can form a $p$-vector of the coefficients $\mathbf{\beta}$ and an error vector $\mathbf{\epsilon}$ of length $n$, giving:
+%\begin{equation}
+%\mathbf{Z_i} = \boldsymbol{\beta}X + \mathbf{\epsilon}_i
+%\label{intro-linearreg-vector}
+%\end{equation}
+%The linear model is well covered in (quite literally) thousands of books (TKTKTK good ones) so only relevant parts of the theory are covered here. If we wish to estimate $\beta_0$ and $\beta_1$ (and any further coefficients that are introduced by adding further covariates into the model) we can use an ordinary least squares (OLS) estimation procedure. This simply minimizes the sum of squared distances between the regression line and the observed values:
+%\begin{equation}
+%\sum_{i=1}^n (\boldsymbol{\beta}X-z_i)^2.
+%\label{intro-OLSobjfcn}
+%\end{equation}
+%Variations on this objective function will be adressed throughout the following chapters. One can think of (\ref{intro-OLSobjfcn}) as a measure of how close the model is to the data.
+%
+%If we wish to analyse data with different error distributions (for example binomial or Poisson data), we can change the distribution of $\epsilon_i$ and then define a \textit{link function} that maps $X\boldsymbol{\beta}$ to the appropriate scale (for example $(0,1)$ for probabilities).
+%
+%TKTKTK have to put something about GLMs here to get GAMs next, error distns - probably have to talk about IRLS
+%
+%An obvious limitation of linear models is the assumption that the covariates (predictors) have a linear effect on the response. Modelling non-linear response using linear regression would give extremely misleading results.
+%
+%There are many ways to model data where the response is a non-linear function of the covariates (for example TKTKTK refs for kriging, kernel density, MORE), however (in the author's view at least) the simplest extension of linear regression is the generalized additive model (GAM). In a GAM we can consider simply adding smooth functions to (\ref{intro-linearreg}), so we have: 
+%\begin{equation}
+%Z_i = \beta_0 + \beta_1x_i + f(x_i) + \epsilon_i,
+%\end{equation}
+%absorbing the linear and intercept terms into $f$, we have:
+%\begin{equation}
+%Z_i = f(x_i) + \epsilon_i.
+%\end{equation}
+%Now the question is: what is the form of $f$? 
+%
+%In order to make $f$ flexible and at the same time think about estimating coefficients rather than functions, we can think of $f$ as a sum of basis functions:
+%\begin{equation}
+%f(x_i) = \sum_{j=1}^J \beta_j b_k(x_i).
+%\label{intro-basisdecomp}
+%\end{equation}
+%Now we are left with the task of chosing the $b_j$s. A simple (and perhaps obvious) choice would be to use the polynomials up to order $J$ (ie. $1, x_i, x_i^2, x_i^3,\cdots, x_i^J$) or some other set of orthogonal polynomials (Hermite, Legendre etc), and then estimate the $\beta_j$s. The problem with using polynomials alone is that they act globally; adding further high order terms may improve the fit at a particular point (reducing the sum of squares) but that may have a negative effect elsewhere. Since we are usually interested in the relationship between $x_i$ and $z_i$, knowing that $f$ is a good approximation to $z_i$ at a single point is not useful. 
+%
+%So, we can instead consider a different set of functions for the $b_j$s; these functions are known as \textit{splines}. Working locally, splines are made of of sections of other functions (polynomials, say) which are stuck together ensuring that both the values and derivatives (up to some limit) are continuous. The points at which the functions join are called \textit{knots}. One of the simplest spline bases is the \textit{cubic spline basis} (\cite{rwc}, pp. 71--72).
+%
+%TKTKTK diagram of splines
+%
+%If we simply wanted to have the $f$ pass through the data ($x_i,z_i$ pairs) and didn't care about the values that $f$ takes elsewhere, we could just minimize the OLS objective function, (\ref{intro-OLSobjfcn}). This interpolating behaviour is not desirable if we believe that there is error in the observed values of the response. To control the \textit{smoothness} (or \textit{roughness} (\cite{rwc}) or \textit{wigglyness} \cite{simonbook}) of $f$ (and hence stop it from interpolating) we can adjust the least squares objective function, adding a penalty:
+%\begin{equation}
+%\sum_{i=1}^n (f(x_i)-z_i)^2 + \lambda \int \frac{\partial^2 f(x)}{\partial x^2} \text{d}x,
+%\end{equation}
+%the integral here gives a measure of the wigglyness of $f$. The influence of the penalty is controlled by $\lambda$: as $\lambda\rightarrow\infty$ then we get the linear model (since the intercept and linear terms have zero second derivative) and as $\lambda\rightarrow 0$ $f$ interpolates the data. Automatically choosing $\lambda$ is a topic that has be extensively covered, as we shall see in the next section.
+%
+%
+%TKTKTK Sum up here
 
 \subsection{Spline bases}
 
