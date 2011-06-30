@@ -55,57 +55,70 @@ This proof was adapted from the one given in lecture notes by Leonidas Guibas av
 
 \subsection{The algorithm terminates}
 
-The condition to be fulfilled for the algorithm to terminate is that in two consecutive runs the path does not change, so the first step is to check that it is possible for this to happen, then to move on to show that it always happens. 
+The condition to be fulfilled for the algorithm to terminate is that in two consecutive runs the path does not change.
 
 First note that the ALTER step can act as (a less efficient) DELETE step: $\mathcal{P}_{I}$ would be the triplet $(v_i,v_{i+1},v_{i+2})$ (a triangle) then the DELETE substep removes $v_{i+1}$, giving $(v_i,v_{i+2})$), which would then be $\mathcal{P}_{ID}$ which could be inserted into the path. For this reason we only need to consider the ALTER step here.
 
+For the path not to change we just require that both DELETE and ALTER steps do not change the path. In the best case this happens when the path is the shortest, since there are no modifications we can make to obtain a shorter path (since the path is unique, once it has been reached, there are no other possible modifications that can be made).
 
-THIS IS WRONG
-
-Some triplet effects the path of another. Show that local optimality -> global optimality.
-
-First show that ALTER is locally optimal
-
-DELETE case is obvious.
-
-THINK about convex/concave
-
-paths always get shorter
-
-
-For the algorithm to fail to terminate, the situation would have to arise in which one ALTER step would take the path $\mathcal{P}_1^*$ (say) and alter it to be $\mathcal{P}_2^*$ such that the next ALTER step would revert $\mathcal{P}_2^*$ back to $\mathcal{P}_1^*$, these two steps would then continue indefinitely.
-
-If this were to happen it would imply that both $\mathcal{P}_2^*$ was shorter than $\mathcal{P}_1^*$ and $\mathcal{P}_1^*$ was shorter than $\mathcal{P}_2^*$ and since in the ALTER step the $\mathcal{P}_{ID}$ must be shorter than $(v_i,v_{i+1},v_{i+2})$ (not equal in length) then this cannot happen.
-
-Clearly the algorithm cannot continue shortening the path forever, at some point there will be no more shorter routes proposed by the ALTER step and hence it will terminate.
-
+In the worst case one might imagine that the algorithm could get caught in a loop. This cannot happen since this would require that the ALTER step proposed shorter paths at every iteration (since otherwise they would not be accepted) \textit{ad infinitum}. This would imply that at every stage a shorter path were possible (since only shorter, not equal length modifications are accepted), clearly this cannot be the case.
 
 \subsection{The algorithm terminates at the shortest path}
 
-Consider the two initial paths following the boundary, $\mathcal{P}_1$ or $\mathcal{P}_2$ above. Without loss of generality, let $\mathcal{P}_1$ be the shorter of the two initial paths. The DELETE and ALTER steps can be thought of as refining $\mathcal{P}_1$ of these starting paths.
 
-We can think of $\mathcal{P}_1$ as traversing a series of features of the boundary and we would like to include as few of them as possible to obtain the shortest path. The features fall into two classes, they are concave and convex. The names are given as they would appear to one traversing them from inside the domain, so they appear to be opposite to the definitions as used to describe polygons. Concave features extrude from the polygon (ie. they would look like ``caves'' to those traversing the boundary) and convex features intrude into the polygon (ie. they would look like ``mountains'' to those traversing the boundary).
+As mentioned above, the path must get shorter at each iteration. 
 
+The algorithm terminates.
 
+It can only terminate when the path cannot get any shorter.
 
-
-Concave features consist of a set of vertices $(v_i, v_{i+1},\cdots,v_{i+k})$, where all of the vertices between $v_i$ and $v_{i+k}$ can be removed without any of the path falling outside of the domain, one can think of this as capping the top of a cave.
-
-Convex features consist of a series of vertices where only some of the 
+To show that the overall path is the shortest, can just show that each individual 3-ple is optimal.
 
 
-The shortest path through a concave section can always be found in a series of DELETE steps: if the concave section alone is taken and triangulated, the DELETE step will always be able to remove all of the vertices in the concave section (since it can be triangulated). This leaves only the starting and ending vertices. Figure \ref{app-WAD-concave} shows how the triangulation removes the vertices.
+If the path is shortest then each sub-path (triplet) must be optimal too (otherwise we could run ALTER or DELETE on it and get a shorter path.)
+
+So it satistys o show that each triplet is optimal.
 
 
-TKTKTK diagram
+Given $(v_{i}, v_{i+1}, v_{i+2})$ there are four possible options
+\begin{enumerate}
+   \item Trivially $v_{i}=v_{i+1}=v_{i+2}$, in which case the DELETE step will remove all but $v_{i}$.
+   \item One of $v_{i}=v_{i+1}$, $v_{i}=v_{i+2}$ or $v_{i+1}=v_{i+2}$, again the DELETE step will remove the duplicate vertex.
+   \item $(v_{i}, v_{i+1}, v_{i+2})$ form a triangle. The DELETE step will remove $v_{i+1}$.
+   \item $(v_{i}, v_{i+1}, v_{i+2})$ do not form a triangle. In this case there is some ``obstacle'' between $v_{i}$ and $v_{i+2}$. In this case ALTER is used to navigate the path around the obstacle.
+\end{enumerate}
 
-Having removed all of the concave parts of the path, this leaves only convex features. In order to find the shortest path around them we can simply trace them (they cannot be reduced any further since they are already convex). It might then be the case that by tracing these convex features further convex and concave features are introduced, however these can be addressed in the next iteration.
+In all but the last case it is clear by definition that the new path will be shorter. The final case is now covered in detail; in essence this amounts to showing that subpaths proposed by ALTER are locally optimal.
 
-The only thing it remains to consider is the points at which the convex segment joins the rest of the path, these may be shortened by using the DELETE step if necessary.
+All cases where ALTER can propose new (non-trivial, in the DELETE sense) paths are more complicated versions of the situation shown in the first panel of figure \ref{app-WAD-alterstep-dia}. 
 
-Given that the initial path many consist of only these two elements and that they are removed by the consecutive steps of DELETE and ALTER (obviously there may need to be micro steps of these within each step due to the aforementioned embeddding of caves-within-mountains and mountains-within-caves) we can conclude that the path is the shortest path.
 
-CAN WE?!?!?!?!?!
+The key features here being that the point $v_{i+1}$ can be replaced with the point $v_{i+1}^*$. This is the simplest case when the ALTER step can be used. 
+
+However all situations reduce to an essentially similar situation. The grey area can be any shape and 
+
+
+TKTKTK define obstacle here
+
+These situations boil down to two options
+\begin{enumerate}
+   \item The grey obstacle is a concave, ie. the shortest path is simply a staight line between two points on the boundary which avoid all of the other vertices on the boundary that make up the obstacle (the second panel in figure \ref{app-WAD-alterstep-dia}. In this case since we can split the area ``under'' the two end points into triangles, the DELETE step makes short work of the extra path elements.
+   \item The grey obstacle is convex after removing any triangles in that bounadry segment, ie. more than the two end points are required to form a path around the obstacle. This is shown in the third panel in figure \ref{app-WAD-alterstep-dia}. In this case, tracing the boundary and removing triangles in the path will still yield the shortest path. We can always obtain the shortest path by tracing the boundary and removing traingles since there cannot be any ALTER steps needed (since that would imply holes) and then the path can simply be minimized by DELETE steps.
+\end{enumerate}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=6in]{app-WAD/figs/alterstep-proof.pdf} \\
+\caption{three panels!}
+\label{app-WAD-alterstep-dia}
+% generated by thesis/app-WAD/figs/makealterstepdia.R
+\end{figure}
+
+
+Since the ALTER step is optimal locally that shows that all triplets are are optimal and ehnce the whole path is optimal. So paths are shortest paths.
+
+
 
 \subsection{The computational complexity of the algorithm}
 

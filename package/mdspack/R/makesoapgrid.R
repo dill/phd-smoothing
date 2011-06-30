@@ -21,11 +21,6 @@ make_soap_grid<-function(bnd,n.grid,mat=FALSE,log=FALSE,delta=FALSE){
    xx <- rep(xm,n)
    yy<-rep(yn,rep(m,n))
 
-   # knock out the points not inside the bnd
-#   onoff<-inSide(bnd,xx,yy)
-#   xx<-0.95*xx[onoff]
-#   yy<-0.95*yy[onoff]
-
    onoff<-inSide(bnd,xx,yy)
    xx<-xx[onoff]
    yy<-yy[onoff]
