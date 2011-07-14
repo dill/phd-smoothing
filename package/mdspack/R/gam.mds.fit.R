@@ -1,5 +1,5 @@
 # fit a gam to general distance data
-gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gaussian(),method="GCV.Cp",start.grid=NULL,samp.points=NULL,dist.metric="euclidean"){
+gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gaussian(),method="GCV.Cp",start.grid=NULL,samp.points=NULL,dist.metric="euclidean",select=FALSE){
    # Args
    #  response       vector of responses
    #  D              sample distance matrix (maybe generated using dist())
@@ -15,6 +15,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
    #  samp.points    sample points, needed if the above is specified    
    #  method         method= for gam() -- GCV.Cp and ML
    #  dist.metric    distance metric, anything allowable by dist() + "mahalanobis"
+   #  select         do variable selection
 
    # Return - list
    #  $gam        gamObject of fitted model
@@ -48,7 +49,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
          # fit the model
          mds.dim<-test.dim
 
-         gam.obj<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method,dist.metric)
+         gam.obj<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method,dist.metric,select)
 
          # did it converge fully? split on outer/magic
          if(gam.obj$gam$optimizer[1]=="magic"){
@@ -99,10 +100,10 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
 
 
    }else if(floor(mds.dim)==mds.dim){
-      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method,dist.metric)
+      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method,dist.metric,select)
    }else{
       mds.dim<-choose.mds.dim(D,mds.dim)
-      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method,dist.metric)
+      fitted<-gam.fitter(response,D,mds.dim,k,family,samp.points,start.grid,method,dist.metric,select)
    }
 
    ret$gam<-fitted$gam
@@ -115,7 +116,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
 }
 
 ### actually fit some GAMs
-gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NULL,method,dist.metric="euclidean"){
+gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NULL,method,dist.metric="euclidean",select=FALSE){
    # big set of letters for column names
    bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
    bl.len<-length(bigletters)
@@ -158,7 +159,7 @@ gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NU
    gam.formula<-as.formula(gam.formula)
    
    # run the model
-   b<-gam(gam.formula,data=samp.mds,family=family,method=method)
+   b<-gam(gam.formula,data=samp.mds,family=family,method=method,select=select)
 
    ret<-list(gam=b,mds.obj=mds.obj,samp.mds=samp.mds)
 
