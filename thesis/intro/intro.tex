@@ -1,8 +1,10 @@
 \label{chap-intro}
 
+%% that larry Wall quote -- lazyness patience and hubris
+
 \section{Introduction to the introduction}
 
-This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled in the thesis proper.
+This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled throughout the rest of the thesis. Two topics will be addressed in the later chapters, the first concerns fine-resolution estimates of density of biological populations in space -- finite area smoothing. The second is a more gross measure of density calculated via a widely used inexpensive method -- distance sampling.
 
 \section{Statistical Ecology}
 
@@ -23,13 +25,36 @@ Some general remarks about stat ecol perhaps.
 
 \section{Generalized Additive Models}
 
-This section gives a very brief introduction to generalized additive models with the emphasis on moving from the linear and generalized linear model to additive and generalized additive models. The outline here only touches on the surface of what is a vast literature. Excellent complete introductions to the topic are given in \cite{simonbook} and \cite{rwc}.
+This section gives a very brief introduction to generalized additive models with the emphasis on moving from the linear and generalized linear model to additive and generalized additive models in a finite-area smoothing scenario. This only touches on the surface of what is a vast literature. Excellent (and much more complete) introductions to the topic are given in \cite{simonbook} and \cite{rwc}.
+
+\subsection{From GLMs to GAMs}
+
+Generalized linear models (GLMs) have been around for almost [[TKTKTK X]] years, in that time they have become a standard tools for those performing statistical analyses. The idea is simple, one has measure some response $Z_i$ (for $i=1,\ldots,n$), and $p$ covariates (in a $n\times p$ matrix $X$) believed to effect the response. In a GLM, the relationship between the response and predictors is
+\begin{equation}
+g(\mu_i) = \beta_0 + X_i\bm{\beta} \quad \text{for } i=1,\cdots,n,
+\end{equation}
+where $g$ is a link function, such that $\mu_i = \mathbb{E}[Z_i]$ (where $Z_i$ has an exponential family distribution). $X_i$ is the $i^\text{th}$ row of the matrix $X$.
+
+
+
+
+
+
+
 
 A generalized additive model (GAM) is a generalized linear model (GLM) with extra terms which are smooth functions of the data. Typically such a model takes the form:
 \begin{equation}
 g(\mu_i) = X^*_i\bm{\beta} + \sum_{j=1}^J s_j(x_{ji}) \quad \text{for } i=1,\cdots,n,
 \end{equation}
 where $g$ is a link function (as in the GLM case), such that $\mu_i = \mathbb{E}[Y_i]$ (where $Y_i$ is a response variable with an exponential family distribution). $X^*_i$ is a row of the matrix $X^*$ which contains the covariates which enter the model in a linear way. The $s_{j}$s are smooth functions (see below) and the $x_{ji}$ are covariates which are related to the response in some non-linear way.
+
+
+univariate smoothing
+
+2d smoothing
+	tensors
+	isotropy -- in particular with reference to spatial smoothing
+	spatio-temporal as an extension
 
 
 TKTKTK EXPAND THIS
@@ -123,7 +148,7 @@ where the radial basis functions $\eta_{md}(x)$ are defined as
 
 The definitions of thin plate and P-splines show an important difference between the two, the thin plate spline is defined over as many dimensions as the data lie in, however the P-spline is only defined in one dimension. This leads to the obvious question of how to smooth in multiple dimensions using P-splines (or any other unidimensional spline basis). This is easily addressed by considering a unidimensional spline basis as a marginal basis of a higher-dimensional basis. By taking tensor products of many marginal bases (which do not necessarily have to be of the same kind) one can construct a high dimensional smooth.
 
-TKTKTK italy paper
+
 
 \subsection{Fitting GAMs}
 \label{GAMfitting}

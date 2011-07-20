@@ -10,8 +10,6 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
    #  if no bnd supplied do the general thing
    #  also do the s(.) thing
    #  select grid resolution sensibly
-   #  knot projection
-   
 
    # for the WAD case -- for non-WAD check that bnd exists
    if(length(names(data))!=2){
@@ -111,85 +109,52 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
    # make some variable names up
    mds.names<-paste("mds-",1:dim(mds.data)[2],sep="")
    # remove any already in the data
-   #mds.names<-mds.names[-match(names(data),mds.names)]
    names(mds.data)<-mds.names
-   ## tack taht extra mds data on the end
-   #data<-cbind(data,mds.data)
-   data<-mds.data
 
-   # make sure there are the right terms in the object
+   # make sure there are the right stuff is in the object before passing
+   # to Duchon, but save beforehand!
+   save.dim<-object$dim
+   save.term<-object$term
+   save.data<-data
+
    object$term<-mds.names
    object$dim<-mds.dim
+   data<-mds.data
+
+   object$msg$term<-mds.names
+   object$msg$dim<-mds.dim
+   object$msg$data<-mds.data
 
 
-   # if necessary, project the knots
+   # if knots were supplied, they're going to be ignored, warn about that!
    if(!is.null(knots)){
-      # DO THIS
+      warning("Knots were supplied but will be ignored!\n")
    }
-
-
-
-   # need to adjust the data (and knots) (and object?) here
-
-
 
    # make the duchon splines object as usual
    object<-smooth.construct.ds.smooth.spec(object,data,knots)
 
+   # recover the stuff we want in the object
+   object$term<-save.term
+   object$dim<-save.dim
+   data<-save.data
 
    class(object)<-"msg.smooth"
    object
 }
 
-# prediction matrix method
-PredictMat<-function(object,data,n=nrow(data)){
-   if(class(object)=="msg.smooth"){
-      D.grid<-object$msg
-      grid.mds<-object$msg$grid.mds
-      my.grid<-object$msg$my.grid
-      mds.dim<-object$mds.dim
-      grid.mds<-cmdscale(D.grid,eig=TRUE,k=mds.dim,x.ret=TRUE)
-      mds.data<-as.data.frame(insert.mds(data,my.grid,grid.mds,bnd))
-      # make some variable names up
-      mds.names<-paste("mds-",1:dim(mds.data)[2],sep="")
-      # remove any already in the data
-      #mds.names<-mds.names[-match(names(data),mds.names)]
-      names(mds.data)<-mds.names
-      ## tack taht extra mds data on the end
-      #data<-cbind(data,mds.data)
-      data<-mds.data
-   }
-   PredictMat(object,data,n)
-}
-Predict.matrix2<-function(object,data){
-   if(class(object)=="msg.smooth"){
-      D.grid<-object$msg
-      grid.mds<-object$msg$grid.mds
-      my.grid<-object$msg$my.grid
-      mds.dim<-object$mds.dim
-      grid.mds<-cmdscale(D.grid,eig=TRUE,k=mds.dim,x.ret=TRUE)
-      mds.data<-as.data.frame(insert.mds(data,my.grid,grid.mds,bnd))
-      # make some variable names up
-      mds.names<-paste("mds-",1:dim(mds.data)[2],sep="")
-      # remove any already in the data
-      #mds.names<-mds.names[-match(names(data),mds.names)]
-      names(mds.data)<-mds.names
-      ## tack taht extra mds data on the end
-      #data<-cbind(data,mds.data)
-      data<-mds.data
-   }
-   Predict.matrix2(object,data)
-}
-
-
-
 Predict.matrix.msg.smooth<-function(object,data){
 
+   save.dim<-object$dim
+   save.term<-object$term
+   save.data<-data
 
-   # make sure there are the right terms in the object
-   #object$term<-mds.names
-   #object$dim<-mds.dim
+   object$term<-object$msg$term
+   object$dim<-object$msg$dim
+   data<-object$msg$data
+
+   #### MAGIC HAPPENS HERE!!!!
 
 
-   Predict.matrix.ds.smooth(object,data)
+   Predict.matrix.duchon.spline(object,data)
 }
