@@ -105,6 +105,7 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
    grid.mds<-cmdscale(D.grid,eig=TRUE,k=mds.dim,x.ret=TRUE)
    object$msg$grid.mds<-grid.mds
    mds.data<-as.data.frame(insert.mds(data,my.grid,grid.mds,bnd))
+   object$msg$mds.data<-mds.data
 
    # make some variable names up
    mds.names<-paste("mds-",1:dim(mds.data)[2],sep="")
@@ -125,7 +126,6 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
    object$msg$dim<-mds.dim
    object$msg$data<-mds.data
 
-
    # if knots were supplied, they're going to be ignored, warn about that!
    if(!is.null(knots)){
       warning("Knots were supplied but will be ignored!\n")
@@ -133,6 +133,10 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
 
    # make the duchon splines object as usual
    object<-smooth.construct.ds.smooth.spec(object,data,knots)
+
+   if(object$xt$extra.penalty){
+      object<-extra.penalty(object)
+   }
 
    # recover the stuff we want in the object
    object$term<-save.term
@@ -151,10 +155,17 @@ Predict.matrix.msg.smooth<-function(object,data){
 
    object$term<-object$msg$term
    object$dim<-object$msg$dim
-   data<-object$msg$data
+   #data<-object$msg$data
 
    #### MAGIC HAPPENS HERE!!!!
+   grid.mds<-object$msg$grid.mds
+   my.grid<-object$msg$grid
+   mds.data<-as.data.frame(insert.mds(data,my.grid,grid.mds,bnd))
 
+   # make some variable names up
+   mds.names<-paste("mds-",1:dim(mds.data)[2],sep="")
+   # remove any already in the data
+   names(mds.data)<-mds.names
 
-   Predict.matrix.duchon.spline(object,data)
+   Predict.matrix.duchon.spline(object,mds.data)
 }
