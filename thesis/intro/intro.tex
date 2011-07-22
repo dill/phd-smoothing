@@ -25,169 +25,199 @@ Some general remarks about stat ecol perhaps.
 
 \section{Generalized Additive Models}
 
-This section gives a very brief introduction to generalized additive models with the emphasis on moving from the linear and generalized linear model to additive and generalized additive models in a finite-area smoothing scenario. This only touches on the surface of what is a vast literature. Excellent (and much more complete) introductions to the topic are given in \cite{simonbook} and \cite{rwc}.
+In large-scale ecological studies, it is typical that one of the covariates collected is the location at which the sample has been taken. Such data may be useful for many reasons. First, it may be the only covariate, in which case we may only be interested in the spatial distribution of the phenomena in question and therefore wish to require spatial (or spatio-temporal) maps. Alternatively the spatial covariate may be used to remove spatial-autocorrelation from the data which may mask the effects of other covariates in the model, thus leading to more exact inference.
 
-\subsection{From GLMs to GAMs}
+The following two examples highlight these two different objectives:
+\begin{enumerate}
+\item The chlorophyl levels in the Aral sea are monitored using satellite images. Each pixel in the image represents an area of WHATEVER meters square on the Earth. However, the satellite images are noisy and as such adjacent pixels have vastly different levels of chlorophyll. We assume that the levels would vary smoothly from pixel to pixel, so a model can be fitted to the image which gives a smooth map of the chlorophyll concentration over the whole of the sea.
+\item We wish to model the whiting population in the North sea. In particular information has been collected on abundance in particular places (in terms of pulling nets up through the water column and counting how many whiting there are), with the location of where the samples were and the dates that they were taken, covariates including sea surface temperature, information on the ship that took the measurement (it's identity and nationality) and the depth of the sea bed at the sample location. Such a model can be used to draw inference about how the population has changed over time (for example, to see if overfishing is a problem). The whiting's distribution in space is non-homogeneous (since it is known from their biology that they spawn near the shore and feed in certain areas) so failing to model this spatial heterogeneity could introduce huge bias in abundance estimates. Accurately modelling the spatial distribution is essential for reliable inference.
+\end{enumerate}
+In both of these examples we have assumed that the phenomena in question (chlorophyll concentration and whiting density) vary smoothly according to their spatial location. [[TKTKTK this is biologically reasonable.]]
 
-Generalized linear models (GLMs) have been around for almost [[TKTKTK X]] years, in that time they have become a standard tools for those performing statistical analyses. The idea is simple, one has measure some response $Z_i$ (for $i=1,\ldots,n$), and $p$ covariates (in a $n\times p$ matrix $X$) believed to effect the response. In a GLM, the relationship between the response and predictors is
+There are a great many ways to construct the models described in the above examples, popular methods include krigging (cite), kernel density estimation (cite) and hierarchical models (???) (cite). This thesis concentrates on using the generalized additive model (GAM) framework, in particular using splines for spatial smoothing.
+
+In particular the interest here is in smooth functions of space, and since the models are additive the emphasis is on situations akin to example 1 above, since if a method can be used in this context, it can also be included in models like those in example 2, simply as an additive component.
+
+Before going any further, let us define this all mathematically.
+
+First, denote observations of the phenomena of interest as $z_i$ (where $i$ indexes the samples $i=1,\ldots,n$, if there are $n$ samples) this could be the chlorophyll level or the whiting density. Each  $z_i$ is the realisation of some random variable $Z_i$, where $Z_i=\mu_i+\epsilon_i$, where $\mu_i=\mathbb{E}[Z_i]$, the expected value of the $Z_i$s.[[TKTKTK explain this further]] It is assumed that $\epsilon_i$ follows some exponential family distribution (such as normal, Poisson, binomial or gamma). At the same time the spatial coordinates of the sample are recorded, denote them $\mathbf{x}_i = (x_{i1}, x_{i2})$ (this could be as latitude and longitude, or as kilometres from some reference point, known as Northings and Eastings). The objective is to model the $\mu_i$ (that is, the expected value of the response) using the coordinates at which the data were collected.
+
+Now, as mentioned above, we have assumed that the distribution of phenomena of interest varies smoothly in space, this is equivalent to saying that $\mu_i$ varies smoothly in space. If we let $f$ be some smooth function, then mathematically this is written as $\mu_i = f(\mathbf{x}_i)$, so
 \begin{equation}
-g(\mu_i) = \beta_0 + X_i\bm{\beta} \quad \text{for } i=1,\cdots,n,
+z_i = f(\mathbf{x}_i) + \epsilon_i.
 \end{equation}
-where $g$ is a link function, such that $\mu_i = \mathbb{E}[Z_i]$ (where $Z_i$ has an exponential family distribution). $X_i$ is the $i^\text{th}$ row of the matrix $X$.
+That is that the observations are made up of a smoothly varying spatial component and some random error. The problem is now how to find $f$.
 
-
-
-
-
-
-
-
-A generalized additive model (GAM) is a generalized linear model (GLM) with extra terms which are smooth functions of the data. Typically such a model takes the form:
+One can imagine several possible ways of finding $f$, for example one might simply work through a large book of mathematical functions, tweaking parameters and hoping one would fit. Alternatively one might estimate $f$ as a kind of moving average of the values [[TKTKTK can you do 2d loess?]]. The first option seems extremely time consuming and the second will not give a nice functional form at the end to slot into other procedures later. In practice, a \textit{basis function} representation of $f$ is used to form $f$. The idea is to build $f$ out of a sum of other known functions, ($b_j$s, say) scaled by coefficients ($\beta_k$, say) and then estimate these coefficients rather than the function as a whole. Mathematically:
 \begin{equation}
-g(\mu_i) = X^*_i\bm{\beta} + \sum_{j=1}^J s_j(x_{ji}) \quad \text{for } i=1,\cdots,n,
+ f(\mathbf{x}_{i}) = \sum_{j=1}^J \beta_j b_j(\mathbf{x}_{i}).
+\label{intro-basisdecomp}
 \end{equation}
-where $g$ is a link function (as in the GLM case), such that $\mu_i = \mathbb{E}[Y_i]$ (where $Y_i$ is a response variable with an exponential family distribution). $X^*_i$ is a row of the matrix $X^*$ which contains the covariates which enter the model in a linear way. The $s_{j}$s are smooth functions (see below) and the $x_{ji}$ are covariates which are related to the response in some non-linear way.
+Now some care must be taken in choosing the $b_j$s so that they give sufficiently flexible functions for $f$ over the whole of the area that is to be smoothed over.
+
+Allowing $f$ to have a representation that is extremely flexible has a downside, that is that when finding the $\beta_j$s, an $f$ which interpolates can be found. Interpolating the data is not useful since in general it is the space between the samples that is of scientific interest; an $f$ that simply jumps from datum to datum does not say any more about the spatial distribution than merely looking at the data. To get around this problem penalties are used.
+
+To obtain an $f$ as close to the data as possible, we can simply minimize an ordinary least squares (OLS) objective function, that is:
+\begin{equation}
+\sum_{i=1}^n (\bm{z} - f(\mathbf{x}_i))^2,
+\label{intro-OLS}
+\end{equation}
+as such, finding the $\beta_j$s which minimize the distance between the data and $f$. As mentioned above, this does nothing to stop $f$ simply interpolating the data (which would give a value of 0 in the above expression). To stop this from happening the ``wigglyness'' of $f$ is penalized.
+
+Penalizing the wigglyness of $f$ makes sense since if $f$ interpolates the data it will change direction very often and hence its second derivatives will be large. Taking this rough idea and writing it down mathematically we can add on a penalty to (\ref{intro-OLS}), giving:
+\begin{equation}
+\sum_{i=1}^n (\bm{z} - f(\mathbf{x}_i))^2 +  \lambda \int\int \Big(\frac{\partial^2 f(\mathbf{x})}{\partial \mathbf{x}^2}\Big)^2 \text{d}x_1\text{d}x_1.
+\end{equation}
 
 
-univariate smoothing
-
-2d smoothing
-	tensors
-	isotropy -- in particular with reference to spatial smoothing
-	spatio-temporal as an extension
 
 
-TKTKTK EXPAND THIS
 
 
-%\subsection{From the linear model to generalized additive models}
 
-%A large class of statistical problems can thought of as finding the relationship between observations of a response (denoted $z_i$) and a predictor ($x_i$). The $z_i$ is a realization of some random variable $Z$. The most basic case of this is the linear or regression model, which can be written:
-%\begin{equation}
-%Z_i = \beta_0 + \beta_1x_i + \epsilon_i
-%\label{intro-linearreg}
-%\end{equation}
-%where $\epsilon_i$ is a zero mean normally distributed random variable representing the error. This relationship dictates that a unit increase in $x_i$ leads to an increase in $z_i$ proportional to $\beta_1$ (with some constant intercept $\beta_0$). One can easily think of an obvious extension to such a model by adding further ($p$, say) predictor variables  (for example TKTKTK). If we take $X$ to be the $n\cross p$ matrix of the predictor (if there are $n$ data measured on $p$ covariates) and $\mathbf{z}$ to be the $n$-vector of responses, we can form a $p$-vector of the coefficients $\mathbf{\beta}$ and an error vector $\mathbf{\epsilon}$ of length $n$, giving:
-%\begin{equation}
-%\mathbf{Z_i} = \boldsymbol{\beta}X + \mathbf{\epsilon}_i
-%\label{intro-linearreg-vector}
-%\end{equation}
-%The linear model is well covered in (quite literally) thousands of books (TKTKTK good ones) so only relevant parts of the theory are covered here. If we wish to estimate $\beta_0$ and $\beta_1$ (and any further coefficients that are introduced by adding further covariates into the model) we can use an ordinary least squares (OLS) estimation procedure. This simply minimizes the sum of squared distances between the regression line and the observed values:
-%\begin{equation}
-%\sum_{i=1}^n (\boldsymbol{\beta}X-z_i)^2.
-%\label{intro-OLSobjfcn}
-%\end{equation}
-%Variations on this objective function will be adressed throughout the following chapters. One can think of (\ref{intro-OLSobjfcn}) as a measure of how close the model is to the data.
+%Chapters 2, 3, and 4 of this thesis are concerned with smoothing, in particular smoothing using generalized additive models. The principle behind such models is that assumptions that are usually made about the effects of covariates on an outcome being linear are not necessarily true. Relaxing this assumption allows for an extremely flexible family of models to be applied.
 %
-%If we wish to analyse data with different error distributions (for example binomial or Poisson data), we can change the distribution of $\epsilon_i$ and then define a \textit{link function} that maps $X\boldsymbol{\beta}$ to the appropriate scale (for example $(0,1)$ for probabilities).
+%This section gives a very brief introduction to generalized additive models with the emphasis on moving from generalized linear models (GLMs) to additive and generalized additive models in a finite-area smoothing scenario. As such, familiarity with GLMs is assumed from the outset. This section only touches on the surface of what is a vast literature [[RWC review paper TKTKTK]]. Excellent (and much more complete) introductions to the topic are given in \cite{simonbook} and \cite{rwc}.
 %
-%TKTKTK have to put something about GLMs here to get GAMs next, error distns - probably have to talk about IRLS
+%\subsection{From GLMs to GAMs}
 %
-%An obvious limitation of linear models is the assumption that the covariates (predictors) have a linear effect on the response. Modelling non-linear response using linear regression would give extremely misleading results.
-%
-%There are many ways to model data where the response is a non-linear function of the covariates (for example TKTKTK refs for kriging, kernel density, MORE), however (in the author's view at least) the simplest extension of linear regression is the generalized additive model (GAM). In a GAM we can consider simply adding smooth functions to (\ref{intro-linearreg}), so we have: 
+%Generalized linear models have become a standard tool for those performing statistical analyses. The idea is simple, one has some response $Z_i$ (for $i=1,\ldots,n$), and $p-1$ covariates (which are given in in a $n\times p$ model matrix $X$, where the first column is a column of 1s) believed to effect the response. The relationship between the response and predictors may be written:
 %\begin{equation}
-%Z_i = \beta_0 + \beta_1x_i + f(x_i) + \epsilon_i,
+%g(\mu_i) = X_i\bm{\beta} \quad \text{for } i=1,\cdots,n,
 %\end{equation}
-%absorbing the linear and intercept terms into $f$, we have:
+%where $g$ is a link function, such that $\mu_i = \mathbb{E}[Z_i]$ (where $Z_i$ has an exponential family distribution). $X_i$ is the $i^\text{th}$ row of the matrix $X$. The coefficients $\bm{\beta}=(\beta_0,\ldots,\beta_{p-1})$ describe the relationship between the response and the covariates and are to be estimated. It may also be useful to think of such a  model in matrix form, that is that for $z$ the vector of observations, 
 %\begin{equation}
-%Z_i = f(x_i) + \epsilon_i.
+%\bm{z} = X\bm{\beta} + \bm{\epsilon}
 %\end{equation}
-%Now the question is: what is the form of $f$? 
+%See (for example) \cite{davisonstatmod} or Chapter 2 of \cite{simonbook} for more information.
 %
-%In order to make $f$ flexible and at the same time think about estimating coefficients rather than functions, we can think of $f$ as a sum of basis functions:
+%A generalized additive model (GAM) is a generalized linear model (GLM) with extra terms which are smooth functions of the data. Typically such a model takes the form:
 %\begin{equation}
-%f(x_i) = \sum_{j=1}^J \beta_j b_k(x_i).
+%g(\mu_i) = X^*_i\bm{\beta} + \sum_{j=1}^J f_j(\bm{x}_{ji}) \quad \text{for } i=1,\cdots,n,
+%\label{intro-gam-g}
+%\end{equation}
+%where $g$ is a link function (as in the GLM case), such that $\mu_i = \mathbb{E}[Z_i]$ (where $Z_i$ is a response variable with an exponential family distribution). $X^*_i$ is a row of the matrix $X^*$ which contains the covariates which enter the model in a linear way. The $f_j$s are smooth functions (see below) and the $\bm{x}_{ji}$ are (one or more) covariates which are related to the response in some non-linear way.
+%
+%Ideally, one would like to find the $f_j$ so that a very wide variety of functions were encompassed. Rather than estimating the functions as a whole, it is useful to think about estimating coefficients of known \textit{basis functions}. So, we can think of $f_j$ as a sum of such basis functions:
+%\begin{equation}
+% f_j(\bm{x}_{ji}) = \sum_{j=1}^J \beta_j b_k(\bm{x}_{ji}).
 %\label{intro-basisdecomp}
 %\end{equation}
-%Now we are left with the task of chosing the $b_j$s. A simple (and perhaps obvious) choice would be to use the polynomials up to order $J$ (ie. $1, x_i, x_i^2, x_i^3,\cdots, x_i^J$) or some other set of orthogonal polynomials (Hermite, Legendre etc), and then estimate the $\beta_j$s. The problem with using polynomials alone is that they act globally; adding further high order terms may improve the fit at a particular point (reducing the sum of squares) but that may have a negative effect elsewhere. Since we are usually interested in the relationship between $x_i$ and $z_i$, knowing that $f$ is a good approximation to $z_i$ at a single point is not useful. 
+%Now we are left with the task of choosing the $b_j$s and then estimating the $\beta_j$s.
 %
-%So, we can instead consider a different set of functions for the $b_j$s; these functions are known as \textit{splines}. Working locally, splines are made of of sections of other functions (polynomials, say) which are stuck together ensuring that both the values and derivatives (up to some limit) are continuous. The points at which the functions join are called \textit{knots}. One of the simplest spline bases is the \textit{cubic spline basis} (\cite{rwc}, pp. 71--72).
+%A simple (and perhaps obvious) choice would be to use the polynomials up to order $J$ (ie. $1, x_i, x_i^2,$ $ x_i^3, \cdots, x_i^J$) or some other set of orthogonal polynomials (Hermite, Legendre etc), and then estimate the $\beta_j$s. The problem with using polynomials alone is that they act globally; adding further high order terms may improve the fit at a particular point (reducing the distance between an observed datum and the curve) but that may have a negative effect elsewhere. Since we are interested in the relationship between $x_i$ and $z_i$ over a range of values (in particular where the data is not), knowing that we have a good approximation to $z_i$ at a single point is not useful. 
+%
+%Note at this point that the basis proposed above includes the linear and intercept terms that were in the ``GLM part'' of (\ref{intro-gam-g}), from now on those parts are considered to be parts of the $f_j$s, so we could write (\ref{intro-gam-g}) as:
+%\begin{equation}
+%g(\mu_i) = \sum_{j=1}^J f_j(\bm{x}_{ji}) \quad \text{for } i=1,\cdots,n,
+%\label{intro-gam-g}
+%\end{equation}
+%or, as a linear model: $\bm{z} = X\bm{\beta} + \bm{\epsilon}$, where we have added extra columns to the model matrix $X$ which are the evaluations of the $f_j$s at the appropriate covariate values.
+%
+%So, we can instead consider a different set of functions for the $b_j$s; these functions are known as \textit{splines}. Working locally, splines are made of of sections of other functions (polynomials, say) which are stuck together ensuring that both the values and derivatives (up to some limit) are continuous. The points at which the functions join are called \textit{knots}. One of the simplest spline bases is the \textit{quadratic spline basis} (\cite{rwc}, pp. 67--69).
 %
 %TKTKTK diagram of splines
 %
-%If we simply wanted to have the $f$ pass through the data ($x_i,z_i$ pairs) and didn't care about the values that $f$ takes elsewhere, we could just minimize the OLS objective function, (\ref{intro-OLSobjfcn}). This interpolating behaviour is not desirable if we believe that there is error in the observed values of the response. To control the \textit{smoothness} (or \textit{roughness} (\cite{rwc}) or \textit{wigglyness} \cite{simonbook}) of $f$ (and hence stop it from interpolating) we can adjust the least squares objective function, adding a penalty:
+%As an example, let us consider the quadratic spline basis for a simple unidimensional problem. The basis consists of the following functions (the $b_j(x)$s in the above notation):
 %\begin{equation}
-%\sum_{i=1}^n (f(x_i)-z_i)^2 + \lambda \int \frac{\partial^2 f(x)}{\partial x^2} \text{d}x,
+%1, x, x^2, (x-x_{k_1})^2_+, (x-x_{k_2})^2_+, (x-x_{k_3})^2_+, \ldots
 %\end{equation}
-%the integral here gives a measure of the wigglyness of $f$. The influence of the penalty is controlled by $\lambda$: as $\lambda\rightarrow\infty$ then we get the linear model (since the intercept and linear terms have zero second derivative) and as $\lambda\rightarrow 0$ $f$ interpolates the data. Automatically choosing $\lambda$ is a topic that has be extensively covered, as we shall see in the next section.
+%where the $x_{k_m}$s are knots and for any $u$, $u_+$ is $u$ if $u$ is positive and $0$ otherwise.
 %
 %
-%TKTKTK Sum up here
-
-\subsection{Spline bases}
-
-So far only the cubic spline basis has been discussed. There are many possible spline bases, two are covered in detail here as they will be relevant later. These bases also show two different ways of addressing the flexibility of splines: knot-based and eigen-based approaches. 
-
-Much discussion has been devoted to the problem of knot placement (see rwc p 255, \ldots TKTKTK MORE). A simplistic approach would be to evenly space the knots across the range of the data. In the univariate case this seems rather easy and yields reasonable results, however often the majority of the knots are wasted since they do not affect the final smooth since some data points may be very close or identical. To avoid wasting knots one might consider putting knots at only unique observed values or at the quantiles of the data. The final model will be sensitive to the placement of the knots, meaning to ensure the model robustness many knot placements may have to be considered.
-
-Discuss eigen- vs. knot-based splines
-
-
-\subsubsection{Thin plate regression splines}
-\label{GAMtprs}
-\label{GAMtprspenalty}
-
-In (\ref{intro-basisdecomp}) the function $f$ was decomposed into a sum of basis functions. For the \textit{thin plate spline}, two summations are used: one for some global functions that act over the whole of the data and one for a set of local functions, one per datum. Thinking in the univariate case, the global functions is a straight line (as with a lienar regression) and the local, \textit{radial basis functions} are  Mathematically $f$ is written as:
-\begin{equation}
-f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
-\label{tprs-basis} 
-\end{equation}
-where the radial basis functions $\eta_{md}(x)$ are defined as
-\begin{align}
-\eta_{md} =\begin{cases} \frac{(-1)^{m+1+d/2}}{2^{2m-1}\pi^{d/2}(m-1)!(m-d/2)!} r^{2m-d} \log(r) &\quad{\text{$d$ even}}\\
-\frac{\Gamma(d/2-m)}{2^{2m}\pi^{d/2}(m-1)!} r^{2m-d} &\quad{\text{$d$ odd.}}
-\end{cases}
-\end{align}
-
-
-\subsubsection{P-splines}
-
-\subsubsection{Tensor product splines}
-\label{GAMtensor}
-
-The definitions of thin plate and P-splines show an important difference between the two, the thin plate spline is defined over as many dimensions as the data lie in, however the P-spline is only defined in one dimension. This leads to the obvious question of how to smooth in multiple dimensions using P-splines (or any other unidimensional spline basis). This is easily addressed by considering a unidimensional spline basis as a marginal basis of a higher-dimensional basis. By taking tensor products of many marginal bases (which do not necessarily have to be of the same kind) one can construct a high dimensional smooth.
-
-
-
-\subsection{Fitting GAMs}
-\label{GAMfitting}
-
-Keeping in mind the functional form of $f$, that it is made up of some set of fixed basis functions which are multiplied by coefficients and then summed, the next topic to discuss is how those coefficients are estimated.
-
-   What are we optimising?
-
-   objective function
-\label{GAMobjfcn}
-   penalties
-\label{GAMpenalties}
-
-
-\subsubsection{Cross-validation}
-
-\label{DEFN-LOOCV}
-
-\subsubsection{Generalized cross validation}
-\label{GAMGCV}
-
-Talk about prediction error etc
-
-CV to GCV and then REML/ML
-
-\subsubsection{Maximum likelihood and restricted maximum likelihood}
-
-\subsubsection{General comments on GCV vs. REML/ML}
-
-\cite{rwc} pp. 120--123 provide an interesting insight into automatic smoothing parameter selection. In particular they cite work showing that as the number of data increases ($n\rightarrow\infty$), GCV slowly converges to finding the optimum smoothing parameter, this leads to the variability of the smoothing parameter to be quite high. In general GCV tends to select more complicated functions (higher EDFs) than likelihood based methods leading to overfitting to the data (\cite{remlpaper}). REML and ML on the other hand will tend to fit smoother functions. However, it is important to note that this is a manifestation of the variance--bias trade-off. GCV will lead to less biased but more variable fits whereas REML and ML will be less variable but more biased (\cite{rwc}, p. 122).
-
-
-\subsection{Other useful stuff}
-
-Maybe put all of this in as we go\ldots
-
-\label{DEFN-MSE}
-
-EDF etc
+%Having the model pass through the data simply then requires that we minimise an ordinary least squares objective function, i.e. finding the $\bm{\beta}$ that minimizes:
+%\begin{equation}
+%\lvert \lvert \bm{z} - X\bm{\beta} \rvert \rvert^2.
+%\label{intro-OLS}
+%\end{equation}
+%This interpolating behaviour is a sure-fire way of finding out what looking at the raw data already tells us. Rather than overfitting to the data, we use a penalty to regularize (TKTKTK check this) the problem and provide a smooth which fits the data well but does not interpolate.
+%
+%[[TKTKTK figure of interpolation!]]
+%
+%To control the \textit{smoothness} (or \textit{roughness}, \cite{rwc} or \textit{wigglyness}, \cite{simonbook}) of the smooth add a penalty is added to (\ref{intro-OLS}):
+%\begin{equation}
+%\lvert \lvert \bm{z} - X\bm{\beta} \rvert \rvert^2 + \sum_j \lambda_j \int \cdots \int \Big(\frac{\partial^{d_j} f_j(\bm{x}_j)}{\partial \bm{x}_j^{d_j}}\Big)^2 \text{d}\bm{x}_j,
+%\end{equation}
+%where $d_j$ is the the integral here gives a measure of the wigglyness of each $f_j$ (this is usually set to 2, however later cases will be covered in which it is not). The influence of the penalty on the objective function is controlled for each smooth term in the model by the \textit{smoothing parameters}, $\bm{\lambda} = \{ \lambda_1,\ldots,\lambda_J\}$. Considering only one of the smoothing parameters, as $\lambda_j\rightarrow\infty$ then $f_j$ will become less wiggly and as $\lambda_j\rightarrow 0$, $f_j$ interpolates the data. To make this clear, consider the case in which $d_j=2$, as the smoothing parameter approaches infinity $f_j$ will look like a linear model (since the linear terms of $f_j$ will be unpenalised, since they have no second derivative) and as the smoothing parameter becomes smaller $f_j$ will become more and more wiggly, eventually interpolating the data.
+%
+%Automatically choosing $\bm{\lambda}$ is a topic that has be extensively covered (see, for example [[TKTKTK LOADS OF PAPERS]]), more information on this is given in \secref{GAMfitting}, but for now let us assume that the optimal set of smoothing parameters has been found.
+%
+%This introduction has dealt with the general case when there are $J$ smooth functions of the covariates, throughout the rest of the section, only the case when $J=1$ is considered. For that reason the subscript $j$ is dropped and $f$ is used to refer to a smooth function of one or more covariates.
+%
+%
+%\subsection{Spline bases}
+%
+%So far only the cubic spline basis has been discussed. There are many possible spline bases (TKTKTK cite!), two are covered in detail here as they will be relevant later. These bases also show two different ways of addressing the flexibility of splines: knot-based and eigen-based approaches. 
+%
+%Much discussion has been devoted to the problem of knot placement (see rwc p 255, \ldots TKTKTK MORE). A simplistic approach would be to evenly space the knots across the range of the data. In the univariate case this seems rather easy and yields reasonable results, however often the majority of the knots are wasted since they do not affect the final smooth since some data points may be very close or identical. To avoid wasting knots one might consider putting knots at only unique observed values or at the quantiles of the data. The final model will be sensitive to the placement of the knots, meaning to ensure the model robustness many knot placements may have to be considered.
+%
+%Discuss eigen- vs. knot-based splines
+%
+%
+%\subsubsection{Thin plate regression splines}
+%\label{GAMtprs}
+%\label{GAMtprspenalty}
+%
+%In (\ref{intro-basisdecomp}) the function $f$ was decomposed into a sum of basis functions. For the \textit{thin plate spline}, two summations are used: one for some global functions that act over the whole of the data and one for a set of local functions, one per datum. Thinking in the univariate case, the global functions is a straight line (as with a lienar regression) and the local, \textit{radial basis functions} are  Mathematically $f$ is written as:
+%\begin{equation}
+%f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
+%\label{tprs-basis} 
+%\end{equation}
+%where the radial basis functions $\eta_{md}(x)$ are defined as
+%\begin{align}
+%\eta_{md} =\begin{cases} \frac{(-1)^{m+1+d/2}}{2^{2m-1}\pi^{d/2}(m-1)!(m-d/2)!} r^{2m-d} \log(r) &\quad{\text{$d$ even}}\\
+%\frac{\Gamma(d/2-m)}{2^{2m}\pi^{d/2}(m-1)!} r^{2m-d} &\quad{\text{$d$ odd.}}
+%\end{cases}
+%\end{align}
+%
+%
+%\subsubsection{P-splines}
+%
+%\subsubsection{Tensor product splines}
+%\label{GAMtensor}
+%
+%The definitions of thin plate and P-splines show an important difference between the two, the thin plate spline is defined over as many dimensions as the data lie in, however the P-spline is only defined in one dimension. This leads to the obvious question of how to smooth in multiple dimensions using P-splines (or any other unidimensional spline basis). This is easily addressed by considering a unidimensional spline basis as a marginal basis of a higher-dimensional basis. By taking tensor products of many marginal bases (which do not necessarily have to be of the same kind) one can construct a high dimensional smooth.
+%
+%
+%
+%\subsection{Fitting GAMs}
+%\label{GAMfitting}
+%
+%Keeping in mind the functional form of $f$, that it is made up of some set of fixed basis functions which are multiplied by coefficients and then summed, the next topic to discuss is how those coefficients are estimated.
+%
+%   What are we optimising?
+%
+%   objective function
+%\label{GAMobjfcn}
+%   penalties
+%\label{GAMpenalties}
+%
+%
+%\subsubsection{Cross-validation}
+%
+%\label{DEFN-LOOCV}
+%
+%\subsubsection{Generalized cross validation}
+%\label{GAMGCV}
+%
+%Talk about prediction error etc
+%
+%CV to GCV and then REML/ML
+%
+%\subsubsection{Maximum likelihood and restricted maximum likelihood}
+%
+%\subsubsection{General comments on GCV vs. REML/ML}
+%
+%\cite{rwc} pp. 120--123 provide an interesting insight into automatic smoothing parameter selection. In particular they cite work showing that as the number of data increases ($n\rightarrow\infty$), GCV slowly converges to finding the optimum smoothing parameter, this leads to the variability of the smoothing parameter to be quite high. In general GCV tends to select more complicated functions (higher EDFs) than likelihood based methods leading to overfitting to the data (\cite{remlpaper}). REML and ML on the other hand will tend to fit smoother functions. However, it is important to note that this is a manifestation of the variance--bias trade-off. GCV will lead to less biased but more variable fits whereas REML and ML will be less variable but more biased (\cite{rwc}, p. 122).
+%
+%
+%\subsection{Other useful stuff}
+%
+%Maybe put all of this in as we go\ldots
+%
+%\label{DEFN-MSE}
+%
+%EDF etc
 
 %	\bi
 %	\item MSE
@@ -204,8 +234,6 @@ EDF etc
 %	\ei
 
 \subsection{GAMs in practise - \texttt{mgcv}}
-
-General GAM setup. The is will mostly be taken from \cite{simonbook}, \cite{rwc} and \cite{marraradice2010}.
 
 
 Say something about GAMs vs. AMs vs smoothing vs. splines
