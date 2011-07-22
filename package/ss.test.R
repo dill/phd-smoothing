@@ -2,11 +2,11 @@
 
 library(mgcv)
 library(soap)
-library(mdspack)
+library(msg)
 
 
-source("mdspack/R/smooth.construct.msg.smooth.spec.R")
-source("mdspack/R/extrapenalty.R")
+source("msg/R/smooth.construct.msg.smooth.spec.R")
+source("msg/R/extrapenalty.R")
 
 # horseshoe
 
@@ -28,10 +28,14 @@ set.seed(123)
 dat<-hs[sample(1:length(hs$x),250),]
 dat$z<-dat$z+rnorm(250)*0.05
 
+mds.dim<-2
+int.res<-20
 
+library(debug)
+mtrace(smooth.construct.msg.smooth.spec)
 
 ### fit without extra penalty
-b<-gam(z~s(x,y,bs="msg",xt=list(bnd=bnd,mds.dim=3,extra.penalty=FALSE)),data=dat)
+b<-gam(z~s(x,y,bs="msg",xt=list(bnd=bnd,mds.dim=mds.dim,extra.penalty=FALSE,int.res=int.res)),data=dat)
 
 pp<-predict(b,data.frame(x=hs$x,y=hs$y))
 zmat<-matrix(NA,m,n)
@@ -39,7 +43,7 @@ zmat[onoff]<-pp
 
 
 # fit with extra penalty
-b.ep<-gam(z~s(x,y,bs="msg",xt=list(bnd=bnd,mds.dim=3,extra.penalty=TRUE)),data=dat)
+b.ep<-gam(z~s(x,y,bs="msg",xt=list(bnd=bnd,mds.dim=mds.dim,extra.penalty=TRUE,int.res=int.res)),data=dat)
 
 pp.ep<-predict(b.ep,data.frame(x=hs$x,y=hs$y))
 zmat.ep<-matrix(NA,m,n)

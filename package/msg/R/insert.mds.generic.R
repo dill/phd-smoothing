@@ -1,5 +1,13 @@
 # generic MDS insertion routine
-insert.mds.generic<-function(mds.obj,new.points,old.points,dist.metric="euclidean"){
+# will call the WAD version if bnd is supplied
+insert.mds.generic<-function(mds.obj,new.points,old.points,dist.metric="euclidean",bnd=NULL){
+
+   # if bnd supplied return what insert.mds() returns
+   if(!is.null(bnd)){
+     return(insert.mds(new.points,old.points,mds.obj,bnd))
+   }
+
+   # otherwise do the non-WAD thing...
 
    big.points<-rbind(old.points,new.points)
    ind<-1:nrow(old.points)
@@ -7,15 +15,14 @@ insert.mds.generic<-function(mds.obj,new.points,old.points,dist.metric="euclidea
 
    lambda.inverse<-diag(1/mds.obj$eig[1:dim(mds.obj$points)[2]])
 
+   # mahalanobis distances
    if(dist.metric=="mahalanobis"){
-#      new.dist.start<-mahalanobis(big.points, big.points[1,])
-#      new.dist<-apply(big.points,1,mahalanobis,x=big.points,
-#                      cov=attr(new.dist.start,"cov.inv"))[ind,]
 
       cov.mat<-solve(cov(big.points))
       new.dist<-apply(big.points,1,mahalanobis,x=big.points,
                       cov=cov.mat,inverted=TRUE)[ind,]
-   }else{ 
+   }else{
+   # Euclidean
       new.dist<-as.matrix(dist(big.points,method=dist.metric,diag=T,upper=T))[ind,]
    }
 

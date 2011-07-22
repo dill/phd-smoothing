@@ -12,6 +12,10 @@ extra.penalty<-function(object,data){
    N<-100
    N<-20 #### ARBITRARY!!!!!!!
 
+   if(!is.null(object$xt$int.res)){
+      N<-object$xt$int.res
+   }
+
    ### first need to create the mesh we want to integrate over
    # mesh function
    mesh <- function(x,d,w=1/length(x)+x*0) { 
@@ -27,7 +31,7 @@ extra.penalty<-function(object,data){
    }
 
    # extract the grid point locations in MDS space
-   grid.points<-object$msg$grid.mds$points
+   grid.points<-object$msg$mds.obj$points
 
    # find the extent of that
    grid.max<-max(grid.points)
