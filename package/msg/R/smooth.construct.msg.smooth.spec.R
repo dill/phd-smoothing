@@ -98,14 +98,10 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
 
          object$msg<-new.obj
       }
-
-      D.samp<-NULL
-      D.pred<-NULL
    }
 
    # for the WAD case, insert the points into the grid
    if(!is.null(bnd)){
-   
       # now we have the grid object, insert the data into that
       # and store it as the data
       grid.mds<-cmdscale(D.grid,eig=TRUE,k=mds.dim,x.ret=TRUE)
@@ -123,7 +119,16 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
       }
 
       # the data in matrix form
+      #data.names<-names(data)
       mdata<-as.matrix(as.data.frame(data))
+
+      ## separate the predictors from response
+      #ind<-rep(FALSE,ncol(mdata))
+      #ind[match(object$term,data.names)]<-TRUE
+
+      ## save the response
+      #response.var<-mdata[,!ind]
+      #mdata<-mdata[,ind]
 
       new.obj$metric<-object$xt$metric
       dist.metric<-object$xt$metric
@@ -144,9 +149,8 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
       }
       new.obj$D<-D
 
-      mds.obj<-cmdscale(D,mds.dim,eig=TRUE,k=mds.dim,x.ret=TRUE)
+      mds.obj<-cmdscale(D,eig=TRUE,k=mds.dim,x.ret=TRUE)
       new.obj$mds.obj<-mds.obj
-
       mds.data<-as.data.frame(mds.obj$points)
 
       object$msg<-new.obj
@@ -178,7 +182,7 @@ smooth.construct.msg.smooth.spec<-function(object,data,knots){
    }
 
    # set the penalty order
-   object$p.order<-mds.dim/2-1
+   object$p.order<-c(2,mds.dim/2-1)
 
    # make the duchon splines object as usual
    object<-smooth.construct.ds.smooth.spec(object,data,knots)
@@ -200,11 +204,9 @@ Predict.matrix.msg.smooth<-function(object,data){
 
    save.dim<-object$dim
    save.term<-object$term
-   save.data<-data
 
    object$term<-object$msg$term
    object$dim<-object$msg$dim
-   #data<-object$msg$data
 
    #### MAGIC HAPPENS HERE!!!!
    mds.obj<-object$msg$mds.obj

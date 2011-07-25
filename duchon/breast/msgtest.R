@@ -34,7 +34,8 @@ breast.array<-as.data.frame(cbind(breast.dat$npi,breast.array))
 names(breast.array)<-c("npi",paste("a",1:27,sep=""))
 
 this.formula<-as.formula(paste("npi~s(",
-     paste("a",1:26,",",sep="",collapse=""),"a27, bs=\"msg\",xt=list(mds.dim=6,metric=\"mahalanobis\"))",sep=""))
+     paste("a",1:26,",",sep="",collapse=""),
+     "a27, bs=\"msg\",xt=list(mds.dim=6,metric=\"mahalanobis\"))",sep=""))
 
 
 source("~/current/phd-smoothing/package/msg/R/smooth.construct.msg.smooth.spec.R")
