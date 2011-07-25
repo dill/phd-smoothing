@@ -1,38 +1,23 @@
 \label{chap-intro}
 
-%% that larry Wall quote -- lazyness patience and hubris
-
 \section{Introduction to the introduction}
 
-This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled throughout the rest of the thesis. Two topics will be addressed in the later chapters, the first concerns fine-resolution estimates of density of biological populations in space -- finite area smoothing. The second is a more gross measure of density calculated via a widely used inexpensive method -- distance sampling.
+This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled throughout the rest of the thesis. Two topics will be addressed in the later chapters, the first concerns fine-resolution estimates of density of biological populations in space -- finite area smoothing. The second is a more coarse measure of density calculated via a widely used, inexpensive method -- distance sampling.
 
 \section{Statistical Ecology}
 
 Some general remarks about stat ecol perhaps.
 
-%\section{Themes}
-%
-%Some sort of general intro here.
-%
-%\bi
-%	\item Morphing
-%	\item Modifying penalties
-%	\item Computational efficiency
-%	\item Realistic physical models!!!!!!
-%\ei
-
-
-
 \section{Generalized Additive Models}
 
-In large-scale ecological studies, it is typical that one of the covariates collected is the location at which the sample has been taken. Such data may be useful for many reasons. First, it may be the only covariate, in which case we may only be interested in the spatial distribution of the phenomena in question and therefore wish to require spatial (or spatio-temporal) maps. Alternatively, the spatial covariate may be used to remove spatial-autocorrelation from the data which may mask the effects of other covariates in the model, removing spatial confounding can lead to a better model, making inferences more accurate.
+In large-scale ecological studies, it is typical that one of the covariates collected is the location at which the sample has been taken. Such data may be useful for many reasons. First, it may be the only covariate, in which case we may only be interested in the spatial distribution of the phenomena in question and therefore wish to require spatial (or spatiotemporal) maps. Alternatively, the spatial covariate may be used to remove spatial-autocorrelation from the data which may mask the effects of other covariates in the model, removing spatial confounding can lead to a better model, making inferences more accurate.
 
 The following two examples highlight these two different objectives:
 \begin{enumerate}
 \item The chlorophyl levels in the Aral sea are monitored using satellite images. Each pixel in the image represents an area of 9 kilometres square on the Earth. However, the satellite images are noisy and as such adjacent pixels have vastly different levels of chlorophyll. We assume that the levels would vary smoothly from pixel to pixel, so a model can be fitted to the image which gives a smooth map of the chlorophyll concentration over the whole of the sea.
 \item We wish to model the whiting population in the North sea. In particular information has been collected on abundance in particular places (in terms of pulling nets up through the water column and counting how many whiting there are), with the location of where the samples were and the dates that they were taken, covariates including sea surface temperature, information on the ship that took the measurement (it's identity and nationality) and the depth of the sea bed at the sample location. Such a model can be used to draw inference about how the population has changed over time (for example, to see if overfishing is a problem). The whiting's distribution in space is non-homogeneous (since it is known from their biology that they spawn near the shore and feed in certain areas) so failing to model this spatial heterogeneity could introduce huge bias in abundance estimates. Accurately modelling the spatial distribution is essential for reliable inference.
 \end{enumerate}
-In both of these examples we have assumed that the phenomena in question (chlorophyll concentration and whiting density) vary smoothly according to their spatial location. In many situations this assumption is biologically plausible. 
+In both of these examples we have assumed that the phenomena in question (chlorophyll concentration and whiting density) vary smoothly according to their spatial location. In many situations this assumption is biologically plausible. TKTKTK
 
 There are many ways to construct models for the data described in the above examples, popular methods include krigging (cite), kernel density estimation (cite) and hierarchical models (???) (cite). This thesis concentrates on using the generalized additive model (GAM) framework, in particular using splines for spatial smoothing.
 
@@ -77,15 +62,33 @@ Here the integral of the derivatives over the whole space gives a measure of the
 
 \subsection{Spline bases}
 
-
+So far all that has been said about the form of $f$ is that it can be decomposed into a series of basis functions. Two bases are discussed here. They will be used throughout this thesis, are generally widely used and are representative of features of other bases.
 
 \subsubsection{P-splines}
+
+P-splines (\cite{eilersmarx96}) consist of B-splines with penalties. So, before thinking about P-splines, the properties of B-splines are considered. B-splines are simple local basis functions; they are simple in that they all have the same shape and local in that they only have an effect near where they are centred (the \textit{knots} of the spline). Looking at (\ref{intro-basisdecomp}), we replace the $b_j$s with an $(m+1)^\text{th}$ order B-spline $B_j^m$. Note that the $B_j^m$s are only a function of one covariate (this will be re-visited below). So, (\ref{intro-basisdecomp}) becomes:
+\begin{equation}
+f(x_i) = \sum_{j=1}^J \beta_j B^m_j(x_i).
+\label{intro-basisdecomp}
+\end{equation}
+the $B_j^m$s are defined recursively:
+\begin{equation}
+B_j^m(x) = \frac{x-x^*_j}{x^*_{j+m+1} - x^*_j} B_j^{m-1}(x) + \frac{x^*_{j+m+2} -x}{x^*_{j+m+2} - x^*_{i+1}} B_{j+1}^{m-1}(x) \quad \text{for } i=1,\ldots,J
+\end{equation}
+and
+\begin{equation}
+ B_j^{-1}(x)=\begin{cases}
+1 \quad x_j \leq x < x_{j+1}\\
+0 \quad \text{otherwise}. 
+\end{cases}
+\end{equation}
+The $J+m+1$ knots $x^*_j$ are evenly spaced over the $x$-axis and these, along with the order of the basis, determine how flexible $f$ is. Each $B^m_j(x)$ is non-zero over the $m+3$ adjacent knots.
 
 \subsubsection{Thin plate regression splines}
 \label{GAMtprs}
 \label{GAMtprspenalty}
 
-In (\ref{intro-basisdecomp}) the function $f$ was decomposed into a sum of basis functions. For the \textit{thin plate spline}, two summations are used: one for some global functions that act over the whole of the data and one for a set of local functions, one per datum. Thinking in the univariate case, the global functions is a straight line (as with a lienar regression) and the local, \textit{radial basis functions} are  Mathematically $f$ is written as:
+In (\ref{intro-basisdecomp}) the function $f$ was decomposed into a sum of basis functions. For the \textit{thin plate spline}, two summations are used: one for some global functions that act over the whole of the data and one for a set of local functions, one per datum. Thinking in the univariate case, the global functions is a straight line (as with a linear regression) and the local, \textit{radial basis functions} are  Mathematically $f$ is written as:
 \begin{equation}
 f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
 \label{tprs-basis} 
@@ -150,7 +153,7 @@ such that
 \end{equation*}
 So for the prediction for the $i^\text{th}$ datum we have:
 \begin{equation*}
-\hat{f}^{[-i]}(\mathbf{x}_i) = A\mathbf{z} - A_{ii}z_i + A_{ii}\hat{f}(\mathbf{x})^{[-i]},
+\hat{f}(\mathbf{x}_i) = A\mathbf{z} - A_{ii}z_i + A_{ii}\hat{f}(\mathbf{x})^{[-i]},
 \end{equation*}
 which can be thought of as the prediction using the full data but replacing the $i^\text{th}$ value with its predicted value from the model. So with a little re-arrangement (see p. 174 of \cite{simonbook} for details), the \textit{ordinary cross validation score} is obtained:
 \begin{equation}
