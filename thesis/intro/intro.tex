@@ -4,36 +4,39 @@
 
 This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled throughout the rest of the thesis. Two topics will be addressed in the later chapters, the first concerns fine-resolution estimates of density of biological populations in space -- finite area smoothing. The second is a more coarse measure of density calculated via a widely used, inexpensive method -- distance sampling.
 
-\section{Statistical Ecology}
+This introduction proceeds as follows: first, section (\ref{intro-GAM}) gives an introduction to generalized additive models (assuming the reader has some familiarity with generalized linear models), then section \ref{intro-FAS} goes on to talk about existing approaches to spatial smoothing in a finite area. Finally section \ref{intro-DS} introduces distance sampling.
 
-Some general remarks about stat ecol perhaps.
+%\section{Statistical Ecology}
+
+%Some general remarks about stat ecol perhaps.
 
 \section{Generalized Additive Models}
+\label{intro-GAM}
 
-In large-scale ecological studies, it is typical that one of the covariates collected is the location at which the sample has been taken. Such data may be useful for many reasons. First, it may be the only covariate, in which case we may only be interested in the spatial distribution of the phenomena in question and therefore wish to require spatial (or spatiotemporal) maps. Alternatively, the spatial covariate may be used to remove spatial-autocorrelation from the data which may mask the effects of other covariates in the model, removing spatial confounding can lead to a better model, making inferences more accurate.
+In large-scale ecological studies, it is typical that one of the covariates collected is the location at which the sample has been taken. Two possible uses for such data are considered here. First, location may be the only covariate collected, in which case we may only be interested in the spatial distribution of the phenomena in question and therefore wish to require spatial (or spatiotemporal) maps. Alternatively, the spatial covariate may be used to remove spatial-autocorrelation from the data which may mask the effects of other covariates in the model, removing spatial confounding can lead to a better model, making inferences more accurate.
 
 The following two examples highlight these two different objectives:
 \begin{enumerate}
-\item The chlorophyl levels in the Aral sea are monitored using satellite images. Each pixel in the image represents an area of 9 kilometres square on the Earth. However, the satellite images are noisy and as such adjacent pixels have vastly different levels of chlorophyll. We assume that the levels would vary smoothly from pixel to pixel, so a model can be fitted to the image which gives a smooth map of the chlorophyll concentration over the whole of the sea.
-\item We wish to model the whiting population in the North sea. In particular information has been collected on abundance in particular places (in terms of pulling nets up through the water column and counting how many whiting there are), with the location of where the samples were and the dates that they were taken, covariates including sea surface temperature, information on the ship that took the measurement (it's identity and nationality) and the depth of the sea bed at the sample location. Such a model can be used to draw inference about how the population has changed over time (for example, to see if overfishing is a problem). The whiting's distribution in space is non-homogeneous (since it is known from their biology that they spawn near the shore and feed in certain areas) so failing to model this spatial heterogeneity could introduce huge bias in abundance estimates. Accurately modelling the spatial distribution is essential for reliable inference.
+\item The chlorophyl levels in the Aral sea are monitored using satellite images. Each pixel in the image represents an area of 9 kilometres square on the Earth. However, the satellite images are noisy and as such adjacent pixels have vastly different measured levels of chlorophyll. We would expect the levels to vary smoothly with location, so a model can be fitted to the image which produces a smooth map of the chlorophyll concentration over the whole of the sea.
+\item We wish to model the whiting population in the North sea. At a set of sampling points nets are pulled up through the water column the number of whiting counted. The sample locations and dates were recorded, as well as other covariates including sea surface temperature, information on the ship that took the measurement (it's identity and nationality) and the depth of the sea bed at the sample location. Such a model can be used to draw inference about how the population has changed over time (for example, to see if overfishing is a problem). The whiting's distribution in space is non-homogeneous (since it is known from their biology that they spawn near the shore and feed in certain areas) so failing to model this spatial heterogeneity could introduce huge bias in abundance estimates. Accurately modelling the spatial distribution is essential for reliable inference.
 \end{enumerate}
-In both of these examples we have assumed that the phenomena in question (chlorophyll concentration and whiting density) vary smoothly according to their spatial location. In many situations this assumption is biologically plausible. TKTKTK
+In both of these examples we have assumed that the phenomena in question (chlorophyll concentration and whiting density) vary smoothly according to their spatial location in the sense that the underlying process does not jump around as location changes. In many situations this assumption is biologically plausible.
 
-There are many ways to construct models for the data described in the above examples, popular methods include krigging (cite), kernel density estimation (cite) and hierarchical models (???) (cite). This thesis concentrates on using the generalized additive model (GAM) framework, in particular using splines for spatial smoothing.
+There are many ways to construct models for the data described in the above examples, popular methods include kriging (\cite{diggle}), kernel density estimation (\cite{wandKDE}) and hierarchical models (\cite{banerjee}). This thesis concentrates on using the generalized additive model (GAM) framework (\cite{gammonograph}) -- using splines for spatial smoothing.
 
-In particular the interest here is in smooth functions of space, and since the models are additive the emphasis is on situations akin to example 1 above, since if a method can be used in this context, it can also be included in models like those in example 2, simply as an additive component. For this reason, we ignore covariates in our model for now.
+In particular the interest here is in smooth functions of space, and since the models are additive the emphasis is on situations akin to example 1 above, since if a method can be used in this context, it can also be included in models like those in example 2, simply as an additive component. For this reason, we ignore covariates in the model setup (for now).
 
 \subsection{Basic setup}
 
-First, denote observations of the phenomena of interest as $z_i$ (where $i$ indexes the samples $i=1,\ldots,n$, if there are $n$ samples) this could be the chlorophyll level or the whiting density. Each  $z_i$ is the realisation of some random variable $Z_i$, where $Z_i=\mu_i+\epsilon_i$, where $\mu_i=\mathbb{E}[Z_i]$, the expected value of the $i^\text{th}$ observation.[[TKTKTK explain this further]] The $\epsilon_i$ term represents the error and is assumed to follow some exponential family distribution (such as normal, Poisson, binomial or gamma). The spatial coordinates of the sample are also recorded, denote them $\mathbf{x}_i = (x_{i1}, x_{i2})$ (this could be as latitude and longitude, or as kilometres North and East of some reference point, known as Northings and Eastings). The objective is to model the $\mu_i$ (that is, the expected value of the response) using the coordinates at which the data were collected.
+First, denote observations of the phenomena of interest as $z_i$ (where $i$ indexes the samples $i=1,\ldots,n$, if there are $n$ samples) this could be the chlorophyll level or the whiting density. Each  $z_i$ is the realisation of some random variable $Z_i$, where $z_i=\mu_i+\epsilon_i$, where $\mu_i=\mathbb{E}[Z_i]$, the expected value of the $i^\text{th}$ observation. The $\epsilon_i$ term represents the error and is assumed to follow a normal distribution with zero mean and some variance, $\sigma^2$ (other (exponential family) error distributions can be used via link functions as in the generalized linear model). The spatial coordinates of the sample are also recorded, denote them $\mathbf{x}_i = (x_{i1}, x_{i2})$ (this could be as latitude and longitude, or as kilometres North and East of some reference point, known as Northings and Eastings). The objective is to model the $\mu_i$ (that is, the expected value of the response) using the coordinates at which the data were collected.
 
-Now, as mentioned above, we have assumed that the distribution of phenomena of interest varies smoothly in space, this is equivalent to saying that $\mu_i$ varies smoothly in space. If we let $f$ be some smooth function, then mathematically this is written as $\mu_i = f(\mathbf{x}_i)$, so
+Now, as mentioned above, we have assumed that the distribution of phenomena of interest varies smoothly in space, this is equivalent to saying that $\mu_i$ varies smoothly in space. If we let $f$ be some smooth function, then mathematically this is written as $\mu_i = f(\mathbf{x}_i)$, so:
 \begin{equation}
 z_i = f(\mathbf{x}_i) + \epsilon_i.
 \end{equation}
-That is that the observations are made up of a smoothly varying spatial component and some random error. The problem is now how to find $f$.
+That is that the observations are made up of a smoothly varying spatial component and some additive random error. The problem is now how to find $f$.
 
-One can imagine several possible ways of finding $f$, for example one might simply work through a large book of mathematical functions, tweaking parameters and hoping one would fit. Alternatively one might estimate $f$ as a kind of moving average of the values [[TKTKTK can you do 2d loess?]]. The first option seems extremely time consuming and the second will not give a nice functional form at the end to slot into other procedures later. In practice, a \textit{basis function} representation of $f$ is used to form $f$. The idea is to build $f$ out of a sum of other known functions, ($b_j$s, say) scaled by coefficients ($\beta_k$, say) and then estimate these coefficients rather than the function as a whole. Mathematically:
+One can imagine several possible ways of finding $f$, for example one might simply work through a large book of mathematical functions, tweaking parameters and hoping one would fit. Alternatively one might estimate $f$ as a kind of moving average of the values (\cite{loess2}). The first option seems extremely time consuming (if it were even possible) and the second will not give a nice functional form at the end to slot into other procedures later. In practice, a \textit{basis function} representation of $f$ is used to form $f$. The idea is to build $f$ out of a sum of other known functions, ($b_j$s, say) scaled by coefficients ($\beta_k$, say) and then estimate these coefficients rather than the function as a whole. Mathematically:
 \begin{equation}
  f(\mathbf{x}_{i}) = \sum_{j=1}^J \beta_j b_j(\mathbf{x}_{i}).
 \label{intro-basisdecomp}
@@ -64,35 +67,6 @@ Here the integral of the derivatives over the whole space gives a measure of the
 
 So far all that has been said about the form of $f$ is that it can be decomposed into a series of basis functions. Two bases are discussed here. They will be used throughout this thesis, are generally widely used and are representative of features of other bases.
 
-\subsubsection{P-splines}
-
-P-splines (\cite{eilersmarx96}) consist of B-splines with penalties. So, before thinking about P-splines, the properties of B-splines are considered. B-splines are simple local basis functions; they are simple in that they all have the same shape and local in that they only have an effect near where they are centred (the \textit{knots} of the spline). Looking at (\ref{intro-basisdecomp}), we replace the $b_j$s with an $(m+1)^\text{th}$ order B-spline $B_j^m$. Note that the $B_j^m$s are only a function of one covariate (this will be re-visited below). So, (\ref{intro-basisdecomp}) becomes:
-\begin{equation}
-f(x_i) = \sum_{j=1}^J \beta_j B^m_j(x_i).
-\label{intro-basisdecomp}
-\end{equation}
-the $B_j^m$s are defined recursively:
-\begin{equation}
-B_j^m(x) = \frac{x-x^*_j}{x^*_{j+m+1} - x^*_j} B_j^{m-1}(x) + \frac{x^*_{j+m+2} -x}{x^*_{j+m+2} - x^*_{i+1}} B_{j+1}^{m-1}(x) \quad \text{for } i=1,\ldots,J
-\end{equation}
-and
-\begin{equation}
- B_j^{-1}(x)=\begin{cases}
-1 \quad x_j \leq x < x_{j+1}\\
-0 \quad \text{otherwise}. 
-\end{cases}
-\end{equation}
-The $J+m+1$ knots $x^*_j$ are evenly spaced over the $x$-axis and these, along with the order of the basis, determine how flexible $f$ is. Each $B^m_j(x)$ is non-zero over the $m+3$ adjacent knots.
-
-% b-splines example 
-\begin{figure}
-\centering
-\includegraphics[width=6.5in]{intro/figs/bspline-ex.pdf}\\
-\caption{An example of B-spline basis functions for order 1, 2 and 3 bases (from left to right).}
-\label{bs-basis}
-\end{figure}
-
-
 \subsubsection{Thin plate regression splines}
 \label{GAMtprs}
 \label{GAMtprspenalty}
@@ -108,6 +82,48 @@ where the radial basis functions $\eta_{md}(x)$ are defined as
 \frac{\Gamma(d/2-m)}{2^{2m}\pi^{d/2}(m-1)!} r^{2m-d} &\quad{\text{$d$ odd.}}
 \end{cases}
 \end{align}
+
+
+
+
+\subsubsection{P-splines}
+
+P-splines (\cite{eilersmarx96}) consist of B-splines with penalties. So, before thinking about P-splines, the properties of B-splines are considered. B-splines are simple local basis functions; they are simple in that they all have the same shape and local in that they only have an effect near where they are centred (the \textit{knots} of the spline). Taking (\ref{intro-basisdecomp}), we replace the $b_j$s with an $(m+1)^\text{th}$ order B-spline $B_j^m$ (where the order is chosen). Note that the $B_j^m$s are only a function of one covariate (this will be re-visited below). So, (\ref{intro-basisdecomp}) becomes:
+\begin{equation}
+f(x_i) = \sum_{j=1}^{J+m+1} \beta_j B^m_j(x_i).
+\label{intro-basisdecomp}
+\end{equation}
+the $B_j^m$s are defined recursively:
+\begin{equation}
+B_j^m(x) = \frac{x-x^*_j}{x^*_{j+m+1} - x^*_j} B_j^{m-1}(x) + \frac{x^*_{j+m+2} -x}{x^*_{j+m+2} - x^*_{i+1}} B_{j+1}^{m-1}(x) \quad \text{for } i=1,\ldots,J
+\end{equation}
+and
+\begin{equation}
+ B_j^{-1}(x)=\begin{cases}
+1 \quad x_j \leq x < x_{j+1}\\
+0 \quad \text{otherwise}. 
+\end{cases}
+\end{equation}
+The $J+m+1$ knots $x^*_j$ are evenly spaced over the $x$-axis and these, along with the order of the basis, determine how flexible $f$ is. Each $B^m_j(x)$ is non-zero over the $m+3$ adjacent knots. This seems like a rather complex mathematical setup, but the functions shown in figure \ref{bs-basis} are rather simple. From left to right the panels show B-splines bases with $m=1,2,3$ for evenly spaces knots over $(0,1)$.
+
+% b-splines example 
+\begin{figure}[h]
+\centering
+\includegraphics[width=6in]{intro/figs/bspline-ex.pdf}\\
+\caption{An example of B-spline basis functions for $m=1, 2$ and $3$ (from left to right) with evenly spaced knots (these are located at the peaks of the basis functions).}
+\label{bs-basis}
+\end{figure}
+
+P-splines take the B-spline basis and add a penalty structure. Because of their local nature, the penalty is somewhat different to that given in (\ref{intro-2d-objfcn}) and is based on finite differences. The idea is that smoothness only needs to be enforces on neighbouring basis functions so (\ref{intro-2d-objfcn}) becomes:
+\begin{equation}
+\sum_{i=1}^n (\bm{z} - f(x_i))^2 +  \lambda \sum_{j=1}^{J+m+1} \Delta^2 \beta_j,
+\end{equation}
+where $\Delta^2 \beta_j = \beta_j -2\beta_{j-1} + \beta_{j-2}$. Such a penalty is very fast to compute, since it can be found directly from the coefficients with no integration required.
+
+So far only unidimensional P-splines have been considered. It is possible to build 2-dimensional (and higher) smooths from \textit{tensor products} of 1-dimensional smooths.
+
+tensors
+
 
 
 \subsection{Fitting}
@@ -128,7 +144,7 @@ the penalty can always be written in this matrix form (\cite{simonbook}, p.128).
 &=\bm{\beta}^\text{T} \Big( \int\cdots\int \mathbf{b}''(\mathbf{x})\mathbf{b}''(\mathbf{x})^\text{T} \text{d}\mathbf{x}\Big) \bm{\beta}\\
 &=\bm{\beta}^\text{T} S \bm{\beta},
 \end{align*}
-where $\mathbf{b}''(\mathbf{x})$ denotes the vector of second derivatives of the basis functions. So $S$ contains the integrated squared second derivatives of the basis functions; it is usually referred to as the \textit{penalty matrix}.
+where $\mathbf{b}''(\mathbf{x})$ denotes the $J$-vector of second derivatives of the basis functions. So $S$ contains the integrated squared second derivatives of the basis functions; it is usually referred to as the \textit{penalty matrix}.
 
 Returning to fitting the model, with this view of the model as a penalized GLM, a penalized iteratively reweighted least squares (P-IRLS) scheme (see \cite{simonbook}, p. 138 for details) can be used to find the $\bm{\beta}$ vector that best fits the data without overfitting (given that we know the optimal $\lambda$ to use).
 
@@ -347,9 +363,9 @@ How we don't usually just want to smooth in xy but that just mops up the autocor
 
 
 \section{Finite area smoothing}
+\label{intro-FAS}
 
 \subsection{Overview of finite area smoothing}
-\label{intro-FAS}
 
 Splines are a popular way of performing spatial smoothing in two dimensions. In this context, they are often used to fit smooth functions over a geographical region. A typical application of this is in ecological modelling; a response (be it simply the presence of individuals in a population or concentration of a chemical) is modelled as a function of its spatial coordinates. The estimated function can then be used to perform inference on the population, whether that be an abundance estimate, density map or a more sophisticated inferential goal. Finite area smoothing simply specifies that the domain over which this smoothing takes place is bounded.
 
@@ -464,6 +480,7 @@ Chapters \ref{chap-sc}, \ref{chap-mds} and \ref{chap-gds} expand on the ideas in
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Distance sampling}
+\label{intro-DS}
 
 Humans rely on the natural world in order to survive. As the human population expands, strain is being exerted on the plant and animal populations of Earth. Accordingly, wide and large-scale monitoring of the biological populations of the planet have been set up to ensure that continued growth does not irreparably damage populations and habitats essential to survival.
 
