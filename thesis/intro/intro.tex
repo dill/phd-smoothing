@@ -122,17 +122,12 @@ J_{2,2} = \int \int \Big( \frac{\partial^2 f(x_1,x_2)}{\partial x_1^2} \Big)^2 +
 \end{equation*}
 The nullspace of the penalty contains $M=3$ functions $\phi_1(\mathbf{x})=1, \phi_2(\mathbf{x})=x_1 \text{ and } \phi_3(\mathbf{x})=x_2$.
 
-Physical explanation
-
+%The two dimensional thin plate spline also has a direct physical analogy, that being the bending of a metal plate, with the penalty equivalent to the bending energy.
 
 
 With one radial function per datum the model is over specified and runs the risk of being too complex in many situations. To avoid this problem, one could either ($i$) select (perhaps randomly) some of the data and use only those points to create the basis and then use the full data to fit the model (i.e. changing the index of the summation in the first term of (\ref{tprs-basis})) or ($ii$) select a (relatively small) representative set of points within the space covered by the data (though not necessarily data locations) which would be evenly spread out enough to create the basis (changing the $\mathbf{x}_i$s in the first summation in (\ref{tprs-basis}) -- these points are known as \textit{knots}). Both approaches have potential problems, namely: how many points should be chosen and where they should best be located.
 
-\cite{wood2003} side-steps this problem by using an eigen-decomposition to find linear combinations of the basis functions, essentially creating eigen-knots to give a reduced-rank version of the basis. This leads to a data-driven set of basis functions based which approximate the full basis as closely as possible.
-
-
-
-
+\cite{wood2003} side-steps this problem by using an eigen-decomposition to find linear combinations of the basis functions, essentially creating eigen-knots to give a reduced-rank version of the basis. This leads to a data-driven set of basis functions which approximate the full basis as closely as possible. It is this thin plate regression spline formulation that will be used throughout. 
 
 \subsubsection{P-splines}
 
@@ -227,10 +222,11 @@ First, let us express the idea above mathematically, that is that we wish to min
 where $\hat{f}^{[-\bm{\kappa}]}$ indicates the fitted model fitted without using the data points $\bm{\kappa}$ (where the elements of $\bm{\kappa}$ are indices of those data not used to fit the model).
 
 The logical conclusion of such a criteria would be to move to a point where only one datum was left out of the model fitting each time and the performance assessed using the following:
-\begin{equation*}
-\sum_{i=1}^n (z_i - \hat{f}^{[-i]}(\mathbf{x}))^2.
-\end{equation*}
-One might think that calculating such a criterion would require fitting $n$ models, however this is not the case. Going back to the penalized GLM view of the GAM, we can write down the \textit{influence} or \textit{hat matrix} for the model:
+\begin{equation}
+\sum_{i=1}^n (z_i - \hat{f}^{[-i]}(\mathbf{x}_i))^2,
+\label{DEFN-LOOCV}
+\end{equation}
+known as \textit{leave-one-out cross validation}. One might think that calculating such a criterion would require fitting $n$ models, however this is not the case. Going back to the penalized GLM view of the GAM, we can write down the \textit{influence} or \textit{hat matrix} for the model:
 \begin{equation*}
 A = X(X^\text{T}X + \lambda S)^{-1}X^\text{T}
 \end{equation*}
@@ -292,20 +288,24 @@ This final section deals with two topics not covered above: assessing the perfor
 \subsubsection{Assessing GAM fit}
 
 Mean squared error
+
+
+Simulation studies will be used extensively to evaluate the proposed methods. In order to make such evaluations, some metric must be chosen. Mean squared error (MSE) is a standard approach to assessing the performance of a model, in terms of prediction error. If there are $n_p$ prediction points, the MSE of the fitted model $\hat{f}$ is defined as:
+\begin{equation*}
+\text{MSE}(\hat{f}(\mathbf{x})) = \mathbb{E}[(\hat{f}(\mathbf{x}) - f(\mathbf{x}))^2],
+\end{equation*}
+which can be approximated by:
+\begin{equation}
+\hat{\text{MSE}}(\hat{f}(\mathbf{x})) = \frac{1}{n_p} \sum_{i=1}^{n_p} (\hat{f}(\mathbf{x}_i) - z_i)^2.
 \label{DEFN-MSE}
+\end{equation}
+The $z_i$ could be datum (in which case $n_p$ could equal $n$) or if how well $\hat{f}$ approximates a known function is being tested then $z_i=f(\mathbf{x}_i)$ where $f$ is the true function that $\hat{f}$ approximates. When MSE is mentioned from now on, it will be with reference to the quantity defined in (\ref{DEFN-MSE}).
 
-Simulation studies will be used extensively to evaluate the proposed methods. In order to make such evaluations, some metric must be chosen.
-
-%	Mean squared error is... (look at HTF)
-%	
-%	\begin{equation}
-%\text{MSE}(\hat{f}) = \frac{1}{P} \sum_{j=1}^P (\hat{f}(x_j) - z_j)^2,
-%\end{equation}
-%the mean difference between the model ($\hat{f}$) evaluated at the prediction points ($\{x_j : j=1 \dots P\}$) and the true value of the function ($\{z_j : j=1 \dots P\}$.) This gives the MSE per model, since here many realisations are run, the mean of these over all simulations is taken and the standard error is calculated.
-
-
-LOOCV
-\label{DEFN-LOOCV}
+A nice feature of the MSE is that it can be decomposed in the following way (\cite{elements}, p. 24):
+\begin{equation*}
+\text{MSE} = \text{bias}(\hat{f}(\mathbf{x}))^2 + \text{Var}[\hat{f}(\mathbf{x})],
+\end{equation*}
+showing that the prediction error is combination of bias and variance.
 
 \subsubsection{\texttt{mgcv}}
 

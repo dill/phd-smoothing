@@ -35,7 +35,8 @@ names(breast.array)<-c("npi",paste("a",1:27,sep=""))
 
 this.formula<-as.formula(paste("npi~s(",
      paste("a",1:26,",",sep="",collapse=""),
-     "a27, bs=\"msg\",xt=list(mds.dim=6,metric=\"mahalanobis\"))",sep=""))
+     "a27, bs=\"msg\",xt=list(mds.dim=3,metric=\"mahalanobis\",extra.penalty=TRUE),k=44)",sep=""))
+#     "a27, bs=\"msg\",xt=list(mds.dim=6,metric=\"mahalanobis\",extra.penalty=FALSE),k=44)",sep=""))
 
 
 source("~/current/phd-smoothing/package/msg/R/smooth.construct.msg.smooth.spec.R")
