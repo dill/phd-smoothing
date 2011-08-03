@@ -45,10 +45,9 @@ Beginning with a recap of the physical analogy of the thin plate spline penalty 
 \subsection{From thin plate splines to Duchon splines}
 \label{gds-tprstoduchon}
 
-Going back to the general GAM objective function given in \secref{GAMobjfcn}, we can examine the penalty term. The thin plate penalty in $d$ dimensions with penalty order $m$ is given as:
+Going back to the general GAM objective function given in \secref{GAMobjfcn}, we can examine the penalty term. Recapping the thin plate penalty in $d$ dimensions with penalty order $m$ is given in (\ref{tprs-pen}) as:
 \begin{equation}
 J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f(x_1,\dots,x_d)}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d,
-\label{tprs-pen}
 \end{equation}
 where the summation index generates all of the possible combinations of derivative orders such than their sum is still $m$ (thereby finding all the correct cross-terms). The technical restriction $2m>d$ is also imposed to ensure that $f$ remains continuous.
 
