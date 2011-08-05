@@ -2,23 +2,21 @@
 
 \section{Introduction to the introduction}
 
-This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled throughout the rest of the thesis. Two topics will be addressed in the later chapters, the first concerns fine-resolution estimates of density of biological populations in space -- finite area smoothing. The second is a more coarse measure of density calculated via a widely used, inexpensive method -- distance sampling.
+This thesis is about statistical ecology, in particular it is about assessing the distribution of animals and plants in some fixed area. The models presented here address problems that practitioners face in their work and will hopefully be found to be useful. The emphasis when developing these methods and in documenting them here has been on (relatively) simple models with intuitive explanations. I can only hope that readers will find this to be the case.
+
+This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled throughout the rest of the thesis. Two topics will be addressed in the later chapters, the first concerns fine-resolution spatial estimates of density of biological populations in space -- finite area smoothing. The second is a more coarse measure of density calculated via a widely used, inexpensive method -- distance sampling.
 
 This introduction proceeds as follows: first, section (\ref{intro-GAM}) gives an introduction to generalized additive models (assuming the reader has some familiarity with generalized linear models), then section \ref{intro-FAS} goes on to talk about existing approaches to spatial smoothing in a finite area. Finally section \ref{intro-DS} introduces distance sampling.
-
-%\section{Statistical Ecology}
-
-%Some general remarks about stat ecol perhaps.
 
 \section{Generalized Additive Models}
 \label{intro-GAM}
 
-In large-scale ecological studies, it is typical that one of the covariates collected is the location at which the sample has been taken. Two possible uses for such data are considered here. First, location may be the only covariate collected, in which case we may only be interested in the spatial distribution of the phenomena in question and therefore wish to create spatial (or spatiotemporal) maps. Alternatively, the spatial covariate may be used to remove spatial-autocorrelation from the data which may mask the effects of other covariates in the model, removing spatial confounding can lead to a better model, making inferences more accurate.
+In ecological studies, it is typical that one of the covariates collected is the location at which the sample has been taken. Two possible uses for such data are considered here. First, location may be the only covariate collected, in which case estimating the spatial distribution of the phenomena in question is the goal. Alternatively, the spatial covariate may be used to remove spatial-autocorrelation from the data which may mask the effects of other covariates in the model, removing spatial confounding can lead to a better model, making inferences more accurate.
 
 The following two examples highlight these two different objectives:
 \begin{enumerate}
-\item The chlorophyl levels in the Aral sea are monitored using satellite images. Each pixel in the image represents an area of 9 kilometres square on the Earth. However, the satellite images are noisy and as such adjacent pixels have vastly different measured levels of chlorophyll. We would expect the levels to vary smoothly with location, so a model can be fitted to the image data which produces a smooth map of the chlorophyll concentration over the whole of the sea. Figure \ref{aral-intro} shows raw data and a smoothed version of chlorophyll levels in the Aral sea (further analysis of this data can be found in section \ref{aral-sec} and \ref{aral-revisit}).
-\item We wish to model the whiting population in the North sea. At a set of sampling points nets are pulled up through the water column the number of whiting counted. The sample locations and dates were recorded, as well as other covariates including sea surface temperature, information on the ship that took the measurement (its identity and nationality) and the depth of the sea bed at the sample location. Such a model can be used to draw inference about how the population has changed over time (for example, to see if overfishing is a problem). The whiting's distribution in space is non-homogeneous (since it is known from other studies that they spawn near the shore and feed in certain areas) so failing to model this spatial heterogeneity could introduce huge bias in abundance estimates. Accurately modelling the spatial distribution is essential for reliable inference.
+\item The chlorophyl levels in the Aral sea are monitored using satellite images. Each pixel in the image represents an area of 9 kilometres square on the Earth. However, the satellite images are noisy and as such adjacent pixels have vastly different measured levels of chlorophyll. We would expect the levels to vary smoothly with location, so a model can be fitted to the image data which produces a smooth map of the chlorophyll concentration over the whole of the sea. Figure \ref{aral-intro} shows both raw and smoothed chlorophyll levels in the Aral sea (this data is revisited in section \ref{aral-sec} and \ref{aral-revisit}).
+\item We wish to model the distribution North sea whiting population in both space and time. At a set of sampling points nets are pulled up through the water column the number of whiting counted. The sample locations and dates were recorded, as well as other covariates including sea surface temperature, information on the ship that took the measurement (its identity and nationality) and the depth of the sea bed at the sample location. Such a model can be used to draw inference about how the population has changed over time (for example, to see if overfishing is a problem or perhaps to see if there are reporting discrepancies between ships). The whiting's distribution in space and time is non-homogeneous (since it is known from other studies that they spawn near the shore and feed in certain areas at certain times of year) so failing to model this spatial heterogeneity could introduce huge bias in abundance estimates. Accurately modelling the spatial distribution is essential for reliable inference.
 \end{enumerate}
 In both of these examples we have assumed that the phenomena in question (chlorophyll concentration and whiting density) vary smoothly according to their spatial location in the sense that the underlying process does not jump around as location changes. In many situations this assumption is biologically plausible.
 
@@ -30,26 +28,28 @@ In both of these examples we have assumed that the phenomena in question (chloro
 \label{aral-intro}
 \end{figure}
 
-There are many ways to construct models for the data described in the above examples, popular methods include kriging (\cite{diggle}), kernel density estimation (\cite{wandKDE}) and hierarchical models (\cite{banerjee}). This thesis concentrates on using the generalized additive model (GAM) framework (\cite{gammonograph}) -- using splines for spatial smoothing.
+There are many ways to construct models for the data described in the above examples, popular methods include kriging (\cite{diggle}), kernel density estimation (\cite{wandKDE}) and hierarchical models (\cite{banerjee}). This thesis concentrates on using the generalized additive model (GAM) framework (\cite{gammonograph}), using splines for spatial smoothing.
 
-Of particular interest here are smooth functions of space, and since the models are additive the emphasis is on situations akin to example 1 above, since if a method can be used in this context, it can also be included in models like those in example 2, simply as an additive component. For this reason, we ignore non-spatial covariates in the model setup (for now).
+Of particular interest here are smooth functions of space, and since the models are additive the emphasis is on situations akin to example 1 above, since if a method can be used in this context, it can also be included in models like those in example 2, simply as an additive component. For this reason, non-spatial covariates are ignored (for now).
 
 \subsection{Basic setup}
 
-First, denote observations of the phenomena of interest as $z_i$ (where $i$ indexes the samples $i=1,\ldots,n$, if there are $n$ samples) this could be the chlorophyll level or the whiting density. Each  $z_i$ is the realisation of some random variable $Z_i$, where $z_i=\mu_i+\epsilon_i$, where $\mu_i=\mathbb{E}[Z_i]$, the expected value of the $i^\text{th}$ observation. The $\epsilon_i$ is an error term and is assumed to follow a normal distribution with zero mean and some variance, $\sigma^2$ (other (exponential family) error distributions can be used via link functions as in the generalized linear model, but these are ignored for now). The spatial coordinates of the sample are also recorded, denote them $\mathbf{x}_i = (x_{i1}, x_{i2})$ (this could be as latitude and longitude, or as kilometres North and East of some reference point, known as Northings and Eastings). The objective is to model the $\mu_i$ (that is, the expected value of the response) using the coordinates at which the data were collected.
+First, denote observations of the phenomena of interest as $z_i$, where $i$ indexes the samples $i=1,\ldots,n$, if there are $n$ samples (in the examples above this would be the chlorophyll level or the whiting catch a particular point). Each  $z_i$ is the realisation of some random variable $Z_i$, where $z_i=\mu_i+\epsilon_i$, where $\mu_i=\mathbb{E}[Z_i]$, the expected value of the $i^\text{th}$ observation. The $\epsilon_i$ is an error term and is assumed to follow a normal distribution with zero mean and some variance, $\sigma^2$ (other exponential family error distributions can be used via link functions as in the generalized linear model, in which case $g(\mu_i)$ is modelled rather than $\mu_i$  but this situation is ignored for now). The spatial coordinates of the sample are also recorded, denote them $\mathbf{x}_i = (x_{i1}, x_{i2})$ (this could be as latitude and longitude, or as kilometres North and East of some reference point, known as Northings and Eastings). The objective is to model the expected value of the response ($\mu_i$) using the coordinates at which the data were collected.
 
-Now, as mentioned above, we have assumed that the distribution of phenomena of interest varies smoothly in space, this is equivalent to saying that $\mu_i$ varies smoothly in space. If we let $f$ be some smooth function, then mathematically this is written as $\mu_i = f(\mathbf{x}_i)$, so:
+Now, as mentioned above, we have assumed that the distribution of phenomena of interest varies smoothly in space, this is equivalent to saying that $\mu_i$ varies smoothly in space. If we let $f$ be some smooth function, then as $\mu_i = f(\mathbf{x}_i)$:
 \begin{equation}
 z_i = f(\mathbf{x}_i) + \epsilon_i.
 \end{equation}
 That is that the observations are made up of a smoothly varying spatial component and some additive random error. The problem is now how to find $f$.
 
-One can imagine several possible ways of obtaining a suitable $f$, for example one might simply work through a large book of mathematical functions, tweaking parameters and hoping one would fit. Alternatively one might estimate $f$ as a kind of moving average of the values (\cite{loess2}). The first option seems extremely time consuming (if it were even possible) and the second will not give a nice functional form at the end to slot into other procedures later. In practice, a \textit{basis function} representation of $f$ is used to form $f$. The idea is to build $f$ out of a sum of other known functions, ($b_j$s, say) scaled by coefficients ($\beta_k$, say) and then estimate these coefficients rather than the function as a whole. Mathematically:
+One can imagine several possible ways of obtaining a suitable $f$, for example one might simply work through a large book of mathematical functions, tweaking parameters and hoping one would fit. Alternatively one might estimate $f$ as a kind of moving average of the values (for example LOESS, see \cite{loess2}). The first option seems extremely time consuming (if it were even possible) and the second will not give a ``nice'' functional form at the end to slot into other procedures later. In practice, a \textit{basis function} representation is used to form $f$. The idea is to build $f$ out of a sum of other known functions, ($b_j$s, say) scaled by coefficients ($\beta_k$, say) and then estimate these coefficients rather than the function as a whole. Mathematically:
 \begin{equation}
  f(\mathbf{x}_{i}) = \sum_{j=1}^J \beta_j b_j(\mathbf{x}_{i}).
 \label{intro-basisdecomp}
 \end{equation}
-Now some care must be taken in choosing both the form of the $b_j$s and how many are used ($J$) so that they give sufficiently flexible functions for $f$ over the whole of the area that is to be smoothed over. [[TKTKTK Add some joining sentence here.]]
+Now some care must be taken in choosing both the form of the $b_j$s and how many are used ($J$) so that they give sufficiently flexible functions for $f$ over the whole of the area that is to be smoothed over. 
+
+The next few sections present a brief introduction to how GAMs work, with a particular emphasis on 2-dimensional smoothing in a spatial context. However, it should be noted that at all times the models presented can be extended to higher (and lower dimensions) and that two dimensions are used for clarity and relevance. The primary references for the rest of the GAM part of the introduction are \cite{simonbook} and \cite{rwc}, both provide excellent and complimentary introductions to the topic.
 
 \subsection{Smoothing with penalties}
 \label{GAMpenalties}
@@ -61,34 +61,43 @@ To obtain an $f$ as close to the data as possible, we can simply minimize an ord
 \sum_{i=1}^n (z_i - f(\mathbf{x}_i))^2,
 \label{intro-OLS}
 \end{equation}
-as such, finding the $\beta_j$s which minimize the distance between the data and $f$. This does nothing to stop $f$ simply interpolating the data (which would give a value of 0 in the above expression). To stop this from happening the ``wigglyness'' of $f$ is penalized.
+as such, finding the $\beta_j$s which minimize the distance between the data and $f$. Given that $b_j$s are a sufficiently rich set of functions, this objective function does nothing to stop $f$ simply interpolating the data (which would give a value of 0 in the above expression). To stop this from happening the ``wigglyness'' of $f$ is penalized.
 
-Penalizing the wigglyness (or \textit{roughness}, \cite{rwc}) of $f$ makes sense since if $f$ interpolates the data it will change direction very often and hence its second derivatives will be large. Taking this rough idea and writing it down mathematically we can add on a penalty to (\ref{intro-OLS}), giving:
+Penalizing the wigglyness (or \textit{roughness}, \cite{rwc}) of $f$ makes sense since (as stated above) the belief is that the underlying phenomena is smooth. Taking this rough idea and writing it down mathematically we can add on a penalty to (\ref{intro-OLS}), giving:
 \begin{equation}
 %\sum_{i=1}^n (z_i - f(\mathbf{x}_i))^2 +  \lambda \int\int \Big(\frac{\partial^2 f(\mathbf{x})}{\partial \mathbf{x}^2}\Big)^2 \text{d}\mathbf{x}.
 \sum_{i=1}^n (z_i - f(\mathbf{x}_i))^2 +  \lambda \int\int \Big(P f(\mathbf{x})\Big)^2 \text{d}\mathbf{x}.
 \label{intro-2d-objfcn}
 \end{equation}
 %Here the integral of the second derivatives over the whole space gives a measure of the wigglyness of the function, functions which vary a lot will lead to large values of the integral. 
-Here $P$ is some derivative operator, for example that might be the second derivatives (i.e. $P=\frac{\partial^2}{\partial x_1^2} + \frac{\partial^2}{\partial x_1 x_2} + \frac{\partial^2}{\partial x_2^2}$). The integrating the derivatives over the whole space gives a measure of the wigglyness of the function, functions which vary a lot will lead to large values of the integral. The exact form of $P$ changes from basis to basis (as will be seen in the next section).
+Here $P$ is some derivative operator, for example that might be the second derivatives (e.g. $P=\frac{\partial^2}{\partial x_1^2} + \frac{\partial^2}{\partial x_1 x_2} + \frac{\partial^2}{\partial x_2^2}$ in the 2-dimensional case). The integrating the derivatives over the whole space gives a measure of the wigglyness of the function, functions which vary a lot will lead to large values of the integral and hence have larger penalties. The exact form of $P$ changes from basis to basis (as will be seen in the next section).
 
 %The amount of wigglyness which is required will vary with the scale of the problem and the resolution of the data. In different situations the penalty should have a different amount of influence on the penalty, this is controlled by $\lambda$ ($\geq0$). The idea is that $\lambda$ (the \textit{smoothing parameter}) will trade-off interpolation (which happens as $\lambda \rightarrow 0$, leading to no penalty) against fitting a plane surface (which happens as $\lambda \rightarrow \infty$, where all terms apart from the linear and plane terms a penalized, since those terms have no second derivatives).
 
-The amount of wigglyness which is to be allowed will vary with the scale of the problem and the resolution of the data. In different situations the penalty should have a different amount of influence on the penalty, this is controlled by $\lambda$ ($\geq0$). The idea is that $\lambda$ (the \textit{smoothing parameter}) will trade-off interpolation (which happens as $\lambda \rightarrow 0$, leading to no penalty) against fitting a simpler (in derivative terms) function (which happens as $\lambda \rightarrow \infty$, where all terms apart from those for which $Pf(\mathbf{x})=0$ are penalised; this is known as the \textit{nullspace} of the penalty). Determining the value of $\lambda$ will be covered in section \ref{GAMfitting}. For now it is assumed that some optimal $\lambda$ has been found.
+Depending on the situation, the penalty should have a different amount of influence on (\ref{intro-2d-objfcn}) and this is controlled by $\lambda$ ($\geq0$). The the \textit{smoothing parameter}, $\lambda$, controls the trade-off between interpolation (which happens as $\lambda \rightarrow 0$, leading to no penalty) and fitting a simpler function (which happens as $\lambda \rightarrow \infty$, where all terms are penalised aside from those for which $Pf(\mathbf{x})=0$: those in the \textit{nullspace} of the penalty. Figure \ref{lambda-ex} shows how different values of $\lambda$ effect the fitted smooth function. Determining the value of $\lambda$ will be covered in section \ref{GAMfitting}. For now it is assumed that some optimal $\lambda$ is known.
+
+% example of setting lambda 
+\begin{figure}[tb]
+\centering
+\includegraphics[width=6in]{intro/figs/lambda-ex.pdf}\\
+\caption{An example of how different values of $\lambda$ effect the fitted smooth function of one variable. In the left panel, $\lambda$ is chosen optimally by GCV (see section \ref{GAMfitting}), in the middle panel the $\lambda=0$ giving an interpolating fit and in the right panel $\lambda=\infty$ leading to a straight line. In each panel the blue curve is the true function and the points are the data sampled from it with error.}
+\label{lambda-ex}
+\end{figure}
+
 
 \subsection{Spline bases}
 
-So far all that has been said about the form of $f$ is that it can be decomposed into a series of basis functions. Two bases are discussed here: \textit{thin plate regression splines} and \textit{P-splines}. They will be used throughout this thesis.
+So far all that has been said about the form of $f$ is that it can be decomposed into a series of basis functions. Two bases are discussed here: \textit{thin plate regression splines} and \textit{P-splines}, which will be used throughout this thesis.
 
 \subsubsection{Thin plate regression splines}
 \label{GAMtprs}
 \label{GAMtprspenalty}
 
-In (\ref{intro-basisdecomp}) the function $f$ was decomposed into a sum of basis functions. For a \textit{thin plate spline}, this summation is split into two: one for some global functions that act over the whole of the data and one for a set of local functions, one per datum. One can think of this as a global effect (in the 2-dimensional case, a plane) with lots of smaller ``bumps'' for the local effect, these are combined to give the spline.
+In (\ref{intro-basisdecomp}) $f$ was decomposed into a sum of basis functions. For a \textit{thin plate spline}, this summation is split into two parts: one for some global functions that act over the whole of the data and one for a set of local functions, one per datum. One can think of this as a global effect (in the 2-dimensional case, linear functions of the two coordinates) with lots of smaller ``bumps'' for the local effect, these are combined to give the spline.
 
 The thin plate spline (\cite{duchon77}) is defined more generally than has been discussed up until now. The more general definition is given first with general comments then afterwards the thin plate spline form for spatial smoothing is given. 
 
-Mathematically, the thin plate spline is written as:
+The thin plate spline basis is:
 \begin{equation}
 f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{m,d}(\lvert \lvert \mathbf{x}-\mathbf{x_i}\rvert \rvert) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
 \label{tprs-basis} 
@@ -99,18 +108,18 @@ where (letting $r=\lvert \lvert \mathbf{x}-\mathbf{x_i}\rvert \rvert$) the radia
 \frac{\Gamma(d/2-m)}{2^{2m}\pi^{d/2}(m-1)!} r^{2m-d} &\quad{\text{$d$ odd.}}
 \end{cases}
 \end{align*}
-where $m$ is the \textit{penalty order} (e.g. $m=2$ so far), $d$ is the dimension of the smooth (i.e. the dimension of $\mathbf{x}$, $2$ in a spatial setting) and $\Gamma$ is the gamma function (see e.g. [[TKTKTK handbuch page]]). The $\phi_j$s are $M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}$ linearly independent polynomials of degree less than $m$ which span the space of polynomials in $\mathbb{R}^d$; all of the $\phi_j$s therefore lie in the nullspace of the penalty.
+where $m$ is the \textit{penalty order} (e.g. $m=2$ so far), $d$ is the dimension of the smooth (i.e. the dimension of $\mathbf{x}$, 2 in a spatial setting) and $\Gamma$ is the gamma function. The $\phi_j$s are $M=\left( \begin{smallmatrix} m+d-1 \\ d  \end{smallmatrix}\right)$ linearly independent polynomials of degree less than $m$ which span the space of polynomials in $\mathbb{R}^d$; all of the $\phi_j$s therefore lie in the nullspace of the penalty.
 
 The thin plate spline penalty is given as:
 \begin{equation}
 J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f(x_1,\dots,x_d)}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d,
 \label{tprs-pen}
 \end{equation}
-where $m$ and $d$ are as above and the summation and $\nu_1,\ldots,\nu_d$ terms simply ensure that derivatives are taken with respect to all the parameters in all of the necessary combinations. This looks rather complex in comparison to (\ref{intro-2d-objfcn}), however in the 2-dimensional case the two expressions look rather similar, as shall be seen below. An important feature of the thin plate spline penalty is that it treats all of the directions of the smoother equally; wigglyness in the $x_1$ direction has the same weight in the penalty as in the $x_2$ direction. This property is known as \textit{isotropy} and makes sense in a spatial setting, since there is nothing special about one geographical coordinate over another when it comes to the smoothness of the function to be fitted.
+where $m$ and $d$ are as above and the summation and $\nu_1,\ldots,\nu_d$ terms simply ensure that derivatives are taken with respect to all the parameters in all of the necessary combinations. This looks rather complex, however in the 2-dimensional case, (\ref{tprs-pen}) looks much simpler, as shall be seen below. An important feature of the thin plate spline penalty is that it treats all of the directions of the smoother equally; wigglyness in the $x_1$ direction has the same weight in the penalty as in the $x_2$ direction and so on. This property is known as \textit{isotropy} and makes sense in a spatial setting, since there is nothing special about one geographical coordinate over another when it comes to the smoothness of the function to be fitted.
 
 Putting the above into the 2-dimensional spatial smoothing case and setting the penalty order to be $2$ ($d=2$ and $m=2$), we have:
 \begin{equation*}
-f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{2,2}(\lvert \lvert \mathbf{x}-\mathbf{x_i}\rvert \rvert) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
+f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{2,2}(\lvert \lvert \mathbf{x}-\mathbf{x_i}\rvert \rvert) + \sum_{j=1}^3 \alpha_j \phi_j(\mathbf{x}),
 \end{equation*}
 where:
 \begin{equation*}
@@ -120,22 +129,31 @@ and the penalty in (\ref{tprs-pen}) is then:
 \begin{equation*}
 J_{2,2} = \int \int \Big( \frac{\partial^2 f(x_1,x_2)}{\partial x_1^2} \Big)^2 + \Big( \frac{\partial^2 f(x_1,x_2)}{\partial x_1  \partial x_2} \Big)^2 + \Big( \frac{\partial^2 f(x_1,x_2)}{\partial x_2^2} \Big)^2 \text{d} x_1 \text{d} x_2,
 \end{equation*}
-The nullspace of the penalty contains $M=3$ functions $\phi_1(\mathbf{x})=1, \phi_2(\mathbf{x})=x_1 \text{ and } \phi_3(\mathbf{x})=x_2$.
+The nullspace of the penalty consists of three functions: $\phi_1(\mathbf{x})=1, \phi_2(\mathbf{x})=x_1 \text{ and } \phi_3(\mathbf{x})=x_2$, which it is easy to see make no contribution to $J_{2,2}$. Figure \ref{tprs-basis-fig} shows some examples of 2-dimensional thin plate basis functions.
+
+
+% tprs basis fig
+\begin{figure}[tb]
+\centering
+\includegraphics[width=6in]{intro/figs/tprs-basis.pdf}\\
+\caption{Example of a thin plate spline basis. The first three are $\phi_1(\mathbf{x})=1, \phi_2(\mathbf{x})=x_1 \text{ and } \phi_3(\mathbf{x})=x_2$, which are in the nullspace of the $J_{2,2}$ penalty. The next 12 plots show radial basis functions and the last panel (bottom right) shows the sum of these functions.}
+\label{tprs-basis-fig}
+\end{figure}
+
 
 %The two dimensional thin plate spline also has a direct physical analogy, that being the bending of a metal plate, with the penalty equivalent to the bending energy.
 
+With one radial function per datum the computational time taken to both evaluate and fit the model is very large and runs the risk of being too complex in many situations since the number of parameters is so big. To avoid this problem, one could either ($i$) select (perhaps randomly) some of the data and use only those points to create the basis and then use the full data to fit the model (i.e. changing the index of the summation in the first term of (\ref{tprs-basis})) or ($ii$) select a (relatively small) representative set of points within the space covered by the data (though not necessarily data locations) which would be evenly spread out enough to create the basis (changing the $\mathbf{x}_i$s in the first summation in (\ref{tprs-basis}) -- these points are known as \textit{knots}). Both approaches have potential problems, namely: how many points should be chosen and where they should best be located.
 
-With one radial function per datum the model is over specified and runs the risk of being too complex in many situations. To avoid this problem, one could either ($i$) select (perhaps randomly) some of the data and use only those points to create the basis and then use the full data to fit the model (i.e. changing the index of the summation in the first term of (\ref{tprs-basis})) or ($ii$) select a (relatively small) representative set of points within the space covered by the data (though not necessarily data locations) which would be evenly spread out enough to create the basis (changing the $\mathbf{x}_i$s in the first summation in (\ref{tprs-basis}) -- these points are known as \textit{knots}). Both approaches have potential problems, namely: how many points should be chosen and where they should best be located.
-
-\cite{wood2003} side-steps this problem by using an eigen-decomposition to find linear combinations of the basis functions, essentially creating eigen-knots to give a reduced-rank version of the basis. This leads to a data-driven set of basis functions which approximate the full basis as closely as possible. It is this thin plate regression spline formulation that will be used throughout. 
+\cite{wood2003} side-steps this problem by using an eigen-decomposition of the full basis to find the parts of the basis which do not affect the model much. Essentially this creates eigen-knots to give a reduced-rank version of the basis. This leads to a data-driven set of basis functions which approximate the full basis as closely as possible (according to a ``least bad'' criterion). It is this thin plate regression spline formulation that will be used throughout. 
 
 \subsubsection{P-splines}
 
-P-splines (\cite{eilersmarx96}) consist of B-splines with penalties. So, before thinking about P-splines, the properties of B-splines are considered. B-splines are simple local basis functions; they are simple in that they all have the same shape and local in that they only have an effect near where they are centred (the knots of the spline). Taking (\ref{intro-basisdecomp}), we replace the $b_j$s with an $(m+1)^\text{th}$ order B-spline $B_j^m$ (where the order is chosen). Note that the $B_j^m$s are only a function of one covariate, in this case the $x_{i1}$s (this will be re-visited below). So, (\ref{intro-basisdecomp}) becomes:
+P-splines (\cite{eilersmarx96}) consist of B-splines with penalties. So, before thinking about P-splines, the properties of B-splines are considered. B-splines are simple local basis functions; they are simple in that they all have the same shape and local in that they only have an effect near where they are centred (the knots). Taking (\ref{intro-basisdecomp}), we replace the $b_j$s with an $(m+1)^\text{th}$ order B-spline $B_j^m$ (where the order is chosen). Note that the $B_j^m$s are only a function of one covariate, (without loss of generality) $x_{i1}$s (this will be re-visited below). So, (\ref{intro-basisdecomp}) becomes:
 \begin{equation*}
 f_{x_1}(x_{1i}) = \sum_{j=1}^{J+m+1} \beta_j B^m_j(x_{1i}).
 \end{equation*}
-The $B_j^m$s are defined recursively:
+The $B_j^m$s are defined recursively as:
 \begin{equation*}
 B_j^m(x) = \frac{x-x^*_j}{x^*_{j+m+1} - x^*_j} B_j^{m-1}(x) + \frac{x^*_{j+m+2} -x}{x^*_{j+m+2} - x^*_{i+1}} B_{j+1}^{m-1}(x) \quad \text{for } i=1,\ldots,J,
 \end{equation*}
@@ -146,7 +164,7 @@ and
 0 \quad \text{otherwise}. 
 \end{cases}
 \end{equation*}
-The $J+m+1$ knots $x^*_j$ are evenly spaced over the $x$-axis and these, along with the order of the basis, determine how flexible $f$ is. Each $B^m_j(x)$ is non-zero over the $m+3$ adjacent knots. This seems like a rather complex mathematical setup, but the functions shown in figure \ref{bs-basis} are rather simple. From left to right the panels show B-splines bases with $m=1,2,3$ for evenly spaces knots over $(0,1)$.
+The $J+m+1$ knots $x^*_j$ are evenly spaced over the $x$-axis and these, along with the order of the basis, determine how flexible $f$ is. Each $B^m_j(x)$ is non-zero over the $m+3$ adjacent knots. Contrary to their rather complex functional form, the functions shown in figure \ref{bs-basis} are rather simple. From left to right the panels show B-splines bases with $m=1,2,3$ for evenly spaces knots over $(0,1)$.
 
 % b-splines example 
 \begin{figure}[tb]
@@ -156,7 +174,7 @@ The $J+m+1$ knots $x^*_j$ are evenly spaced over the $x$-axis and these, along w
 \label{bs-basis}
 \end{figure}
 
-P-splines take the B-spline basis and add a penalty structure. Because of their local nature, the penalty is somewhat different to that given in (\ref{intro-2d-objfcn}) and is based on finite differences. The idea is that smoothness only needs to be enforces on neighbouring basis functions so (\ref{intro-2d-objfcn}) becomes:
+P-splines take the B-spline basis and add a penalty structure. Because of their local nature, the penalty is somewhat different to that given in (\ref{intro-2d-objfcn}) and is based on finite differences. The idea is that smoothness only needs to be enforced on neighbouring basis functions (since the $B^m_j$s are defined locally) so (\ref{intro-2d-objfcn}) becomes:
 \begin{equation*}
 \sum_{i=1}^n (z_i - f_{x_1}(x_{1i}))^2 +  \lambda \sum_{j=1}^{J+m+1} \Delta^2 \beta_j,
 \end{equation*}
@@ -178,23 +196,25 @@ f_{x_1, x_2}(\mathbf{x}_{1i}) = \sum_{j=1}^J \sum_{j=1}^J \delta_j d_j(x_{2i}) b
 \end{equation*}
 Finally, there is now one penalty for each direction yielding:
 \begin{equation*}
-\lambda_{x_1} \int\int \Big(\frac{\partial^2 f_{x_1, x_2}(x_1,x_2}{\partial x_1^2}\Big)^2 \text{d}x_1\text{d}x_1 + \lambda_{x_2} \int\int \Big(\frac{\partial^2 f_{x_1, x_2}(x_1,x_2}{\partial x_2^2}\Big)^2 \text{d}x_1\text{d}x_1.
+\lambda_{x_1} \int\int \Big(P_{x_1} f_{x_1, x_2}(x_1,x_2)\Big)^2 \text{d}x_1\text{d}x_1 + \lambda_{x_2} \int\int \Big(P_{x_2} f_{x_1, x_2}(x_1,x_2)\Big)^2 \text{d}x_1\text{d}x_1,
 \end{equation*}
-Although only a very simplistic example is given here, tensor product splines are an extremely powerful technique only limited in dimensionality by computational time. Not that  the use of a different smoothing parameter for each direction allows for \textit{anisotropic} smoothing. That is that covariates that are measured on different scales (for example temperature and length) may be combined into one tensor product smooth.
+where $P_{x_1}$ and $P_{x_2}$ are derivatives with respect to $x_1$ and $x_2$ respectively. 
+
+Although only a very simplistic example is given here, tensor product splines provide an excellent addition to the GAM framework; they allow for extra dimensions to be added to models using different bases. The use of a different smoothing parameter for each direction allows for \textit{anisotropic} smoothing, so that covariates that are measured on different scales (for example temperature and length) may be combined into one tensor product smooth. In particular this can be useful when constructing a spatiotemporal smooth: for example using a thin plate spline for the spatial part of the smooth (so the spatial part of the model is isotropic) then taking a tensor product of that with a P-spline for the temporal effect (so a different amount of smoothing can be used for each direction).
 
 \subsection{Fitting}
 \label{GAMfitting}
 
-If $\lambda$ were known, fitting such models (i.e. estimating a ``best'' $\bm{\beta}$) would be relatively straight forward. This is because we can think of a GAM as a penalized GLM. The matrix form of a GLM is $\mathbf{z}=X\bm{\beta}$, where $\mathbf{z}$ is the $n$-vector of the observations, $z_i$. Each row of the ($n\times p$) matrix $X$ consists of the $p$ covariates collected on observation $i$ (with the first element being a $1$ for the intercept term) and $\bm{\beta}$ is the $p$-vector of corresponding coefficients.
+If $\lambda$ were known, fitting such models (i.e. estimating a ``best'' $\bm{\beta}$) would be relatively straight forward. This is because we can think of a GAM as a penalized GLM. The matrix form of a GLM is $\mathbf{z}=X\bm{\beta}$, where $\mathbf{z}$ is the $n$-vector of the observations, $z_i$. Each row of the ($n\times p$) matrix $X$ consists of the $p$ covariates collected on observation $i$ (with the first element being a 1 for the intercept term) and $\bm{\beta}$ is the $p$-vector of corresponding coefficients.
 
-The models described above fit into this matrix formulation too. By appending the evaluations of the bases in (\ref{intro-basisdecomp}) at the covariate values onto the end of the matrix $X$ and the corresponding coefficients onto the end of $\bm{\beta}$, we have the exact same matrix form and can think of the extra basis evaluations simply as extra covariates. 
+The models described above fit into this matrix formulation too. By appending the evaluations of the bases in (\ref{intro-basisdecomp}) at the covariate values onto the end of the design matrix $X$ and the corresponding coefficients onto the end of $\bm{\beta}$, we have the exact same matrix form and can think of the extra basis evaluations simply as extra covariates. 
 
 With this matrix formulation, the objective function (\ref{intro-2d-objfcn}) can be written as
 \begin{equation}
-\lvert \lvert \bm{z} - X\bm{\beta} \rvert \rvert^2 + \lambda \bm{\beta}^\text{T} S \bm{\beta},
+\lvert \lvert \bm{z} - X\bm{\beta} \rvert \rvert^2 + \lambda \bm{\beta}^\text{T} S \bm{\beta}.
 \label{GAMobjfcn}
 \end{equation}
-the penalty can always be written in this matrix form (\cite{simonbook}, p.128). 
+The penalty can always be written as $\bm{\beta}^\text{T} S \bm{\beta}$ (\cite{simonbook}, p.128). 
 %This is since:
 %\begin{align*}
 %\int\cdots\int \Big(\frac{\partial^2 f(\mathbf{x})}{\partial \mathbf{x}^2}\Big)^2 \text{d}\mathbf{x} &= \int\cdots\int \Big(\frac{\partial^2 \sum_{j=1}^J \beta_j b_j(\mathbf{x})}{\partial \mathbf{x}^2}\Big)^2 \text{d}\mathbf{x}\\
@@ -204,11 +224,11 @@ the penalty can always be written in this matrix form (\cite{simonbook}, p.128).
 %&=\bm{\beta}^\text{T} S \bm{\beta},
 %\end{align*}
 %where $\mathbf{b}''(\mathbf{x})$ denotes the $J$-vector of second derivatives of the basis functions. So 
-$S$ contains the integrated squared second derivatives of the basis functions; it is usually referred to as the \textit{penalty matrix}.
+$S$ contains the integrated squared derivatives of the basis functions and is usually referred to as the \textit{penalty matrix}. In this form, fitting a GAM can be viewed as fitting a penalized GLM.
 
-Returning to fitting the model, with this view of the model as a penalized GLM, a penalized iteratively reweighted least squares (P-IRLS) scheme (see \cite{simonbook}, p. 138 for details) can be used to find the $\bm{\beta}$ vector that best fits the data without overfitting (given that we know the optimal $\lambda$ to use).
+Returning to fitting the model, with this view of the model as a penalized GLM, a penalized iteratively reweighted least squares (P-IRLS) scheme (see \cite{simonbook}, p. 138 for details) can be used to find $\hat{\bm{\beta}}$, the vector of parameter estimated (and hence the estimated smooth $\hat{f}$) that best fits the data without overfitting (given that we know the optimal $\lambda$ to use).
 
-Automatic smoothing parameter selection has been the subject of many articles (for example, \cite{wood2000}, \cite{wood2004}, \cite{wood2008}, \cite{gammonograph} and \cite{ruppertreview} for a general overview of some developments) and the descriptions given here are certainly not exhaustive. All approaches fall into one of two classes, either they attempt to minimize some prediction error-based criterion or they are likelihood-based. The two methods that will be used in this thesis are now discussed: \textit{generalized cross validation} (GCV) and \textit{restricted maximum likelihood or (marginal) maximum likelihood} (REML/ML).
+Up until know the value of $\lambda$ has been assumed to be known, however since we do not know its value in practise, it must be estimated. Automatic smoothing parameter selection has been the subject of much discussion (for example, \cite{wood2000}, \cite{wood2004}, \cite{wood2008}, \cite{gammonograph} and \cite{ruppertreview} for a general overview of some developments) and the descriptions given here are certainly not exhaustive. Approaches fall into one of two classes, either they attempt to minimize some prediction error-based criterion or they are likelihood-based. The two methods that will be used in this thesis are now discussed: \textit{generalized cross validation} (GCV) and \textit{restricted maximum likelihood or (marginal) maximum likelihood} (REML/ML).
 
 \subsubsection{GCV}
 \label{GAMGCV}
@@ -219,14 +239,14 @@ First, let us express the idea above mathematically, that is that we wish to min
 \begin{equation*}
 \sum_{i \in \bm{\kappa}} (z_i - \hat{f}^{[-\bm{\kappa}]}(\mathbf{x}_i))^2,
 \end{equation*}
-where $\hat{f}^{[-\bm{\kappa}]}$ indicates the fitted model fitted without using the data points $\bm{\kappa}$ (where the elements of $\bm{\kappa}$ are indices of those data not used to fit the model).
+where $\hat{f}^{[-\bm{\kappa}]}$ indicates the model fitted without using the data points $\bm{\kappa}$ (where $\bm{\kappa}$ is a vector containing the indices of those data not used to fit the model).
 
-The logical conclusion of such a criteria would be to move to a point where only one datum was left out of the model fitting each time and the performance assessed using the following:
+Taking such a criterion to its logical conclusion where only one datum was left out of the model fitting each time would lead to the performance being assessed using the following criterion:
 \begin{equation}
 \sum_{i=1}^n (z_i - \hat{f}^{[-i]}(\mathbf{x}_i))^2,
 \label{DEFN-LOOCV}
 \end{equation}
-known as \textit{leave-one-out cross validation}. One might think that calculating such a criterion would require fitting $n$ models, however this is not the case. Going back to the penalized GLM view of the GAM, we can write down the \textit{influence} or \textit{hat matrix} for the model:
+known as \textit{leave-one-out cross validation} (LOOCV). One might think that calculating such a criterion would require fitting $n$ models, however this is not the case. Going back to the penalized GLM view of the GAM, we can write down the \textit{influence} or \textit{hat matrix} for the model:
 \begin{equation*}
 A = X(X^\text{T}X + \lambda S)^{-1}X^\text{T}
 \end{equation*}
@@ -238,57 +258,54 @@ So for the prediction for the $i^\text{th}$ datum we have:
 \begin{equation*}
 \hat{f}(\mathbf{x}_i) = A\mathbf{z} - A_{ii}z_i + A_{ii}\hat{f}(\mathbf{x})^{[-i]},
 \end{equation*}
-which can be thought of as the prediction using the full data but replacing the $i^\text{th}$ value with its predicted value from the model. So with a little re-arrangement (see p. 174 of \cite{simonbook} for details), the \textit{ordinary cross validation score} is obtained:
+which can be thought of as the prediction using the full data but replacing the $i^\text{th}$ value with its predicted value from the model. So with a little re-arrangement (see p. 174 of \cite{simonbook} for details), the \textit{ordinary cross validation score} (OCV) is obtained:
 \begin{equation}
 \mathcal{V}_o = \frac{1}{n} \sum_{i=1}^n \frac{(z_i - \hat{f}(\mathbf{x}_i))^2}{(1-A_{ii})^2}.
 \label{intro-OCV}
 \end{equation}
-Now this seems like a reasonable criterion to use for finding the optimal smoothing parameters however, the measure in \ref{intro-OCV} does not take into account rotations of $\mathbf{z}-X\bm{\beta}$. The generalized cross validation score takes this into account:
+Now this seems like a reasonable criterion to use for finding the optimal smoothing parameters however, the measure in \ref{intro-OCV} does not take into account rotations of $\mathbf{z}-X\bm{\beta}$, in the sense that inferences on $\mathbf{z}-X\bm{\beta}$ are the same as inferences on $Q\mathbf{z}-QX\bm{\beta}$ (where $Q$ is some orthogonal matrix). The generalized cross validation score takes this into account:
 \begin{equation}
 \mathcal{V}_g = \frac{n \lvert\lvert \mathbf{z} - \mathbf{\hat{f}}(\mathbf{x}_i)\rvert \rvert^2}{(n-\text{tr}(A))^2},
 \label{intro-GCV}
 \end{equation}
 where $\text{tr}(X)$ indicates the trace of the matrix $X$. A full account and justification is provided in \cite{simonbook} pp. 175--177.
 
-The quantity $\text{tr}(A)$ gives the \textit{effective degrees of freedom}. This gives an measure of the complexity of the model that was fit to the data. The higher the EDF, the more basis functions were used and  the more complex the model.  Since the models used here are penalised, it is the penalty term that controls the overall ``wigglyness'' of the spline and hence the EDF. In most cases the basis dimension is set in the model, but this is just an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite{simonbook}, p. 161.) 
+So the GCV score will minimized by the model coefficients which provide the best prediction error. These coefficients ($\hat{\bm{\beta}}$) can be found by iterating between:
+\begin{enumerate}
+\item A P-IRLS step, converging at the best $\hat{\bm{\beta}}$ for a given smoothing parameter (or parameters).
+\item A step which uses a Newton-Raphson procedure to find the optimal $\lambda$(s) for a given $\hat{\bm{\beta}}$.
+\end{enumerate}
+This is known as \textit{outer iteration} (\cite{osullivan}).
 
-So the GCV score will minimized by the model coefficients which provide the best prediction error. These coefficients ($\bm{\beta}$) can be found by iterating between a P-IRLS step to find the best $\bm{\beta}$ for a given smoothing parameter (or parameters) and a step which uses a Newton-Raphson procedure to find the optimal $\lambda$(s) for a given set of coefficients.
+The quantity $\text{tr}(A)$ gives the \textit{effective degrees of freedom}. This gives an measure of the complexity of the model that was fitted to the data. The higher the EDF, the more basis functions were used and  the more complex the model. 
+
+Since the models used here are penalised, it is the penalty term that controls the overall ``wigglyness'' of the spline and hence the EDF. If there was no penalty then the EDF would be the dimension of $\bm{\beta}$ (minus any identifiability constraints, see section \ref{intro-extending}). In most cases the basis dimension is set as an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite{simonbook}, p. 161.) 
 
 More complicated versions of this kind of procedure exist (see \cite{wood2008}) but they rely on the same basic principle.
 
-[[TKTKTK check this and put more explanation here]]
-
 \subsubsection{REML/ML}
 
-An alternative to minimizing the GCV score is to use a likelihood-based method. The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods for fitting GAMs is the realisation that the estimates of the coefficients, the $\bm{\hat{\beta}}$ are the posterior modes of the distribution of $\bm{\hat{\beta}}|\mathbf{z}$ (\cite{remlpaper}). When the $\bm{\hat{\beta}}$ are considered to be random variables, the smoothing parameter(s) can be thought of as the variance parameter(s). This is known as the \textit{random effects formulation} for GAMs.
+It has been observed (\cite{reissogden}) that GCV can have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method which do not suffer from this problem. The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods for fitting GAMs is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},S^-)$ where $S^-$ is some appropriate generalized inverse (see chapter \ref{chap-gds} and \cite{remlpaper}). When the $\bm{\hat{\beta}}$ are considered to be random variables, the smoothing parameter(s) can be thought of as the variance parameter(s). This is known as the \textit{random effects formulation} for GAMs.
 
-Using this formulation a likelihood can be formed and the variance parameters (equivalently, the smoothing parameters) can be estimated. Technical details of the implementation used here (for REML and ML) are given in \cite{remlpaper}.
-
-[[TKTKTK check this and put more explanation here]]
+A likelihood can then be formed for the penalized GLM and the variance parameters (equivalently, the smoothing parameters) can be estimated. Technical details of the implementation used here (for REML and ML) are given in \cite{remlpaper}.
 
 \subsubsection{General comments on GCV vs. REML/ML}
 
-\cite{rwc} pp. 120--123 provide an interesting insight into automatic smoothing parameter selection. In particular they cite work showing that as the number of data increases ($n\rightarrow\infty$), GCV slowly converges to finding the optimum smoothing parameter, this leads to the variability of the smoothing parameter to be quite high. In general GCV tends to select more complicated functions (higher EDFs) than likelihood based methods leading to overfitting to the data (\cite{remlpaper}). REML and ML on the other hand will tend to fit smoother functions. However, it is important to note that this is a manifestation of the variance--bias trade-off. GCV will lead to less biased but more variable fits whereas REML and ML will be less variable but more biased (\cite{rwc}, p. 122).
+\cite{rwc} pp. 120--123 provide an interesting discussion of automatic smoothing parameter selection. In particular they cite work showing that as the number of data increases ($n\rightarrow\infty$), GCV slowly converges to finding the optimum smoothing parameter, this leads to the variability of the smoothing parameter to be quite high. In general GCV tends to select more complicated functions (with higher EDFs) than likelihood based methods leading to overfitting to the data (\cite{remlpaper}). REML and ML on the other hand will tend to fit smoother functions. However, it is important to note that this is a manifestation of the variance--bias trade-off. GCV will lead to less biased but more variable fits whereas REML and ML will be less variable but more biased.
 
 \subsection{Extending to more complex models}
+\label{intro-extending}
 
-Although in the above, the focus has been on including on geographical coordinates as explanatory variables, the GAM framework allows for the inclusion of other covariates (or combinations of covariates) in an additive way. The notation above is simply extended in this case and all of the above results hold, simply by defining $f=\sum_j f_j(\mathbf{x}_j)$ for smooths $f_j$ of corresponding covariates ($\mathbf{x}_j$) and the smoother matrix $S$ is replaced by $S= \sum_j \lambda_j S_j$ with the original $\lambda$ removed from calculations and the $\lambda_j$ estimated. Finding smoothing parameters reliably in this situation is covered in \cite{wood2004}.
+Although in the above, the focus has been on including on geographical coordinates as explanatory variables, the GAM framework allows for the inclusion of other covariates (or combinations of covariates) in an additive way. The notation above is simply extended in this case and all of the above results hold, simply by defining $f=\sum_k f_k(\mathbf{x}^{(k)})$ for smooths $f_k$ of corresponding covariates ($\mathbf{x}^{(k)}$) and the smoother matrix $S$ is replaced by $S= \sum_k \lambda_k S_k$ with $\lambda$ replaced with $\lambda_k$s. With such models identifiability becomes an issue since each of the $f_k$ can only be found up to some additive constant (since one could add a value, $a$ to $f_1$, say and then subtract it from $f_2$ leading to the same model as if $a$ were not included. To get around this problem \textit{identifiability constraints} are used to ensure that the models are identifiable, this manifests itself as ensuring that the sum of the values of each function at the observed values is zero (for linear functions this means that the function passes through the origin). Finding smoothing parameters reliably in this situation is covered in \cite{wood2004}.
 
-As seen in the thin plate spline case, the order of the penalty can be changed (and, indeed, is require to change) according to the number of dimensions that smoothing takes place in. MORE
-
-Smoothing in high dimensions can be unreliable and numerically difficult however, as will be seen later in this thesis, not impossible (see TKTKTK CHAPTER 5).
-
-higher order/higher dimensional problems
+As seen in the thin plate spline case, the order of the penalty can be changed (and, indeed, is required to change) according to the number of dimensions that smoothing takes place in. Ensuring that the derivative order in the penalty is high enough to prevent overly complex functions being unpenalized is essential. Smoothing in high dimensions can be unreliable and numerically tricky however, as will be seen later in this thesis, not impossible (see chapter \ref{chap-gds}).
 
 
 \subsection{GAMs in practice}
 
 This final section deals with two topics not covered above: assessing the performance of GAMs and the practical implementation of the methods detailed above.
 
-\subsubsection{Assessing GAM fit}
-
-Mean squared error
-
+\subsubsection{Assessing GAM fit using mean squared error}
 
 Simulation studies will be used extensively to evaluate the proposed methods. In order to make such evaluations, some metric must be chosen. Mean squared error (MSE) is a standard approach to assessing the performance of a model, in terms of prediction error. If there are $n_p$ prediction points, the MSE of the fitted model $\hat{f}$ is defined as:
 \begin{equation*}
@@ -299,7 +316,7 @@ which can be approximated by:
 \hat{\text{MSE}}(\hat{f}(\mathbf{x})) = \frac{1}{n_p} \sum_{i=1}^{n_p} (\hat{f}(\mathbf{x}_i) - z_i)^2.
 \label{DEFN-MSE}
 \end{equation}
-The $z_i$ could be datum (in which case $n_p$ could equal $n$) or if how well $\hat{f}$ approximates a known function is being tested then $z_i=f(\mathbf{x}_i)$ where $f$ is the true function that $\hat{f}$ approximates. When MSE is mentioned from now on, it will be with reference to the quantity defined in (\ref{DEFN-MSE}).
+The $z_i$s could be the data (in which case $n_p=n$ and the indexing is the same as for the data) or if how well $\hat{f}$ approximates a known function is being tested then $z_i=f(\mathbf{x}_i)$ where $f$ is the true function that $\hat{f}$ approximates. When MSE is mentioned from now on, it will be with reference to the quantity defined in (\ref{DEFN-MSE}).
 
 A nice feature of the MSE is that it can be decomposed in the following way (\cite{elements}, p. 24):
 \begin{equation*}
@@ -307,21 +324,22 @@ A nice feature of the MSE is that it can be decomposed in the following way (\ci
 \end{equation*}
 showing that the prediction error is combination of bias and variance.
 
-\subsubsection{\texttt{mgcv}}
+\subsubsection{Fitting GAMs using \texttt{mgcv}}
 
-Throughout this this thesis the software package \texttt{mgcv} by Simon N. Wood is used. The package is free (GPL) software for the language \textsf{R} (\cite{Rsoftware}).
+Throughout this this thesis the software package \texttt{mgcv} by Simon N. Wood is used. The package is free (GPL) software for the language \textsf{R} (\cite{Rsoftware}). The library gives a simple, extensible collection of fitting routines, bases and diagnostics.
 
 
 \subsection{Summing up}
 
-WORDS GO HERE.
+This section has hopefully given a brief introduction to generalized additive models in the setting of spatial smoothing. The next section goes into the particulars of the problem that will be address in the first three chapters of the thesis: finite area smoothing.
+
 
 \section{Finite area smoothing}
 \label{intro-FAS}
 
 \subsection{Overview of finite area smoothing}
 
-As we have seen in the previous section, splines are a popular way of performing spatial smoothing in two dimensions. In this context, they are often used to fit smooth functions over a geographical region. A typical application of this is in ecological modelling; a response (be it simply the presence of individuals in a population or concentration of a chemical) is modelled as a function of its spatial coordinates. The estimated function can then be used to perform inference on the population, whether that be an abundance estimate, density map or a more sophisticated inferential goal. Finite area smoothing simply specifies that the domain over which this smoothing takes place is bounded.
+As we have seen in the previous section, splines are a popular way of performing spatial smoothing in two dimensions. To recap, a typical application in ecological modelling consists of a response (be it simply the presence of individuals in a population or concentration of a chemical) modelled as a function of its spatial coordinates. The estimated function can then be used to perform inference on the population, whether that be an abundance estimate, density map or a more sophisticated inferential goal. Finite area smoothing simply specifies that the domain over which this smoothing takes place is bounded.
 
 When the geographical region has a \emph{complex boundary}, features from one part of the domain can unduly influence other parts. Considering the boundary as a polygon, a complex boundary is a non-convex polygon, in particular when the non-convexity is relatively extreme. Often this consists of having some peninsula-like feature(s) in the domain with notably different observation values on either side of the feature. Given that there is some scientific motivation as to why those parts of the domain should not affect each other, features such as peninsulae give rise to a phenomenon known as \emph{leakage}.
 
