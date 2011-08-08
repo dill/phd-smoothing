@@ -1,15 +1,9 @@
 % thesis?
 
-\documentclass[mitthesis]{report}
+\documentclass[mitthesis,12pt]{report}
 \usepackage{baththesis}
 
-\usepackage{times, amsmath, amssymb, amsfonts, url, natbib, bm, rotating}
- 
-\usepackage{multirow}
-\usepackage{graphicx}
-\usepackage{rotating}
-\usepackage{psfrag}
-\usepackage{appendix}
+\usepackage{amsmath, amssymb, amsfonts, url, natbib, bm, rotating, multirow, graphicx, psfrag, appendix}
 
  
 % Shortcuts
@@ -30,6 +24,9 @@
 % shortcut for ij^{th}
 \newcommand{\ijth}{$ij^{\text{th}}$}
 
+% lazy citation correction...
+\newcommand{\citeb}{\citet}
+\renewcommand{\cite}{\citealp}
 
 % references
 % figure reference command
@@ -110,6 +107,8 @@ This thesis is split into two parts:
 \tableofcontents
 
 \listoffigures
+
+\listoftables
 
 \chapter{An Introduction}
 \begin{quotation}
