@@ -34,7 +34,7 @@ Of particular interest here are smooth functions of space, and since the models 
 
 \subsection{Basic setup}
 
-First, denote observations of the phenomena of interest as $z_i$, where $i$ indexes the samples $i=1,\ldots,n$, if there are $n$ samples (in the examples above this would be the chlorophyll level or the whiting catch a particular point). Each  $z_i$ is the realisation of some random variable $Z_i$, where $z_i=\mu_i+\epsilon_i$, where $\mu_i=\mathbb{E}[Z_i]$, the expected value of the $i^\text{th}$ observation. For an additive model the $\epsilon_i$ is an error term and is assumed to be normally distributed with zero mean and some variance, $\sigma^2$. If other exponential family error distributions are used, we call this a generalized additive model and in that case we may model $g(\mu_i)$ where $g$ is a \textit{link function}, however this is ignored for now. The spatial coordinates of the sample are also recorded, denote them $\mathbf{x}_i = (x_{i1}, x_{i2})$ (this could be as latitude and longitude, or as kilometres North and East of some reference point, known as Northings and Eastings). The objective is to model the expected value of the response ($\mu_i$) using the coordinates at which the data were collected.
+First, denote observations of the phenomena of interest as $z_i$, where $i$ indexes the samples $i=1,\ldots,n$, if there are $n$ samples (in the examples above this would be the chlorophyll level or the whiting catch a particular point). Each  $z_i$ is the realisation of some random variable $Z_i$, where $z_i=\mu_i+\epsilon_i$, where $\mu_i=\mathbb{E}[Z_i]$, the expected value of the $i^\text{th}$ observation. For an additive model the $\epsilon_i$ is an error term and is assumed to be normally distributed with zero mean and some variance, $\sigma^2$. If other exponential family error distributions are used, we call this a generalized additive model and in that case we may model $g(\mu_i)$ where $g$ is a \textit{link function} (in the same sense as the GLM case). The spatial coordinates of the sample are also recorded, denote them $\mathbf{x}_i = (x_{i1}, x_{i2})$ (this could be as latitude and longitude, or as kilometres North and East of some reference point, known as Northings and Eastings). The objective is to model the expected value of the response ($\mu_i$) using the coordinates at which the data were collected.
 
 Now, as mentioned above, we have assumed that the distribution of phenomena of interest varies smoothly in space, this is equivalent to saying that $\mu_i$ varies smoothly in space. If we let $f$ be some smooth function, then as $\mu_i = f(\mathbf{x}_i)$:
 \begin{equation}
@@ -136,9 +136,6 @@ The nullspace of the penalty consists of three functions: $\phi_1(\mathbf{x})=1,
 \label{tprs-basis-fig}
 \end{figure}
 
-
-%The two dimensional thin plate spline also has a direct physical analogy, that being the bending of a metal plate, with the penalty equivalent to the bending energy.
-
 With one radial function per datum the computational time taken to both evaluate and fit the model is very large and runs the risk of being too complex in many situations since the number of parameters is so big. To avoid this problem, one could either ($i$) select (perhaps randomly) some of the data and use only those points to create the basis and then use the full data to fit the model (i.e. changing the index of the summation in the first term of (\ref{tprs-basis})) or ($ii$) select a (relatively small) representative set of points within the space covered by the data (though not necessarily data locations) which would be evenly spread out enough to create the basis (changing the $\mathbf{x}_i$s in the first summation in (\ref{tprs-basis}) -- these points are known as \textit{knots}). Both approaches have potential problems, namely: how many points should be chosen and where they should best be located.
 
 \citeb{wood2003} side-steps this problem by using an eigen-decomposition of the full basis to find the parts of the basis which do not affect the model much. Essentially this creates eigen-knots to give a reduced-rank version of the basis. This leads to a data-driven set of basis functions which approximate the full basis as closely as possible (according to a ``least bad'' criterion). It is this thin plate regression spline formulation that will be used throughout. 
@@ -196,94 +193,79 @@ Finally, there is now one penalty for each direction yielding:
 \end{equation*}
 where $P_{x_1}$ and $P_{x_2}$ are derivatives with respect to $x_1$ and $x_2$ respectively. 
 
-Although only a very simplistic example is given here, tensor product splines provide an excellent addition to the GAM framework; they allow for extra dimensions to be added to models using different bases. The use of a different smoothing parameter for each direction allows for \textit{anisotropic} smoothing, so that covariates that are measured on different scales (for example temperature and length) may be combined into one tensor product smooth. In particular this can be useful when constructing a spatiotemporal smooth: for example using a thin plate spline for the spatial part of the smooth (so the spatial part of the model is isotropic) then taking a tensor product of that with a P-spline for the temporal effect (so a different amount of smoothing can be used for each direction).
+Although only a very simplistic example is given here, tensor product splines provide an extremely useful tool, allowing for extra dimensions to be added to models using different bases. The use of a different smoothing parameter for each direction allows for \textit{anisotropic} smoothing, so that covariates that are measured on different scales (for example temperature and length) may be combined into one tensor product smooth. In particular this can be useful when constructing a spatiotemporal smooth: for example using a thin plate spline for the spatial part of the smooth (so the spatial part of the model is isotropic) then taking a tensor product of that with a P-spline for the temporal effect (so a different amount of smoothing can be used for each direction).
 
 \subsection{Fitting}
 \label{GAMfitting}
 
-If $\lambda$ were known, fitting such models (i.e. estimating a ``best'' $\bm{\beta}$) would be relatively straight forward. This is because we can think of a GAM as a penalized GLM. The matrix form of a GLM is $\mathbf{z}=X\bm{\beta}$, where $\mathbf{z}$ is the $n$-vector of the observations, $z_i$. Each row of the ($n\times p$) matrix $X$ consists of the $p$ covariates collected on observation $i$ (with the first element being a 1 for the intercept term) and $\bm{\beta}$ is the $p$-vector of corresponding coefficients.
+Many possibilities for fitting of GAMs and AMs have been suggested, they include:
 
-The models described above fit into this matrix formulation too. By appending the evaluations of the bases in (\ref{intro-basisdecomp}) at the covariate values onto the end of the design matrix $X$ and the corresponding coefficients onto the end of $\bm{\beta}$, we have the exact same matrix form and can think of the extra basis evaluations simply as extra covariates. 
+PQL
+MCMC - Lang
+Backfitting - Hastie \& Tibshirani
+MERGE
+Up until know the value of $\lambda$ has been assumed to be known, however since we do not know its value in practise, it must be estimated. Automatic smoothing parameter selection has been the subject of much discussion (for example, \cite{wood2000}, \cite{wood2004}, \cite{wood2008}, \cite{gammonograph} and \cite{ruppertreview} for a general overview of some developments) and the descriptions given here are certainly not exhaustive. 
 
-With this matrix formulation, the objective function (\ref{intro-2d-objfcn}) can be written as
-\begin{equation}
-\lvert \lvert \bm{z} - X\bm{\beta} \rvert \rvert^2 + \lambda \bm{\beta}^\text{T} S \bm{\beta}.
-\label{GAMobjfcn}
-\end{equation}
-The penalty can always be written as $\bm{\beta}^\text{T} S \bm{\beta}$ (\cite[p. 128]{simonbook}). 
-%This is since:
-%\begin{align*}
-%\int\cdots\int \Big(\frac{\partial^2 f(\mathbf{x})}{\partial \mathbf{x}^2}\Big)^2 \text{d}\mathbf{x} &= \int\cdots\int \Big(\frac{\partial^2 \sum_{j=1}^J \beta_j b_j(\mathbf{x})}{\partial \mathbf{x}^2}\Big)^2 \text{d}\mathbf{x}\\
-%&= \int\cdots\int \Big(\bm{\beta}^\text{T}\mathbf{b}''(\mathbf{x})\Big)^2 \text{d}\mathbf{x}\\
-%&= \int\cdots\int \bm{\beta}^\text{T}\mathbf{b}''(\mathbf{x})\mathbf{b}''(\mathbf{x})^\text{T}\bm{\beta} \text{d}\mathbf{x}\\
-%&=\bm{\beta}^\text{T} \Big( \int\cdots\int \mathbf{b}''(\mathbf{x})\mathbf{b}''(\mathbf{x})^\text{T} \text{d}\mathbf{x}\Big) \bm{\beta}\\
-%&=\bm{\beta}^\text{T} S \bm{\beta},
-%\end{align*}
-%where $\mathbf{b}''(\mathbf{x})$ denotes the $J$-vector of second derivatives of the basis functions. So 
-$S$ contains the integrated squared derivatives of the basis functions and is usually referred to as the \textit{penalty matrix}. In this form, fitting a GAM can be viewed as fitting a penalized GLM.
-
-Returning to fitting the model, with this view of the model as a penalized GLM, a penalized iteratively reweighted least squares (P-IRLS) scheme (see \cite[p. 138]{simonbook} for details) can be used to find $\hat{\bm{\beta}}$, the vector of parameter estimated (and hence the estimated smooth $\hat{f}$) that best fits the data without overfitting (given that we know the optimal $\lambda$ to use).
-
-Up until know the value of $\lambda$ has been assumed to be known, however since we do not know its value in practise, it must be estimated. Automatic smoothing parameter selection has been the subject of much discussion (for example, \cite{wood2000}, \cite{wood2004}, \cite{wood2008}, \cite{gammonograph} and \cite{ruppertreview} for a general overview of some developments) and the descriptions given here are certainly not exhaustive. Approaches fall into one of two classes, either they attempt to minimize some prediction error-based criterion or they are likelihood-based. The two methods that will be used in this thesis are now discussed: \textit{generalized cross validation} (GCV) and \textit{restricted maximum likelihood or (marginal) maximum likelihood} (REML/ML).
+Approaches fall into one of two classes, either they attempt to minimize some prediction error-based criterion or they are likelihood-based. The two methods that will be used in this thesis are now discussed: \textit{generalized cross validation} (GCV) using the methods in \citeb{wood2008}and \textit{restricted maximum likelihood or (marginal) maximum likelihood} (REML/ML) as described in \citeb{remlpaper}. These methods are used since they are ($i$) computationally efficient and ($ii$) implemented in freely available, user-friendly software (see section \ref{intro-mgcv}).
 
 \subsubsection{GCV}
 \label{GAMGCV}
 
-Minimizing prediction-based error seems like the logical way to approach the problem of finding smoothing parameters in GAMs: a $\lambda$ is sought that will not only give a model that fits the current  data but will also give a good fit to as yet uncollected data. A simple way of approaching this would be to fit the model to (say) $9/10$ of the data, then predict the remaining $1/10$, calculate the error in those observations and then try a different value for $\lambda$, repeating this procedure until the error is minimized is the basis of \textit{cross validation} (CV).
-
-First, let us express the idea above mathematically, that is that we wish to minimize the following criterion:
-\begin{equation*}
-\sum_{i \in \bm{\kappa}} (z_i - \hat{f}^{[-\bm{\kappa}]}(\mathbf{x}_i))^2,
-\end{equation*}
-where $\hat{f}^{[-\bm{\kappa}]}$ indicates the model fitted without using the data points $\bm{\kappa}$ (where $\bm{\kappa}$ is a vector containing the indices of those data not used to fit the model).
-
-Taking such a criterion to its logical conclusion where only one datum was left out of the model fitting each time would lead to the performance being assessed using the following criterion:
+For additive models, parameter estimation is relatively straight forward. The generalized cross validation score can be minimized. The GCV score is defined as:
 \begin{equation}
-\sum_{i=1}^n (z_i - \hat{f}^{[-i]}(\mathbf{x}_i))^2,
-\label{DEFN-LOOCV}
-\end{equation}
-known as \textit{leave-one-out cross validation} (LOOCV). One might think that calculating such a criterion would require fitting $n$ models, however this is not the case. Going back to the penalized GLM view of the GAM, we can write down the \textit{influence} or \textit{hat matrix} for the model:
-\begin{equation*}
-A = X(X^\text{T}X + \lambda S)^{-1}X^\text{T}
-\end{equation*}
-such that
-\begin{equation*}
-\mathbf{\hat{f}}^{[-i]}(\mathbf{x}) = A\mathbf{z} = X(X^\text{T}X + \lambda S)^{-1}X^\text{T}\mathbf{z}
-\end{equation*}
-So for the prediction for the $i^\text{th}$ datum we have:
-\begin{equation*}
-\hat{f}(\mathbf{x}_i) = A\mathbf{z} - A_{ii}z_i + A_{ii}\hat{f}(\mathbf{x})^{[-i]},
-\end{equation*}
-which can be thought of as the prediction using the full data but replacing the $i^\text{th}$ value with its predicted value from the model. So with a little re-arrangement (see \cite[p. 174]{simonbook} for details), the \textit{ordinary cross validation score} (OCV) is obtained:
-\begin{equation}
-\mathcal{V}_o = \frac{1}{n} \sum_{i=1}^n \frac{(z_i - \hat{f}(\mathbf{x}_i))^2}{(1-A_{ii})^2}.
-\label{intro-OCV}
-\end{equation}
-Now this seems like a reasonable criterion to use for finding the optimal smoothing parameters however, the measure in \ref{intro-OCV} does not take into account rotations of $\mathbf{z}-X\bm{\beta}$, in the sense that inferences on $\mathbf{z}-X\bm{\beta}$ are the same as inferences on $Q\mathbf{z}-QX\bm{\beta}$ (where $Q$ is some orthogonal matrix). The generalized cross validation score takes this into account:
-\begin{equation}
-\mathcal{V}_g = \frac{n \lvert\lvert \mathbf{z} - \mathbf{\hat{f}}(\mathbf{x}_i)\rvert \rvert^2}{(n-\text{tr}(A))^2},
+\mathcal{V}_g = \frac{n \lvert\lvert \mathbf{z} - \mathbf{\hat{f}}(\mathbf{x})\rvert \rvert^2}{\{n-\text{tr}(A)\}^2},
 \label{intro-GCV}
 \end{equation}
-where $\text{tr}(X)$ indicates the trace of the matrix $X$. A full account and justification is provided in \citeb[pp. 175-177]{simonbook}.
+where $A$ is the hat (or influence) matrix (see section \ref{GAMEDF}) and $\text{tr}(A)$ indicates the trace of $A$. A full account and justification is provided in \citeb[pp. 134-137]{simonbook}, however it serves to say that one can think of $\mathcal{V}_g$ as a measure of how well the model predicts data not in the sample, so the GCV score will minimized by the model coefficients which provide the best prediction error. 
 
-So the GCV score will minimized by the model coefficients which provide the best prediction error. These coefficients ($\hat{\bm{\beta}}$) can be found by iterating between:
-\begin{enumerate}
-\item A P-IRLS step, converging at the best $\hat{\bm{\beta}}$ for a given smoothing parameter (or parameters).
-\item A step which uses a Newton-Raphson procedure to find the optimal $\lambda$(s) for a given $\hat{\bm{\beta}}$.
-\end{enumerate}
-This is known as \textit{outer iteration} (\cite{osullivan}).
+SAY SOMETHING ABOUT LIKELIHOOD HERE!!!
 
-The quantity $\text{tr}(A)$ gives the \textit{effective degrees of freedom}. This gives an measure of the complexity of the model that was fitted to the data. The higher the EDF, the more basis functions were used and  the more complex the model. 
+Unfortunately in the generalized additive model case things are not so simple. The above penalized least squares-type approach cannot be easily adapted into a context where non-normal error distributions are used. The approach used in this thesis is of \citeb{wood2008}, which revolves around optimizing the generalized GCV score:
+\begin{equation}
+\mathcal{V}^*_g = \frac{n D(\bm{\hat{\beta}})}{\{n-\text{tr}(A)\}^2},
+\label{intro-GCV2008}
+\end{equation}
+where $D(\bm{\hat{\beta}})$ is the model deviance defined as $D(\bm{\hat{\beta}}) = 2\phi (\hat{l}_\text{max} - \hat{l}(\bm{\hat{\beta}}))$ with $\hat{l}_\text{max}$ the value of the (saturated) log-likelihood when a model with one parameter per datum is used and $\hat{l}(\bm{\hat{\beta}})$ is the value of the log-likelihood for the fitted model. $D(\bm{\hat{\beta}})$ can be thought of as a measure of model fit in a similar way to $\mathcal{V}_g$. WHAT IS $\phi$?!
 
-Since the models used here are penalised, it is the penalty term that controls the overall ``wigglyness'' of the spline and hence the EDF. If there was no penalty then the EDF would be the dimension of $\bm{\beta}$ (minus any identifiability constraints, see section \ref{intro-extending}). In most cases the basis dimension is set as an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite[p. 161]{simonbook}). 
+Optimize $\mathcal{V}^*_g$ with respect to $\lambda$
 
-More complicated versions of this kind of procedure exist (see \cite{wood2008}) but they rely on the same basic principle.
+For a given $\lambda$ optimize $\mathcal{V}^*_g$ with respect to $\bm{\beta}$
 
-\subsubsection{REML/ML}
 
-It has been observed (\cite{reissogden}) that GCV can have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method which do not suffer from this problem. The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},S^-)$ where $S^-$ is some appropriate generalized inverse (see chapter \ref{chap-gds} and \cite{remlpaper}). When the $\bm{\hat{\beta}}$ are considered to be random variables, the smoothing parameter(s) can be thought of as the variance parameter(s). This is known as the \textit{random effects formulation}.
 
-A likelihood can then be formed for the penalized GLM and the variance parameters (equivalently, the smoothing parameters) can be estimated. Technical details of the implementation used here (for REML and ML) are given in \citeb{remlpaper}.
+
+%If $\lambda$ were known, fitting such models (i.e. estimating a ``best'' $\bm{\beta}$) would be relatively straight forward. This is because we can think of a GAM as a penalized GLM. The matrix form of a GLM is $\mathbf{z}=X\bm{\beta}$, where $\mathbf{z}$ is the $n$-vector of the observations, $z_i$. Each row of the ($n\times p$) matrix $X$ consists of the $p$ covariates collected on observation $i$ (with the first element being a 1 for the intercept term) and $\bm{\beta}$ is the $p$-vector of corresponding coefficients.
+%
+%The models described above fit into this matrix formulation too. By appending the evaluations of the bases in (\ref{intro-basisdecomp}) at the covariate values onto the end of the design matrix $X$ and the corresponding coefficients onto the end of $\bm{\beta}$, we have the exact same matrix form and can think of the extra basis evaluations simply as extra covariates. 
+%
+%With this matrix formulation, the objective function (\ref{intro-2d-objfcn}) can be written as
+%\begin{equation}
+%\lvert \lvert \bm{z} - X\bm{\beta} \rvert \rvert^2 + \lambda \bm{\beta}^\text{T} S \bm{\beta}.
+%\label{GAMobjfcn}
+%\end{equation}
+%The penalty can always be written as $\bm{\beta}^\text{T} S \bm{\beta}$ (\cite[p. 128]{simonbook}). 
+%%This is since:
+%%\begin{align*}
+%%\int\cdots\int \Big(\frac{\partial^2 f(\mathbf{x})}{\partial \mathbf{x}^2}\Big)^2 \text{d}\mathbf{x} &= \int\cdots\int \Big(\frac{\partial^2 \sum_{j=1}^J \beta_j b_j(\mathbf{x})}{\partial \mathbf{x}^2}\Big)^2 \text{d}\mathbf{x}\\
+%%&= \int\cdots\int \Big(\bm{\beta}^\text{T}\mathbf{b}''(\mathbf{x})\Big)^2 \text{d}\mathbf{x}\\
+%%&= \int\cdots\int \bm{\beta}^\text{T}\mathbf{b}''(\mathbf{x})\mathbf{b}''(\mathbf{x})^\text{T}\bm{\beta} \text{d}\mathbf{x}\\
+%%&=\bm{\beta}^\text{T} \Big( \int\cdots\int \mathbf{b}''(\mathbf{x})\mathbf{b}''(\mathbf{x})^\text{T} \text{d}\mathbf{x}\Big) \bm{\beta}\\
+%%&=\bm{\beta}^\text{T} S \bm{\beta},
+%%\end{align*}
+%%where $\mathbf{b}''(\mathbf{x})$ denotes the $J$-vector of second derivatives of the basis functions. So 
+%$S$ contains the integrated squared derivatives of the basis functions and is usually referred to as the \textit{penalty matrix}. In this form, fitting a GAM can be viewed as fitting a penalized GLM.
+%
+%Returning to fitting the model, with this view of the model as a penalized GLM, a penalized iteratively reweighted least squares (P-IRLS) scheme (see \cite[p. 138]{simonbook} for details) can be used to find $\hat{\bm{\beta}}$, the vector of parameter estimated (and hence the estimated smooth $\hat{f}$) that best fits the data without overfitting (given that we know the optimal $\lambda$ to use).
+%
+%Up until know the value of $\lambda$ has been assumed to be known, however since we do not know its value in practise, it must be estimated. Automatic smoothing parameter selection has been the subject of much discussion (for example, \cite{wood2000}, \cite{wood2004}, \cite{wood2008}, \cite{gammonograph} and \cite{ruppertreview} for a general overview of some developments) and the descriptions given here are certainly not exhaustive. Approaches fall into one of two classes, either they attempt to minimize some prediction error-based criterion or they are likelihood-based. The two methods that will be used in this thesis are now discussed: \textit{generalized cross validation} (GCV) and \textit{restricted maximum likelihood or (marginal) maximum likelihood} (REML/ML).
+%
+
+%
+%\subsubsection{REML/ML}
+%
+%It has been observed (\cite{reissogden}) that GCV can have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method which do not suffer from this problem. The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},S^-)$ where $S^-$ is some appropriate generalized inverse (see chapter \ref{chap-gds} and \cite{remlpaper}). When the $\bm{\hat{\beta}}$ are considered to be random variables, the smoothing parameter(s) can be thought of as the variance parameter(s). This is known as the \textit{random effects formulation}.
+%
+%A likelihood can then be formed for the penalized GLM and the variance parameters (equivalently, the smoothing parameters) can be estimated. Technical details of the implementation used here (for REML and ML) are given in \citeb{remlpaper}.
 
 \subsubsection{GCV vs. REML/ML}
 
@@ -320,7 +302,15 @@ A nice feature of the MSE is that it can be decomposed in the following way (\ci
 \end{equation*}
 showing that the prediction error is combination of bias and variance.
 
+
+\subsubsection{EDF}
+\label{GAMEDF}
+%The quantity $\text{tr}(A)$ gives the \textit{effective degrees of freedom}. This gives an measure of the complexity of the model that was fitted to the data. The higher the EDF, the more basis functions were used and  the more complex the model. 
+%
+%Since the models used here are penalised, it is the penalty term that controls the overall ``wigglyness'' of the spline and hence the EDF. If there was no penalty then the EDF would be the dimension of $\bm{\beta}$ (minus any identifiability constraints, see section \ref{intro-extending}). In most cases the basis dimension is set as an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite[p. 161]{simonbook}). 
+
 \subsubsection{Fitting GAMs using \texttt{mgcv}}
+\label{intro-mgcv}
 
 Throughout this this thesis the software package \texttt{mgcv} by Simon Wood is used. The package is free (GPL) software for the language \textsf{R} (\cite{Rsoftware}). The library gives a simple, extensible collection of fitting routines, bases and diagnostics.
 
