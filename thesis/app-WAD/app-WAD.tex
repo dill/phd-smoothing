@@ -60,14 +60,30 @@ This proof was adapted from the one given in lecture notes by Leonidas Guibas av
 
 By definition it is clear that the algorithm must terminate at the point at which no further DELETE or ALTER steps will shorten the path. However, what is not clear is that it will terminate at the shortest path within the domain.
 
-Say we have a locally optimal path, $P_l$. This path is locally optimal in the sense that any small perturbation of the points in $P_l$ does not yield a shorter path but the vertices of $P_l$ are not all identical to those of the unique (globally) shortest path $P_o$. The following argument shows that $P_l$ cannot exist. 
+Say we have a locally optimal path, $P_l$. This path is locally optimal in the sense that any small perturbation of the points in $P_l$ does not yield a shorter path (i.e. the algorithm has converged) but the vertices of $P_l$ are not all identical to those of the unique (globally) shortest path $P_o$. The following argument shows that $P_l$ cannot exist. 
 
-As in the above proof of the uniqueness of the shortest path, consider the loop $L$, formed by taking the first and last disjoint vertices of $P_l$ and $P_o$ and those points between, those points in $L$ belonging to $P_o$ are denoted $L_o$ and similarly those points belonging to $P_l$ are denoted $L_l$ (i.e. intersection of $L_l$ and $L_o$ are the start and ends of the disjointness). It must always be possible to move the points in $L_l$ towards $L_o$ smoothly (i.e. continuously through space) since there are no holes in the domain. 
+As in the above proof of the uniqueness of the shortest path, consider the loop $L$, formed by taking the first and last disjoint vertices of $P_l$ and $P_o$ and those points between, those points in $L$ belonging to $P_o$ are denoted $L_o$ and similarly those points belonging to $P_l$ are denoted $L_l$ (i.e. intersection of $L_l$ and $L_o$ are the start and ends of the disjointness). It must always be possible to move the points in $L_l$ towards $L_o$ smoothly (i.e. continuously through space) since there are no holes in the domain. This deformation must always continually reduce the overall path length of $P_l$.
 
-In the best case ($i$) there is a 1-1 correspondence between vertices in $L_o$ and $L_l$ (but some of the vertices are in the wrong place). Alternatively: ($ii$) if there are too many vertices in $L_l$ then we may simply allocate more than one vertex of $L_l$ to a single vertex in $L_o$. Finally, ($iii$) if there are fewer vertices in $L_l$ than there are in $L_o$, then let us (for now) imagine that we can spontaneously create the necessary extra vertices. 
+Since it is possible to move at least one point in $L_l$ nearer to a point in $L_o$, that implies that there is a triangle in $L_l$ that could be removed by a DELETE step and hence $P_l$ is not the result of the algorithm converging.
 
 
-In any of the three cases above we can always smoothly deform $L_l$ to $L_o$, since there are no obstacles (i.e. holes) between the two paths (and at each stage, this deformation must always reduce the overall path length of $P_l$). Since there are no obstacles between $L_l$ and $L_o$, it is possible to triangulate the area bounded by $L$ and therefore go from $L_l$ to $L_o$ via a series of DELETE steps. So, it is always possible to move from a locally optimal path to a globally optimal path this implied that there are no locally optimal paths and therefore that the path given by the algorithm is the unique shortest path.
+
+Now it remains to be shown that such a deformation can be performed by using the DELETE and ALTER steps. 
+
+
+If it could not be performed using DELETE and ALTER steps then..!!!!
+
+
+Can't propose a new shorter subpath using ALTER => 
+
+
+In L run INIT part of ALTER
+
+
+In any of the three cases above we can always smoothly deform $L_l$ to $L_o$, since there are no obstacles (i.e. holes) between the two paths (and at each stage, this deformation must always reduce the overall path length of $P_l$). Since there are no obstacles between $L_l$ and $L_o$, it is possible to triangulate the area bounded by $L$ and therefore go from $L_l$ to $L_o$ via a series of DELETE steps. 
+
+
+So, it is always possible to move from a locally optimal path to a globally optimal path this implies that there are no locally optimal paths and therefore that the path given by the algorithm is the unique shortest path.
 
 
 
