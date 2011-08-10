@@ -66,28 +66,46 @@ As in the above proof of the uniqueness of the shortest path, consider the loop 
 
 Now it remains to be shown that such a deformation can be performed by using the DELETE and ALTER steps. 
 
-If it is possible to go from $L_l$ to $L_o$ using only DELETE steps then we are done. However, if it is not possible to go between the locally and globally optimal paths using only DELETE steps then that implies that the boundary is in the way (only the boundary, since there are no holes).  In that case then ALTER steps must be used. If ALTER steps are used then they must be at least one ALTER proposed path that reduces the overall length of $P_l$ since  there is nothing between $L_o$ and $L_l$ the f
+Now consider $L$ which forms an envelope of all possible path segments shorter than $L_l$ (since it is bound on one side by $L_o$ the true shortest path and it is possible to smoothly deform from $L_l$ to $L_o$. 
 
-Consider L, any proposed path within L will give a shorter path since it will reduce the size of L. All paths proposed by ALTER lie within L (since their start and end points are vertices of L and their constituent points must be inside L by the DELETE after the INIT). So, the ALTER step must reduce the path, then you can always go from L_l to L_o
+Any proposed path must lie within $L$ since its start and end points lie on $L_l$.
 
-
-If the ALTER step cannot find a path along an encroaching boundary segment that decreases the total path length (i.e. that a local optimum does exist)
-
-
-If it could not be performed using DELETE and ALTER steps then..!!!!
+Accepted paths must lie in $L$ since otherwise the path would be longer than $L_l$ and could not be accepted.
 
 
-Can't propose a new shorter subpath using ALTER => 
+Thinking only about ALTER steps (since a DELETE step is simply an ALTER step where the replacement path is the start and end points only), at least one path can be proposed and must be selected. 
+
+A path proposed by ALTER must include 
+
+If this were not the case then it would imply $L_l$ could not be shortened by drawing straight lines between a point pair and tracing the boundary. 
 
 
-In L run INIT part of ALTER
 
 
-In any of the three cases above we can always smoothly deform $L_l$ to $L_o$, since there are no obstacles (i.e. holes) between the two paths (and at each stage, this deformation must always reduce the overall path length of $P_l$). Since there are no obstacles between $L_l$ and $L_o$, it is possible to triangulate the area bounded by $L$ and therefore go from $L_l$ to $L_o$ via a series of DELETE steps. 
 
-
-So, it is always possible to move from a locally optimal path to a globally optimal path this implies that there are no locally optimal paths and therefore that the path given by the algorithm is the unique shortest path.
-
+%
+%If it is possible to go from $L_l$ to $L_o$ using only DELETE steps then we are done. However, if it is not possible to go between the locally and globally optimal paths using only DELETE steps then that implies that the boundary is in the way (only the boundary, since there are no holes).  In that case then ALTER steps must be used. If ALTER steps are used then they must be at least one ALTER proposed path that reduces the overall length of $P_l$ since  there is nothing between $L_o$ and $L_l$ the f
+%
+%Consider L, any proposed path within $L$ will give a shorter path since it will reduce the size of $L$. All paths proposed by ALTER lie within L (since their start and end points are vertices of L and their constituent points must be inside L by the DELETE after the INIT). So, the ALTER step must reduce the path, then you can always go from $L_l$ to $L_o$
+%
+%
+%If the ALTER step cannot find a path along an encroaching boundary segment that decreases the total path length (i.e. that a local optimum does exist)
+%
+%
+%If it could not be performed using DELETE and ALTER steps then..!!!!
+%
+%
+%Can't propose a new shorter subpath using ALTER => 
+%
+%
+%In L run INIT part of ALTER
+%
+%
+%In any of the three cases above we can always smoothly deform $L_l$ to $L_o$, since there are no obstacles (i.e. holes) between the two paths (and at each stage, this deformation must always reduce the overall path length of $P_l$). Since there are no obstacles between $L_l$ and $L_o$, it is possible to triangulate the area bounded by $L$ and therefore go from $L_l$ to $L_o$ via a series of DELETE steps. 
+%
+%
+%So, it is always possible to move from a locally optimal path to a globally optimal path this implies that there are no locally optimal paths and therefore that the path given by the algorithm is the unique shortest path.
+%
 
 
 

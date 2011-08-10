@@ -4,63 +4,50 @@
 
 \section{Introduction}
 
-
-   what the problems are
-   why do it this way (why not use other smoothers)
-   
-
 In the previous chapter multidimensional scaling was used to project the points within some geographical area into a new space in which smoothing can be performed without the problem of leakage. However, it has become clear that we face a trade-off in using this method: if the ordering of the points in space is to be maintained (\secref{pensuck}), a sufficiently high dimensional projection of the data must be obtained. Increasing the projection dimension causes the nullspace of the thin plate spline penalty (\secref{GAMtprspenalty}) to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results (\secref{nohigherdim}). To resolve this issue a smoother which can deal with high dimensional data must be used. 
 
-Smoothing reliably in high dimensions is a difficult problem, however it has been approached in several different ways previously. It is worth quickly covering here other smoothers that could be used to solve this problem and their relative advantages and disadvantages.
-
-WHY DO THESE METHODS SUCK?
+High dimensional smoothing is a tricky problem, however it has been approached in several different ways previously. Though this final chapter a generalization of thin plate splines will be used to combat this problem, however first it is worth reviewing other approaches before committing to the thin plate generalization.
 \begin{itemize}
-   \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of cubic or P-splines could be combined using a tensor product to create a mutlidimensional smooth in the requisite number of dimensions. Although this approach is appealing conceptually, in practice several problems arise. First is the problem of knot placement (which the thin plate spline neatly avoids, see \secref{GAMtprs}), TKTKTK more here. Second is that tensor product smooths are non-isotropic so the ammount of smoothing in each direction is variable, mutliple smoothing paramater estimation adds further computational burden to the fitting process (TKTKTK cite). Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to require many evaluations.
-   \item Rather than using a fixed basis, one could use LOESS (TKTKTK cite Cleveland 79) which smooths the data using a low-degree local polynomial. 
-         as above, in multidimensional case: expensive 
-         backfitting only way to integrate with other smoothers
+   \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of P-splines (\secref{intro-psplines}) could be combined using a tensor product to create a mutlidimensional smooth in the requisite number of dimensions. Although this approach is appealing conceptually, in practice several problems arise. First is the problem of knot placement, which in high dimensions can become massive computational burden, in particular with P-splines since non-regular grid of P-splines do not tend to make sense (TKTKTK what?). Second is that tensor product smooths are non-isotropic so the amount of smoothing in each direction is variable which doesn't necessarily make sense in a geographical situation, additionally multiple smoothing parameter estimation adds further computational cost to the fitting process. Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to require many evaluations.
+   \item Rather than using a fixed basis, one could use LOESS (\cite{loess2}) which smooths the data using a low-degree local polynomial. As with P-splines this approach is computationally expensive in high dimensions. LOESS has the additional problem that the only way to integrate the method with other methods is to use backfitting for smoothness selection, this has been shown to... TKTKTK backfitting thing, ch 4. TKTKTK interpretability?
          smoothing selection
-   \item GSS
-         ???
    \item kriging ???
          covariance matrix stuff -- curriero
    \item kernel smoothing ???
 \end{itemize}
 
+All of the methods listed above have problems that thin plate splines do not suffer from, however the thin plate spline does have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions. Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
 
-
-If thin plate splines are to continue to be used, the requirement we seek is clear: we wish to smooth in as many dimensions as necessary; but while doing this we must also limit the nullspace of the penalty in order to avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
-
-In the paper in which thin plate splines are proposed for the first time (\cite{duchon77}) a much more general set of interpolation methods are proposed, of which thin plate splines are a particular example. This chapter illustrates how a more general version of the thin plate spline (henceforth referred to as Duchon splines) can be used for high dimensional smoothing whilst avoiding an overly big penalty nullspace.
+\citeb{duchon77} (the seminal work on thin plate splines) actually proposes a much more general set of interpolation methods are proposed, of which thin plate splines are just a particular example. This chapter illustrates how a more general version of the thin plate spline (henceforth referred to as Duchon splines) can be used for high dimensional smoothing whilst avoiding an overly big penalty nullspace.
 
 The next section goes into the technical detail of how Duchon splines work and how they can be used in the finite area smoothing case. \Secref{gds-wad-examples} shows how this can be useful in the within-area distance case discussed in chapters \ref{chap-sc} and \ref{chap-mds}. \Secref{gds-gds-examples} expands the methodology to look at any problems where distances can be considered, taking the MDS projection of these distances and then smoothing in the projected space. \Secref{gds-software} illustrates the software implementation of these methods. Finally, \secref{gds-conclusion} concludes the chapter.
 
 \section{Using Duchon splines for reliable high dimensional smoothing}
 
-As mentioned above \cite{duchon77} initially proposed a more general version of the thin plate spline penalty and the thin plate spline is just one example of a resulting interpolator. Given that up to this point we have mainly concerned ourselves with thin plate splines and that \secref{GAMtprs} gives explanation of how the thin plate spline works, the following explanation of how Duchon splines operate works from the thin plate spline back to the more general version of the penalty given in \cite{duchon77}. For a more rigorous technical explanation of the construction of such splines, Duchon's paper is recommended.
-
-Beginning with a recap of the physical analogy of the thin plate spline penalty working up to the Duchon spline, the section continues to show how (once reliable high dimensional smoothing can be performed) the size of the MDS projection dimension can be selected.
+Starting from the definition of the thin plate spline penalty, this section moves to the more general Duchon spline penalty. Although this is not strictly mathematically rigorous, the idea is to show how such a penalty works and that the main differences between it and the thin plate spline. For a full technical exposition see \citeb{duchon77}. This section goes on to show how (once reliable high dimensional smoothing can be performed) the size of the MDS projection dimension can be selected.
 
 
 \subsection{From thin plate splines to Duchon splines}
 \label{gds-tprstoduchon}
 
-Going back to the general GAM objective function given in \secref{GAMobjfcn}, we can examine the penalty term. Recapping the thin plate penalty in $d$ dimensions with penalty order $m$ is given in (\ref{tprs-pen}) as:
-\begin{equation}
+Recapping, the thin plate spline penalty in $d$ dimensions with derivative order $m$ is given in (\ref{tprs-pen}) as:
+\begin{equation*}
 J_{m,d} = \int \ldots \int_{\mathbb{R}^n} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f(x_1,\dots,x_d)}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d,
-\end{equation}
+\end{equation*}
 where the summation index generates all of the possible combinations of derivative orders such than their sum is still $m$ (thereby finding all the correct cross-terms). The technical restriction $2m>d$ is also imposed to ensure that $f$ remains continuous.
 
-The thin plate spline is then split into two sets of bases:
+The thin plate spline basis is then given as:
 \begin{equation}
 f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
 \label{tprs-basis}
 \end{equation}
-where the first summation is a series of (local) radial basis functions ($i$ indexing the $n$ data) and the second summation are a set of (global) linearly independent polynomials of degree less than $m$. The terms in the second summation are unpenalised and therefore like in the nullspace of the penalty (\cite{wood2003}). There are $M$ of these polynomials where $M$ is given by:
+where the first summation is a series of (local) radial basis functions ($i$ indexing the $n$ data) and the second summation are a set of (global) linearly independent polynomials of degree less than $m$. The terms in the second summation are unpenalised and therefore lie in the nullspace of the penalty (\cite{wood2003}). 
+
+There are $M$ of these polynomials lying in the nullspace of the penalty. $M$ is given by:
 \begin{equation*}
 M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}.
 \end{equation*}
-In the cases presented so far, $d$ (in our the MDS projection dimension) is known and $m$ is dictated by $d$. Increasing $d$ increases $m$ (by the continuity condition that $2m>d$) and hence increases $M$ in the manner above. Therefore $M$ increases very quickly with the number of dimensions used; this is shown in figure \ref{nullspace-dim} (blue line). As more functions are included in the nullspace, the more and more complex (because of their linear independence) the functions are. Having very wiggly functions in the nullspace is certainly undesirable, having many of them will be extremely problematic for model parsimony. 
+In the cases presented so far, $d$ (in our the MDS projection dimension) is known and $m$ is dictated by $d$. Increasing $d$ increases $m$ (by the continuity condition that $2m>d$) and hence increases $M$ in the manner above. Therefore $M$ increases very quickly with the number of dimensions used; this is shown in figure \ref{nullspace-dim} (blue line). As more functions are included in the nullspace, the more and more complex (because of their linear independence) the functions are. Complex functions that lie in the nullspace of the penalty cause serious issues for model parsimony since there is no way to suppress their effects. 
 
 \begin{figure}
 \centering
@@ -70,24 +57,20 @@ In the cases presented so far, $d$ (in our the MDS projection dimension) is know
 % generated by thesis/mds/figs/nullspace-dim.R
 \end{figure}
 
-A top-down rigorous proof and treatment of Duchon splines is given in \cite{duchon77}; below is an informal explanation of how from (\ref{tprs-pen}) one can reach the penalty given by Duchon. 
-
-The usual thin plate regression spline penalty given in (\ref{tprs-pen}) can be thought of as a measure of ``wigglyness'' or ``roughness'', taking higher values when $f$ is particularly rough or wiggly (the penalty prevents the spline from interpolating). Integrating the square of the derivatives over the whole of $\mathbb{R}^d$ allows us to consider the fitting procedure as minimizing the objective function in such a way that reduces the wigglyness across the whole of $f$ whilst being as close to the data as possible. 
-
-The penalty in (\ref{tprs-pen}) is only one example of a more general kind of penalty proposed in \cite{duchon77}. Starting from (\ref{tprs-pen}), the first step toward this more general penalty is to consider taking the Fourier transform of the derivatives before squaring and integrating them. The Fourier transform allows us to consider the penalty as an infinite sum of frequencies; decomposing functions defined in space into their frequency domain representations. Mathematically, the Fourier transform of some function of $d$-dimensional space ($\mathbf{x}$), $g$, is defined as:
+Starting from (\ref{tprs-pen}), the first step toward the more general Duchon penalty is to consider taking the Fourier transform of the derivatives before squaring and integrating them. The Fourier transform allows us to consider the penalty as an infinite sum of frequencies; decomposing functions defined in space into their frequency domain representations. Mathematically, the Fourier transform $g$ a function $\mathbf{x}$ (a $d$-vector), is defined as:
 \begin{equation*}
 \mathfrak{F} g(\boldsymbol{\tau}) = \int \ldots \int_{\mathbb{R}^d} e^{2 \pi \sqrt{-1} \mathbf{x}^\text{T} \boldsymbol{\tau}} g(\mathbf{x}) \text{d}\mathbf{x}.
 \end{equation*}
 Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (a $d$-vector of continuous frequencies). More detail on Fourier transforms can be found in (for example) \cite{bracewell}, \cite{chu-ft} and \cite{beerends}. 
 
-Taking the Fourier transform of the penalty allows us to think of how the penalty is calculated in a different way. Rather than thinking about measuring the wigglyness over the whole of $f$, point by point, instead the measure is based on the frequencies of $f$, the higher the frequency components contribute more to the integral than the lower ones. Intuitively this makes sense, since the low frequency components of the derivatives of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more likely to represent $f$ attempting to interpolate parts of the smooth where consecutive dissimilar values occur.
+Taking the Fourier transform of the penalty allows us to think of how the penalty is calculated in a different way. Rather than thinking about measuring the wigglyness over the whole of $f$, point by point in space, instead the measure is based on the frequencies of $f$ over the whole domain, the higher the frequency components contribute more to the integral than the lower ones. Intuitively, the low frequency components of the derivatives of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more complicated parts of the function, likely to be the parts of $f$ that attempt to interpolate the data.
 
 Taking the Fourier transform of the derivative terms in (\ref{tprs-pen}) yields the following penalty:
 \begin{equation}
 J_{m,d} = \int \ldots \int_{\mathbb{R}^d} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau}.
 \label{tprs-pen-ft}
 \end{equation}
-The penalties (\ref{tprs-pen}) and (\ref{tprs-pen-ft}) are in fact equivalent by Plancherel's theorem (\cite{vretblad}, p. 180), so one can take either view and obtain the same numerical value for the penalty.
+The penalties (\ref{tprs-pen}) and (\ref{tprs-pen-ft}) are in fact equivalent by Plancherel's theorem (\cite{vretblad}, p. 180) in the sense that they evaluate to the same numerical value.
 
 Since taking the Fourier transform of the derivatives has allowed us to think of the derivatives as made up of frequencies, it then follows to exploit this interpretation by introduing a weighting into the penalty: 
 \begin{equation}
@@ -101,9 +84,9 @@ Duchon shows that if $w(\boldsymbol{\tau})= \lvert \boldsymbol{\tau} \rvert^{2s}
 \breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^d} \lvert \boldsymbol{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau}.
 \label{duchon-penalty}
 \end{equation}
-Again, (\ref{tprs-pen}) can be recovered from this penalty (by setting $s=0$). When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$. So $s$ can be used to allow high dimensional smoothing, while still using lower-order penalties without yielding discontinuous functions. One can therefore think of $s$ as a kind of ``fudge factor'' that allows the conditions on $m$ and $d$ to be relaxed; given some fixed combination of $m$ and $d$, an $s$ can be found (by simply calculating $s=d/2-m$).
+Again, (\ref{tprs-pen}) can be recovered from this penalty (by setting $s=0$). When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$. So $s$ can be used to allow high dimensional smoothing, while still using lower-order penalties without yielding discontinuous functions. One can therefore think of $s$ as a kind of ``fudge factor'' that allows the conditions on $m$ and $d$ to be relaxed. Given some fixed combination of $m$ and $d$, an $s$ can be found by simply calculating $s=d/2-m$.
 
-In a sense, the new penalty allows the radial basis functions in (\ref{tprs-basis}) to fill the gaps left by using a reduced set of global polynomials. Using such a penalty allows us to avoid the problem of having too many complex functions in the nullspace of the penalty while not sacrificing the continuity of $f$. 
+The new penalty allows the radial basis functions in (\ref{tprs-basis}) to perform the function of those polynomials which were not included because the nullspace was reduced in size. Using such a penalty  avoids reduces the size and complexity of the nullspace while not sacrificing the continuity of $f$. 
 
 Looking back to figure \ref{nullspace-dim} (where the blue line showed the increasing numbers of functions in the nullspace of the conventional thin plate penalty), the red line gives the number of functions in penalty (\ref{duchon-penalty}). In this case $m=2$ has been chosen to remain constant as the dimensionality increases, leading to a linear increase in nullspace size with the smoothing dimension.
 
@@ -113,35 +96,41 @@ These splines have been largly neglected in statistical smoothing literature wit
 
 \subsection{Duchon splines with \mdsap\ -- \mdsds}
 
-With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into larger numbers of dimensions and smooth over the response without having to worry about the high dimensional nullspaces causing problems. The use of Duchon splines along with \mdsap\ and the projection dimension selection techniques below will be known as \mdsds\ (Multidimensional Scaling for GAMs) from here on.
+With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into higher dimensions and smooth over the response without having to worry about the the size and complexity of the nullspace causing problems. The use of Duchon splines along with \mdsap\ and the projection dimension selection techniques below will be known as \mdsds\ (Multidimensional Scaling for GAMs) from here on.
 
 \subsection{Choosing MDS projection dimension}
 
-With Duchon's basis, it is now possible to smooth a space of any dimension using a second order derivative penalty, simply by picking $s$ appropriately. Picking the dimension of the MDS projection is now a concern since there is no reason to believe that simply going to higher and higher dimensions will yield better and better results. Keeping in mind the desire for a parsimony, it would be preferable to keep the dimension of the projection as small as possible, whilst avoiding leakage.
+With Duchon's basis, it is now possible to smooth a space of any dimension whilst using second order derivatives in the penalty, simply by picking $s$ appropriately. Picking the dimension of the MDS projection is now a concern since there is no reason to believe that simply going to higher and higher dimensions will yield better and better results. Since even if very high dimensional models can be used there is still a desire for the simplest possible model to be used, it seems sensible to make sure that the projection is as small as possible whilst still avoiding leakage.
 
 \subsubsection{Using proportion of variation explained}
 
-It is clear that as higher and higher projections are used, a larger and larger proportion of the variation in the distance matrix is explained. It therefore seems reasonable to base the choice of dimension on the proportion of the variation explained in the initial grid. However, what proportion should be used? 80\%? 90\%? 99\%? There is no reason to choose any one of these over the others. Setting the proportion of variation to be explained generally is surely a bad idea, since what works for one domain may well be a disaster for another (see also \secref{nohigherdim}).
+As higher dimensional projections are used, a larger and larger proportion of the variation in the distance matrix is explained. It therefore seems reasonable to base the choice of dimension on the proportion of the variation explained in the initial grid. However, what proportion should be used? 80\%? 90\%? 99\%? There is no reason \textit{a priori} to choose any one of these over the others. Setting the proportion of variation to be explained without thought of the domain in question is surely a bad idea, since what works for one domain may well be a disaster for another (see also \secref{nohigherdim}).
 
 \subsubsection{Using scores}
 
-Since fitting a GAM with a Duchon spline basis is relatively cheap compared to the cost of finding the within-area distances, the GCV score can be used to find an optimal dimension for the MDS projection. A series of (increasing dimensional) projections can be tried, their GCV scores calculated, and the best selected as the projection to use for the model.
+Since fitting a smooth with a Duchon spline basis is relatively cheap compared to the cost of finding the within-area distances, it is not problematic to fit many models provided no new distances need to be calculated. For this reason the GCV score can be used to find an optimal dimension for the MDS projection. A series of (increasing dimensional) projections can be tried, their GCV scores calculated, and the best selected as the projection to use for the model.
 
-In particular, starting from a 2-dimensional projection, the dimensionality is increased and models fitted, until there is an increase in GCV score. The upper bound is the number of dimensions that explain 95\% (say) of the variation in the distance matrix of the initial grid (see section \ref{grids}).  This favours simpler models (in dimensionality terms), although of course a larger set of dimensions could be considered if there is some prior belief that the dimensionality should be higher or that no clear minima has been found (indeed there is no reason to believe that the GCV score should be unimodal in dimension). It might be considered preferable to take the first minima in the score anyway as we would generally prefer a simpler model. Throughout the following all dimensions between the limits given are assessed to avoid any problems with local optima.
+Starting from a 2-dimensional projection, the dimensionality is increased and models fitted, until there is an increase in GCV score. The upper bound is the number of dimensions that explain 95\% (say) of the variation in the distance matrix of the initial grid (see section \ref{grids}).  
 
-Simulations show that the minima in the GCV score and MSE are in agreement. Figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared error for 60 simulations from the peninsula domain, for each of the 60 realisations \mdsds\ was fitted using a 2 through 20 dimensional projection. The boxplots are grouped according to the dimension of the MDS projection used. The graph shows that there is a minima in the score when the dimension is four which corresponds with the minimum MSE.
+Although a complete search on all dimensions could be performed, this could become extremely time consuming and it is likely that higher dimensions offer very little difference in the point configuration given that the associated eigenvalues will become smaller and smaller.
+
+It is also possible to proceed step-wise and stop once the GCV score starts to increase, however there is no good reason to believe that the GCV score would be unimodal in the number of dimensions. Looking at plots such as those in figure \ref{wt2-gcv-projdim-boxplot} gives guidance on how to proceed. Throughout the following analyses all dimensions between 2 and that which explains 95\% of the variation in the distances are tested.
+
+Simulations show that the minima in the GCV score and MSE are in agreement. For example figure \ref{wt2-gcv-projdim-boxplot} shows a plot of GCV score and mean squared error for 60 simulations from the peninsula domain, for each of the 60 realisations \mdsds\ was fitted using a 2 through 20 dimensional projection. The boxplots are grouped according to the dimension of the MDS projection used. The graph shows that there is a minima in the score when the dimension is four, this corresponds with the minimum MSE.
 
 \begin{figure}
 \centering
 \includegraphics[width=6in]{mds/figs/wt2-gcv-projdim-boxplot.pdf} \\
-\caption{MSE and GCV score for the peninsula domain when different dimensional projections are used. Here a 4-dimensional projection gives a minimum GCV score and MSE.}
+\caption{MSE and GCV score for the peninsula domain when different dimensional projections are used. Here a 4-dimensional projection minimizes both the GCV score and the MSE in simulation.}
 \label{wt2-gcv-projdim-boxplot}
 % generated by mds/duchon/wt2-gcvml.R
 \end{figure}
 
-If smoothing parameter selection is to be performed via ML (\cite{remlpaper}), the ML score can be adapted into an AIC-like score to be used in place of the GCV score, provided there is appropriate penalisation to take into account the increase in the dimension of the projection space. Following score was used:
+If smoothing parameter selection is to be performed via ML (\cite{remlpaper}), the ML score can be adapted into an AIC-like score to be used in place of the GCV score, provided there is appropriate penalisation to take into account the increase in the dimension of the projection space. Note that the REML score cannot be used as REML scores cannot be compared when fixed effects are changed (\cite{remlpaper}).
+
+The (AIC-like) score used was:
 \begin{equation*}
-\text{ML}_p = -2 \hat{l} + 2P
+\text{ML}_P = -2 \hat{l} + 2P
 \end{equation*}
 where $\hat{l}$ is the log-likelihood at the MLE and $P$ is a penalty which is the nullspace dimension (ie. $M$ from above with $m=2$ and $d$ set to the MDS projection dimension):
 \begin{align*}
@@ -151,19 +140,17 @@ P =& \begin{pmatrix} 2+d-1 \\ d  \end{pmatrix},\\
 \end{align*}
 So the score used to select dimension is:
 \begin{equation*}
-\text{ML}_p = -2 \hat{l} + 2(d+1)
+\text{ML}_P = -2 \hat{l} + 2(d+1)
 \end{equation*}
-Since the maximum basis is kept constant, but the dimension of the problem changes, this penalty attempts to stop small increases in the likelihood by increasing dimension. This allows the ML score to be used to fit each individual GAM and then comparisons to be made between models of different dimensions. Note the similarity to the AIC.
+The extra penalty is necessary to avoid the situation in which an increase in the dimension leads to a small increase in the score, leading to a much more complex model for only a very small gain.
 
-There is, of course, no guarantee that there will always be a minimum to find and as with all automated methods, practitioners should be mindful of what could potentially go wrong. However, in the situations tested (see below for examples), both of these methods appeared to be satisfactory.
+There is, of course, no guarantee that there will always be a clear minimum to find and as with all automated methods diagnostics (for example the plots of score against dimension) should be used. However, in the situations tested (see below for examples), both of these methods appeared to be satisfactory.
 
 \section{Within-area distance examples}
 \label{gds-wad-examples}
 \subsection{Simulations}
 
-Returning to the simulation study in section \ref{wt2bigsim}, the same set of simulations (250 samples at three error levels) was re-run using \mdsds, selecting MDS dimension based on both GCV and $\text{ML}_p$ scores (maximum spline basis dimension was set at 100). The results are shown for the original simulations (for thin plate splines and the soap film smoother) along side those for the new model.
-
-Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds\ with GCV dimension selection does better than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels. Using $\text{ML}_p$ gave roughly similar results, becoming significantly different from the soap film smoother at high noise levels.
+The simulation study on the peninsulae domain in section \ref{wt2bigsim} was re-run including \mdsds as a possible model, MDS dimension selection based on both GCV and $\text{ML}_P$ scores was used and the maximum spline basis dimension was set at 100. The results are shown for the original simulations (for thin plate splines and the soap film smoother) along side those for the new model in figure \ref{wt2-boxplot-duchon}. \mdsds\ with GCV dimension selection obtained a lower MSE than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels. Using $\text{ML}_P$ generally had poorer performance but this only became significant at the highest noise level.
 
 \begin{figure}
 \centering
@@ -176,7 +163,7 @@ Figure \ref{wt2-boxplot-duchon} shows the boxplots for these simulations, \mdsds
 
 \subsection{Revisiting the Aral sea}
 \label{aral-revisit}
-Going back to the Aral sea example from section \ref{aral-sec}, we can fit a model using the optimal dimension. Figure \ref{mds-aral-5d-duchon} shows the raw data and a smoothed version, using a 5-dimensional projection (given by minimising the GCV score). The plot does not contain any of the artefacts that were present in the previous smooths of the data.
+Returning to the Aral sea example from section \ref{aral-sec}, \mdsds\ can be used to fit a model using the optimal dimension (in GCV/$\text{ML}_P$ terms). Figure \ref{mds-aral-5d-duchon} shows the raw data and a smoothed version, using a 5-dimensional projection (given by minimising the GCV score). The plot does not contain any of the artefacts that were present in the previous smooths of the data in high dimensions.
 
 \begin{figure}
 \centering
@@ -186,27 +173,23 @@ Going back to the Aral sea example from section \ref{aral-sec}, we can fit a mod
 % generated by duchon/aral-evolve.R
 \end{figure}
 
-Using the $\text{ML}_p$ statistic to select the MDS projection dimension resulted in a 19-dimensional smooth, significantly greater than the dimension selected by GCV. An image plot is shown in figure \ref{gds-aral-19d}; the produced plot does not look that different from the GCV selected on in figure \ref{mds-aral-5d-duchon}, although it perhaps overfits to the data slightly (for example in the $(-50,100)$ and $(80,-20)$ areas). Figure \ref{gds-aral-dim-select} shows plots of score (both GCV and $\text{ML}_p$) against MDS projection dimension. The GCV plot shows a clear minima where as $\text{ML}_p$ does not. Given this plot and the marginally worse performance in the simulations above, it doesn't seem like $\text{ML}_p$ is a particularly good choice for projection dimension selection when using within-area distances.
-
+Using the $\text{ML}_P$ statistic to select the MDS projection dimension resulted in a 19-dimensional smooth, significantly greater than the dimension selected by GCV. The image plot in figure \ref{gds-aral-19d} does not look particularly different from the GCV selected one in figure \ref{mds-aral-5d-duchon}, although perhaps there is some overfitting (for example in the $(-50,100)$ and $(80,-20)$ areas). Figure \ref{gds-aral-dim-select} shows plots of score (both GCV and $\text{ML}_P$) against MDS projection dimension. The GCV plot shows a clear minima where as $\text{ML}_P$ does not. TKTKTK Given this plot and the marginally worse performance in the simulations above, it doesn't seem like $\text{ML}_P$ is a particularly good choice for projection dimension selection when using within-area distances.
 
 \begin{figure}
 \centering
 \includegraphics[width=4in]{gds/figs/aral-19d.pdf} \\
-\caption{Image plot of the smoothed surface fitted by \mdsds\ for the Aral sea when $\text{ML}_p$ is used to select the MDS projection dimension.}
+\caption{Image plot of the smoothed surface fitted by \mdsds\ for the Aral sea when $\text{ML}_P$ is used to select the MDS projection dimension.}
 \label{gds-aral-19d}
 % generated by duchon/aral-scoreplots.R with liberal use of commenting
 \end{figure}
 
-
 \begin{figure}
 \centering
 \includegraphics[width=6in]{gds/figs/aral-dim-scores.pdf} \\
-\caption{Plots of score against MDS projection dimension for the Aral sea data when GCV (left) and $\text{ML}_p$ are used for dimension selection.}
+\caption{Plots of score against MDS projection dimension for the Aral sea data when GCV (left) and $\text{ML}_P$ are used for dimension selection.}
 \label{gds-aral-dim-select}
 % generated by duchon/aral-scoreplots.R
 \end{figure}
-
-\textbf{SIMON}: do you think I should put some more examples in here? Perhaps a new set of simulations (based on the ``comb'' in section 3.7.2, fig 3-24)?
 
 \section{Generalized distance smoothing}
 \label{gds-gds-examples}
@@ -253,7 +236,7 @@ The website Public Whip (\url{http://www.publicwhip.org.uk/}) provide data from 
 \label{voting-code}
 \end{table}
 
-Taking the matrix of votes, Euclidean distances between the MPs (rows) were found and used to form the distance matrix. Multidimensional scaling was then used to project these distances into MDS space (dimension selection was performed by optimizing the GCV or $\text{ML}_p$ score). The party affiliation (simplified to Labour party versus not Labour party) was then predicted using a logit link.
+Taking the matrix of votes, Euclidean distances between the MPs (rows) were found and used to form the distance matrix. Multidimensional scaling was then used to project these distances into MDS space (dimension selection was performed by optimizing the GCV or $\text{ML}_P$ score). The party affiliation (simplified to Labour party versus not Labour party) was then predicted using a logit link.
 
 Of the 1273 divisions in the 1997--2001 parliament, 17 of them were declared  as ``free votes'' (\cite{freevotes}), where MPs were not ``whipped'' (pressured to take the party line). Predicting affiliation based on whipped votes is relatively easy since MPs are likely to vote along party lines (since they presumably want to keep their leaders happy). Using free votes makes the classification much more difficult. The free votes are summarised in table \ref{free-vote-description}; most of these are ``conscience'' votes.
 
@@ -293,7 +276,7 @@ The usual approach for such problems would be to use either a linear model or a 
 The four models tested were:
 \begin{enumerate}
 	\item \mdsds\ (GCV): MDS projection of the data, selected by minimum GCV score over the full range of 2 to the number of dimensions that account for 85\% of the variation in the sample. Spline basis size maximum was 100.
-	\item \mdsds\: ($\text{ML}_p$): as above but using $\text{ML}_p$ score to select the MDS projection dimension.
+	\item \mdsds\: ($\text{ML}_P$): as above but using $\text{ML}_P$ score to select the MDS projection dimension.
 	\item Lasso: as implemented in \texttt{glmnet}, cross-validation (using deviance as a loss function) was used to select amount of shrinkage per realisation.
 	\item GLM: as implemented in \texttt{glm()}.
 \end{enumerate}
@@ -321,12 +304,12 @@ where subscript $p$ indicates the probability, rather than the prediction on the
 % generated by duchon/mps/analyse-mps.R
 \end{figure}
 
-Figures \ref{gds-mps-mse} and \ref{gds-mps-brier} show boxplots of the MSE and Brier scores respectively at the varying sample sizes. The picture painted by the results is consistent across sample sizes, that is that the lasso out-performs other methods. Interestingly, using the $\text{ML}_p$ score rather than the GCV score for the MDS projection dimension yields both a lower median MSE and a smaller standard error. Looking at the plots of score against dimension per simulation (figure \ref{gds-mps-dimselect}), we can see that per simulation (the black lines) the GCV score appears to be much more volatile than the $\text{ML}_p$ criterion. Both scores appear to have a fair spread of selection dimension projections (red dots). Smooths through the full data (blue lines, green confidence bands) do not show that there is any particular, definite minima of the scores in dimension.
+Figures \ref{gds-mps-mse} and \ref{gds-mps-brier} show boxplots of the MSE and Brier scores respectively at the varying sample sizes. The picture painted by the results is consistent across sample sizes, that is that the lasso out-performs other methods. Interestingly, using the $\text{ML}_P$ score rather than the GCV score for the MDS projection dimension yields both a lower median MSE and a smaller standard error. Looking at the plots of score against dimension per simulation (figure \ref{gds-mps-dimselect}), we can see that per simulation (the black lines) the GCV score appears to be much more volatile than the $\text{ML}_P$ criterion. Both scores appear to have a fair spread of selection dimension projections (red dots). Smooths through the full data (blue lines, green confidence bands) do not show that there is any particular, definite minima of the scores in dimension.
 
 \begin{figure}
 \centering
 \includegraphics[width=6in]{gds/figs/mps-dimselect.pdf} \\
-\caption{Plots of MDS projection dimension against score (GCV and $\text{ML}_p$) for the MP voting simulation per sample size. Each line represents one round of cross-validation (some lines are broken due to convergence failure in the GAM), red dots indicate the selected projection dimensions (score minima) per simulation, blue lines are smooths through the full data set and the green bands are confidence bands.}
+\caption{Plots of MDS projection dimension against score (GCV and $\text{ML}_P$) for the MP voting simulation per sample size. Each line represents one round of cross-validation (some lines are broken due to convergence failure in the GAM), red dots indicate the selected projection dimensions (score minima) per simulation, blue lines are smooths through the full data set and the green bands are confidence bands.}
 \label{gds-mps-dimselect}
 % generated by duchon/mps/analyse-scoredim.R
 \end{figure}
@@ -386,17 +369,17 @@ lasso                 & 1.67  & 1.021  & 1.837 \\
 % generated by duchon/breast/analyse-cv-plot.R
 \end{figure}
 
-Looking within the \mdsds\ models, we can again look at plots of the MDS projection dimension selection. These are show in figure \ref{breastcancer-dimselect}, where each line represents one round of cross-validation (some lines are broken due to convergence failure in the GAM), red dots indicate minima in the score per simulation (the selected projection dimensions) and the blue lines are smooths through the full data set to give a general idea of what is going on (with green confidence bands). Both error distributions show a similar relationship between dimension and score, however the $\text{ML}_p$ appears again to select high dimensional solutions (in fact all selections were either 19 or 20 dimensions). The GCV score appears to have a fairly clearly defined minima. 
+Looking within the \mdsds\ models, we can again look at plots of the MDS projection dimension selection. These are show in figure \ref{breastcancer-dimselect}, where each line represents one round of cross-validation (some lines are broken due to convergence failure in the GAM), red dots indicate minima in the score per simulation (the selected projection dimensions) and the blue lines are smooths through the full data set to give a general idea of what is going on (with green confidence bands). Both error distributions show a similar relationship between dimension and score, however the $\text{ML}_P$ appears again to select high dimensional solutions (in fact all selections were either 19 or 20 dimensions). The GCV score appears to have a fairly clearly defined minima. 
 
 \begin{figure}
 \centering
 \includegraphics[width=6in]{gds/figs/breastcancer-dimselect.pdf} \\
-\caption{Plots of MDS projection dimension against score (GCV and $\text{ML}_p$) for both normal (left) and quasi-likelihood (right) models for the breast cancer microarray LOOCV. Each line represents one round of cross-validation (some lines are broken due to convergence failure in the GAM), red dots indicate the selected projection dimensions (score minima) per simulation, blue lines are smooths through the full data set and the green bands are confidence bands.}
+\caption{Plots of MDS projection dimension against score (GCV and $\text{ML}_P$) for both normal (left) and quasi-likelihood (right) models for the breast cancer microarray LOOCV. Each line represents one round of cross-validation (some lines are broken due to convergence failure in the GAM), red dots indicate the selected projection dimensions (score minima) per simulation, blue lines are smooths through the full data set and the green bands are confidence bands.}
 \label{breastcancer-dimselect}
 % generated by duchon/breast/analyse-dimselect.R
 \end{figure}
 
-In this example we have seen that \mdsds\ is capable of being used for generalized distance smoothing in a microarray setting when Mahalanobis distances are used in place of Euclidean. It would be interesting to investigate the behaviour of the $\text{ML}_p$ score further on larger data sets (since although it picks very high dimensional solutions, their CV scores are lower). The study here is rather small and specialized, therefore it is hard to draw a conclusion about how \mdsds\ will perform in other situations, although its performance here against the lasso (technique that has been in development for considerably longer) is encouraging.
+In this example we have seen that \mdsds\ is capable of being used for generalized distance smoothing in a microarray setting when Mahalanobis distances are used in place of Euclidean. It would be interesting to investigate the behaviour of the $\text{ML}_P$ score further on larger data sets (since although it picks very high dimensional solutions, their CV scores are lower). The study here is rather small and specialized, therefore it is hard to draw a conclusion about how \mdsds\ will perform in other situations, although its performance here against the lasso (technique that has been in development for considerably longer) is encouraging.
 
 \subsubsection{Leukemia microarrays}
 
@@ -411,7 +394,7 @@ Unfortunately the results are not encouraging at all. For both the T-ALL and TEL
 \begin{figure}
 \centering
 \includegraphics[width=6in]{gds/figs/sim-msebrier.pdf} \\
-\caption{Boxplot of Brier and MSE scores (columns) for the T-ALL and TEL data (columns) when the genes selected by $\chi^2$ were used for each of the models fit (lasso, \mdsds\ with $\text{ML}_p$ and \mdsds\ with GCV dimension selection. The lasso vastly outperforms \mdsds.}
+\caption{Boxplot of Brier and MSE scores (columns) for the T-ALL and TEL data (columns) when the genes selected by $\chi^2$ were used for each of the models fit (lasso, \mdsds\ with $\text{ML}_P$ and \mdsds\ with GCV dimension selection. The lasso vastly outperforms \mdsds.}
 \label{leuk-sim-boxplot}
 % generated by duchon/leuk/analyse-sim.R
 \end{figure}
@@ -419,7 +402,7 @@ Unfortunately the results are not encouraging at all. For both the T-ALL and TEL
 \begin{figure}
 \centering
 \includegraphics[width=6in]{gds/figs/confsim-msebrier.pdf} \\
-\caption{Boxplot of Brier and MSE scores (columns) for the T-ALL and TEL data (columns) when $\chi^2$ selected and 100 extra genes were used for each of the models fit (lasso, \mdsds\ with $\text{ML}_p$ and \mdsds\ with GCV dimension selection. Again, the lasso vastly outperforms \mdsds.}
+\caption{Boxplot of Brier and MSE scores (columns) for the T-ALL and TEL data (columns) when $\chi^2$ selected and 100 extra genes were used for each of the models fit (lasso, \mdsds\ with $\text{ML}_P$ and \mdsds\ with GCV dimension selection. Again, the lasso vastly outperforms \mdsds.}
 \label{leuk-confsim-boxplot}
 % generated by duchon/leuk/analyse-sim.R
 \end{figure}

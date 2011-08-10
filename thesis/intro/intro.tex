@@ -141,6 +141,7 @@ With one radial function per datum the computational time taken to both evaluate
 \citeb{wood2003} side-steps this problem by using an eigen-decomposition of the full basis to find the parts of the basis which do not affect the model much. Essentially this creates eigen-knots to give a reduced-rank version of the basis. This leads to a data-driven set of basis functions which approximate the full basis as closely as possible (according to a ``least bad'' criterion). It is this thin plate regression spline formulation that will be used throughout. 
 
 \subsubsection{P-splines}
+\label{intro-psplines}
 
 P-splines (\cite{eilersmarx96}) consist of B-splines with penalties. So, before thinking about P-splines, the properties of B-splines are considered. B-splines are simple local basis functions; they are simple in that they all have the same shape and local in that they only have an effect near where they are centred (the knots). Taking (\ref{intro-basisdecomp}), we replace the $b_j$s with an $(m+1)^\text{th}$ order B-spline $B_j^m$ (where the order is chosen). Note that the $B_j^m$s are only a function of one covariate, (without loss of generality) $x_{i1}$s (this will be re-visited below). So, (\ref{intro-basisdecomp}) becomes:
 \begin{equation*}
@@ -174,6 +175,7 @@ P-splines take the B-spline basis and add a penalty structure. Because of their 
 where $\Delta^2 \beta_j = \beta_j -2\beta_{j-1} + \beta_{j-2}$. Such a penalty is very fast to compute, since it can be found directly from the coefficients with no integration required.
 
 \subsubsection{Tensor products}
+\label{GAMtensor}
 
 The P-splines discussed above are unidimensional, however, it is possible to build 2-dimensional (and higher) smooths from \textit{tensor products} of 1-dimensional smooths. This is made possible by thinking of each 1-dimensional basis as a marginal smooth of a bigger model. A spatial smooth of, say $x_1$ and $x_2$ can be constructed by first writing down the basis expansions for the marginal smooths of $x_1$ and $x_2$ (in general terms, since this applies to all splines not just P-splines):
 \begin{equation*}
@@ -260,12 +262,12 @@ For a given $\lambda$ optimize $\mathcal{V}^*_g$ with respect to $\bm{\beta}$
 %Up until know the value of $\lambda$ has been assumed to be known, however since we do not know its value in practise, it must be estimated. Automatic smoothing parameter selection has been the subject of much discussion (for example, \cite{wood2000}, \cite{wood2004}, \cite{wood2008}, \cite{gammonograph} and \cite{ruppertreview} for a general overview of some developments) and the descriptions given here are certainly not exhaustive. Approaches fall into one of two classes, either they attempt to minimize some prediction error-based criterion or they are likelihood-based. The two methods that will be used in this thesis are now discussed: \textit{generalized cross validation} (GCV) and \textit{restricted maximum likelihood or (marginal) maximum likelihood} (REML/ML).
 %
 
-%
-%\subsubsection{REML/ML}
-%
-%It has been observed (\cite{reissogden}) that GCV can have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method which do not suffer from this problem. The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},S^-)$ where $S^-$ is some appropriate generalized inverse (see chapter \ref{chap-gds} and \cite{remlpaper}). When the $\bm{\hat{\beta}}$ are considered to be random variables, the smoothing parameter(s) can be thought of as the variance parameter(s). This is known as the \textit{random effects formulation}.
-%
-%A likelihood can then be formed for the penalized GLM and the variance parameters (equivalently, the smoothing parameters) can be estimated. Technical details of the implementation used here (for REML and ML) are given in \citeb{remlpaper}.
+
+\subsubsection{REML/ML}
+
+It has been observed (\cite{reissogden}) that GCV can have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method which does not suffer from this problem. The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},S^-)$ where $S^-$ is some appropriate generalized inverse (see chapter \ref{chap-gds} and \cite{remlpaper}). When the $\bm{\hat{\beta}}$ are considered to be random variables, the smoothing parameter(s) can be thought of as the variance parameter(s). This is known as the \textit{random effects formulation}.
+
+A likelihood can then be formed for the penalized GLM and the variance parameters (equivalently, the smoothing parameters) can be estimated. Technical details of the implementation used here (for REML and ML) are given in \citeb{remlpaper}.
 
 \subsubsection{GCV vs. REML/ML}
 
