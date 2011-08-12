@@ -44,68 +44,68 @@ The basic concept behind MDS as used here is to take the data, calculate their w
 
 \subsection{Finding the new point configuration}
 
-First define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a symmetric $n \cross n$ matrix, $D$, with \ijth element $d^2_{ij}$. For the moment let us assume that $D$ is known and $d_{ij}$ is the Euclidean distance between points $i$ and $j$. 
+First define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a symmetric $n \cross n$ matrix, $\mathbf{D}$, with \ijth element $d^2_{ij}$. For the moment let us assume that $\mathbf{D}$ is known and $d_{ij}$ is the Euclidean distance between points $i$ and $j$. 
 
 \cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \cite{principlesofMA}, pp. 104-108 and \cite{chatfieldcollins}, pp. 189-200.
 
-First, suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{X}^*$. Now let $S=\tilde{X}^{*} \tilde{X}^{*\text{T}} $, so $S$ is a matrix of scalar products of the point vectors, \emph{ie.} the \ijth element of $S$ is:
+First, suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{\mathbf{X}}^*$. Now let $\mathbf{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbf{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbf{S}$ is:
 \begin{equation}
 s_{ij} = \bm{x}_i\tr{\bm{x}_j},
 \label{selem}
 \end{equation}
-$S$ is an $(n\cross n)$ matrix. Note that we may only find $\tilde{X}^*$ up to a translation and rotation, so it is assumed that the values in $\tilde{X}^*$ have been centred about the origin.
+$\mathbf{S}$ is an $(n\cross n)$ matrix. Note that we may only find $\tilde{\mathbf{X}}^*$ up to a translation and rotation, so it is assumed that the values in $\tilde{\mathbf{X}}^*$ have been centred about the origin.
 
-We now wish to relate $D$ to $S$. First, note that that \ijth element of D is 
+We now wish to relate $\mathbf{D}$ to $\mathbf{S}$. First, note that that \ijth element of $\mathbf{D}$ is 
 \begin{equation}
 d_{ij}^2 = (\bm{x}_i-\bm{x}_j)\tr{(\bm{x}_i-\bm{x}_j)} = \bm{x}_i\tr{\bm{x}_i} + \bm{x}_j\tr{\bm{x}_j}  -2 \bm{x}_i\tr{\bm{x}_j}.
 \label{dij}
 \end{equation}
 Using \eqn{selem}, we can re-write \eqn{dij} as
 \begin{equation}
-D=\bm{s}_\text{diag}\tr{\bm{1}} + \bm{1}\tr{\bm{s}_\text{diag}} -2S.
+\mathbf{D}=\bm{s}_\text{diag}\tr{\bm{1}} + \bm{1}\tr{\bm{s}_\text{diag}} -2\mathbf{S}.
 \label{dijmat}
 \end{equation}
-where $\bm{1}$ is an $n \cross 1$ vector of 1s and $\bm{s}_\text{diag}$ is the $n \cross 1$ vector of diagonal elements of $S$.
+where $\bm{1}$ is an $n \cross 1$ vector of 1s and $\bm{s}_\text{diag}$ is the $n \cross 1$ vector of diagonal elements of $\mathbf{S}$.
 
 Define:
 \begin{equation}
-H = I-\frac{1}{n}\bm{1}\tr{\bm{1}},
+\mathbf{H} = \mathbf{I}-\frac{1}{n}\bm{1}\tr{\bm{1}},
 \end{equation}
-where $I$ is the identity matrix, as usual, and $\bm{1}\tr{\bm{1}}$ is an $n \cross n$ matrix of 1s.
+where $\mathbf{I}$ is the identity matrix, as usual, and $\bm{1}\tr{\bm{1}}$ is an $n \cross n$ matrix of 1s.
 
-By pre- and post-multiplying any matrix by $H$ the matrix is double centred (such that row and column means are 0). Pre- and post-multiplying \eqn{dijmat} by $H$ yields:
+By pre- and post-multiplying any matrix by $\mathbf{H}$ the matrix is double centred (such that row and column means are 0). Pre- and post-multiplying \eqn{dijmat} by $\mathbf{H}$ yields:
 \begin{equation}
-HDH = -2HSH.
+\mathbf{H}\mathbf{D}\mathbf{H} = -2\mathbf{H}\mathbf{S}\mathbf{H}.
 \end{equation}
-The first two terms in on the right hand side of \eqn{dijmat} are zero since the rows of $\bm{s}_\text{diag}\tr{\bm{1}}$ and the columns of  $\bm{1}\tr{\bm{s}_\text{diag}}$ are constant. Since $S$ is already centred so $HSH=S$. Rearranging, the following relation between $S$ and $D$ holds:
+The first two terms in on the right hand side of \eqn{dijmat} are zero since the rows of $\bm{s}_\text{diag}\tr{\bm{1}}$ and the columns of  $\bm{1}\tr{\bm{s}_\text{diag}}$ are constant. Since $\mathbf{S}$ is already centred so $\mathbf{H}\mathbf{S}\mathbf{H}=\mathbf{S}$. Rearranging, the following relation between $\mathbf{S}$ and $\mathbf{D}$ holds:
 \begin{equation}
-S = -\frac{1}{2}HDH.
+\mathbf{S} = -\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.
 \end{equation}
 
-Now there is a relation between $D$ and $S$, we can concentrate on dealing with $S$. In order to find $\tilde{X}^{*}$ we must factor $S$. There are many options for matrix decomposition. One option for factoring $S$ is to use the Cholesky decomposition, however, with MDS we are looking to decompose the space based on the directions of largest variation, \emph{ie.} those that have the largest contribution to $s_{ij}$. For that reason we use the eigen-decomposition.
+Now there is a relation between $\mathbf{D}$ and $\mathbf{S}$, we can concentrate on dealing with $\mathbf{S}$. In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbf{S}$. There are many options for matrix decomposition. One option for factoring $\mathbf{S}$ is to use the Cholesky decomposition, however, with MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $s_{ij}$. For that reason we use the eigen-decomposition.
 
-Finding the eigen-decomposition of $S$, we obtain $S=U\Lambda\tr{U}$. Here $U$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\Lambda$ is the $n \cross n$ diagonal matrix of eigenvalues. Then an $\tilde{X}^*$ satisfying \eqn{selem} may be computed as:
+Finding the eigen-decomposition of $\mathbf{S}$, we obtain $\mathbf{S}=\mathbf{U}\mathbf{\Lambda}\tr{\mathbf{U}}$. Here $\mathbf{U}$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\mathbf{\Lambda}$ is the $n \cross n$ diagonal matrix of eigenvalues. Then an $\tilde{\mathbf{X}}^*$ satisfying \eqn{selem} may be computed as:
 \begin{equation}
-\tilde{X}^*=U\Lambda^{\frac{1}{2}}.
+\tilde{\mathbf{X}}^*=\mathbf{U}\mathbf{\Lambda}^{\frac{1}{2}}.
 \end{equation}
 
-Following these steps $\tilde{X}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions, and in general multidimensional scaling is performed to reduce the dimensionality of the data, so we must now reduce the dimensionality of $\tilde{X}^*$. To represent the space using two dimensions the directions with the two largest eigenvalues are chosen and the others discarded. These two largest eigenvalues and their associated eigenvectors constitute the two largest sources of variation in distance (since they are the two largest contributions to $S$) this gives the two dimensional representation of the data. 
+Following these steps $\tilde{\mathbf{X}}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions, and in general multidimensional scaling is performed to reduce the dimensionality of the data, so we must now reduce the dimensionality of $\tilde{\mathbf{X}}^*$. To represent the space using two dimensions the directions with the two largest eigenvalues are chosen and the others discarded. These two largest eigenvalues and their associated eigenvectors constitute the two largest sources of variation in distance (since they are the two largest contributions to $\mathbf{S}$) this gives the two dimensional representation of the data. 
 
-Defining $X^*$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a 2-dimensional representation has been obtained. More generally, we can find the $k$-dimensional MDS representation of the space by just taking the first $k$ columns of $\tilde{X}^*$.
+Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a 2-dimensional representation has been obtained. More generally, we can find the $k$-dimensional MDS representation of the space by just taking the first $k$ columns of $\tilde{\mathbf{X}}^*$.
 
 In summary, to calculate the MDS configuration of a set of points (given their inter-point distances) we merely need to double centre the matrix of distances, perform an eigen-decomposition on the resulting matrix, and finally truncate that matrix to the first $k$ columns.
 
 For finite area smoothing, $d_{ij}$ should be the shortest distance between the points, given the path between any pair of points remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. 
 
-One can think of the justification in the following way: given that the distances in $D$ obey the triangle inequality, all of the points in $D$ ($n$ of them if $D$ is $n \cross n$) may be represented by MDS in $n$ dimensional Euclidean space (at worst). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in $n$-dimensional space with no loss of information about the distances. So, in the case when the distances in $D$ are shortest within-area distances, one can think of the points in $D$ as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
+One can think of the justification in the following way: given that the distances in $\mathbf{D}$ obey the triangle inequality, all of the points in $\mathbf{D}$ ($n$ of them if $\mathbf{D}$ is $n \cross n$) may be represented by MDS in $n$ dimensional Euclidean space (at worst). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in $n$-dimensional space with no loss of information about the distances. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points in $\mathbf{D}$ as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
 
-Note that an additive constant can be computed and added to the non-diagonal entries of $D$ to ensure that the eigenvalues of $S$ are non-negative. However, this does not occur in any of the examples shown here.
+Note that an additive constant can be computed and added to the non-diagonal entries of $\mathbf{D}$ to ensure that the eigenvalues of $\mathbf{S}$ are non-negative. However, this does not occur in any of the examples shown here.
 
 \subsection{Gower's interpolation} 
 \label{gowers}
 Given the setup in \secref{mdsproc}, once the MDS configuration has been found further points will need to be inserted into our MDS representation. For example when further data is collected, or in order to predict over points not in the initial grid. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years; Gower's interpolation (\cite{gower1968}) is covered here.
 
-Say we have some point, $x_{\text{new}}$ and we wish to find its location, $x^*_{\text{new}}$ in the MDS configuration. The position of $x^*_{\text{new}}$ is at a Euclidean distance from the points in $X^*$ which is approximately the same as the within-area distance between $x_{\text{new}}$ and the points in the non-transformed space, $X$. 
+Say we have some point, $x_{\text{new}}$ and we wish to find its location, $x^*_{\text{new}}$ in the MDS configuration. The position of $x^*_{\text{new}}$ is at a Euclidean distance from the points in $\mathbf{X}^*$ which is approximately the same as the within-area distance between $x_{\text{new}}$ and the points in the non-transformed space, $\mathbf{X}$. 
 
 Note that here we are assuming that a 2 dimensional projection has been used in the initial MDS configuration, Gower's interpolation remains valid for the case in which the initial MDS projection is $k$-dimensional.
 
@@ -113,17 +113,17 @@ Note that here we are assuming that a 2 dimensional projection has been used in 
 
 We may find the position in the transformed space, $x^*_{\text{new}}$ , of some new datum $x_{\text{new}}$ in the original space using:
 \begin{equation}
-x^*_{\text{new}} = \frac{1}{2} \Lambda^{-1} \tr{(X^*)} \mathbb{D}.
+x^*_{\text{new}} = \frac{1}{2} \mathbf{\Lambda}^{-1} \tr{(\mathbf{X}^*)} \mathbb{D}.
 \label{gower}
 \end{equation}
-Here $\Lambda$ ($2 \cross 2$) and $\tr{(X^*)}$ ($2 \cross n$) are as above, $\mathbb{D}$ ($n \cross 1$) is the vector of centred within-area distances from the points in the original configuration to $x_{\text{new}}$.
+Here $\mathbf{\Lambda}$ ($2 \cross 2$) and $\tr{(\mathbf{X}^*)}$ ($2 \cross n$) are as above, $\mathbb{D}$ ($n \cross 1$) is the vector of centred within-area distances from the points in the original configuration to $x_{\text{new}}$.
 
 % Thesis fact: this paragraph infact represents about 3 months of work :(
-In Gower's paper, he defines the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{X}^*\tilde{X^{* \text{T}}}$ \emph{ie}. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{X}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\bm{d}$ as:
+In Gower's paper, he defines the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\bm{d}$ as:
 \begin{equation}
-d_{i} = -(d^2_{i,n+1}-\text{diag}(S)_{ii}).
+d_{i} = -(d^2_{i,n+1}-\text{diag}(\mathbf{S})_{ii}).
 \end{equation}
-Since $S$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
+Since $\mathbf{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
 
 Gower's interpolation extends simply to the case when $m$ new points are inserted by making $x^*_{\text{new}}$ as $2 \cross m$ matrix and $\mathbb{D}$ an $n \cross m$ matrix.
 
@@ -137,11 +137,11 @@ Before performing any analysis we must test that the method will be reliable and
 \subsubsection{Using grids to compute the initial MDS configuration}
 \label{grids}
 
-To perform MDS, we must first find D. In a spatial setting one can imagine the case in which samples were not taken from one part of the domain of interest (for example, there may be no observations in a particular peninsulae) and in that case the resulting MDS configuration would differ from when there were observations in that area. The only way that the boundary will influence the model is via the MDS configuraton and in turn, the MDS configuration's only influence from the boundary is via the distances in D. Ensuring that different analyses on the same domain of interest yield consistent results is extremely important. 
+To perform MDS, we must first find $\mathbf{D}$. In a spatial setting one can imagine the case in which samples were not taken from one part of the domain of interest (for example, there may be no observations in a particular peninsulae) and in that case the resulting MDS configuration would differ from when there were observations in that area. The only way that the boundary will influence the model is via the MDS configuraton and in turn, the MDS configuration's only influence from the boundary is via the distances in $\mathbf{D}$. Ensuring that different analyses on the same domain of interest yield consistent results is extremely important. 
 
-When Euclidean distances are used to calculate $D$, the critera needed so that the resulting space is the same (in the sense that the eigenvalues of $D$ are the same) is that there is one more point used to create the MDS configuration than there are dimensions in the space in which they reside (provided that the points are not collinear) (\cite{landmark}). However, it is not clear what a similar criteria would be for the shortest paths used here. 
+When Euclidean distances are used to calculate $\mathbf{D}$, the critera needed so that the resulting space is the same (in the sense that the eigenvalues of $\mathbf{D}$ are the same) is that there is one more point used to create the MDS configuration than there are dimensions in the space in which they reside (provided that the points are not collinear) (\cite{landmark}). However, it is not clear what a similar criteria would be for the shortest paths used here. 
 
-A simple example of this problem is show in \fig{tshape}. Here, a regular grid has been generated inside a T -shape (top left panel). The point configuration found by using the full set of points and within-area distances is given in the top right panel. In the pathological case when either only the ``head'' or ``tail'' of the T are sampled and used to generate the MDS and the other half inserted (bottom left for head (red) inserted from tail (black), bottom right of tail (red) inserted from head (black)), one can see that those points inserted into the configuration become warped. 
+A simple example of this problem is show in \fig{tshape}. Here, a regular grid has been generated inside a T-shape (top left panel). The point configuration found by using the full set of points and within-area distances is given in the top right panel. In the pathological case when either only the ``head'' or ``tail'' of the T are sampled and used to generate the MDS and the other half inserted (bottom left for head (red) inserted from tail (black), bottom right of tail (red) inserted from head (black)), one can see that those points inserted into the configuration become warped. 
 
 % showing the the grid is necessary using the T shape
 \begin{figure}
@@ -460,7 +460,7 @@ A quick benchmark shows that \texttt{ARPACK++} can compute the first two eigenva
 
 \subsubsection{Partial path calculation}
 
-Many of the distances stored in $D$ are calculated by simply using the Euclidean metric since for the corresponding point pairs, there is no part of the path between them that lies outside of the domain. It is often the case that the paths that need to be calculated are on a grid (for example, when doing prediction). This leads us to believe that there are many sets of paths that are rather similar. These paths may perhaps only differ in their final vertex. Given that, in this case, there is a lot of wasted computational time spent calculating similar paths, it would be useful to exploit this problem, and use it to increase the speed of the path calculation.
+Many of the distances stored in $\mathbf{D}$ are calculated by simply using the Euclidean metric since for the corresponding point pairs, there is no part of the path between them that lies outside of the domain. It is often the case that the paths that need to be calculated are on a grid (for example, when doing prediction). This leads us to believe that there are many sets of paths that are rather similar. These paths may perhaps only differ in their final vertex. Given that, in this case, there is a lot of wasted computational time spent calculating similar paths, it would be useful to exploit this problem, and use it to increase the speed of the path calculation.
 
 The idea here is to use a sparse grid to first calculate a set of paths that are then saved. These saved paths are then form the base of the other paths that need to be calculated. Finally, these paths are optimised in the same manner as the algorithm given in \secref{mdsdist}. This removes the expensive calculation in the middle of the path, where perhaps the bulk of the interactions with the boundary take place.
 
@@ -549,11 +549,11 @@ For the moment let us take $\hat{f}$ to be a one dimensional smooth function. It
 \ee
 The $ij^\text{th}$ element of the penalty matrix (see \secref{GAMpenalties}) is given as:
 \be
-S_{ij}= \int_a^b \mathcal{L}^*(x) \frac{\partial^2 b_i(x)}{\partial x^2}\frac{\partial^2 b_j(x)}{\partial x^2} \text{d}x = \int_a^b \mathcal{L}^*(x) b^{\prime\prime}_i(x) b^{\prime\prime}_j(x) \text{d}x,
+\mathbf{S}_{ij}= \int_a^b \mathcal{L}^*(x) \frac{\partial^2 b_i(x)}{\partial x^2}\frac{\partial^2 b_j(x)}{\partial x^2} \text{d}x = \int_a^b \mathcal{L}^*(x) b^{\prime\prime}_i(x) b^{\prime\prime}_j(x) \text{d}x,
 \ee
 in one dimension (letting a prime indicate differentiation with respect to $x$). The integral can then be approximated by the midpoint rule as:
 \be
-S_{ij}= \frac{b-a}{K}\sum_{k=1}^K \mathcal{L}^*(x_k) b^{\prime\prime}_i(x_k) b^{\prime\prime}_j(x_k) \quad \text{for} \quad x_k=a+\frac{(k-0.5)(b-a)}{K},
+\mathbf{S}_{ij}= \frac{b-a}{K}\sum_{k=1}^K \mathcal{L}^*(x_k) b^{\prime\prime}_i(x_k) b^{\prime\prime}_j(x_k) \quad \text{for} \quad x_k=a+\frac{(k-0.5)(b-a)}{K},
 \label{midpointS}
 \ee
 for $k=1,\dots, K$. Second derivatives are evaluated by finite differences in the usual manner:
@@ -561,14 +561,14 @@ for $k=1,\dots, K$. Second derivatives are evaluated by finite differences in th
 \label{bfinitediff}
 b^{\prime\prime}_i(x) = \frac{ b_i(x+2\epsilon) - 2b_i(x+\epsilon) + b_i(x)}{\epsilon^2}.
 \ee
-For the sake of efficiency, we in fact calculate a $K\cross J$ matrix $D$ with $kj^\text{th}$ element:
+For the sake of efficiency, we in fact calculate a $K\cross J$ matrix $\mathbf{D}$ with $kj^\text{th}$ element:
 \be
-D_{kj}=\sqrt{\mathcal{L}^*(x_k)} b^{\prime\prime}_j(x_k),
+\mathbf{D}_{kj}=\sqrt{\mathcal{L}^*(x_k)} b^{\prime\prime}_j(x_k),
 \label{oneDD}
 \ee
 for $x_k$ as above. Then $S$ may be calculated as:
 \be
-S=\frac{b-a}{K}\tr{D}D.
+\mathbf{S}=\frac{b-a}{K}\tr{\mathbf{D}}\mathbf{D}.
 \ee
 
 In this example $\mathcal{L}^*(x)$ was simply calculated using the inverse of the cube of the factor by which the relevant part of the domain (given above) was squashed. 
@@ -589,9 +589,9 @@ In this example $\mathcal{L}^*(x)$ was simply calculated using the inverse of th
 
 \subsection{Penalty adjustments in two dimensions}
 
-Using a similar procedures as for one dimension, the two dimensional case can be addressed. Again looking at the $ij^\text{th}$ element of $S$, for the two dimensional case we have:
+Using a similar procedures as for one dimension, the two dimensional case can be addressed. Again looking at the $ij^\text{th}$ element of $\mathbf{S}$, for the two dimensional case we have:
 \begin{equation}
-S_{ij}=\int\int_\Gamma \mathcal{L}^*(x,y) \Big( \frac{\partial^2 b_i(x,y)}{\partial x^2}\frac{\partial^2 b_j(x,y)}{\partial x^2}+2\frac{\partial^2 b_i(x,y)}{\partial x \partial y}\frac{\partial^2 b_j(x,y)}{\partial x \partial y}+\frac{\partial^2 b_i(x,y)}{\partial y^2}\frac{\partial^2 b_j(x,y)}{\partial y^2} \Big) \text{d}x\text{d}y.
+\mathbf{S}_{ij}=\int\int_\Gamma \mathcal{L}^*(x,y) \Big( \frac{\partial^2 b_i(x,y)}{\partial x^2}\frac{\partial^2 b_j(x,y)}{\partial x^2}+2\frac{\partial^2 b_i(x,y)}{\partial x \partial y}\frac{\partial^2 b_j(x,y)}{\partial x \partial y}+\frac{\partial^2 b_i(x,y)}{\partial y^2}\frac{\partial^2 b_j(x,y)}{\partial y^2} \Big) \text{d}x\text{d}y.
 \end{equation}
 Matrices analogous to \eqn{oneDD} can be constructed using the finite differences from \eqn{bfinitediff} for differentials $x$ and $y$ individually and
 \be
@@ -599,17 +599,17 @@ Matrices analogous to \eqn{oneDD} can be constructed using the finite difference
 \ee
 for the cross term. The matrices then take the form:
 \be
-[D_x]_{kj}=\sqrt{\mathsf{K}(x_k,y_k)} \frac{\partial^2 b_j(x_k,y_k)}{\partial x^2},
+[\mathbf{D}_x]_{kj}=\sqrt{\mathsf{K}(x_k,y_k)} \frac{\partial^2 b_j(x_k,y_k)}{\partial x^2},
 \ee
 \be
-[D_y]_{kj}=\sqrt{\mathsf{K}(x_k,y_k)} \frac{\partial^2 b_j(x_k,y_k)}{\partial y^2},
+[\mathbf{D}_y]_{kj}=\sqrt{\mathsf{K}(x_k,y_k)} \frac{\partial^2 b_j(x_k,y_k)}{\partial y^2},
 \ee
 \be
-[D_{xy}]_{kj}=\sqrt{\mathsf{K}(x_k,y_k)} \frac{\partial^2 b_j(x_k,y_k)}{\partial x \partial y}.
+[\mathbf{D}_{xy}]_{kj}=\sqrt{\mathsf{K}(x_k,y_k)} \frac{\partial^2 b_j(x_k,y_k)}{\partial x \partial y}.
 \ee
-So we may then express $S$ as:
+So we may then express $\mathbf{S}$ as:
 \be
-S=\tr{D_x}D_x + \tr{D_{xy}}D_{xy} + \tr{D_y}D_y.
+\mathbf{S}=\tr{\mathbf{D}_x}\mathbf{D}_x + \tr{\mathbf{D}_{xy}}\mathbf{D}_{xy} + \tr{\mathbf{D}_y}\mathbf{D}_y.
 \ee
 Where the partial derivative evaluation points ($x_k$ and $y_k$) now form a grid for the integration to be calculated. First defining $x^\dagger_k$ and $y^\dagger_k$ analogously to \ref{midpointS}, we have:
 \be
@@ -655,11 +655,11 @@ Note that the power is now $\frac{3}{2}$. This is since we do not know the contr
 
 \subsubsection{Checking that the adjustment works}
 
-In order to make sure that the adjustment works in both the known and unknown contraction/expansion case, a small simulation was run. In this case a surface consisting of two bivariate Normal distributions (mean vectors $(0,-0.5)$ and $(0,0.5)$, covariance matrix diagonal entries $(0.2,0.1)$) were sampled from (sample size 300) and then noise added from a $\text{Normal}(0,0.05)$ distribution. The surface was then divided into its four constituent quadrants about the origin and squashed according to the following factors (in $(x,y)$ pairs, in order top left, top right, bottom left, bottom right): ((0.3,5),(1,5),(0.3,1),(1,1)).
+In order to make sure that the adjustment works in both the known and unknown contraction/expansion case, a small simulation was run. In this case a surface consisting of two bivariate Normal distributions (mean vectors $(0,-0.5)$ and $(0,0.5)$, covariance matrix diagonal entries $(0.2,0.1)$) were sampled from (sample size 300) and then noise added from a $\text{Normal}(0,0.05)$ distribution. The surface was then divided into its four constituent quadrants about the origin and squashed according to the following factors (in $(x,y)$ pairs, in order top left, top right, bottom left, bottom right): ((0.3,5), (1,5), (0.3,1), (1,1)).
 
 The samples were then used to fit a standard \tprs\ model, \tprs\ with adjusted penalty with known stretch factors and a \tprs\ with $\mathcal{L}^*(x,y)$ estimated from the data. The mean squared error between the truth and prediction over a dense (50 by 50) grid was then calculated.
 
-The simulation results show that there is a decrease in MSE when the expansion/contraction of the space is taken into account (MSEs were: $2.355, 2.300 \text{and} 2.305$ for \tprs, known stretch and estimated stretch, respectively). Unfortunately this didn't offer the same visual improvement as the 1-dimensional case, so heat maps are not shown here.
+The simulation results show that there is a decrease in MSE when the expansion/contraction of the space is taken into account (MSEs were: $2.355, 2.300 \text{ and } 2.305$ for thin plate regression splines, known stretch and estimated stretch, respectively). Unfortunately this didn't offer the same visual improvement as the 1-dimensional case, so heat maps are not shown here.
 
 The next section puts the adjusted penalty approach to the test on a number of domains and compares it to other possible models.
 
@@ -880,9 +880,9 @@ An explanation for why the penalty adjustment doesn't offer much improvement can
 
 Looking at the plots of the prediction points in MDS space for the peninsulae domain (\fig{wt2-2d-proj} and \fig{wt2-3d-proj}) it is easy to see that in two dimensions, the first peninsula has been squashed to a line. 
 
-By truncating $\tilde{X}^*$ in the MDS procedure (\secref{MDStechdet}) the information in $D$ relating to thhe width of the peninsula has been lost. Projecting into higher dimensions reduces the truncation (smaller eigenvalues of $D$ and their corresponding eigenvectors are use to construct $\tilde{X}^*$) and as such more information about the relative positions of the points is introduced (this can be seen for the peninsula domain in \fig{wt2-3d-proj}). The adjusted penalty attempts to account for this squashing by allowing a more flexible model to be fit in that area. However, what is not taken into account is that some of the points in the peninsula are projected on top of (or on the wrong side of) one another. In other words, the 2-D MDS projection makes the points lose their ordering. 
+By truncating $\tilde{\mathbf{X}}^*$ in the MDS procedure (\secref{MDStechdet}) the information in $\mathbf{D}$ relating to thhe width of the peninsula has been lost. Projecting into higher dimensions reduces the truncation (smaller eigenvalues of $\mathbf{D}$ and their corresponding eigenvectors are use to construct $\tilde{\mathbf{X}}^*$) and as such more information about the relative positions of the points is introduced (this can be seen for the peninsula domain in \fig{wt2-3d-proj}). The adjusted penalty attempts to account for this squashing by allowing a more flexible model to be fit in that area. However, what is not taken into account is that some of the points in the peninsula are projected on top of (or on the wrong side of) one another. In other words, the 2-D MDS projection makes the points lose their ordering. 
 
-As a simple, unidimensional example, take three points, $a, b, \text{and}\ c$ in the top line of \fig{linedia}. The projection could squash them in the way shown on the second line, in this case the penalty adjustments as described in \cite{wood2000} could be used to correct the model. However, with MDS the situation shown in the bottom line of \fig{linedia} (changing the order of $a, b, \text{and}\ c$) can occur. This phenomena is also mentioned in \cite{elements}, pp. 572--573.
+As a simple, unidimensional example, take three points, $a, b, \text{ and } c$ in the top line of \fig{linedia}. The projection could squash them in the way shown on the second line, in this case the penalty adjustments as described in \cite{wood2000} could be used to correct the model. However, with MDS the situation shown in the bottom line of \fig{linedia} (changing the order of $a, b, \text{and}\ c$) can occur. This phenomena is also mentioned in \cite{elements}, pp. 572--573.
 
 In the MDS projection we can see this happening in the peninsula described above. The projection takes a side-on view of the peninsula, making the points lose their ordering. In this case, the penalty adjustment can't save the model. If the ordering of the points is not guaranteed, then the smoother's job is potentially impossible, especially when one thinks of a 2-D extension of \fig{linedia}.
 
@@ -942,7 +942,7 @@ In this case adding an extra dimension could help. Taking a 3-dimensional projec
 % generated by thesis/mds/figs/comb.R
 \end{figure}
 
-Although these plots are illustrative, a quantitative measure of how well the within-area distances are being approximated by the MDS projection is desirable. Given the eigen-decomposition attempts to minimise the spectral norm, this is the logical metric to use. If we label the matrix of within-area distances $D$ (as above) and the matrix of Euclidean distances in MDS space as $D_E$, then we may calculate the spectral norm as the largest eigenvalue of $D-D_E$.
+Although these plots are illustrative, a quantitative measure of how well the within-area distances are being approximated by the MDS projection is desirable. Given the eigen-decomposition attempts to minimise the spectral norm, this is the logical metric to use. If we label the matrix of within-area distances $\mathbf{D}$ (as above) and the matrix of Euclidean distances in MDS space as $\mathbf{D}_E$, then we may calculate the spectral norm as the largest eigenvalue of $\mathbf{D}-\mathbf{D}_E$.
 
 % Results here are in mds/counter/run-DRcomp.R
 Looking at this measure for the domain considered in this section (the ``comb''), peninsulae domain (from \secref{mds-wt2-sim}) and the Aral sea as dimension of projection is increased yields some interesting results. These are summarised in \tabref{increasek}. The table indicates that there is some optimum number of dimensions ($k$) to project into, such that adding a further dimension gives only a negligible decrease in the spectral norm. 

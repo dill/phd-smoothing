@@ -6,7 +6,7 @@ As discussed in \secref{intro-FAS}, leakage can be problematic for spatial smoot
 
 This chapter investigates the efficacy of using a conformal mapping to transform the domain in which we wish to perform smoothing. The mapping takes points in the domain of the data ($W$) to a domain on which it is easier to smooth ($W^*$). In particular the utility of the \sch\ transform is examined (elaborating on \cite{eilerstalk}).
 
-Given some region that it is difficult to smooth over, one approach is to transform the domain in which the problem resides. So, for example, one could transform a region into a rectangle, circle or other familiar shape to avoid the problems such as leakage. In this spirit, we wish to find some mapping such as $\phi$ in \fig{simpledia}.
+Given some region that it is difficult to smooth over, one approach is to transform the domain in which the problem resides. So, for example, one could transform a region into a rectangle, circle or other familiar shape to avoid the problems such as leakage. In this spirit, we wish to find some mapping such as $\varphi$ in \fig{simpledia}.
 
 This kind of approach is appealing since it allows the use of existing techniques in the transformed domain (\emph{ie.} not having to resort to model and basis reformulation). It also feels more natural to treat the domain as if it were made of silly putty and simply squash the region into the shape required to perform analysis.
 
@@ -14,7 +14,7 @@ This kind of approach is appealing since it allows the use of existing technique
 \begin{figure} [htbp]
 \centering
 \includegraphics[scale=0.3]{sc/figs/simpledia.pdf}
-\caption{An example of a transformation; the function $\phi$ takes the points in the rectangle and maps them to the region on the left.}
+\caption{An example of a transformation; the function $\varphi$ takes the points in the rectangle and maps them to the region on the left.}
 \label{simpledia}
 \end{figure}
 
@@ -24,7 +24,7 @@ The \sch\ mapping offers such a transformation; it takes some arbitrary polygon 
 \begin{figure} [tbp]
 \centering
 \includegraphics[scale=0.6]{sc/figs/reallinedia.pdf}
-\caption{A mapping of the upper half-plane to the polygon. The vertices ($w_k$) are the result of applying $\phi$ to the points on the real line ($w^*_k$). The boundary of the polygon is mapped to the real line. Note that the final vertex, $w^*_6$ is mapped to the point $\infty$ on the real line.}
+\caption{A mapping of the upper half-plane to the polygon. The vertices ($w_k$) are the result of applying $\varphi$ to the points on the real line ($w^*_k$). The boundary of the polygon is mapped to the real line. Note that the final vertex, $w^*_6$ is mapped to the point $\infty$ on the real line.}
 \label{reallinedia}
 \end{figure}
 
@@ -32,7 +32,7 @@ The \sch\ mapping offers such a transformation; it takes some arbitrary polygon 
 \begin{figure} [tbp]
 \centering
 \includegraphics[scale=0.6]{sc/figs/unitdiskdia.pdf}
-\caption{A mapping of the upper half-plane to the polygon. The vertices ($w_k$) are the result of applying $\phi$ to the points on the real line ($w^*_k$). The boundary of the polygon is mapped to the boundary of the unit disk.}
+\caption{A mapping of the upper half-plane to the polygon. The vertices ($w_k$) are the result of applying $\varphi$ to the points on the real line ($w^*_k$). The boundary of the polygon is mapped to the boundary of the unit disk.}
 \label{unitdiskdia}
 \end{figure}
 
@@ -41,7 +41,7 @@ The goal is to transform the domain with the complex boundary, then smooth in th
 \begin{enumerate}
 \item Determine the domain over which we would like to smooth, $W$. This could be the region or a (simpler) bounding polygon around it.
 
-\item Compute the \sch\ transform of $W$ to get $W^*$ (the nicely shaped domain, in which we want to smooth), obtaining the function $\phi$.
+\item Compute the \sch\ transform of $W$ to get $W^*$ (the nicely shaped domain, in which we want to smooth), obtaining the function $\varphi$.
 
 \item Map the co-ordinates of the datapoints in $W$ to $W^*$.
 
@@ -78,7 +78,7 @@ The boundary of the polygon is denoted by $\Gamma$. We refer to two domains: $W$
 
 Vertices on the polygon are denoted as $w_k$ and those on the transformed boundary are denoted as $w^*_k$ (the \emph{prevertices}). In general a point in the polygon's original domain is denoted as $w$ and in the transformed domain as $w^*$.
 
-We use the function $\phi$ to map from the transformed domain to the polygon (\emph{ie.} $\phi:W^* \mapsto W$). The inverse mapping function, $\phi^{-1}$, is used to go from the polygon to one of: the unit disk, rectangle or half-plane ($\phi:W \mapsto W^*$).  See \fig{mappingdia}.
+We use the function $\varphi$ to map from the transformed domain to the polygon (\emph{ie.} $\varphi:W^* \mapsto W$). The inverse mapping function, $\varphi^{-1}$, is used to go from the polygon to one of: the unit disk, rectangle or half-plane ($\varphi:W \mapsto W^*$).  See \fig{mappingdia}.
 
 % Mapping diagram from my whiteboard
 \begin{figure} [tbp]
@@ -92,27 +92,27 @@ We use the function $\phi$ to map from the transformed domain to the polygon (\e
 \label{schparprob}
 We now look at the mathematical formulation for the upper half-plane, unit disk and rectangle. There are many mappings that can be performed however those detailed here are either canonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two).
 
-For the purposes of smoothing we are interested in the function $\phi^{-1}$ (\emph{ie.} the function that goes from our domain to the transformed one). We must first calculate $\phi$ before we may calculate its inverse. In the literature $\phi$ is referred to as the \emph{forwards map} and $\phi^{-1}$ as the \emph{backwards map}.
+For the purposes of smoothing we are interested in the function $\varphi^{-1}$ (\emph{ie.} the function that goes from our domain to the transformed one). We must first calculate $\varphi$ before we may calculate its inverse. In the literature $\varphi$ is referred to as the \emph{forwards map} and $\varphi^{-1}$ as the \emph{backwards map}.
 
-The forwards map, $\phi$, is determined up to translation, scaling, and rotation by the prevertices (see below). So, our task is to efficiently find the prevertices and hence find the mapping $\phi$. The task of obtaining the prevertices is known as the \emph{\sch\ parameter problem}.
+The forwards map, $\varphi$, is determined up to translation, scaling, and rotation by the prevertices (see below). So, our task is to efficiently find the prevertices and hence find the mapping $\varphi$. The task of obtaining the prevertices is known as the \emph{\sch\ parameter problem}.
 
 \subsubsection{The upper half-plane}
 \label{sc-parprob}
 
-When mapping $\Gamma$ to $H^+$ we set $\phi(\infty) = w_n$ without any loss of generality. \cite{driscoll}, p. 10 then gives the following formula formula:
+When mapping $\Gamma$ to $H^+$ we set $\varphi(\infty) = w_n$ without any loss of generality. \cite{driscoll}, p. 10 then gives the following formula formula:
 \begin{equation}
-\phi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{n-1} (\zeta-w^*_k)^{\alpha_k-1} d\zeta.
+\varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{n-1} (\zeta-w^*_k)^{\alpha_k-1} d\zeta.
 \end{equation}
 Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been calculated. These control the scaling, translation, and rotation of the transform.
 
-Although setting $\phi(\infty) = w_n$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into $H^+$ is rather odd. Given two adjacent points near $w_n$, their spacing on the upper half-plane is huge in comparison to two adjacent points near the other vertices. For this reason the $H^+$ mapping is not pursued further here.
+Although setting $\varphi(\infty) = w_n$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into $H^+$ is rather odd. Given two adjacent points near $w_n$, their spacing on the upper half-plane is huge in comparison to two adjacent points near the other vertices. For this reason the $H^+$ mapping is not pursued further here.
 
 \subsubsection{Unit disk}
 
 The formula for the unit disk looks very similar to that for $H^+$ but the product now runs over all prevertices. The integrand is simply a constant multiple of the $H^+$ case. This is merely to avoid problems in the calculation of the branch cuts (\cite{driscoll}, p. 12).
 \begin{equation}
 \label{unitscmap}
-\phi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{\alpha_k-1} d\zeta.
+\varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{\alpha_k-1} d\zeta.
 \end{equation}
 As above, $A$ and $C$ are complex constants responsible for scaling, translation, and rotation.
 
@@ -132,9 +132,9 @@ To compute the map, we need to find the prevertices, $w^*_k$; since the complex 
 To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ we use the following set of equations:
 \begin{equation}
 \label{optimizeme}
-\frac{\vert \phiinv(w_{k+1}) -  \phiinv(w_k) \vert}{\vert \phiinv(w_2)-\phiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} = 0, \qquad \text{for } k=3,\dots,n-1.
+\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} = 0, \qquad \text{for } k=3,\dots,n-1.
 \end{equation}
-Here $\vert \phiinv(w_{k+1}) -  \phiinv(w_k) \vert$ is the distance between the $k^{\text{th}}$ and $(k+1)^{\text{th}}$ vertex.  We find this by integrating along the line between the points within $W$.
+Here $\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert$ is the distance between the $k^{\text{th}}$ and $(k+1)^{\text{th}}$ vertex.  We find this by integrating along the line between the points within $W$.
 
 Intuitively, we are comparing the side lengths of the polygon in order to evaluate approximation of $\Gamma$ in each iteration (\cite{snider}, A-3). Both of these measures are scaled by the distance between the first two vertices (in their respective domains).
 
@@ -146,7 +146,7 @@ In practice we fix $w^*_n=1$, $w^*_{n-1}=-i$ and $w^*_{n-2}=-1$ in the unit disk
 
 The scaling factor, $C$, (from \eqn{unitscmap}) may be calculated using:
 \begin{equation}
-C=\frac{\vert \phiinv(w_2)-\phiinv(w_1)\vert}{\vert w_2 - w_1\vert}.
+C=\frac{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert}{\vert w_2 - w_1\vert}.
 \end{equation}
 Otherwise, we can assume that up to scaling and rotation that $w_1$ and $w_2$ are correct. In which case we know that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense). 
 
@@ -164,7 +164,7 @@ $A$ is the image of the base point of the integration and is usually written as 
    \end{enumerate}
 \item Define the objective function, $F$, as:
  \begin{equation*}
-F=\frac{\vert \phiinv(w_{k+1}) -  \phiinv(w_k) \vert}{\vert \phiinv(w_2)-\phiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert}, \qquad \text{for } k=3,\dots,n-1,
+F=\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert}, \qquad \text{for } k=3,\dots,n-1,
  \end{equation*}
 \item Use steepest descent and then Newton's method to until $\vert F\vert < \epsilon \quad \forall k$. \item Calculate $C$ and $A$ as detailed above.
 \item Return values for $w^*_1,\dots,w^*_n$, $C$ and $A$.
@@ -176,23 +176,23 @@ Starting values for the algorithm are evenly spaced vertices around the edge of 
 
 \subsubsection{Forwards map}
 
-Calculating the forwards map is simply a case of evaluating $\phi$ at the necessary points. If we wish to find the point on polygon ($w$), given some known point on the disk ($w^*$), we compute:
+Calculating the forwards map is simply a case of evaluating $\varphi$ at the necessary points. If we wish to find the point on polygon ($w$), given some known point on the disk ($w^*$), we compute:
 \begin{equation}
 \label{forwardsmap}
-w=\phi(w^*) = w_0 + C \int_{w^*_0}^{w^*} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta,
+w=\varphi(w^*) = w_0 + C \int_{w^*_0}^{w^*} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta,
 \end{equation}
-where $w^*_0$ is any point in the closed disk such that $w_0 = \phi(w^*_0)$ is known and non-infinite. We may choose any point since the integrand is analytic throughout the mapping and hence the integral is path-independent (\cite{driscoll} \emph{p. 27}). A common choice for $w_0$ is the centre of the polygon.
+where $w^*_0$ is any point in the closed disk such that $w_0 = \varphi(w^*_0)$ is known and non-infinite. We may choose any point since the integrand is analytic throughout the mapping and hence the integral is path-independent (\cite{driscoll} \emph{p. 27}). A common choice for $w_0$ is the centre of the polygon.
 
 Equivalent expressions exist for the rectangle and upper half-plane cases (see \cite{driscoll} p. 49 and p. 10, respectively).
 
 \subsubsection{Backwards map}
 
-To calculate the backwards mapping, there are two possible approaches: (i) using Newton's method to solve the equation $\phi(w^*)-w=0$ and (ii) solving the initial value problem (IVP):
+To calculate the backwards mapping, there are two possible approaches: (i) using Newton's method to solve the equation $\varphi(w^*)-w=0$ and (ii) solving the initial value problem (IVP):
 \begin{equation}
 \label{scivp}
-\frac{dw^*}{dw}=\frac{1}{\phi^{-1}(w^*)} \quad \text{and} \quad \phiinv(w_0)=w^*_0.
+\frac{dw^*}{dw}=\frac{1}{\varphi^{-1}(w^*)} \quad \text{and} \quad \varphiinv(w_0)=w^*_0.
 \end{equation}
-In fact a combination of these methods are used. Solving \eqn{scivp} approximately gives the starting values for the Newton iterations which are significantly faster (since $\phi^{-1}$ is cheaper than $\phi$ to compute) (\cite{driscoll} p. 29).
+In fact a combination of these methods are used. Solving \eqn{scivp} approximately gives the starting values for the Newton iterations which are significantly faster (since $\varphi^{-1}$ is cheaper than $\varphi$ to compute) (\cite{driscoll} p. 29).
 
 The only problem with this is that the path from $w_0$ to the point to map, $w$, must lie entirely inside the polygon. Whether this is true is not known, since after the mapping has been computed, the only known points are the vertices (at which the IVP is singular). So, to combat this, all points on the path are checked sequentially. This computation, although inelegant, is fast compared to the IVP/Newton iterations.
 
