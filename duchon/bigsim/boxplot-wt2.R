@@ -16,14 +16,14 @@ mod.names<-c("tprs","mds+tp","soap","mds+ds\n (GCV)","mds+ds\n (ML)")
 ddat<-read.csv(file="bigresults-GCV.Cp.csv")
 names(ddat)<-c("n","noise","sim","name","dat")
 ddat$noise<-as.factor(ddat$noise)
-ddat$dat<-ddat$dat/1300
+ddat$dat<-ddat$dat/1300 # column has sum not average
 ddat.mse<-ddat$dat[ddat$name=="mse"]
 ddat.noise<-ddat$noise[ddat$name=="mse"]
-# duchon data - GCV.Cp
+# duchon data - ML
 ddat.ML<-read.csv(file="bigresults-ML.csv")
 names(ddat.ML)<-c("n","noise","sim","name","dat")
 ddat.ML$noise<-as.factor(ddat.ML$noise)
-ddat.ML$dat<-ddat.ML$dat/1300
+ddat.ML$dat<-ddat.ML$dat/1300 # column has sum not average
 ddat.ML.mse<-ddat.ML$dat[ddat.ML$name=="mse"]
 ddat.ML.noise<-ddat.ML$noise[ddat.ML$name=="mse"]
 
