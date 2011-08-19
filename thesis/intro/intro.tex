@@ -290,11 +290,9 @@ Since the models used here are penalised, it is the penalty term that controls t
 
 When analysing non-simulated data (where the true values are unknown) it is still sometimes necessary to quantify the out-of-sample error in predictions. This can be achieved using leave-one-out cross validation (LOOCV). THE LOOCV score is calculated as:
 \begin{equation}
-\text{LOOCV} = \frac{1}{n} \sum_{i=1}^n \left \{ f^{-i}(\mathbf{x}_i) - z_i \right\}^2
+\text{LOOCV} = \frac{1}{n} \sum_{i=1}^n \left \{ \hat{f}^{-i}(\mathbf{x}_i) - z_i \right\}^2,
 \end{equation}
-
-
-LOOCV is similar to the GCV score considered above, however it is more computationally intensive since it directly calculates the models.
+where $\hat{f}^{-i}$ is the model fit to all of the data except the $i^\text{th}$, so one can think of the LOOCV score as a measure of fit to unseen data.
 
 \subsubsection{Fitting GAMs using \texttt{mgcv}}
 \label{intro-mgcv}
