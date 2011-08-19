@@ -4,46 +4,47 @@
 
 \section{Introduction}
 
-In the previous chapter multidimensional scaling was used to project the points within some geographical area into a new space in which smoothing can be performed without the problem of leakage. However, it has become clear that we face a trade-off in using this method: if the ordering of the points in space is to be maintained (\secref{pensuck}), a sufficiently high dimensional projection of the data must be obtained. Increasing the projection dimension causes the nullspace of the thin plate spline penalty (\secref{GAMtprspenalty}) to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results (\secref{nohigherdim}). To resolve this issue a smoother which can deal with high dimensional data must be used. 
+In the previous chapter multidimensional scaling was used to project the points within some geographical area into a new space in which smoothing can be performed without the problem of leakage. However, it has become clear that there is a trade-off involved in using this method: if the ordering of the points in space is to be maintained (\secref{pensuck}), a sufficiently high dimensional projection of the data must be obtained. Increasing the projection dimension causes the nullspace of the thin plate spline penalty (\secref{GAMtprspenalty}) to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results (\secref{nohigherdim}). To resolve this issue a smoother which can deal with high dimensional data must be used. 
 
-High dimensional smoothing is a tricky problem, however it has been approached in several different ways previously. Though this final chapter a generalization of thin plate splines will be used to combat this problem, however first it is worth reviewing other approaches before committing to the thin plate generalization.
+High dimensional smoothing has been approached in several different ways previously. Though this final chapter a generalization of thin plate splines will be used to combat this problem, it is worth first reviewing other approaches before committing to the thin plate generalization.
 \begin{itemize}
    \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of P-splines (\secref{intro-psplines}) could be combined using a tensor product to create a mutlidimensional smooth in the requisite number of dimensions. Although this approach is appealing conceptually, in practice several problems arise. First is the problem of knot placement, which in high dimensions can become massive computational burden, in particular with P-splines since non-regular grid of P-splines do not tend to make sense (TKTKTK what?). Second is that tensor product smooths are non-isotropic so the amount of smoothing in each direction is variable which doesn't necessarily make sense in a geographical situation, additionally multiple smoothing parameter estimation adds further computational cost to the fitting process. Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to require many evaluations.
    \item Rather than using a fixed basis, one could use LOESS (\cite{loess2}) which smooths the data using a low-degree local polynomial. As with P-splines this approach is computationally expensive in high dimensions. LOESS has the additional problem that the only way to integrate the method with other methods is to use backfitting for smoothness selection, this has been shown to... TKTKTK backfitting thing, ch 4. TKTKTK interpretability?
          smoothing selection
+   \item Kernel smoothing [[TKTKTK cite]] could be used and incorporated into a larger additive model scheme using backfitting [[TKTKTK check]]. However, as observed in ESL II p 200 the 
+
    \item kriging ???
          covariance matrix stuff -- curriero
-   \item kernel smoothing ???
 \end{itemize}
 
-All of the methods listed above have problems that thin plate splines do not suffer from, however the thin plate spline does have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions. Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
+All of the methods listed above have problems that thin plate splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions. Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
 
-\citeb{duchon77} (the seminal work on thin plate splines) actually proposes a much more general set of interpolation methods are proposed, of which thin plate splines are just a particular example. This chapter illustrates how a more general version of the thin plate spline (henceforth referred to as Duchon splines) can be used for high dimensional smoothing whilst avoiding an overly big penalty nullspace.
+When originally proposing thin plate splines in his seminal 1977 paper, Jean Duchon actually describes a much more general set of interpolation methods; thin plate splines are just a particular example of these. This chapter illustrates how a more general version of the thin plate spline (henceforth referred to as Duchon splines) can be used for high dimensional smoothing whilst avoiding a large and complex penalty nullspace.
 
 The next section goes into the technical detail of how Duchon splines work and how they can be used in the finite area smoothing case. \Secref{gds-wad-examples} shows how this can be useful in the within-area distance case discussed in chapters \ref{chap-sc} and \ref{chap-mds}. \Secref{gds-gds-examples} expands the methodology to look at any problems where distances can be considered, taking the MDS projection of these distances and then smoothing in the projected space. \Secref{gds-software} illustrates the software implementation of these methods. Finally, \secref{gds-conclusion} concludes the chapter.
 
 \section{Using Duchon splines for reliable high dimensional smoothing}
 
-Starting from the definition of the thin plate spline penalty, this section moves to the more general Duchon spline penalty. Although this is not strictly mathematically rigorous, the idea is to show how such a penalty works and that the main differences between it and the thin plate spline. For a full technical exposition see \citeb{duchon77}. This section goes on to show how (once reliable high dimensional smoothing can be performed) the size of the MDS projection dimension can be selected.
+Starting from the definition of the thin plate spline penalty, this section moves to the more general Duchon spline penalty. Although this is not strictly mathematically rigorous, the aim is to show how the penalty works and that the main differences between it and the thin plate spline. A full technical exposition (from a mathematical rather than statistical point of view) is given in \citeb{duchon77}. This section goes on to show how (once reliable high dimensional smoothing can be performed) the size of the MDS projection dimension can be selected.
 
 
 \subsection{From thin plate splines to Duchon splines}
 \label{gds-tprstoduchon}
 
-Recapping, the thin plate spline penalty in $d$ dimensions with derivative order $m$ is given in (\ref{tprs-pen}) as:
+First re-iterating and expanding on the description of thin plate splines given in the introduction, the thin plate spline penalty (as given in (\ref{tprs-pen})) in $d$ dimensions with derivative order $m$ is :
 \begin{equation*}
 J_{m,d} = \int \ldots \int_{\mathbb{R}^d} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \frac{\partial^m f(x_1,\dots,x_d)}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \Big)^2 \text{d} x_1 \ldots  \text{d} x_d,
 \end{equation*}
-where the summation index generates all of the possible combinations of derivative orders such than their sum is still $m$ (thereby finding all the correct cross-terms). The technical restriction $2m>d$ is also imposed to ensure that $f$ remains continuous.
+where the summation index generates all of the possible combinations of derivative orders such than their sum is still $m$ (thereby finding all the correct cross-terms for the derivatives). The technical restriction $2m>d$ is also imposed to ensure that $f$ remains continuous.
 
-The thin plate spline basis is then given as:
+It can then be shown that the function that minimizes (\ref{tprs-pen}) is given by:
 \begin{equation}
 f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
 \label{tprs-basis}
 \end{equation}
 where the first summation is a series of (local) radial basis functions ($i$ indexing the $n$ data) and the second summation are a set of (global) linearly independent polynomials of degree less than $m$. The terms in the second summation are unpenalised and therefore lie in the nullspace of the penalty (\cite{wood2003}). 
 
-There are $M$ of these polynomials lying in the nullspace of the penalty. $M$ is given by:
+There are $M$ of these polynomials lying in the nullspace of the penalty, where $M$ is given by:
 \begin{equation*}
 M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}.
 \end{equation*}
@@ -63,7 +64,7 @@ Starting from (\ref{tprs-pen}), the first step toward the more general Duchon pe
 \end{equation*}
 Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (a $d$-vector of continuous frequencies). More detail on Fourier transforms can be found in (for example) \cite{bracewell}, \cite{chu-ft} and \cite{beerends}. 
 
-Taking the Fourier transform of the penalty allows us to think of how the penalty is calculated in a different way. Rather than thinking about measuring the wigglyness over the whole of $f$, point by point in space, instead the measure is based on the frequencies of $f$ over the whole domain, the higher the frequency components contribute more to the integral than the lower ones. Intuitively, the low frequency components of the derivatives of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more complicated parts of the function, likely to be the parts of $f$ that attempt to interpolate the data.
+Taking the Fourier transform of the penalty allows us to think of how the penalty is calculated in a different way. Rather than thinking about measuring the wigglyness of each radial basis function, instead the penalty is calculated from measuring the wigglyness of the frequencies of $f$ over the whole domain, the higher the frequency components contribute more to the integral than the lower ones. Intuitively, the low frequency components of the derivatives of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more complicated parts of the function, likely to be the parts of $f$ that attempt to interpolate the data.
 
 Taking the Fourier transform of the derivative terms in (\ref{tprs-pen}) yields the following penalty:
 \begin{equation}
@@ -79,18 +80,18 @@ Since taking the Fourier transform of the derivatives has allowed us to think of
 \end{equation}
 the function $w$ could then be used to pick out particularly high frequencies and penalise those more than the lower frequency ones. Setting $w(\boldsymbol{\tau})=1, \forall \boldsymbol{\tau}$ allows us to recover (\ref{tprs-pen}).
 
-Duchon shows that if $w(\boldsymbol{\tau})= \lvert \boldsymbol{\tau} \rvert^{2s}$ is used then the thin plate spline functions in (\ref{tprs-basis}) arise. In this case the above penalty becomes:
+Duchon suggests the use of $w(\boldsymbol{\tau})= \lvert \boldsymbol{\tau} \rvert^{2s}$. This will still give a minimizer of the same form as the thin plate spline functions in (\ref{tprs-basis}) but $M$ will change. First writing down this penalty:
 \begin{equation}
-\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^d} \lvert \boldsymbol{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau}.
+\breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^d} \lvert \boldsymbol{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\Big( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}}(\boldsymbol{\tau}) \Big)^2 \text{d} \boldsymbol{\tau},
 \label{duchon-penalty}
 \end{equation}
+one can think of the penalty as penalizing the frequency components of the radial basis functions that are already relatively smooth (i.e. those doing a similar job to the global polynoomials) less severly. As such parts of  the radial basis functions perform the function of those polynomials which were not included because the nullspace was reduced in size. The penalty allows the use of a reduced nullspace (in both size and complexity terms) while not sacrificing the continuity of $f$. 
+
 Again, (\ref{tprs-pen}) can be recovered from this penalty (by setting $s=0$). When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$. So $s$ can be used to allow high dimensional smoothing, while still using lower-order penalties without yielding discontinuous functions. One can therefore think of $s$ as a kind of ``fudge factor'' that allows the conditions on $m$ and $d$ to be relaxed. Given some fixed combination of $m$ and $d$, an $s$ can be found by simply calculating $s=d/2-m$.
 
-The new penalty allows the radial basis functions in (\ref{tprs-basis}) to perform the function of those polynomials which were not included because the nullspace was reduced in size. Using such a penalty  avoids reduces the size and complexity of the nullspace while not sacrificing the continuity of $f$. 
+The red line in figure \ref{nullspace-dim} gives the number of functions in penalty (\ref{duchon-penalty}). In this case $m=2$ has been chosen to remain constant as the dimensionality increases, leading to a linear increase in nullspace size with the smoothing dimension.
 
-Looking back to figure \ref{nullspace-dim} (where the blue line showed the increasing numbers of functions in the nullspace of the conventional thin plate penalty), the red line gives the number of functions in penalty (\ref{duchon-penalty}). In this case $m=2$ has been chosen to remain constant as the dimensionality increases, leading to a linear increase in nullspace size with the smoothing dimension.
-
-\textbf{SIMON} : If I can construct some kind of proof that the MDS projection of within-area distances always leads to a manifold then I'll say something here about how that leads to the following \ldots In any small region a 2-dimensional manifold will look like $\mathbb{R}^2$, in the same small region the smoother's behaviour will closely approximate a regular thin plate regression spline with $m=2$ on the tangent space of the manifold (as the smoothing parameter tends to zero, at least).
+[[\textbf{SIMON} : If I can construct some kind of proof that the MDS projection of within-area distances always leads to a manifold then I'll say something here about how that leads to the following \ldots In any small region a 2-dimensional manifold will look like $\mathbb{R}^2$, in the same small region the smoother's behaviour will closely approximate a regular thin plate regression spline with $m=2$ on the tangent space of the manifold (as the smoothing parameter tends to zero, at least).]]
 
 These splines have been largly neglected in statistical smoothing literature with the exception of \cite{girosi} which discusses the connections between neural networks and GAMs with the more general form of this type of penalty (ie. (\ref{duchon-penalty-general})). \cite{elements} p. 168 also discuss Girosi's work briefly.
 
