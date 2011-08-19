@@ -286,10 +286,15 @@ The hat or influence matrix, $\mathbf{A}$, has the rather useful property that t
 Since the models used here are penalised, it is the penalty term that controls the overall wigglyness of the spline and hence the EDF. If there was no penalty then the EDF would be the dimension of $\bm{\beta}$ (minus any identifiability constraints, see above). In most cases the basis dimension is set as an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite[p. 161]{simonbook}). 
 
 \subsubsection{Leave-one-out cross validation}
-\label{intro-LOOCV}
+\label{DEFN-LOOCV}
 
-When analysing non-simulated data (where the true values are unknown) it is still sometimes necessary to quantify the out-of-sample error in predictions. This can be achieved using leave-one-out cross validation (LOOCV).
+When analysing non-simulated data (where the true values are unknown) it is still sometimes necessary to quantify the out-of-sample error in predictions. This can be achieved using leave-one-out cross validation (LOOCV). THE LOOCV score is calculated as:
+\begin{equation}
+\text{LOOCV} = \frac{1}{n} \sum_{i=1}^n \left \{ f^{-i}(\mathbf{x}_i) - z_i \right\}^2
+\end{equation}
 
+
+LOOCV is similar to the GCV score considered above, however it is more computationally intensive since it directly calculates the models.
 
 \subsubsection{Fitting GAMs using \texttt{mgcv}}
 \label{intro-mgcv}
