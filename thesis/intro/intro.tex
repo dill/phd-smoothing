@@ -205,7 +205,7 @@ Turning attention to estimating $\bm{\hat{\beta}}$ and $\lambda$, a simple and e
 \mathcal{V}_g = \frac{n \lvert\lvert \mathbf{z} - \mathbf{\hat{f}}(\mathbf{x})\rvert \rvert^2}{\left \{n-\text{tr}(\mathbf{A}) \right \}^2},
 \label{intro-GCV}
 \end{equation}
-where $\mathbf{A}$ is the hat (or influence) matrix (see section \ref{GAMEDF}) and $\text{tr}(\mathbf{A})$ indicates the trace of $\mathbf{A}$. Numerical minimization of $\mathcal{V}_g$ gives the parameters ($\bm{\hat{\beta}}$ and $\lambda$) which minimize the prediction error of the model. Further details are given in \citeb[pp. 134-137]{simonbook}. 
+where $\mathbf{A}$ is the hat (or influence) matrix and $\text{tr}(\mathbf{A})$ indicates the trace of $\mathbf{A}$. Numerical minimization of $\mathcal{V}_g$ gives the parameters ($\bm{\hat{\beta}}$ and $\lambda$) which minimize the prediction error of the model. Further details are given in \citeb[pp. 134-137]{simonbook}. 
 
 
 
@@ -222,7 +222,7 @@ Although in the above, the focus has been on including on geographical coordinat
 
 Other exponential family error distributions may be used in place of normal errors. If other exponential family error distributions are used, we call this a \textit{generalized additive model} and in that case we may model $\eta_i=g(\mu_i)$ where $g$ is a \textit{link function} (in the same sense as the GLM case) and $\eta_i$ is the linear predictor. A more complex fitting routine must then be used to estimate the parameters. The method of \citeb{remlpaper} is used here, the idea being that the optimisation is heirarchical. At each iteration a smoothing parameter is selected to optimize the GCV score, then this $\lambda$ implies a set of model coefficients (the best $\bm{\hat{\beta}}$ for that given $\lambda$) which are found using PIRLS (see below), the algorithm then proposes a new value of $\lambda$ based on the derivatives at this point.
 
-Thinking of the GAM as a penalized GLM allows for the use of the PIRLS algorithm to find $\bm{\hat{\beta}}$. Consider first the usual GLM model matrix $\mathbf{X}$, this model matrix can be used when smooths are included in the model by simply appending the basis evaluations of each datum as columns of $\mathbf{X}$ (i.e. $\mathbf{X}:=\left ( \mathbf{X},\mathbf{X}^* \right )$, where $\mathbf{X}^*_{ij} = b_j(\mathbf{x}_i)$). The PIRLS algorithm is as follows (\cite[p. 138]{simonbook}):
+Thinking of the GAM as a penalized GLM allows for the use of the PIRLS algorithm to find $\bm{\hat{\beta}}$. Consider first the usual GLM model matrix $\mathbf{X}$, by appending the basis evaluations of each datum as columns of $\mathbf{X}$ (i.e. $\mathbf{X}:=\left ( \mathbf{X},\mathbf{X}^* \right )$, where $\mathbf{X}^*_{ij} = b_j(\mathbf{x}_i)$), the smooth terms in the model can be included in the usual model matrix setup. The PIRLS algorithm is as follows (\cite[p. 138]{simonbook}):
 
 First define $\eta_i = \mathbf{X}_i\bm{\beta}$ (where $\mathbf{X}_i$ is the $i^\text{th}$ row of $\mathbf{X}$) as the linear predictor such that $\mu_i = g^{-1}(\eta_i)$ and the variance function, $V(\mu^{[k]})$, such that $\text{Var}\left ( Z_i \right ) = \phi V(\mu^{[k]})$. At iteration $k$ the PIRLS algorithm is:
 \begin{enumerate}
@@ -243,24 +243,13 @@ with respect to $\bm{\beta}$, giving $\bm{\beta}^{[k]}$ and hence allowing the c
 \end{enumerate}
 This procedure is iterated to convergence of $\bm{\beta}$ for the given smoothing parameter(s).
 
-It has been observed (\cite{reissogden}) that GCV can sometimes have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method such as approximate REML or ML, which does not suffer from this problem (\cite{remlpaper}). The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},\mathbf{S}^-)$ where $\mathbf{S}^-$ is some generalized matrix inverse. When the $\bm{\hat{\beta}}$ are considered to be random variables, smoothing parameters can then be thought of as variance parameters and a likelihood can then be formed (known as the \textit{random effects formulation}).  This likelihood can then be optimized with respect to $\lambda$ (in computation $\log(\lambda)$ is used since $\lambda$ must be positive) and as in the GCV case above optimal $\bm{\beta}$ found via PIRLS at each iteration.
+It has been observed (\cite{reissogden}) that GCV can sometimes have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method such as approximate REML or ML, which does not suffer from this problem (\cite{remlpaper}). The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},\mathbf{S}^-)$ (where $\mathbf{S}^-$ the generalized matrix inverse of $\mathbf{S}$). When the $\bm{\hat{\beta}}$ are considered to be random variables, smoothing parameters can then be thought of as variance parameters and a likelihood can then be formed (known as the \textit{random effects formulation}).  This likelihood can then be optimized with respect to $\lambda$ (in computation $\log(\lambda)$ is used since $\lambda$ must be positive) and as in the GCV case above optimal $\bm{\beta}$ found via PIRLS at each iteration.
 
-\citeb[pp. 120-123]{rwc} provide an interesting discussion of automatic smoothing parameter selection. In particular they note that as the number of data increases ($n\rightarrow\infty$), GCV slowly converges to finding the optimum smoothing parameter, this leads to the variability of the smoothing parameter to be quite high. In general GCV tends to select more complicated functions (with higher EDFs) than likelihood based methods leading to overfitting to the data (see \cite{remlpaper} and \cite{reissogden}). REML and ML on the other hand will tend to fit smoother functions. However, it is important to note that this is a manifestation of the variance--bias trade-off. GCV will lead to less biased but more variable fits whereas REML and ML will be less variable but more biased. It does not seem that there is a clear ``best'' method for selecting smoothness but rather that both methods are imperfect in different ways. 
+\citeb[pp. 120-123]{rwc} provide an interesting discussion of automatic smoothing parameter selection. In particular they note that as the number of data increases ($n\rightarrow\infty$), GCV only slowly converges to finding the optimum smoothing parameter, this leads to the variability of the smoothing parameter to be quite high. In general GCV tends to select more complicated functions than likelihood based methods leading to overfitting to the data (see \cite{remlpaper} and \cite{reissogden}). REML and ML on the other hand will tend to fit smoother functions. However, it is important to note that this is a manifestation of the variance--bias trade-off. GCV will lead to less biased but more variable fits whereas REML and ML will be less variable but more biased. It does not seem that there is a clear ``best'' method for selecting smoothness but rather that both methods are imperfect in different ways. This being said, these issues did not manifest themselves during the work carried out as part of this thesis.
 
-TKTKTK [[say something other than this, GCV by default unless there were problems]] For the analyses presented here both methods were used and if there were no discrepancies between the two, the model fitted by GCV was used (unless otherwise stated).
+There are many other ways of fitting GAMs, such as backfitting (\cite{gammonograph}), Markov chain Monte Carlo (MCMC, e.g. \cite{fahrmeir2004}) or integrated nested Laplace approximations (INLA, \cite{inla}). The methods described above were chosen over these methods for several reasons. Backfitting and MCMC are quite computationally expensive, especially when larger models are used (see \cite{simonbook}, pp. 213-215 for why this is the case for backfitting). MCMC-type approaches can be improved by exploiting sparse bases (like P-splines) however, this does not allow for the use of thin plate splines and their isotropic property. INLA can be very fast, however when many terms are included it becomes computationally expensive to find the full marginal posterior distributions of the parameters [[TKTKTK cite!!!]].
 
-
-There are many other ways of fitting GAMs, such as backfitting, MCMC or INLA. But BLAHBLAHBLAH
-%Many possibilities for fitting of GAMs and AMs have been suggested, they include:
-%
-%PQL
-%MCMC - Lang
-%Backfitting - Hastie \& Tibshirani
-%MERGE
-%Up until know the value of $\lambda$ has been assumed to be known, however since we do not know its value in practise, it must be estimated. Automatic smoothing parameter selection has been the subject of much discussion (for example, \cite{wood2000}, \cite{wood2004}, \cite{wood2008}, \cite{gammonograph} and \cite{ruppertreview} for a general overview of some developments) and the descriptions given here are certainly not exhaustive. 
-%
-%Approaches fall into one of two classes, either they attempt to minimize some prediction error-based criterion or they are likelihood-based. The two methods that will be used in this thesis are now discussed: \textit{generalized cross validation} (GCV) using the methods in \citeb{wood2008}and \textit{restricted maximum likelihood or (marginal) maximum likelihood} (REML/ML) as described in \citeb{remlpaper}. These methods are used since they are ($i$) computationally efficient and ($ii$) implemented in freely available, user-friendly software (see section \ref{intro-mgcv}).
-
+\cite{ruppertreview} gives a general overview of developments in the area of semiparametric regression in general during the 2003--2007 period.
 
 
 
@@ -271,11 +260,11 @@ This final section deals with two topics not covered above: assessing the perfor
 
 \subsubsection{Assessing GAM fit using mean squared error}
 
-Simulation studies will be used extensively to evaluate the proposed methods. In order to make such evaluations, some metric must be chosen. Mean squared error (MSE) is a standard approach to assessing the performance of a model, in terms of prediction error. If there are $n_p$ prediction points, the MSE of the fitted model $\hat{f}$ is defined as:
+Simulation studies will be used extensively to evaluate the proposed methods. In order to make such evaluations, some metric must be chosen. Mean squared error (MSE) is a standard approach to assessing the performance of a model, in terms of prediction error. The MSE of the fitted model $\hat{f}$ is defined as:
 \begin{equation*}
 \text{MSE}(\hat{f}(\mathbf{x})) = \mathbb{E}\left [\left \{ \hat{f}(\mathbf{x}) - f(\mathbf{x}) \right \}^2 \right ],
 \end{equation*}
-which can be approximated by:
+which (if there are $n_p$ prediction points) can be approximated by:
 \begin{equation}
 \hat{\text{MSE}}(\hat{f}(\mathbf{x})) = \frac{1}{n_p} \sum_{i=1}^{n_p} \left \{\hat{f}(\mathbf{x}_i) - z_i \right \}^2.
 \label{DEFN-MSE}
@@ -289,13 +278,18 @@ A nice feature of the MSE is that it can be decomposed in the following way (\ci
 showing that the prediction error is combination of bias and variance.
 
 
-\subsubsection{EDF}
+\subsubsection{Effective degrees of freedom}
 \label{GAMEDF}
-%The quantity $\text{tr}(A)$ gives the \textit{effective degrees of freedom}. This gives an measure of the complexity of the model that was fitted to the data. The higher the EDF, the more basis functions were used and  the more complex the model. 
-%
-%Since the models used here are penalised, it is the penalty term that controls the overall ``wigglyness'' of the spline and hence the EDF. If there was no penalty then the EDF would be the dimension of $\bm{\beta}$ (minus any identifiability constraints, see section \ref{intro-extending}). In most cases the basis dimension is set as an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite[p. 161]{simonbook}). 
 
-\subsubsection{LOOCV}
+The hat or influence matrix, $\mathbf{A}$, has the rather useful property that taking the trace of the matrix ($\text{tr}(\mathbf{A})$) gives the \textit{effective degrees of freedom} (EDF) of the model. The EDF gives an measure of the complexity of the model that was fitted to the data. The higher the EDF, the more complex the model. The EDF can be a useful tool when it comes to model choice; if models have similar prediction errors (e.g. similar MSEs), looking at the EDFs of the fitted models can highlight whether one model is ``doing more with less'' and therefore is more parsimonious.
+
+Since the models used here are penalised, it is the penalty term that controls the overall wigglyness of the spline and hence the EDF. If there was no penalty then the EDF would be the dimension of $\bm{\beta}$ (minus any identifiability constraints, see above). In most cases the basis dimension is set as an upper bound, the smoothing penalty suppresses parts of the model. Therefore basis dimension is not a major concern provided that it is not set too low (\cite[p. 161]{simonbook}). 
+
+\subsubsection{Leave-one-out cross validation}
+\label{intro-LOOCV}
+
+When analysing non-simulated data (where the true values are unknown) it is still sometimes necessary to quantify the out-of-sample error in predictions. This can be achieved using leave-one-out cross validation (LOOCV).
+
 
 \subsubsection{Fitting GAMs using \texttt{mgcv}}
 \label{intro-mgcv}
@@ -313,7 +307,7 @@ This section has hopefully given a brief introduction to generalized additive mo
 
 \subsection{Overview of finite area smoothing}
 
-As we have seen in the previous section, splines are a popular way of performing spatial smoothing in two dimensions. To recap, a typical application in ecological modelling consists of a response (be it simply the presence of individuals in a population or concentration of a chemical) modelled as a function of its spatial coordinates. The estimated function can then be used to perform inference on the population, whether that be an abundance estimate, density map or a more sophisticated inferential goal. Finite area smoothing simply specifies that the domain over which this smoothing takes place is bounded.
+As we have seen in the previous section, splines are a popular way of performing spatial smoothing in two dimensions. To recap, a typical application in ecological modelling consists of a response (be it simply the presence of individuals in a population or concentration of a chemical) modelled as a function of its spatial coordinates. The estimated function can then be used to perform inference on the population, whether that be an abundance estimate, density map or as part of a larger model, taking into account nuisance spatial effects. Finite area smoothing simply specifies that the domain over which this smoothing takes place is bounded.
 
 When the geographical region has a \emph{complex boundary}, features from one part of the domain can unduly influence other parts. Considering the boundary as a polygon, a complex boundary is a non-convex polygon, in particular when the non-convexity is relatively extreme. Often this consists of having some peninsula-like feature(s) in the domain with notably different observation values on either side of the feature. Given that there is some scientific motivation as to why those parts of the domain should not affect each other, features such as peninsulae give rise to a phenomenon known as \emph{leakage}.
 
