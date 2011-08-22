@@ -13,9 +13,35 @@ High dimensional smoothing has been approached in several different ways previou
          smoothing selection
    \item Kernel smoothing [[TKTKTK cite]] could be used and incorporated into a larger additive model scheme using backfitting [[TKTKTK check]]. However, as observed in ESL II p 200 the 
 
-   \item A geostatistical/krigging approach could also be used, that is modelling explicitly the spatial covariance function. Using MDS as a dimension expansion technique with krigging has been explored by [[CITE Gavin paper]] and earlier by [[CITE Curriero]].
-         covariance matrix stuff -- curriero
+TKTKTK with kernel and loess methods is there a problem of increasing computational time with $n$?
+
+   \item A geostatistical (kriging) approach could also be used (see \cite[pp. 425-430]{MASS} for a concise introduction, or \cite{schabenberger} for a thorough treatment). Kriging consists of modelling the spatial correlation between points via the \textit{semivariogram} and a spatial trend via a mean function (similar to the linear predictor in the smoothing case, although there are flavours of kriging where the mean is considered constant or known). Semivariogram models assume that the correlation between points drops with distance in the same way at every point in the domain.
+   
+   talk about covariates
+   spatiotemporal models
+   general ``bigger model'' stuff!   
+   Say some more about kriging here. 
 \end{itemize}
+
+\subsection{Comparison with MDS-based kriging methods}
+
+Central to kriging is the explicit modelling of the semivariagram, relating the correlations between points in space according to the distance between the points. It is therefore logical that in (say) a river system, the distances through the river (i.e. the way the water travels) be used as the distances between points rather than the Euclidean distance. The use of river distances becomes problematic from a technical point of view since the covariance functions may then no-longer be positive definite or conditionally negative definite (\citeb{curriero}).  \citeb{mdskrig} work around this by using mutlidimensional scaling to project the water distances into Euclidean space. Distances are not found exactly, rather a series of approximations are used rather than directly calculating the distances between the data. First the domain in question is triangulated, then the ``river distance'' between all of the notes in the triangulation are calculated via Dijkstra's algorithm. Second, these distances are then projected using MDS. Finally, the data locations are mapped into the MDS space by interpolating between the grid points from the triangulation in MDS space.  The distances in MDS space are then used in the estimation of the semivariogram.
+
+There are a number of issues with this approach as well as simple differences with the methods described in this thesis. Most prominently of all,  \citeb{mdskrig} only look at what is referred to as ordinary kriging, when the mean process is treated as constant. In this case spatial variation only enters the model through the semivariogram. It is not clear what effect using the MDS projected points for a spatially varying mean process as well as for the distances used to estimate the semivariogram would have. 
+
+Although the approximations used undoubtedly decrease the computational time, the validity of the approximations is not tested (especially on the fitting of the semivariogram, \citeb{crabkrig}). In particular, the use of the graph distance via Dijsktra's algorithm has similar pitfalls to \citeb{wangranalli} in the reliance on the discretisation of the domain (although the issue of edges of the graph falling outside of the domain is avoided), so may run into the issues discussed in \secref{grids}. Additionally, \citeb{crabkrig} do not full address the issue of the dimension of the MDS projection, merely suggesting the proportion of variation explained or the Bayesian criterion of \citeb{ohraftery} as possible metrics but resort to 2-dimensional projections. Neither of these methods take into account the effect that the MDS projection has on the overall model in terms of the response (in fairness, this is not their purpose). Using the interpolation in higher dimensions may also have it's own issues and so the approximations may run into further problems.
+
+ \citeb{boisvert} suggest that to best approximate the distances the $n-1$ dimensional projection of the distance matrix (if htere are $n$ data, or triangulation nodes) be used (which is of course true) however they go one to point out that the use of such a high-dimensional projection could lead to numerical issues. In this sense the MDS projection is being used to approximate the within-area distances by a set of distances obeying the rules of a Euclidean metric (the criterion given by \citeb{curriero} for positive definite or conditionally negative definite semivariograms). 
+
+   only a spatial model
+   hard to integrate other terms?
+   error distributions?
+   stationarity?
+   ``folding'' issues
+
+
+
+
 
 All of the methods listed above have problems that thin plate splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions. Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
 
