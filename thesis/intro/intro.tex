@@ -407,12 +407,18 @@ Although mathematically elegant, the soap film smoother is a rather complex mode
 
 Indeed, \citeb{eilerstalk} proposed using the \sch\ transform for this very purpose (the author independently came to the idea in 2008 via BBC Radio 4.) Using the \sch\ transform for smoothing will be elaborated on in chapter \ref{chap-sc}, so only a brief summary is given here.
 
-[[TALK ABOUT CURRIERO HERE!]]
-
 The basic idea is to find a function, $\varphi$ say, that takes points in the domain the data lie in ($W$) and maps them to a domain ($W^*$) in which the boundary is less complex ($\varphi : W \mapsto W^*$, mathematically).
 
 Creating some kind of mapping between the space in which the data lies and the space in which conventional smoothers perform well is convenient. Not having to setup a new basis structure and relying on long tested methodology is clearly appealing. This approach also benefits from not treating the boundary as a special in the basis setup.
 \end{enumerate}
+
+Outside of the smoothing spline and GAM literature methods have also been suggested, in particular, when using a \textit{geostatistical} or \textit{kriging} approach is used (see \cite[pp. 425-430]{MASS} for a concise introduction, or \cite{schabenberger} for a thorough treatment). Kriging consists of modelling the spatial correlation between points via the \textit{semivariogram} and a spatial trend via a mean function (similar to the linear predictor in the smoothing case, although there are flavours of kriging where the mean is considered constant and/or known). Semivariogram models assume that the correlation between points is related to the distance between the points but not their position (this is known as \textit{stationarity}, and comes in varying degrees, see \cite[pp. 42-44]{schabenberger}). Although not specifically designed to deal with leakage issues, several authors have suggested the use of some kind of transformation of the data points in space in order to maintain stationarity by approximating within-area distances by equivalent Euclidean distances  via multidimensional scaling (\cite{mdskrig}, \cite{crabkrig}, \cite{curriero}). This is similar to the methods proposed in chapters  \ref{chap-mds} and \ref{chap-gds}, a comparison between these geostatistical methods and those proposed in this thesis is given in \secref{gds-krig}, once the proposed methods have been fully explained to avoid confusion.
+   
+   talk about covariates
+   spatiotemporal models
+   general ``bigger model'' stuff!   
+   Say some more about kriging here. 
+
 
 Chapters \ref{chap-sc}, \ref{chap-mds} and \ref{chap-gds} expand on the ideas in the last method; of using a transformation of space and conventional smoothers to solve the problem of leakage in finite area smoothing.
 

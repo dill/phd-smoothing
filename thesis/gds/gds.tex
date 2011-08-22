@@ -6,42 +6,15 @@
 
 In the previous chapter multidimensional scaling was used to project the points within some geographical area into a new space in which smoothing can be performed without the problem of leakage. However, it has become clear that there is a trade-off involved in using this method: if the ordering of the points in space is to be maintained (\secref{pensuck}), a sufficiently high dimensional projection of the data must be obtained. Increasing the projection dimension causes the nullspace of the thin plate spline penalty (\secref{GAMtprspenalty}) to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results (\secref{nohigherdim}). To resolve this issue a smoother which can deal with high dimensional data must be used. 
 
-High dimensional smoothing has been approached in several different ways previously. Though this final chapter a generalization of thin plate splines will be used to combat this problem, it is worth first reviewing other approaches before committing to the thin plate generalization.
+High dimensional smoothing has been approached in several different ways previously. Though this final chapter a generalization of thin plate splines will be used to combat this problem, it is worth first reviewing other approaches before committing to this. Other options include:
 \begin{itemize}
-   \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of P-splines (\secref{intro-psplines}) could be combined using a tensor product to create a mutlidimensional smooth in the requisite number of dimensions. Although this approach is appealing conceptually, in practice several problems arise. First is the problem of knot placement, which in high dimensions can become massive computational burden, in particular with P-splines since non-regular grid of P-splines do not tend to make sense (TKTKTK what?). Second is that tensor product smooths are non-isotropic so the amount of smoothing in each direction is variable which doesn't necessarily make sense in a geographical situation, additionally multiple smoothing parameter estimation adds further computational cost to the fitting process. Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to require many evaluations.
-   \item Rather than using a fixed basis, one could use LOESS (\cite{loess2}) which smooths the data using a low-degree local polynomial. As with P-splines this approach is computationally expensive in high dimensions. LOESS has the additional problem that the only way to integrate the method with other methods is to use backfitting for smoothness selection, this has been shown to... TKTKTK backfitting thing, ch 4. TKTKTK interpretability?
-         smoothing selection
-   \item Kernel smoothing [[TKTKTK cite]] could be used and incorporated into a larger additive model scheme using backfitting [[TKTKTK check]]. However, as observed in ESL II p 200 the 
+   \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of P-splines (\secref{intro-psplines}) could be combined using a tensor product to create a multidimensional smooth in the requisite number of dimensions. Although this approach is appealing conceptually, in practice several problems arise. First is the problem of knot placement, which in high dimensions can become massive computational burden, in particular with P-splines since non-regular grid of P-splines do not tend to make sense (TKTKTK what?). Second is that tensor product smooths are non-isotropic so the amount of smoothing in each direction is variable which doesn't necessarily make sense in a geographical situation, additionally multiple smoothing parameter estimation adds further computational cost to the fitting process. Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to require many evaluations.
+   \item Rather than using a fixed basis, one could use a local regression technique such as LOESS (\cite{loess1}, \cite{loess2}) which smooths the data using a low-degree local polynomial. Although such an approach is appealing, integrating such a model into a larger GAM would require the model to be fit via backfitting. This consists of smoothing the residuals with respect to the covariates relating to that component and is especially since many different smoothers can be used. However backfitting is quite computationally expensive since smoothing parameters must be selected at every stage; if smoothness selection is to be performed via GCV the hat matrix for the entire model must be calculated at each stage.
+   
+      \item Kernel smoothing [[TKTKTK cite]] could be used and incorporated into a larger additive model scheme using backfitting [[TKTKTK check]]. However, as observed in ESL II p 200 the 
 
 TKTKTK with kernel and loess methods is there a problem of increasing computational time with $n$?
-
-   \item A geostatistical (kriging) approach could also be used (see \cite[pp. 425-430]{MASS} for a concise introduction, or \cite{schabenberger} for a thorough treatment). Kriging consists of modelling the spatial correlation between points via the \textit{semivariogram} and a spatial trend via a mean function (similar to the linear predictor in the smoothing case, although there are flavours of kriging where the mean is considered constant or known). Semivariogram models assume that the correlation between points drops with distance in the same way at every point in the domain.
-   
-   talk about covariates
-   spatiotemporal models
-   general ``bigger model'' stuff!   
-   Say some more about kriging here. 
 \end{itemize}
-
-\subsection{Comparison with MDS-based kriging methods}
-
-Central to kriging is the explicit modelling of the semivariagram, relating the correlations between points in space according to the distance between the points. It is therefore logical that in (say) a river system, the distances through the river (i.e. the way the water travels) be used as the distances between points rather than the Euclidean distance. The use of river distances becomes problematic from a technical point of view since the covariance functions may then no-longer be positive definite or conditionally negative definite (\citeb{curriero}).  \citeb{mdskrig} work around this by using mutlidimensional scaling to project the water distances into Euclidean space. Distances are not found exactly, rather a series of approximations are used rather than directly calculating the distances between the data. First the domain in question is triangulated, then the ``river distance'' between all of the notes in the triangulation are calculated via Dijkstra's algorithm. Second, these distances are then projected using MDS. Finally, the data locations are mapped into the MDS space by interpolating between the grid points from the triangulation in MDS space.  The distances in MDS space are then used in the estimation of the semivariogram.
-
-There are a number of issues with this approach as well as simple differences with the methods described in this thesis. Most prominently of all,  \citeb{mdskrig} only look at what is referred to as ordinary kriging, when the mean process is treated as constant. In this case spatial variation only enters the model through the semivariogram. It is not clear what effect using the MDS projected points for a spatially varying mean process as well as for the distances used to estimate the semivariogram would have. 
-
-Although the approximations used undoubtedly decrease the computational time, the validity of the approximations is not tested (especially on the fitting of the semivariogram, \citeb{crabkrig}). In particular, the use of the graph distance via Dijsktra's algorithm has similar pitfalls to \citeb{wangranalli} in the reliance on the discretisation of the domain (although the issue of edges of the graph falling outside of the domain is avoided), so may run into the issues discussed in \secref{grids}. Additionally, \citeb{crabkrig} do not full address the issue of the dimension of the MDS projection, merely suggesting the proportion of variation explained or the Bayesian criterion of \citeb{ohraftery} as possible metrics but resort to 2-dimensional projections. Neither of these methods take into account the effect that the MDS projection has on the overall model in terms of the response (in fairness, this is not their purpose). Using the interpolation in higher dimensions may also have it's own issues and so the approximations may run into further problems.
-
- \citeb{boisvert} suggest that to best approximate the distances the $n-1$ dimensional projection of the distance matrix (if htere are $n$ data, or triangulation nodes) be used (which is of course true) however they go one to point out that the use of such a high-dimensional projection could lead to numerical issues. In this sense the MDS projection is being used to approximate the within-area distances by a set of distances obeying the rules of a Euclidean metric (the criterion given by \citeb{curriero} for positive definite or conditionally negative definite semivariograms). 
-
-   only a spatial model
-   hard to integrate other terms?
-   error distributions?
-   stationarity?
-   ``folding'' issues
-
-
-
-
 
 All of the methods listed above have problems that thin plate splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions. Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
 
@@ -458,17 +431,67 @@ Although in the spatial setting \mdsds\ appears to perform very well, in a gener
 \section{Software implementation - \mdspack}
 \label{gds-software}
 
-The methods detailed in this section, namely the use of Duchon splines along with MDS to perform smoothing are provided in the \textsf{R} package \mdspack\ which is available at\ldots
+The methods detailed in this section, namely the use of Duchon splines along with MDS to perform smoothing are provided in the \textsf{R} package \mdspack\ which is available at \url{http://www.github.com/dill/msg}.
 
 TKTKTK writeup once properly integrated with mgcv and user interface is nicer.
 
 TKTKTK write documentation in the package
 
+\section{Comparison with MDS-based kriging methods}
+\label{gds-krig}
+
+Central to kriging is the explicit modelling of the semivariogram, relating the correlations between points in space according to the distance between the points. It is therefore logical that in (say) a river system, the distances through the river (i.e. the way the water travels) be used as the distances between points rather than the Euclidean distance. The use of river distances becomes problematic from a technical point of view since the covariance functions may then no-longer be positive definite or conditionally negative definite (\citeb{curriero}).  \citeb{mdskrig} work around this by using multidimensional scaling to project the water distances into Euclidean space. Distances are not found exactly, rather a series of approximations are used rather than directly calculating the distances between the data. First the domain in question is triangulated, then the ``river distance'' between all of the notes in the triangulation are calculated via Dijkstra's algorithm. Second, these distances are then projected using MDS. Finally, the data locations are mapped into the MDS space by interpolating between the grid points from the triangulation in MDS space.  The distances in MDS space are then used in the estimation of the semivariogram.
+
+There are a number of issues with this approach as well as simple differences with the methods described in this thesis. Most prominently of all,  \citeb{mdskrig} only look at what is referred to as ordinary kriging, when the mean process is treated as constant. In this case spatial variation only enters the model through the semivariogram. It is not clear what effect using the MDS projected points for a spatially varying mean process as well as for the distances used to estimate the semivariogram would have. 
+
+Although the approximations used undoubtedly decrease the computational time, the validity of the approximations is not tested (especially on the fitting of the semivariogram, \citeb{crabkrig}). In particular, the use of the graph distance via Dijsktra's algorithm has similar pitfalls to \citeb{wangranalli} in the reliance on the discretisation of the domain (although the issue of edges of the graph falling outside of the domain is avoided), so may run into the issues discussed in \secref{grids}. Additionally, \citeb{crabkrig} do not full address the issue of the dimension of the MDS projection, merely suggesting the proportion of variation explained or the Bayesian criterion of \citeb{ohraftery} as possible metrics but resort to 2-dimensional projections. Neither of these methods take into account the effect that the MDS projection has on the overall model in terms of the response (in fairness, this is not their purpose). Using the interpolation in higher dimensions may also have it's own issues and so the approximations may run into further problems.
+
+\citeb{boisvert} suggest that to best approximate the distances the $n-1$ dimensional projection of the distance matrix (if there are $n$ data, or triangulation nodes) be used (which is of course true) however they go one to point out that the use of such a high-dimensional projection could lead to numerical issues. In this sense the MDS projection is being used to approximate the within-area distances by a set of distances obeying the rules of a Euclidean metric (the criterion given by \citeb{curriero} for positive definite or conditionally negative definite semivariograms). 
+
+   only a spatial model
+   hard to integrate other terms?
+   error distributions?
+   stationarity?
+   ``folding'' issues
+
+
+
 
 \section{Conclusion}
 \label{gds-conclusion}
 
+The final section of this chapter serves to summarize the progression from 
+
+
+squashing bad -> go data based
+
+okay but when data based need to work out how to constrain that
+
+constraints but how to smooth
+
+gds great but not quite ready for prime time.
+
+
 TKTKTK sum up, say what else could be done. Show path SC->MDS+RS->MSG, improvements along the way.
 
 TKTKTK write about interpretability of GDS results, mainly data mining rather than inference (cite Breiman two cultures paper?). IS IT EVEN GOOD AT THIS??!
+
+
+Cut from MDS end, still interesting to waffle about:
+
+Drawing together what has been learnt from the previous chapters, one can at least begin to create a list of desirable properties which would be required for a domain mapping technique to be useful for finite area smoothing. If a domain morphing technique is ever to work for smoothing over complex regions, the mapping used must have the following properties:
+
+\begin{enumerate}
+\item The mapping of points must be smooth, there should be no sudden jumps or gaps. Points that are near one-another in the original space must be near one-another in the transformed space. See \secref{mds-smoothness}.
+\item The transformation must not squash space too much. Squashing points so they are numerically indistinguishable (crowding) must be absolutely avoided, but less severe compressions of space can also cause problems. See \secref{sch-crowding} and \secref{mds-penadjust}.
+\item Ordering of points must be maintained. If the response values are mis-ordered then the recovering of the truth becomes impossible (\secref{pensuck}).
+\item A function to map one space into the other must be found. To make the method competitive in terms of computational time, the method must be able to quickly map points from the data space into the smoothing space. This can be achieved by using some kind of functional mapping or by a sufficiently optimised way of finding within-area distances (\secref{mds-faster}).
+\end{enumerate}
+
+Given a sufficiently high number of dimensions \mdsap\ succeeds on points 1--3 and given that any way of calculating within-area distances can be dropped into the method as a ``black box'' it is not inconceivable that point 4 can be overcome too. Considering point 4 as a more operational detail, the next chapter turns to the problem presented by the first three points: selecting how many dimensions to project distances into and how to smooth reliably in high dimensions.
+
+
+
+
+
 
