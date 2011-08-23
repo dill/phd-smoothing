@@ -30,7 +30,7 @@ bwrong.mat<-c()
 for(samp.size in c(200,300,400,500)){
    load(paste("freesim-",samp.size,".RData",sep=""))
 
-   method.names<-c("dsgcv","dsml","glmnet","glm")
+   method.names<-c("MSG\n(GCV)","MSG\n(ML)","lasso","glm")
    ### BUG
    # there was an extra column in the data.frames used to hold the results
    # to get around this:
