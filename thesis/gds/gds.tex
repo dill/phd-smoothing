@@ -4,17 +4,25 @@
 
 \section{Introduction}
 
-In the previous chapter multidimensional scaling was used to project the points within some geographical area into a new space in which smoothing can be performed without the problem of leakage. However, it has become clear that there is a trade-off involved in using this method: if the ordering of the points in space is to be maintained (\secref{pensuck}), a sufficiently high dimensional projection of the data must be obtained. Increasing the projection dimension causes the nullspace of the thin plate spline penalty (\secref{GAMtprspenalty}) to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results (\secref{nohigherdim}). To resolve this issue a smoother which can deal with high dimensional data must be used. 
+In the previous chapter multidimensional scaling was used to project the points within some geographical area into a new space in which smoothing can be performed without the problem of leakage. However, it has become clear that there is a trade-off involved in using this method: if the ordering of the points in space is to be maintained (\secref{pensuck}), a sufficiently high dimensional projection of the data must be obtained. Increasing the projection dimension causes the nullspace of the thin plate spline penalty (\secref{GAMtprspenalty}) to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results (\secref{nohigherdim}). To resolve this issue, a smoother which can deal with high dimensional data must be used. 
 
-High dimensional smoothing has been approached in several different ways previously. Though this final chapter a generalization of thin plate splines will be used to combat this problem, it is worth first reviewing other approaches before committing to this. Other options include:
-\begin{itemize}
-   \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of P-splines (\secref{intro-psplines}) could be combined using a tensor product to create a multidimensional smooth in the requisite number of dimensions. Although this approach is appealing conceptually, in practice several problems arise. First is the problem of knot placement, which in high dimensions can become massive computational burden, in particular with P-splines since non-regular grid of P-splines do not tend to make sense (TKTKTK what?). Second is that tensor product smooths are non-isotropic so the amount of smoothing in each direction is variable which doesn't necessarily make sense in a geographical situation, additionally multiple smoothing parameter estimation adds further computational cost to the fitting process. Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to require many evaluations.
-   \item Rather than using a fixed basis, one could use a local regression technique such as LOESS (\cite{loess1}, \cite{loess2}) which smooths the data using a low-degree local polynomial. Although such an approach is appealing, integrating such a model into a larger GAM would require the model to be fit via backfitting. This consists of smoothing the residuals with respect to the covariates relating to that component and is especially since many different smoothers can be used. However backfitting is quite computationally expensive since smoothing parameters must be selected at every stage; if smoothness selection is to be performed via GCV the hat matrix for the entire model must be calculated at each stage.
+High dimensional smoothing has been approached in several different ways previously, these include:
+\begin{enumerate}
+   \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of P-splines (\secref{intro-psplines}) could be combined using a tensor product to create a multidimensional smooth in the requisite number of dimensions. In practice several problems arise with this approach. First is the problem of knot placement, which in high dimensions can become massive computational burden, requiring some kind of knot selection. Second is that tensor product smooths are anisotropic so one smoothing parameter is used per dimension, aside from the additional computational burden, the point of the high dimensional projections used is in part to combat anisotropy. Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to require many evaluations.
+   \item TALK ABOUT LOESS AND KERNEL SMOOTHING AT THE SAME TIME, LIKE IN ESL II
    
-      \item Kernel smoothing [[TKTKTK cite]] could be used and incorporated into a larger additive model scheme using backfitting [[TKTKTK check]]. However, as observed in ESL II p 200 the 
+Rather than using a basis function decomposition of the smoother, local regression could be used. Two popular local regression techniques are LOESS (\cite{loess1}, \cite{loess2}), which smooths the data using a low-degree local polynomial or kernel smoothing.
+
+
+. Although such an approach is appealing, integrating such a model into a larger GAM would require the model to be fit via backfitting. This consists of smoothing the residuals with respect to the covariates relating to that component and is especially since many different smoothers can be used. However backfitting is quite computationally expensive since smoothing parameters must be selected at every stage; if smoothness selection is to be performed via GCV the hat matrix for the entire model must be calculated at each stage.
+   
+ Kernel smoothing [[TKTKTK cite]] could be used and incorporated into a larger additive model scheme using backfitting [[TKTKTK check]]. However, as observed in ESL II p 200 the 
 
 TKTKTK with kernel and loess methods is there a problem of increasing computational time with $n$?
-\end{itemize}
+
+   \item Kriging could be used to smooth in high dimensions, however there are technical limitations on the number of dimensions that are possible. In particular ensuring that the semivariogram remains positive definite (\cite{boisvert}). Although there has been work using MDS to obtain isotropic distances for semiveriogram estimation, there has not been work on how to deal with the mean field when it is non-constant (see \secref{gds-krig}, below), incorporating a trend into the mean field when it has been projected into high dimensions leads back to the problems before [[TKTKTK since we are back to splines?!?!?]]
+
+\end{enumerate}
 
 All of the methods listed above have problems that thin plate splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions. Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
 
@@ -475,6 +483,12 @@ gds great but not quite ready for prime time.
 TKTKTK sum up, say what else could be done. Show path SC->MDS+RS->MSG, improvements along the way.
 
 TKTKTK write about interpretability of GDS results, mainly data mining rather than inference (cite Breiman two cultures paper?). IS IT EVEN GOOD AT THIS??!
+
+
+
+talk about black box distance matrix generation
+
+
 
 
 Cut from MDS end, still interesting to waffle about:
