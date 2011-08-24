@@ -97,7 +97,7 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
       samp.dat<-votemat[samp.ind,]
       pred.dat<-votemat[-samp.ind,]
       
-      D.samp<-dist(samp.dat,upper=T,diag=T,dist.metric=dist.metric)
+      D.samp<-dist(samp.dat,upper=T,diag=T,method=dist.metric)
    
       mpparty.samp<-as.data.frame(mpparty[samp.ind])
       rownames(mpparty.samp)<-mpid[samp.ind]
