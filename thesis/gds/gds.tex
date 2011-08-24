@@ -14,6 +14,12 @@ High dimensional smoothing has been approached in several different ways previou
 Integrating these methods into a GAM with other terms requires backfitting. Backfitting consists of smoothing the residuals with respect to that component's covariate. However, backfitting is quite computationally expensive since smoothing parameters must be selected at every stage; if smoothness selection is to be performed via GCV the hat matrix for the entire model must be calculated at each stage.
 
    \item Kriging could be used to smooth in high dimensions, however there are technical limitations on the number of dimensions that are possible. In particular ensuring that the semivariogram remains positive definite (\cite{boisvert}). Although there has been work using MDS to obtain isotropic distances for semivariogram estimation, there has not been work on how to deal with the mean field when it is non-constant (see \secref{gds-krig}, below), incorporating a trend into the mean field when it has been projected into high dimensions leads back to the problems before [[TKTKTK since we are back to splines?!?!?]]
+   
+   http://spatial-analyst.net/wiki/index.php?title=Regression-kriging
+   
+   http://dl.acm.org/citation.cfm?id=1294455
+   
+   
 \end{enumerate}
 
 All of the methods listed above have problems that thin plate splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions. Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
