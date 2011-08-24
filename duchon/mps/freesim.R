@@ -65,6 +65,9 @@ options(cores=6)
 
 samp.sizes<-c(200,300,400,500)
 
+#dist.metric<-"euclidean"
+dist.metric<-"binary"
+
 #for(samp.size in samp.sizes){
 foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
 
@@ -94,7 +97,7 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
       samp.dat<-votemat[samp.ind,]
       pred.dat<-votemat[-samp.ind,]
       
-      D.samp<-dist(samp.dat,upper=T,diag=T)
+      D.samp<-dist(samp.dat,upper=T,diag=T,dist.metric=dist.metric)
    
       mpparty.samp<-as.data.frame(mpparty[samp.ind])
       rownames(mpparty.samp)<-mpid[samp.ind]
@@ -105,6 +108,7 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
       for(method in c("GCV.Cp","ML")){
 
          gam.obj<-gam.mds.fit(mpparty.samp,D.samp,NULL,k,c(2,0.85),
+                              dist.metric=dist.metric,
                               family=binomial(link="logit"),method=method)
 
          # record the EDF
@@ -220,7 +224,8 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
    }
    
    # save some data to file
-   save(brier,mse,edf,wrong.mat,mds.dim.sel,file=paste("freesim-",samp.size,".RData",sep=""))
+   save(brier,mse,edf,wrong.mat,mds.dim.sel,
+        file=paste("freesim-",samp.size,"-",dist.metric,".RData",sep=""))
 
    return(1)
 }
