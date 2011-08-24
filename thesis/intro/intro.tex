@@ -265,18 +265,18 @@ This final section deals with two topics not covered above: assessing the perfor
 
 Simulation studies will be used extensively to evaluate the proposed methods. In order to make such evaluations, some metric must be chosen. Mean squared error (MSE) is a standard approach to assessing the performance of a model, in terms of prediction error. The MSE of the fitted model $\hat{f}$ is defined as:
 \begin{equation*}
-\text{MSE}(\hat{f}(\mathbf{x})) = \mathbb{E}\left [\left \{ \hat{f}(\mathbf{x}) - f(\mathbf{x}) \right \}^2 \right ],
+\text{MSE}(\hat{f}) = \mathbb{E}\left [\left \{ \hat{f}(X) - f(X) \right \}^2 \right ],
 \end{equation*}
 which (if there are $n_p$ prediction points) can be approximated by:
 \begin{equation}
-\hat{\text{MSE}}(\hat{f}(\mathbf{x})) = \frac{1}{n_p} \sum_{i=1}^{n_p} \left \{\hat{f}(\mathbf{x}_i) - z_i \right \}^2.
+\hat{\text{MSE}}(\hat{f}) = \frac{1}{n_p} \sum_{i=1}^{n_p} \left \{\hat{f}(\mathbf{x}_i) - z_i \right \}^2.
 \label{DEFN-MSE}
 \end{equation}
 The $z_i$s could be the data (in which case $n_p=n$ and the indexing is the same as for the data) or if how well $\hat{f}$ approximates a known function is being tested then $z_i=f(\mathbf{x}_i)$ where $f$ is the true function that $\hat{f}$ approximates. When MSE is mentioned from now on, it will be with reference to the quantity defined in (\ref{DEFN-MSE}).
 
 A nice feature of the MSE is that it can be decomposed in the following way (\cite[p. 24]{elements}):
 \begin{equation*}
-\text{MSE} = \text{bias} \left \{ \hat{f}(\mathbf{x})\right \}^2 + \text{Var}\left\{\hat{f}(\mathbf{x}) \right \},
+\text{MSE}(\hat{f}) = \text{bias} \left \{ \hat{f}(\mathbf{x})\right \}^2 + \text{Var}\left\{\hat{f}(\mathbf{x}) \right \},
 \end{equation*}
 showing that the prediction error is combination of bias and variance.
 

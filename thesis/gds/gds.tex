@@ -242,9 +242,9 @@ The website Public Whip (\url{http://www.publicwhip.org.uk/}) provides data from
 \label{voting-code}
 \end{table}
 
-Euclidean distances between the MPs (rows) were found and used to form the distance matrix. Multidimensional scaling was then used to project these distances into MDS space (dimension selection was performed by optimizing the GCV or $\text{ML}_P$ score). The party affiliation (simplified to Labour party versus not Labour party) was then predicted using a logit link.
+Euclidean distances between the MPs were found and used to form the distance matrix. Multidimensional scaling was then used to project these distances into MDS space (dimension selection was performed by optimizing the GCV or $\text{ML}_P$ score). The party affiliation (simplified to Labour party versus not Labour party) was then predicted using a logit link.
 
-Of the 1273 divisions in the 1997--2001 parliament, 17 of them were declared  as ``free votes'' (\cite{freevotes}), where MPs were not ``whipped'' (pressured to take the party line). Predicting affiliation based on whipped votes is relatively easy since MPs are likely to vote along party lines (since for the most part they want to keep their leaders happy). Using free votes makes the classification much more difficult, not only because there is significantly less data. The free votes are summarised in table \ref{free-vote-description}; most of these are ``conscience'' votes.
+Of the 1273 divisions in the 1997--2001 parliament, 17 of them were declared  as ``free votes'' (\cite{freevotes}), where MPs were not ``whipped'' (pressured to take the party line). Predicting affiliation based on whipped votes is relatively easy since MPs are likely to vote along party lines. Using free votes makes the classification much more difficult, not only because there is significantly less data. The free votes are summarised in table \ref{free-vote-description}, most of which are ``conscience'' votes.
 
 \begin{table}  
 \begin{centering}
@@ -273,24 +273,26 @@ Of the 1273 divisions in the 1997--2001 parliament, 17 of them were declared  as
 \label{free-vote-description}
 \end{table}
 
-Using these votes, MPs were selected at random, the model fit to the data and the party affiliation was predicted for those MPs not in the sample. This was repeated for 200 realisations with sample sizes of 200, 300, 400 and 500.
+Using the free vote data, MPs were sampled, \mdsds\ fitted to the data and prediction of party affiliation made for those MPs not in the sample. This was repeated for 200 realisations with sample sizes of 200, 300, 400 and 500.
 
-The usual approach for such problems would be to use either ($i$) a linear model or ($ii$) the lasso (\cite{elements} pp. 68--69) both using logistic link functions. The idea behind the lasso is that when performing a linear regression with many covariates some may not be useful, while some may only be partially useful. Subset selection (i.e. dropping terms from the model) will get around those covariates that are completely non-informative, however, those which are partially informative may only be removed or left in the model. The lasso penalizes the sum of the absolute value of the coefficients and therefore allows the coefficients to shrink to zero. This will mean that those covariates that are completely uninformative will be removed but those which are partially informative will be allowed to remain (but with reduced influence). As with smoothing a parameter must be estimated in order to find the optimal level of shrinkage; this is usually found via cross validation. The built-in function \texttt{glm()} is suitable for ($i$) and the \textsf{R} package \texttt{glmnet} provides a lasso implementation for ($ii$).
+For comparison, the usual approach for such problems would be to use either ($i$) a linear regression with subset selection (e.g. step-wise selection of model terms by, say, AIC) or ($ii$) the lasso (\cite{elements} pp. 68--69) both using logistic link functions (so the probability of being a member of the Labour party is modelled as a function of the free votes). 
 
-The four models tested were:
+The idea behind the lasso is that when performing a linear regression with many covariates some may not be useful, while some may only be partially useful. Subset selection will remove those covariates that are completely non-informative, however, those which are partially informative may only be removed or left in the model. The lasso penalizes the sum of the absolute value of the coefficients and therefore allows the coefficients to shrink to zero. This will mean that those covariates that are completely uninformative will be removed (since their coefficients will be set to zero) but those which are partially informative will be allowed to remain (but with reduced influence). As with smoothing, a parameter must be estimated in order to find the optimal level of shrinkage; this is usually found via cross validation. The built-in procedure \texttt{glm()} is suitable for ($i$) and the \textsf{R} package \texttt{glmnet} provides a lasso implementation for ($ii$).
+
+The four models used in the simulation were:
 \begin{enumerate}
 	\item \mdsds\ (GCV): MDS projection of the data, selected by minimum GCV score over the full range of 2 to the number of dimensions that account for 85\% of the variation in the sample. Spline basis size maximum was 100.
 	\item \mdsds\: ($\text{ML}_P$): as above but using $\text{ML}_P$ score to select the MDS projection dimension.
-	\item Lasso: as implemented in \texttt{glmnet}, cross validation (using deviance as a loss function) was used to select amount of shrinkage per realisation.
-	\item GLM: as implemented in \texttt{glm()}.
+	\item Lasso: as implemented in \texttt{glmnet}, cross validation was used to select amount of shrinkage per realisation.
+	\item GLM: as implemented in \texttt{glm()} with \texttt{step()} providing step-wise variable selection based on AIC.
 \end{enumerate}
 For all models the error distribution was binomial and a logit link was used.
 
 To compare the results two metrics were used. First the MSE (as defined in \secref{DEFN-MSE}) and second the Brier score (\cite{brier50}). The Brier score is defined as:
 \begin{equation}
-\text{BS} = \frac{1}{N} \sum_{i=1}^N (\hat{f}_p(\mathbf{x})-y_i)^2
+\text{BS} = \frac{1}{N} \sum_{i=1}^N (\hat{f}_p(\mathbf{x}_i)-y_i)^2
 \end{equation}
-where subscript $p$ indicates the probability, rather than the prediction on the response scale. The Brier score therefore has the advantage of offering a more granular measure of the accuracy of a model.
+where subscript $p$ indicates the probability, rather than the prediction on the response scale. The Brier score has the advantage of offering a more granular measure of the accuracy of a model, since probabilities will be continuous on $(0,1)$ rather than dichotomous class predictions.
 
 \begin{figure}
 \centering
@@ -308,7 +310,7 @@ where subscript $p$ indicates the probability, rather than the prediction on the
 % generated by duchon/mps/analyse-mps.R
 \end{figure}
 
-Figures \ref{gds-mps-mse} and \ref{gds-mps-brier} show boxplots of the MSE and Brier scores respectively at the varying sample sizes. The picture painted by the results is consistent across sample sizes; the lasso out-performs other methods. Interestingly, using the $\text{ML}_P$ score rather than the GCV score for the MDS projection dimension yields both a lower median MSE and a smaller standard error. Looking at the plots of score against dimension per simulation (figure \ref{gds-mps-dimselect}), we can see that per simulation (the black lines) the GCV score appears to be much more volatile than the $\text{ML}_P$ criterion. Both scores appear to have a fair spread of selection dimension projections (red dots). Smooths through the full data (blue lines, green confidence bands) do not show that there is any particular, definite minima of the scores in dimension.
+Figures \ref{gds-mps-mse} and \ref{gds-mps-brier} show boxplots of the MSE and Brier scores respectively at the sample sizes used. The picture painted by the results is unambiguous and consistent across sample sizes: the lasso out-performs other methods. Interestingly, using the $\text{ML}_P$ score rather than the GCV score for the MDS projection dimension yields both a lower median MSE and a smaller standard error. Looking at the plots of score against dimension per simulation (figure \ref{gds-mps-dimselect}), we can see that per simulation (the black lines) the GCV score appears to be much more volatile than the $\text{ML}_P$ criterion. The selected projection dimensions (red dots) are spread across the whole range, showing no clear preference for one over another. Smooths (blue lines, green confidence bands) through the full set of scores do not show that there is any particular, definite minima of the scores in dimension.
 
 \begin{figure}
 \centering
@@ -318,7 +320,7 @@ Figures \ref{gds-mps-mse} and \ref{gds-mps-brier} show boxplots of the MSE and B
 % generated by duchon/mps/analyse-scoredim.R
 \end{figure}
 
-\mdsds\ does not appear to be useful in predicting MPs allegiance using the free vote data. This may be due to there not being enough information in the distances to predict the party; since the data were trinary (votes were coded only $-1$, $0$ or $1$) there would be many distances that were similar. This theory is supported by looking at distance matrix for all MPs for the free votes, in that matrix there are only 63 unique values out of a possible 228150 ($(676 \times 676)-676)/2$ since the matrix is symmetric). Also worth noting is potential confounding between Labour MPs (which made up 429 out of the 676) and other ideologically similar parties (such as Plaid Cymru, SDLP and the Liberal Democrats (at that time)) which might cause potential problems when classifying. This, second, theory is less likely (given the performance of the lasso and GLM) but in combination with the first seems plausible.
+\mdsds's performance in predicting MPs allegiance using the free vote data is disappointing. This poor performance may be due to there not being enough information in the distances to predict the party; since the data were ternary (votes were coded only $-1$, $0$ or $1$) there would be many distances that were similar. This theory is supported by looking at distance matrix for all MPs for the free votes, in that matrix there are only 63 unique values out of a possible 228150 ($(676 \times 676)-676)/2$ since the matrix is symmetric) [[TKTKTK this calculation may be incorrect!!!]]. Also worth noting is potential confounding between Labour MPs (which made up 429 out of the 676) and other ideologically similar parties (such as Plaid Cymru, SDLP and the Liberal Democrats (at that time)) which might cause potential problems when classifying. This, second, theory is less likely (given the performance of the lasso and GLM) but in combination with the first seems plausible.
 
 \subsubsection{Breast cancer microarrays}
 
