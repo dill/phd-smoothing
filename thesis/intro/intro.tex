@@ -223,11 +223,11 @@ Although in the above, the focus has been on including on geographical coordinat
 \subsubsection{Generalized additive models}
 \label{intro-extending-gams}
 
-Other exponential family error distributions may be used in place of normal errors. If other exponential family error distributions are used, we call this a \textit{generalized additive model} and in that case we may model $\eta_i=g(\mu_i)$ where $g$ is a \textit{link function} (in the same sense as the GLM case) and $\eta_i$ is the linear predictor. A more complex fitting routine must then be used to estimate the parameters. The method of \citeb{remlpaper} is used here, the idea being that the optimisation is heirarchical. At each iteration a smoothing parameter is selected to optimize the GCV score, then this $\lambda$ implies a set of model coefficients (the best $\bm{\hat{\beta}}$ for that given $\lambda$) which are found using PIRLS (see below), the algorithm then proposes a new value of $\lambda$ based on the derivatives at this point.
+Other exponential family error distributions may be used in place of normal errors. If other exponential family error distributions are used, we call this a \textit{generalized additive model} and in that case we may model $\eta_i=g(\mu_i)$ where $g$ is a \textit{link function} (in the same sense as the GLM case) and $\eta_i$ is the linear predictor. A more complex fitting routine must then be used to estimate the parameters. The ``hierarchical'' optimisation method of \citeb{remlpaper} is used here. At each iteration a smoothing parameter is selected to optimize the GCV score, then this $\lambda$ implies a set of model coefficients (the best $\bm{\hat{\beta}}$ for that given $\lambda$) which are found using PIRLS (see below), the algorithm then proposes a new value of $\lambda$ based on the derivatives at this point.
 
-Thinking of the GAM as a penalized GLM allows for the use of the PIRLS algorithm to find $\bm{\hat{\beta}}$. Consider first the usual GLM model matrix $\mathbf{X}$, by appending the basis evaluations of each datum as columns of $\mathbf{X}$ (i.e. $\mathbf{X}:=\left ( \mathbf{X},\mathbf{X}^* \right )$, where $\mathbf{X}^*_{ij} = b_j(\mathbf{x}_i)$), the smooth terms in the model can be included in the usual model matrix setup. The PIRLS algorithm is as follows (\cite[p. 138]{simonbook}):
+Thinking of the GAM as a penalized GLM allows for the use of the PIRLS algorithm to find $\bm{\hat{\beta}}$. Consider first the usual GLM model matrix $\mathbf{X}$. By appending the basis evaluations of each datum as columns of $\mathbf{X}$ (i.e. $\mathbf{X}:=\left ( \mathbf{X},\mathbf{X}^* \right )$, where $\mathbf{X}^*_{ij} = b_j(\mathbf{x}_i)$), the smooth terms in the model can be included in the usual model matrix setup. The PIRLS algorithm is as follows (\cite[p. 138]{simonbook}):
 
-First define $\eta_i = \mathbf{X}_i\bm{\beta}$ (where $\mathbf{X}_i$ is the $i^\text{th}$ row of $\mathbf{X}$) as the linear predictor such that $\mu_i = g^{-1}(\eta_i)$ and the variance function, $V(\mu^{[k]})$, such that $\text{Var}\left ( Z_i \right ) = \phi V(\mu^{[k]})$. At iteration $k$ the PIRLS algorithm is:
+First define $\eta_i = \mathbf{X}_i\bm{\beta}$ (where $\mathbf{X}_i$ is the $i^\text{th}$ row of $\mathbf{X}$) as the linear predictor such that $\mu_i = g^{-1}(\eta_i)$ and the variance function, $V(\mu^{[k]})$, such that $\text{Var}\left ( Z_i \right ) = \phi V(\mu^{[k]})$ ($\phi$ is the scale parameter, see \cite[p. 62]{simonbook}). At iteration $k$ the PIRLS algorithm is:
 \begin{enumerate}
 \item Given the current linear predictor estimate and mean response vectors ($\bm{\eta}^{[k]}$ and $\bm{\mu}^{[k]}$, respectively) calculate the diagonal weight matrix with the following elements:
 \begin{equation*}
@@ -237,20 +237,20 @@ and the pseudodata:
 \begin{equation*}
 s_i = g^\prime(\mu_i^{[k]})^2(z_i-\mu_i^{[k]}) + \mathbf{X}_i\bm{\beta}^{[k]},
 \end{equation*}
-is in the $n$-vector $\mathbf{s}$. [[TKTKTK what is gdash!!]]
+stored in the $n$-vector $\mathbf{s}$. $g^\prime(\mu_i^{[k]})$ is the first derivative of the link function with respect to $\mu_i^{[k]}$.
 \item Minimize
 \begin{equation*}
 \lvert \lvert \sqrt{\mathbf{W}^{[k]}} (\mathbf{s}^{[k]} - \mathbf{X}\bm{\beta})  \rvert \rvert^2 + \lambda \int\int P^2 f(\mathbf{x}) \text{d}\mathbf{x}
 \end{equation*}
 with respect to $\bm{\beta}$, giving $\bm{\beta}^{[k]}$ and hence allowing the calculation of $\bm{\eta}^{[k]}$ and $\bm{\mu}^{[k]}$.
 \end{enumerate}
-This procedure is iterated to convergence of $\bm{\beta}$ for the given smoothing parameter(s).
+This procedure is iterated to convergence of $\bm{\beta}$ for the given smoothing parameter(s). Further information on PIRLS in the GLM context can be found in chapter 1 of \citeb{GEEbook}.
 
-It has been observed (\cite{reissogden}) that GCV can sometimes have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method such as approximate REML or ML, which does not suffer from this problem (\cite{remlpaper}). The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},\mathbf{S}^-)$ (where $\mathbf{S}^-$ the generalized matrix inverse of $\mathbf{S}$). When the $\bm{\hat{\beta}}$ are considered to be random variables, smoothing parameters can then be thought of as variance parameters and a likelihood can then be formed (known as the \textit{random effects formulation}).  This likelihood can then be optimized with respect to $\lambda$ (in computation $\log(\lambda)$ is used since $\lambda$ must be positive) and as in the GCV case above optimal $\bm{\beta}$ found via PIRLS at each iteration.
+It has been observed (\cite{reissogden}) that GCV can sometimes have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method such as approximate REML or ML, which does not suffer from this problem (\cite{remlpaper}). The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},\mathbf{S}^-)$ (where $\mathbf{S}^-$ the generalized matrix inverse of $\mathbf{S}$). When the $\bm{\hat{\beta}}$ are considered to be random variables, smoothing parameters can then be thought of as variance parameters and a likelihood can then be formed (known as the \textit{random effects formulation}).  This likelihood can then be optimized with respect to $\lambda$ (in computation $\log(\lambda)$ is used since $\lambda$ must be positive) in the same way as with GCV above. At each iteration the optimal $\bm{\beta}$ is found via PIRLS.
 
 \citeb[pp. 120-123]{rwc} provide an interesting discussion of automatic smoothing parameter selection. In particular they note that as the number of data increases ($n\rightarrow\infty$), GCV only slowly converges to finding the optimum smoothing parameter, this leads to the variability of the smoothing parameter to be quite high. In general GCV tends to select more complicated functions than likelihood based methods leading to overfitting to the data (see \cite{remlpaper} and \cite{reissogden}). REML and ML on the other hand will tend to fit smoother functions. However, it is important to note that this is a manifestation of the variance--bias trade-off. GCV will lead to less biased but more variable fits whereas REML and ML will be less variable but more biased. It does not seem that there is a clear ``best'' method for selecting smoothness but rather that both methods are imperfect in different ways. This being said, these issues did not manifest themselves during the work carried out as part of this thesis.
 
-There are many other ways of fitting GAMs, such as backfitting (\cite{gammonograph}), Markov chain Monte Carlo (MCMC, e.g. \cite{fahrmeir2004}) or integrated nested Laplace approximations (INLA, \cite{inla}). The methods described above were chosen over these methods for several reasons. Backfitting and MCMC are quite computationally expensive, especially when larger models are used (see \cite{simonbook}, pp. 213-215 for why this is the case for backfitting). MCMC-type approaches can be improved by exploiting sparse bases (like P-splines) however, this does not allow for the use of thin plate splines (and their nice properties like isotropy). INLA can be very fast, however when many terms are included it becomes computationally expensive to find the full marginal posterior distributions of the parameters [[TKTKTK cite!!!]].
+There are many other ways of fitting GAMs, such as backfitting (\cite{gammonograph}, see also \secref{gds-intro}), Markov chain Monte Carlo (MCMC, e.g. \cite{fahrmeir2004}) or integrated nested Laplace approximations (INLA, \cite{inla}). The methods described above were chosen over these methods for several reasons. Backfitting and MCMC are quite computationally expensive, especially when larger models are used (see \cite{simonbook}, pp. 213-215 for why this is the case for backfitting). MCMC-type approaches can be improved by exploiting sparse bases (like P-splines) however, thin plate splines (and their nice properties like isotropy) cannot be used. INLA can be very fast, however when many terms are included it becomes computationally expensive (\cite{inla} suggest more than 10 become problematic).
 
 \cite{ruppertreview} gives a general overview of developments in the area of semiparametric regression in general during the 2003--2007 period.
 
@@ -272,11 +272,11 @@ which (if there are $n_p$ prediction points) can be approximated by:
 \hat{\text{MSE}}(\hat{f}) = \frac{1}{n_p} \sum_{i=1}^{n_p} \left \{\hat{f}(\mathbf{x}_i) - z_i \right \}^2.
 \label{DEFN-MSE}
 \end{equation}
-The $z_i$s could be the data (in which case $n_p=n$ and the indexing is the same as for the data) or if how well $\hat{f}$ approximates a known function is being tested then $z_i=f(\mathbf{x}_i)$ where $f$ is the true function that $\hat{f}$ approximates. When MSE is mentioned from now on, it will be with reference to the quantity defined in (\ref{DEFN-MSE}).
+The $z_i$s could be the data (in which case $n_p=n$ and the indexing is the same as for the data) or if how well $\hat{f}$ approximates a known function is being tested then $z_i=f(\mathbf{x}_i)$ where $f$ is the true function that $\hat{f}$ approximates. It makes more sense to evaluate $z_i$ which are not the data since an $\hat{f}$ that simply interpolates will have zero MSE, but may still be a very bad model for the unobserved locations. When MSE is mentioned from now on, it will be with reference to the quantity defined in (\ref{DEFN-MSE}).
 
 A nice feature of the MSE is that it can be decomposed in the following way (\cite[p. 24]{elements}):
 \begin{equation*}
-\text{MSE}(\hat{f}) = \text{bias} \left \{ \hat{f}(\mathbf{x})\right \}^2 + \text{Var}\left\{\hat{f}(\mathbf{x}) \right \},
+\text{MSE}(\hat{f}) = \text{bias} \left ( \hat{f}\right )^2 + \text{Var}\left (\hat{f} \right ),
 \end{equation*}
 showing that the prediction error is combination of bias and variance.
 
@@ -291,7 +291,7 @@ Since the models used here are penalised, it is the penalty term that controls t
 \subsubsection{Leave-one-out cross validation}
 \label{DEFN-LOOCV}
 
-When analysing non-simulated data (where the true values are unknown) it is still sometimes necessary to quantify the out-of-sample error in predictions. This can be achieved using leave-one-out cross validation (LOOCV). THE LOOCV score is calculated as:
+When analysing non-simulated data (where the true values are unknown) it is still sometimes necessary to quantify the out-of-sample error in predictions. This can be achieved using leave-one-out cross validation (LOOCV). The LOOCV score is calculated as:
 \begin{equation}
 \text{LOOCV} = \frac{1}{n} \sum_{i=1}^n \left \{ \hat{f}^{-i}(\mathbf{x}_i) - z_i \right\}^2,
 \end{equation}

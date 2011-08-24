@@ -3,6 +3,7 @@
 
 
 \section{Introduction}
+\label{gds-intro}
 
 In the previous chapter multidimensional scaling was used to project the points within some geographical area into a new space in which smoothing can be performed without the problem of leakage. However, it has become clear that there is a trade-off involved in using this method: if the ordering of the points in space is to be maintained (\secref{pensuck}), a sufficiently high dimensional projection of the data must be obtained. Increasing the projection dimension causes the nullspace of the thin plate spline penalty (\secref{GAMtprspenalty}) to become large, causing a large space of wiggly functions to be used without being penalised, leading to unreliable smoothing results (\secref{nohigherdim}). To resolve this issue, a smoother which can deal with high dimensional data must be used. 
 
@@ -11,15 +12,9 @@ High dimensional smoothing has been approached in several different ways previou
    \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of P-splines (\secref{intro-psplines}) could be combined using a tensor product to create a multidimensional smooth in the requisite number of dimensions. In practice several problems arise with this approach. First is the problem of knot placement, which in high dimensions can become massive computational burden, requiring some kind of knot selection. Second is that tensor product smooths are anisotropic so one smoothing parameter is used per dimension, aside from the additional computational burden, the point of the high dimensional projections used is in part to combat anisotropy. Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to require many evaluations.
    \item Rather than using a basis function decomposition of the smoother, local regression could be used. Two popular local regression techniques are LOESS (\cite{loess1}, \cite{loess2}), which smooths the data using a low-degree local polynomial or kernel smoothing (e.g. \cite[pp. 194-200]{elements}) by taking weighted averages of the response with weightings based on distance. Local methods are, of course, local and as such rely on the data being relatively dense, which cannot be guaranteed, especially in high dimensions (\cite[p. 200]{elements}). 
 
-Integrating these methods into a GAM with other terms requires backfitting. Backfitting consists of smoothing the residuals with respect to that component's covariate. However, backfitting is quite computationally expensive since smoothing parameters must be selected at every stage; if smoothness selection is to be performed via GCV the hat matrix for the entire model must be calculated at each stage.
+Integrating these methods into a GAM (which is desirable so that other terms and other smoothers can be included in the model) requires backfitting. Backfitting consists of smoothing the residuals with respect to that component's covariate. However, backfitting is quite computationally expensive since smoothing parameters must be selected at every stage; if smoothness selection is to be performed via GCV the hat matrix for the entire model must be calculated at each stage.
 
-   \item Kriging could be used to smooth in high dimensions, however there are technical limitations on the number of dimensions that are possible. In particular ensuring that the semivariogram remains positive definite (\cite{boisvert}). Although there has been work using MDS to obtain isotropic distances for semivariogram estimation, there has not been work on how to deal with the mean field when it is non-constant (see \secref{gds-krig}, below), incorporating a trend into the mean field when it has been projected into high dimensions leads back to the problems before [[TKTKTK since we are back to splines?!?!?]]
-   
-   http://spatial-analyst.net/wiki/index.php?title=Regression-kriging
-   
-   http://dl.acm.org/citation.cfm?id=1294455
-   
-   
+   \item Kriging could be used to smooth in high dimensions, however there are technical limitations on the number of dimensions that are possible. In particular ensuring that the semivariogram remains positive definite (\cite{boisvert}). Although there has been work using MDS to obtain isotropic distances for semivariogram estimation, there has not been work on how to deal with the mean field when it is non-constant (see \secref{gds-krig}, below), incorporating a trend into the mean field when it has been projected into high dimensions will lead to similar difficulties as in the spline smoothing case.
 \end{enumerate}
 
 All of the methods listed above have problems that thin plate splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions. Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
