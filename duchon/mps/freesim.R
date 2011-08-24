@@ -2,7 +2,7 @@ source("getdata.R")
 
 # simulation for the free vote data
 
-library(mdspack)
+library(msg)
 library(lars)
 library(glmnet)
 
