@@ -254,14 +254,11 @@ There are many other ways of fitting GAMs, such as backfitting (\cite{gammonogra
 
 \cite{ruppertreview} gives a general overview of developments in the area of semiparametric regression in general during the 2003--2007 period.
 
+\subsection{Smoothing in practice}
 
+This final section deals with two topics not covered above: assessing model performance and the practical implementation of the methods detailed above.
 
-
-\subsection{GAMs in practice}
-
-This final section deals with two topics not covered above: assessing the performance of GAMs and the practical implementation of the methods detailed above.
-
-\subsubsection{Assessing GAM fit using mean squared error}
+\subsubsection{Mean squared error}
 
 Simulation studies will be used extensively to evaluate the proposed methods. In order to make such evaluations, some metric must be chosen. Mean squared error (MSE) is a standard approach to assessing the performance of a model, in terms of prediction error. The MSE of the fitted model $\hat{f}$ is defined as:
 \begin{equation*}
@@ -280,6 +277,14 @@ A nice feature of the MSE is that it can be decomposed in the following way (\ci
 \end{equation*}
 showing that the prediction error is combination of bias and variance.
 
+\subsubsection{The Brier score}
+\label{DEFN-brier}
+
+The Brier score (\cite{brier50}) is useful when the response variable is binary (a more general version of the score for $n$-ary variables can also be used). In this case the probability of observations belonging to a particular class (0 or 1 in the binary case) is measured, so it makes sense to assess the model performance using the probabilities rather than just the classifications. The score is similar in form to the MSE:
+\begin{equation}
+\text{BS} = \frac{1}{n_p} \sum_{i=1}^{n_p} \left \{\hat{f}_p(\mathbf{x}_i)-z_i \right \}^2
+\end{equation}
+where subscript $f_p$ indicates that the predictions are on the probability scale, rather than the prediction on the response scale. The Brier score has the advantage of offering a more granular measure of the model errors, since probabilities will be continuous on $(0,1)$ rather than dichotomous (or $n$-chotomous) class predictions.
 
 \subsubsection{Effective degrees of freedom}
 \label{GAMEDF}

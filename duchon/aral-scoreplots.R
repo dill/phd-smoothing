@@ -76,6 +76,9 @@ mds.fit2<-gam.mds(aral.dat,pred.grid,bnd,grid.res=c(20,20),family=Gamma(link="lo
 
 
 par(mfrow=c(1,2))
+
+#par(las=1,mgp=c(2,0.75,0),mar=c(3,3,2,2),cex.axis=0.5,cex.lab=0.7)
 plot(mds.fit2$gcv.dim,type="l",xlab="MDS projection dimension",ylab="GCV")
-plot(mds.fit$gcv.dim,type="l",xlab="MDS projection dimension",ylab="Score")
+plot(mds.fit$gcv.dim,type="l",
+     xlab="MDS projection dimension",ylab=expression(ML[p]))
 
