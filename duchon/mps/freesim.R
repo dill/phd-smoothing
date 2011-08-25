@@ -131,7 +131,7 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
          samp.mds<-as.data.frame(samp.mds)
          
          ### predictions
-         pred.mds<-insert.mds.generic(mds.obj,pred.dat,samp.dat)
+         pred.mds<-insert.mds.generic(mds.obj,pred.dat,samp.dat,dist.metric=dist.metric)
          pred.mds<-as.data.frame(pred.mds)
          attr(pred.mds,"names")<-bigletters[(length(bigletters)-
                                              (dim(samp.mds)[2]-2)):length(bigletters)]
