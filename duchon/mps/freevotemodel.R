@@ -1,6 +1,7 @@
 source("getdata.R")
 
-library(mdspack)
+library(msg)
+library(e1071)
 
 # model for free votes only
 
@@ -66,9 +67,10 @@ pred.dat<-votemat[-samp.ind,]
 
 # which metric to use
 #dist.metric<-"manhattan"
-dist.metric<-"euclidean"
+#dist.metric<-"euclidean"
+dist.metric<-"hamming"
 
-bigletters<-c(letters,paste("a",letters,sep=""),paste("b",letters,sep=""))
+bigletters<-as.vector(sapply(letters,paste,letters,sep=""))
 bl.len<-length(bigletters)
 
 ###########################################
@@ -80,9 +82,11 @@ bl.len<-length(bigletters)
 #
 #D.grid<-dist(base.grid,method=dist.metric)
 
-D.samp<-dist(samp.dat)
+#D.samp<-dist(samp.dat)
+D.samp<-hamming.distance(samp.dat)
 
-gam.ret<-gam.mds.fit(mpparty[samp.ind],D.samp,NULL,100,c(2,16),binomial())
+gam.ret<-gam.mds.fit(mpparty[samp.ind],D.samp,NULL,100,c(2,16),
+                     binomial(),dist.metric=dist.metric)
 attach(gam.ret)
 b<-gam.ret$gam
 
@@ -91,7 +95,7 @@ b<-gam.ret$gam
 # map the predictions
 # using code from insert.mds
 
-pred.mds<-insert.mds.generic(mds.obj,pred.dat,samp.dat)
+pred.mds<-insert.mds.generic(mds.obj,pred.dat,samp.dat,dist.metric=dist.metric)
 
 # predict back over _all_ MPs
 pred.grid<-matrix(NA,length(mpid),mds.dim)

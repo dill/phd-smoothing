@@ -14,7 +14,8 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
    #  start.grid     initial grid to use, can be NULL
    #  samp.points    sample points, needed if the above is specified    
    #  method         method= for gam() -- GCV.Cp and ML
-   #  dist.metric    distance metric, anything allowable by dist() + "mahalanobis"
+   #  dist.metric    distance metric, anything allowable by dist() + 
+   #                  "mahalanobis" + "hamming"
    #  select         do variable selection
 
    # Return - list
@@ -131,6 +132,8 @@ gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NU
 
       if(dist.metric=="mahalanobis"){
          D.grid<-apply(grid.points,1,mahalanobis,x=grid.points,cov=cov(grid.points))
+      }else if(dist.metric=="hamming"){
+         D.grid<-hamming.distance(grid.points)
       }else{
          D.grid<-as.matrix(dist(grid.points,method=dist.metric))
       }

@@ -1,5 +1,5 @@
 # looking at MPs voting records
-library(mdspack)
+library(msg)
 
 year<-"1997" # "2005"
 

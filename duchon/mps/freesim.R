@@ -66,7 +66,8 @@ options(cores=6)
 samp.sizes<-c(200,300,400,500)
 
 #dist.metric<-"euclidean"
-dist.metric<-"binary"
+#dist.metric<-"binary"
+dist.metric<-"hamming"
 
 #for(samp.size in samp.sizes){
 foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
@@ -97,7 +98,8 @@ foreach.result<-foreach(samp.size=samp.sizes,.combine="+",.init=0) %dopar% {
       samp.dat<-votemat[samp.ind,]
       pred.dat<-votemat[-samp.ind,]
       
-      D.samp<-dist(samp.dat,upper=T,diag=T,method=dist.metric)
+      #D.samp<-dist(samp.dat,upper=T,diag=T,method=dist.metric)
+      D.samp<-hamming.distance(samp.dat)
    
       mpparty.samp<-as.data.frame(mpparty[samp.ind])
       rownames(mpparty.samp)<-mpid[samp.ind]
