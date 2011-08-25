@@ -335,7 +335,7 @@ where $\mathbf{\Sigma}^{-1}$ is replaced with the inverse of the sample covarian
 
 Of the 62 patients in the study, 45 had non-missing values for NPI and out of the 59 genes in the microarray, 27 did not have missing values. This lead to an analysis of  the NPI measurements of 45 patients using distance from 27 genes. A number of different \mdsds\ models were fitted, with various error distributions. Using standard checks (eg. \texttt{gam.check()} in \texttt{mgcv}, fitting to residuals etc) two were deemed most promising. Those were a model with normal errors and one using a quasi-likelihood (\cite{quasi}, \cite{wood2008}) with a square root link function and variance proportional to the square of the mean. For comparison the lasso was (again) used. The implementation of the lasso does not allow the use of quasi-likelihood, so the normal model for \mdsds\ is a fairer comparison. 
 
-Since the sample size is rather small, it was not possible to reasonably split the data into training and validation sets as with the MP data. Instead, leave-one-out cross validation (LOOCV) (see section \ref{DEFN-LOOCV}) was used to assess the sensitivity of the models to changes in the data, as well as overall prediction. Table \ref{breast-cancer-cv-results} and figure \ref{breast-cancer-cv-plot} show the results. Both the table and plot show that although \mdsds\ has a lower LOOCV score than the lasso across the board, the variability in the models is about the same.
+Since the sample size is rather small, it was not possible to reasonably split the data into training and validation sets as with the MP data. Instead, leave-one-out cross validation (LOOCV) (\secref{DEFN-LOOCV}) was used to assess the sensitivity of the models to changes in the data, as well as overall prediction. Table \ref{breast-cancer-cv-results} and figure \ref{breast-cancer-cv-plot} show the results. Both the table and plot show that although \mdsds\ has a lower LOOCV score than the lasso across the board, the variability in the models is about the same.
 
 \begin{table}  
 \begin{centering}
@@ -470,7 +470,7 @@ TKTKTK write about interpretability of GDS results, mainly data mining rather th
 
 talk about black box distance matrix generation
 
-
+distances that aren't distances -- costs and albatross non-symmetric, problems
 
 
 Cut from MDS end, still interesting to waffle about:
