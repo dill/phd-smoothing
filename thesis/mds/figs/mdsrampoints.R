@@ -2,10 +2,7 @@
 # create a diagram showing the Ramsay horseshoe in Euclidean and
 # MDS space.
 
-# NB RUN this from the mds directory!!
-
-
-source("mds.R")
+library(msg)
 
 ## create a boundary...
 bnd <- fs.boundary()
@@ -25,9 +22,9 @@ D.grid<-create_distance_matrix(xx,yy,bnd)
 grid.mds<-cmdscale(D.grid,eig=TRUE,k=2,x.ret=TRUE)
 
 
-pdf(file="../thesis/mds/figs/mdsrampoints.pdf",6,2.5)
-par(mfrow=c(1,2))
-plot(my.grid,asp=1,xlab="",ylab="",pch=".",cex.axis=0.5)
-plot(grid.mds$points,asp=1,xlab="",ylab="",pch=".",cex.axis=0.5)
+pdf(file="mdsrampoints.pdf",width=6,height=2.5)
+par(mfrow=c(1,2),las=1,cex.lab=0.7,cex.axis=0.7,mar=c(3,2.5,1,1),mgp=c(1.8,0.7,0))
+plot(my.grid,asp=1,xlab="x",ylab="y",pch=19,cex=0.2)
+plot(grid.mds$points,asp=1,xlab="x*",ylab="y*",pch=19,cex=0.2)
 dev.off()
 
