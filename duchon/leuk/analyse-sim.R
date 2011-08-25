@@ -10,7 +10,10 @@ for(ltype in c("ALL","TEL")){
    
    if(ltype=="ALL") ltype<-"T-ALL"
    if(ltype=="TEL") ltype<-"TEL-AML1"
-   
+
+   # print results
+   cat(ltype,"\n")
+
    
    # MSE
    res<-rbind(res,cbind(dsml.mse.cv,
@@ -25,6 +28,7 @@ for(ltype in c("ALL","TEL")){
                         rep("MSE",length(lasso.mse.cv)),
                         rep(ltype,length(lasso.mse.cv)),
                         rep("lasso",length(lasso.mse.cv))))
+
    # Brier
    res<-rbind(res,cbind(dsml.brier.cv,
                         rep("Brier",length(dsml.brier.cv)),
@@ -38,9 +42,31 @@ for(ltype in c("ALL","TEL")){
                         rep("Brier",length(lasso.brier.cv)),
                         rep(ltype,length(lasso.brier.cv)),
                         rep("lasso",length(lasso.brier.cv))))
+   # print
+   cat("lasso & ",   round(mean(lasso.mse.cv),2),"&",
+                     round(median(lasso.mse.cv),2),"&",
+                     round(sd(lasso.mse.cv)/sqrt(length(lasso.mse.cv)),2),"&",
+                     round(mean(lasso.brier.cv),2),"&",
+                     round(median(lasso.brier.cv),2),"&",
+                     round(sd(lasso.brier.cv)/sqrt(length(lasso.brier.cv)),2),"\\\\\n")
+   cat("MSG (GCV) &",round(mean(dsgcv.mse.cv),2),"&",
+                     round(median(dsgcv.mse.cv),2),"&",
+                     round(sd(dsgcv.mse.cv)/sqrt(length(dsgcv.mse.cv)),2),"&",
+                     round(mean(dsgcv.brier.cv),2),"&",
+                     round(median(dsgcv.brier.cv),2),"&",
+                     round(sd(dsgcv.brier.cv)/sqrt(length(dsgcv.brier.cv)),2),"\\\\\n")
+   cat("MSG (ML) & ",round(mean(dsml.mse.cv),2),"&",
+                     round(median(dsml.mse.cv),2),"&",
+                     round(sd(dsml.mse.cv)/sqrt(length(dsml.mse.cv)),2),"&",
+                     round(mean(dsml.brier.cv),2),"&",
+                     round(median(dsml.brier.cv),2),"&",
+                     round(sd(dsml.brier.cv)/sqrt(length(dsml.brier.cv)),2),"\\\\\n")
 }
 
-res<-data.frame(Score=as.numeric(res[,1]),type=res[,2],sim=res[,3],Model=res[,4])
+res<-data.frame(Score=as.numeric(res[,1]),
+                type=res[,2],
+                sim=res[,3],
+                Model=res[,4])
 
 theme_set(theme_bw())
 p<-ggplot(res)
