@@ -538,33 +538,32 @@ As well as the above, there are other non-essential but desirable properties:
 \item The ability for the method to effectively be transparent to the practitioner is extremely useful, making the method look like something familiar a implementation in existing software aids this.
 \end{enumerate}
 
-The methods proposed in chapters \ref{chap-sc} and \ref{chap-mds} do not achieve all of these goals, however the work in developing them did help to form the above lists.
+The methods proposed in chapters \ref{chap-sc} and \ref{chap-mds} do not achieve all of these goals, however the work in developing them did help to form the above lists. It would be unfair, however, to say that \mdsds\ is without faults as a method for finite area smoothing.
 
-squashing bad -> go data based
+There is still an issue with speed. Although the
 
-okay but when data based need to work out how to constrain that
+grids
 
-constraints but how to smooth
+
+
+The within-area distance algorithm given in \secref{mdsdist} can only find shortest paths for simple polygons. This excludes domains with islands in them, which obviously occur in ship-board studies. This could be worked-around using other shortest path algorithms, however the behaviour of MDS (especially in higher dimensions) in such situations is unknown.
+
+The advantage of seeing the distance generation as a black box procedure is that any procedure that can generate the necessary distance can be used. Aside from the discrete space approximation algorithms mentioned in \secref{mdsdist}, other measures can be used while still keeping in a roughly spatial ontext. For example a cost based distance approach [[TKTKTK cite]] that takes into account (for example) fuel cost. Another interesting approach might be to use distances in three dimensions, over terrain as the distances
+
+talk about black box distance matrix generation
+
+distances that aren't metrics (?) -- costs and albatross non-symmetric, problems
+
+
+
+now from distances to gds
 
 gds great but not quite ready for prime time.
 
 
-TKTKTK sum up, say what else could be done. Show path SC->MDS+RS->MSG, improvements along the way.
-
 TKTKTK write about interpretability of GDS results, mainly data mining rather than inference (cite Breiman two cultures paper?). IS IT EVEN GOOD AT THIS??!
 
+can it control for confounders?
 
-
-talk about black box distance matrix generation
-
-distances that aren't distances -- costs and albatross non-symmetric, problems
-
-
-Cut from MDS end, still interesting to waffle about:
-
-
-
-
-
-
+blahblahblah
 
