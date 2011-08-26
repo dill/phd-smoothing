@@ -386,7 +386,7 @@ This analysis shows that although \mdsds\ can be used for generalized distance s
 
 \subsubsection{Leukemia microarrays}
 
-\citeb{yeoh2002} investigate expression data from 327 patients with acute lymphoblastic leukaemia (ALL), collected on 12626 genes. The original purpose of the study was attempting to classify patients into one of ten prognostically important ALL subtypes (since treatment is dependent on subtype), based on looking at the expression data. \citeb{yeoh2002} used heirarchical clustering to find groupings of genes in the data and then found those groups corresponded to particular ALL subtypes. Genes were ranked per subtype according a $\chi^2$ statistic (based on the expected value per cluster) to find the most relevant genes for each subtype. All patients true diagnosis had been verified by other methods. More information on the study may be found at \url{http://www.stjuderesearch.org/data/ALL1}.
+\citeb{yeoh2002} investigate expression data from 327 patients with acute lymphoblastic leukaemia (ALL), collected on 12626 genes. The original purpose of the study was attempting to classify patients into one of ten prognostically important ALL subtypes (since treatment is dependent on subtype), based on looking at the expression data. \citeb{yeoh2002} used heirarchical clustering to find groupings of genes in the data and then found those groups corresponded to particular ALL subtypes. Genes were ranked per subtype according a $\chi^2$ statistic (based on the expected value per cluster) to find the most relevant genes for each subtype. The ``true'' diagnoses had been found by other methods. More information on the study may be found at \url{http://www.stjuderesearch.org/data/ALL1}.
 
 To simplify the analysis here, a binary response was used (of a particular subtype versus not that subtype, similarly to the MP's parties above). In all four simulations settings were used, varying the model and data. Two simulations used the whether the patient had the TEL-AML1 subtype as the response (TEL-AML1 was the largest group, with 79 patients) and two simulations used T-ALL (43 patients were diagnosed with T-ALL). For each subtype two different simulations were run: ($i$) the 40 genes selected by $\chi^2$ as the best indicators of that subtype were used as the data and ($ii$) those 40 genes chosen by $\chi^2$ with an additional 100 genes chosen at random (but kept the same over realisations). 
 
@@ -454,7 +454,7 @@ MSG (ML) &  14.81 & 14 & 0.54 & 14.31 & 13.84 & 0.48 \\
 \end{table}
 
 
-Tables \ref{leuk-sim} and \ref{leuk-confsim} show that \mdsds\ does not even begin to approach the predictive power of the lasso on this data set. One might expect that the lasso would perform well on the dataset consisting of only the 40 genes selected by \citeb{yeoh2002} (and indeed that \mdsds\ would perform better), however it is extremely impressive that the lasso has such a low MSE and Brier score for the data with the confounding genes. This may, however give some insights into why \mdsds\ has such poor performance. 
+Tables \ref{leuk-sim} and \ref{leuk-confsim} show that \mdsds\ does not even begin to approach the predictive power of the lasso on this data set. One might expect that the lasso would perform well on the dataset consisting of only the 40 genes selected by \citeb{yeoh2002} (and indeed that \mdsds\ would perform better), however it is extremely impressive that the lasso has such a low MSE and Brier score for the data with the confounding genes. This may, however, give some insights into why \mdsds\ has such poor performance. 
 
 
 WAITING FOR EDF RESULTS...
@@ -469,13 +469,21 @@ lasso probably using more of the data proportionally
 
 might this just be the issue?
 
-choice of metric still important
 
+
+Another potential source of poor performance is the metric used to find the distances. Although the Mahalanobis distance may be an obvious choice, there may be other measures that provide better results.
 
 
 \subsection{Conclusion}
 
-Although in the spatial setting \mdsds\ appears to perform very well, in a generalized distance situation it fails.
+Although in the spatial setting \mdsds\ appears to perform very well, in a generalized distance situation it fails. Between examples the results are quite variable, with a lack of conclusive behaviour. Within each example the results are extremely variable and it is difficult to draw a solid conclusions. It would however appear that the metric used to calculate the distances plays a key role in the performance of \mdsds, as one would expect. 
+
+
+Another factor may be that in the examples above, in each case the response may not have been non-linear enough to warrant the use of a GAM and that this..
+
+not non-linear enough response
+
+
 
    variance
    what's important

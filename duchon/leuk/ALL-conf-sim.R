@@ -112,7 +112,7 @@ for(i in 1:n.sims){
          # record the selected MDS dimension
          ml.best.dim<-c(ml.best.dim,b.ml$mds.dim)
          # and the edf
-         ml.edf.cv<-c(ml.edf.cv,sum(b.gcv$gam$edf))
+         ml.edf.cv<-c(ml.edf.cv,sum(b.ml$gam$edf))
 
          # do some prediction
          pred.data<-as.data.frame(insert.mds.generic(b.ml$mds.obj,
