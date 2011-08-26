@@ -35,7 +35,8 @@ dsgcv.mse.cv<-c()
 dsgcv.brier.cv<-c()
 lasso.brier.cv<-c()
 lasso.mse.cv<-c()
-#edf.cv<-c()
+ml.edf.cv<-c()
+gcv.edf.cv<-c()
 ml.best.dim<-c()
 gcv.best.dim<-c()
 
@@ -55,12 +56,8 @@ for(i in 1:n.sims){
 
    ### DS model
 
-   # calculate the distance matrix for the microarray data
-   #dd.start<-mahalanobis(leuk.samp, leuk.samp[1,])
-   #dd<-apply(leuk.samp,1,mahalanobis,x=leuk.samp,cov=attr(dd.start,"cov.inv"))
    dd.cov.inv<-solve(cov(leuk.samp))
    dd<-apply(leuk.samp,1,mahalanobis,x=leuk.samp,cov=dd.cov.inv,inverted=TRUE)
-
 
    #### for both GCV and ML dimension selection
    #### GCV
@@ -74,6 +71,9 @@ for(i in 1:n.sims){
       gcv.score.cv<-rbind(gcv.score.cv,this.score)
       # record the selected MDS dimension
       gcv.best.dim<-c(gcv.best.dim,b.gcv$mds.dim)
+      # record the EDF
+      gcv.edf.cv<-c(gcv.edf.cv,sum(b.gcv$gam$edf))
+
 
       # do some prediction
       pred.data<-as.data.frame(insert.mds.generic(b.gcv$mds.obj,
@@ -100,6 +100,8 @@ for(i in 1:n.sims){
          ml.score.cv<-rbind(ml.score.cv,this.score)
          # record the selected MDS dimension
          ml.best.dim<-c(ml.best.dim,b.ml$mds.dim)
+         # and the edf
+         ml.edf.cv<-c(ml.edf.cv,sum(b.gcv$gam$edf))
 
          # do some prediction
          pred.data<-as.data.frame(insert.mds.generic(b.ml$mds.obj,
