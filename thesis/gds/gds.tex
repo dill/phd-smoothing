@@ -481,7 +481,9 @@ Although in the spatial setting \mdsds\ appears to perform very well, in a gener
 
 Another factor may be that in the examples above, in each case the response may not have been non-linear enough to warrant the use of a GAM and that this..
 
-not non-linear enough response
+Are we seeing the Reiss and Ogden behaviour?
+
+
 
 
 
@@ -513,13 +515,30 @@ There are a number of issues with this approach as well as simple differences wi
 
 Although the approximations used undoubtedly decrease the computational time, the validity of the approximations is not tested (especially on the fitting of the semivariogram, \citeb{crabkrig}). In particular, the use of the graph distance via Dijsktra's algorithm has similar pitfalls to \citeb{wangranalli} in the reliance on the discretisation of the domain and so may run into the issues discussed in \secref{grids} (although the issue of edges of the graph falling outside of the domain is avoided). Additionally, \citeb{crabkrig} do not full address the issue of the dimension of the MDS projection, merely suggesting the proportion of variation explained or the Bayesian criterion of \citeb{ohraftery} as possible metrics but resort to 2-dimensional projections. Neither of these methods take into account the effect that the MDS projection has on the overall model in terms of the response although this is not so problematic in the kriging case since only distances between points matter in the semivariogram, rather than connectivity. Using the interpolation in higher dimensions may also have it's own issues and so the approximations may run into further problems. \citeb{boisvert} suggest that to best approximate the distances the $n-1$ dimensional projection of the distance matrix (if there are $n$ data, or triangulation nodes) be used (which is of course true) however they go one to point out that the use of such a high-dimensional projection could lead to numerical issues. In this sense the MDS projection is being used to approximate the within-area distances by a set of distances obeying the rules of a Euclidean metric (the criterion given by \citeb{curriero} to ensure valid semivariograms). 
 
-In general kriging methods suffer from having developed as an \textit{ad hoc} set of tools used in the mining industry (\cite[preface]{diggle}). Although much work has been done to improve the mathematical basis of kriging, models are not as flexible as GAMs, in particular the incorporation of other covariates, temporal effects and random effects is still somewhat patchy.
+In general kriging methods suffer from having developed as an \textit{ad hoc} set of tools used in the mining industry (\cite[preface]{diggle}). Although much work has been done to improve the mathematical basis of kriging, models are not as flexible as GAMs, in particular the incorporation of other covariates, temporal effects and random effects is not straight forward as it is for additive and generalized additive models (in both theory and practice).
 
 \section{Conclusion}
 \label{gds-conclusion}
 
-The final section of this chapter serves to summarize the progression from 
+The next chapter will move off the topic of smoothing, so presented here is a summary and conclusion of the smoothing work presented in this thesis. It begins with an overview of the work on spatial smoothing, moving on to generalized distance smoothing as presented in the sections of this chapter.
 
+At each stage of the work presented in this thesis the models became more refined and a more nuanced view of how the problem should be addressed was developed. Moving from a strictly functional mapping based on the boundary to one that relies on the shape of the domain was key to finding a reliable transformation that avoided the problem of crowding (moving from the \sch\ transform to MDS). The next big step was the realisation that the point configurations produced by MDS have problems with ordering and these can be avoided by projecting into higher dimensions. The final breakthrough was using Duchon splines to perform this high dimensional smoothing reliably.
+
+The previous two chapters have taken a simple idea (using domain morphing to combat leakage) and moved forward, along the way finding a set of properties for transformation methods.
+ if they are to be useful for spatial smoothing. These properties are:
+\begin{enumerate}
+\item The mapping of points must be smooth, there should be no sudden jumps or gaps. Points that are near one-another in the original space must be near one-another in the transformed space. See \secref{mds-smoothness}.
+\item The transformation must not squash space too much. Squashing points so they are numerically indistinguishable (crowding) must be absolutely avoided, but less severe compressions of space can also cause problems. See \secref{sch-crowding} and \secref{mds-penadjust}.
+\item Ordering of points must be maintained. If the response values are mis-ordered then the recovering of the truth becomes impossible (\secref{pensuck}).
+\end{enumerate}
+As well as the above, there are other non-essential but desirable properties:
+\begin{enumerate}
+\item To make the method competitive in terms of computational time, the method must be able to quickly map points from the data space into the smoothing space. This can be achieved by using some kind of functional mapping or by a sufficiently optimised way of finding within-area distances (\secref{mds-faster}).
+\item Being able to integrate the spatial smooth into a larger model incorporating covariates, temporal interactions and random effects would be very useful.
+\item The ability for the method to effectively be transparent to the practitioner is extremely useful, making the method look like something familiar a implementation in existing software aids this.
+\end{enumerate}
+
+The methods proposed in chapters \ref{chap-sc} and \ref{chap-mds} do not achieve all of these goals, however the work in developing them did help to form the above lists.
 
 squashing bad -> go data based
 
@@ -543,16 +562,6 @@ distances that aren't distances -- costs and albatross non-symmetric, problems
 
 Cut from MDS end, still interesting to waffle about:
 
-Drawing together what has been learnt from the previous chapters, one can at least begin to create a list of desirable properties which would be required for a domain mapping technique to be useful for finite area smoothing. If a domain morphing technique is ever to work for smoothing over complex regions, the mapping used must have the following properties:
-
-\begin{enumerate}
-\item The mapping of points must be smooth, there should be no sudden jumps or gaps. Points that are near one-another in the original space must be near one-another in the transformed space. See \secref{mds-smoothness}.
-\item The transformation must not squash space too much. Squashing points so they are numerically indistinguishable (crowding) must be absolutely avoided, but less severe compressions of space can also cause problems. See \secref{sch-crowding} and \secref{mds-penadjust}.
-\item Ordering of points must be maintained. If the response values are mis-ordered then the recovering of the truth becomes impossible (\secref{pensuck}).
-\item A function to map one space into the other must be found. To make the method competitive in terms of computational time, the method must be able to quickly map points from the data space into the smoothing space. This can be achieved by using some kind of functional mapping or by a sufficiently optimised way of finding within-area distances (\secref{mds-faster}).
-\end{enumerate}
-
-Given a sufficiently high number of dimensions \mdsap\ succeeds on points 1--3 and given that any way of calculating within-area distances can be dropped into the method as a ``black box'' it is not inconceivable that point 4 can be overcome too. Considering point 4 as a more operational detail, the next chapter turns to the problem presented by the first three points: selecting how many dimensions to project distances into and how to smooth reliably in high dimensions.
 
 
 
