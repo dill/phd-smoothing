@@ -433,13 +433,13 @@ Chapters \ref{chap-sc}, \ref{chap-mds} and \ref{chap-gds} expand on the ideas in
 \section{Distance sampling}
 \label{intro-DS}
 
-Humans rely on the natural world in order to survive. As the human population expands, strain is being exerted on the plant and animal populations of Earth. Accordingly, wide and large-scale monitoring of the biological populations of the planet have been set up to ensure that continued growth does not irreparably damage populations and habitats essential to survival.
+%Humans rely on the natural world in order to survive. As the human population expands, strain is being exerted on the plant and animal populations of Earth. Accordingly, wide and large-scale monitoring of the biological populations of the planet have been set up to ensure that continued growth does not irreparably damage populations and habitats essential to survival.
+%
+%The general problem being that one wishes to know the abundance of some biological population in a finite area. Census-type methods are extremely expensive and inefficient, so some kind of sampling must be used. 
 
-The general problem being that one wishes to know the abundance of some biological population in a finite area. Census-type methods are extremely expensive and inefficient, so some kind of sampling must be used. 
+Distance sampling (\cite{IDS}, \cite{ADS}) is one of the most popular methods of abundance estimation for biological populations. It has been used by researchers across the globe to assess the abundance of everything from birds nests to marine mammals. Surveys are cheap to run since they do not require many observers (like, say, a census) or multiple site visits (like, say, mark-recapture). Distance sampling is also rather different from methods like mark-recapture (\cite{ruthbook}) as it does not explicitly include the abundance in the likelihood, as shall be seen below. The popularity of distance sampling is in part due to the software Distance (\cite{distance-software}) which makes it easy to record and analyse distance sampling data. 
 
-Distance sampling (\cite{IDS}, \cite{ADS}) is probably the most popular method for assessing the abundance of biological populations. It has been used by researchers across the globe to assess the abundance of everything from birds nests to dung and from marine mammals to mines. Its popularity is in part due to the software Distance (\cite{distance-software}) which makes it easy to record and analyse distance sampling data.
-
-One can think of distance sampling as the logical extension of quadrat and then strip transect sampling. In quadrat sampling a series of squares (quadrats) are laid out at random over the area in question and the number of objects of interest within each is counted. It is assumed that within each quadrat a census is performed. From the per quadrat abundance the overall density can be calculated and multiplied-up to find the total abundance. For the sampling to be efficient the quadrats need to be large and hence it is almost impossible to ensure that all objects in the quadrat are seen, this can be further hindered by animals moving between the quadrats during the survey (\cite[p. 2]{IDS}).
+One can think of distance sampling as the logical extension of quadrat and then strip transect sampling. In quadrat sampling a series of squares (quadrats) are laid out at random over the area in question and the number of objects of interest within each is counted. It is assumed that within each quadrat a census is performed. From the per-quadrat abundance the overall density can be calculated and multiplied-up to find the total abundance. For the sampling to be efficient the quadrats need to be large and hence it is almost impossible to ensure that all objects in the quadrat are seen, this can be further hindered by animals moving between the quadrats during the survey (\cite[p. 2]{IDS}).
 
 % evolution to DS from quadrat and strip
 \begin{figure}
@@ -456,9 +456,9 @@ To make the task of counting the objects within the quadrat easier, one could mo
 \label{ds-simpleD}
 \end{equation}
 
-The problem with both quadrat and strip sampling is that there may well be many objects just outside of the covered area. Clearly this is a waste of survey effort, since observers must ignore objects that they have seen. It would be preferable to include as many observations as possible and leverage the maximum amount of data that can be collected to assess the abundance of the population.
+The problem with both quadrat and strip sampling is that there may well be many objects just outside of the covered area. Clearly this is a waste of survey effort, since observers must ignore objects that they have seen but that are not within the quadrat. It would be preferable to include as many observations as possible and leverage the maximum amount of data that can be collected to assess the abundance of the population.
 
-Distance sampling is based on this principle; if the objects of interest are seen, then their presence should be recorded. Instead of using fixed-area sampling units, distance sampling requires that only centrelines are specified. The observers should walk (or swim, ride, drive etc) down these observing objects and recording the distances ($x_i$) to these objects as they go. Once the survey is complete, the distances are used to estimated the effective area that was sampled. Figure \ref{quad-to-ds} shows the evolution from quadrat to strip to distance sampling.
+Distance sampling is based on this principle; if the objects of interest are seen, then their presence should be recorded. Instead of using fixed-area sampling units, distance sampling requires that only centrelines are specified. The observers should walk (or swim, ride, drive, sail, etc) down these \textit{transects} observing objects and recording the distances ($x_i$) to these objects as they go. Once the survey is complete, the distances are used to estimated the effective area that was sampled. Figure \ref{quad-to-ds} shows the evolution from quadrat to strip to distance sampling.
 
 In equation (\ref{ds-simpleD}) one can think of replacing $w$ with an estimate of $\mu$, the \textit{effective strip (half-)width}. Further explanation of $\mu$ is given in section \ref{gtoD}. (\ref{ds-simpleD}) can then be modified to:
 \begin{equation}
@@ -469,7 +469,7 @@ We could also consider that a certain proportion ($\hat{P}_a$, the probability o
 \begin{equation*}
 \hat{D}=\frac{n}{2wL\hat{P}_a}.
 \end{equation*}
-Here $w$ is the point after which observations are discarded and is referred to as the \textit{truncation distance}. Truncation is used to discard outliers that make the estimation process tricky (\cite[pp. 15-16]{IDS}). From these two expressions we can see that the relationship between $P_a$ and $\mu$ is $P_a=\mu/w$, these quantities will be investigated further below.
+Here $w$ is the point after which observations are discarded and is referred to as the \textit{truncation} distance. Truncation is used to discard outliers that make the estimation process tricky (\cite[pp. 15-16]{IDS}). From these two expressions we can see that the relationship between $P_a$ and $\mu$ is $P_a=\mu/w$, these quantities will be investigated further below.
 
 A typical example of line transect data is shown in figure \ref{ds-lt-example}. The figure shows a histogram of perpendicular distances. Note how, as distance increases the number of detections decreases. This characteristic will be exploited later.
 
@@ -502,9 +502,9 @@ An example of point transect data is given in figure \ref{ds-pt-example}. In con
 \subsection{Assumptions}
 In order to ensure that estimation is unbiased several assumptions are made. These are summarised below, more information (especially with regard to field procedure) may be found in \citeb{IDS}, chapter 2. The assumptions are given in order of importance from most to least.
 \begin{itemize}
-	\item The survey must be performed and designed properly and field procedure followed. No amount of analysis can correct for this.
+	\item The survey must be performed and designed properly and field procedure followed. No amount \textit{post hoc} of analysis can correct for this.
 	\item Objects are distributed according to some stochastic process throughout the area of interest.
-	\item Lines and points are randomly placed (with respect to the population) and a sample of $n$ objects are detected, measured and recorded.
+	\item Lines and points are randomly placed (with respect to the population) and a sample of $n$ objects are detected, measured and recorded. This could be via a grid with a baseline randomly placed with respect to the survey area.
 	\item Objects on the line (or point) are detected with probability 1.
 	\item Objects are observed in their initial location, not after movement in response to the observer.
 	\item Distances are accurate.
@@ -512,15 +512,15 @@ In order to ensure that estimation is unbiased several assumptions are made. The
 \end{itemize}
 
 \subsection{The detection function}
-One would expect that the number of animals observed would decrease as the distance of them from the line increased (as can be seen in figures \ref{ds-lt-example} and \ref{ds-pt-example}). Correspondingly, one would therefore expect that the probability of seeing an animal would also decrease as a function of distance. This is the relationship captured by the detection function.
+\label{intro-ds-detefct}
 
-The concept of the detection function ($g(x)$) is central to distance sampling. The definition is given as (\cite[p. 10]{IDS}):
+One would expect that the probability of observing an animal would decrease as the distance of them from the observer increased (as in figures \ref{ds-lt-example} and \ref{ds-pt-example}). This is the relationship captured by the detection function ($g(x)$) which is defined as (\cite[p. 10]{IDS}):
 \begin{equation*}
 g(x)=\mathbb{P} (\text{object detected} | \text{object was at distance } x).
 \end{equation*}
 The assumption being that objects' detectability is a function of their distance from the observer. Before talking about models for $g(x)$, we look at the desirable properties.
 
-First off, as stated in the assumptions above, objects on the line are detected with certainty, so $g(0)=1$. Second, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a ``shoulder''. This is physically realistic since the observer should see most things close to him/her (not just those directly under/in front of him/her). Third, it is also desirable that the model for the detection function is robust, in the sense that it is flexible and can take many plausible shapes. Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
+First, as stated in the assumptions above, objects on the line are detected with certainty, so $g(0)=1$. Second, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a \textit{shoulder}. This is physically realistic since the observer should see most things close to him/her (not just those directly under/in front of him/her). Third, it is also desirable that the model for the detection function is robust, in the sense that it is flexible and can take many plausible shapes. Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
 
 We now must specify the functional form for $g$. \citeb{buckland92} gives a ``key function plus adjustment terms'' formulation for the detection function. The idea is that the key function is used as a starting point for the basic shape of the detection function. The adjustment terms consist of a series expansion that improve the fit of the model. The adjustment terms may not be necessary, in which case they may be left out of the model. The key function is usually selected as one of a uniform, half-Normal or hazard-rate (\cite{buckland85}) function. The adjustment terms are typically either even simple polynomials, Hermite polynomials or cosine functions. Further information can be found in \citeb[p. 47]{IDS}. Figure \ref{ds-detfct-examples} shows some possible detection functions.
 
@@ -532,24 +532,29 @@ We now must specify the functional form for $g$. \citeb{buckland92} gives a ``ke
 \label{ds-detfct-examples}
 \end{figure}
 
-This formulation leads to a class of highly flexible models and a normal analysis may consist of running models made up of various combinations of key functions and adjustment terms. Model selection is usually performed using AIC (\cite[p. 69]{IDS}).
+This formulation leads to a class of highly flexible models and a normal analysis may consist of running models made up of various combinations of key functions and adjustment terms. Model parameters are found using maximum likelihood. Model selection is via minimum AIC (\cite[p. 69]{IDS}), that is:
+\begin{equation}
+\text{AIC} = -2 l + 2p,
+\label{DEFN-AIC}
+\end{equation}
+where $l$ is the value of the likelihood at the MLE and $p$ is the number of parameters in the model. Models with many parameters are penalized more heavily than those that are more parsimonious.
 
 \subsection{From $g(x)$ to $D$}
 \label{gtoD}
 Equation (\ref{ds-D}), above shows that in order to estimate the density of the population in question, we must find an estimator of $\mu$, the effective strip width (or, equivalently for point transects, $\rho$). To do this the detection function is used.
 
 \subsubsection{Line transects} 
-As mentioned above, $\mu$ is defined to be the distance from the lines for which as many objects are detected beyond $\mu$ as are missed within $\mu$ (\cite{eenviron}). Looking at figure \ref{ds-mu-explanation}, the shaded area above the curve (the detection function) represents those objects that the observer missed up to a distance $\mu$ from the line. The shaded area below the curve represents those objects that were observed beyond a distance $\mu$. By moving $\mu$ to the left or to the right, it is possible to find a point at which the two shaded areas are of equal size. This fulfils the criterion for $\mu$.
+As mentioned above, $\mu$ is defined to be the distance from the lines for which as many objects are detected beyond $\mu$ as are missed within $\mu$ (\cite{eenviron}). Looking at figure \ref{ds-mu-explanation}, the shaded area above the detection function represents those objects that the observer missed up to a distance $\mu$ from the line. The shaded area below the curve represents those objects that were observed beyond a distance $\mu$. By moving $\mu$ to the left or to the right, it is possible to find a point at which the two shaded areas are of equal size. This fulfils the criterion for $\mu$.
 
 % explanation of mu
 \begin{figure}
 \centering
 \includegraphics{intro/figs/muexplanation.pdf}\\
-\caption{A detection function ($g(x)$) with the effective strip width ($\mu$) marked as well as the truncation distance ($w$). The shaded regions have equal area, this means that the area under the curve has the same size as the rectangle with base length $\mu$.}
+\caption{A detection function ($g(x)$) with the effective strip width ($\mu$) marked as well as the truncation distance ($w$). The shaded regions have equal area, this means that the area under the curve has the same size as the rectangle with base length $\mu$. Figure taken from \cite{IDS}.}
 \label{ds-mu-explanation}
 \end{figure}
 
-Now the question is: how is $\mu$ calculated? Note that the rectangle with side $0$ to $1$ on the $y$ axis and $0$ to $\mu$ on the $x$ axis has area $\mu$ and that this is the same as the area under the detection function (by the argument above). So, $\mu$ is also the distance out to which we observe everything and is defined as:
+Now the question is: how is $\mu$ calculated and how does this relate to the detection function? Note that the rectangle with side $0$ to $1$ on the $y$ axis and $0$ to $\mu$ on the $x$ axis has area $\mu$ and that this is the same as the area under the detection function (by the argument above). So, $\mu$ is also the distance out to which the observer sees everything and is defined as:
 \begin{equation}
 \mu = \int_0^w g(x) \text{d}x.
 \label{ds-lt-mu-def}
@@ -562,7 +567,7 @@ So an estimator of density may be written as:
 \begin{equation*}
 \hat{D}=\frac{n}{2L \int_0^w \hat{g}(x) \text{d}x}.
 \end{equation*}
-Now let us assume that $g(x)$ has some fixed functional form and that we wish to estimate its parameter(s) (which for now will be referred to as $\bm{\theta}$). This can be done via standard maximum likelihood methods. First we must find a probability density function. Note that the expected number of objects at a distance $x$ from the transect line (including those not observed) is independent of $x$. This then implies that the shape of the density functions is the same as that of the detection function and can therefore be obtained by rescaling (\cite[p. 38]{IDS}). So, the PDF of the perpendicular distance data, conditional on the object being observed is then:
+The detection function is one of the functions described in \secref{intro-ds-detefct} and so only its parameter(s) must be estimated ($\bm{\theta}$, say). However to first form the likelihood, the probability density function must be defined. Note that the expected number of objects at a distance $x$ from the transect line (including those not observed) is independent of $x$. This then implies that the shape of the density functions is the same as that of the detection function and can therefore be obtained by rescaling (\cite[p. 38]{IDS}). So, the PDF of the perpendicular distance data, conditional on the object being observed is then:
 \begin{equation}
 f(x;\bm{\theta}) = \frac{g(x;\bm{\theta})}{\int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{g(x;\bm{\theta})}{\mu}.
 \end{equation}
