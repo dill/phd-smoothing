@@ -6,13 +6,11 @@
 \section{Introduction}
 \label{s:intro}
 
-Distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating the size and/or density of biological populations.  There are two main flavours: line transects and point transects.  In both, the basic idea is the same: an observer visits a randomly-located set of of transect lines or points and records the distance from the transect to all objects of interest (i.e., animals or plants of the target species) that are detected within some truncation distance $w$.  Not all objects within $w$ are assumed to be detected; instead the distribution of observed distances is used to estimate the parameters of a detection function model, which describes how the probability of detection declines with increasing distance.  This fitted model is then used to estimate the average probability of detecting an object within distance $w$ of the transects, and the number of objects present given the number detected. From this estimating total population size and density are straightforward. 
+Distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating the size and/or density of biological populations. Estimating the detection function is key to distance sampling.  The most common approach, often called ``conventional distance sampling'', is based on methods developed by \citeb{buckland92}. 
 
-Estimating the detection function is therefore the key to distance sampling.  The most common approach, often called ``conventional distance sampling'', is based on methods developed by \citeb{buckland92}. 
+Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fit to data, in particular non-monotone detection functions. The usual way to work around this is to constrain the detection function. Current implementations perform this by evaluating a set of constraints at each stage of the optimization procedure (usually performed via a Newton method on the log likelihood), this is expensive computationally and can be ineffective (as was seen in \secref{intro-ds-mono} and below in figure \ref{fig1}. Covariate models for the detection function (\secref{intro-ds-covar}) are not currently constrained at all. This situation is undesirable and can be problematic (especially in the covariate case where quantile and marginal plots may not reveal the non-monotonicity).
 
-Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fit to data, in particular non-monotone detection functions. The usual way to work around this is to constrain the detection function. Current implementations perform this by evaluating a set of constraints a
-
-One problem with constraining the detection function to be monotonic is that the constraints can only be applied at a finite number of points. This can lead to constraints missing the non-monotonic points in the function. An example from the recent literature (\cite{williams}) is shown in the first panel of figure \ref{fig1}. Here a half-normal detection function was fit with one second order cosine adjustment term to humpback whale sightings. The second and third panels in figure \ref{fig1} show a detection function when covariate data was included in the model. [[no constraints on the covariates in distance, levels]] In this case for long-finned pilot whales (\cite{pike}) the Beaufort sea state was added as a covariate, the first plot shows that the detection function, when averaged over the covariate values, shows some non-monotonic behaviour. However, in the third panel the marginal detection function at 25\%, 50\% and 75\% quantiles of the covariate are shown and here the non-monotonicity is particularly pronounced. Given the above, it would seem preferable to use a formulation that guarantees monotonicity from the outset.
+One problem with constraining the detection function to be monotonic is that the constraints can only be applied at a finite number of points. This can lead to constraints missing the non-monotonic points in the function. An example from the recent literature (\cite{williams}) is shown in the first panel of figure \ref{fig1}. Here a half-normal detection function was fit with one second order cosine adjustment term to humpback whale sightings. The second and third panels in figure \ref{fig1} show a detection function when covariate data was included in the model. [[no constraints on the covariates in distance, levels]] In this case for long-finned pilot whales (\cite{pike}) the Beaufort sea state was added as a covariate, the first plot shows that the detection function, when averaged over the covariate values, shows some non-monotonic behaviour. However, in the third panel the marginal detection function at 25\%, 50\% and 75\% quantiles of the covariate are shown and here the non-monotonicity is particularly pronounced. Given the above, a formulation that guarantees monotonicity from the outset is appealing.
 
 \begin{figure}
 \centering
@@ -21,9 +19,9 @@ One problem with constraining the detection function to be monotonic is that the
 \label{fig1}
 \end{figure}
 
-Mixture models have recently been applied in the capture-recapture literature following the work of \citeb{pledger2000}, \citeb{dorazio03}, \citeb{pledger2005} and \citeb{morgan08}. Their main utility is in better accounting for between-individual heterogeneity which can cause severe bias if unmodelled (Link, 2003). In distance sampling this problem does not arise provided that the detection at zero distance is certain and a flexible detection function model is used (\cite[section 11.12]{ADS} TKTKTK). MIxture models offer the potential for flexible modelling since, if the individual parts of the mixture model (the mixture components) are each monotonic decreasing then a sum of these functions will also be monotonic decreasing. Such an approach is appealing since each function is simple but the combinations yield a great many possible shapes (see figure \ref{sim-detfcts}).
+Mixture models have recently been applied in the capture-recapture literature following the work of \citeb{pledger2000}, \citeb{dorazio03}, \citeb{pledger2005} and \citeb{morgan08}. Their main utility is in better accounting for between-individual heterogeneity which can cause severe bias if unmodelled (Link, 2003). In distance sampling this problem does not arise provided that the detection at zero distance is certain and a flexible detection function model is used (\cite[section 11.12]{ADS} TKTKTK). Mixture models offer the potential for flexible modelling since, if the individual parts of the mixture model (the mixture components) are each monotonic decreasing then a sum of these functions will also be monotonic decreasing. Such an approach is appealing since each function is simple but the combinations yield a great many possible shapes (see figure \ref{sim-detfcts}).
 
-In this paper, we introduce a new class of distance sampling detection function models, based on mixtures of simple parametric key functions.  In the next section, we describe the models.  We then illustrate their use by applying them to simulated data, and then to real data from a number of studies.  We compare results of CDS and mixture model detection functions.  We finish with a discussion of the utility of these new methods.
+In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section, we describe the models.  We then illustrate their use by applying them to simulated data, and then to real data from a number of studies.  We compare results of CDS and mixture model detection functions. We finish with a discussion of the utility of these new methods.
 
 \section{Finite mixture model detection functions}
 
@@ -104,7 +102,7 @@ Variances in both $N$ and $P_a$ were found for both non-covariate models (\cite[
 \section{Optimization}
 \label{s:optimization}
 
-As noted in the literature (for example, \cite[TKTKTK PAGES]{BDA}, \cite{robert}), mixture model likelihoods are notorious for being multimodal. This can cause serious problems when finding MLEs of the parameters. In testing this was found to be a problem so simulated annealing (\cite[pp. 549-554]{numrec}) was used to explore the parameter space (for 500 iterations) then after that BFGS [[TKTKTK quasi-Newton method?]] was used to find the maxima (the implementations in the \textsf{R} function \texttt{optim()} were used). These two steps were run 5 times. This two step approach appears to be satisfactory in most cases. [[TKTKTK EM STUFF]]The EM algorithm (Dempster, Laird and Rubin, 1977) was also used although there was no significant performance increase (in terms of computational time or parameter precision) over using BFGS with SANN. To aid the optimization, analytic derivatives were also found; these can be found in Appendix \ref{app-mixderivs}.
+As noted in the literature (for example, \cite[TKTKTK PAGES]{BDA}, \cite{robert}), mixture model likelihoods are notorious for being multimodal. This can cause serious problems when finding MLEs of the parameters. In testing this was found to be a problem so simulated annealing (\cite[pp. 549-554]{numrec}) was used to explore the parameter space (for 500 iterations) then after that BFGS [[TKTKTK quasi-Newton method?]] was used to find the maxima (the implementations in the \textsf{R} function \texttt{optim()} were used). These two steps were run 5 times. This two step approach appears to be satisfactory in most cases. To aid the optimization, analytic derivatives were also found; these can be found in Appendix \ref{app-mixderivs}.
 
 \subsection{Starting values}
 
@@ -204,19 +202,18 @@ The covariate models again show an initial positive bias in $P_a$ but do still c
 \section{Real data}
 \label{s:data}
 
-Given the performance of the method in simulation, several data sets were analysed using the method. All of the analyses were performed in the \textsf{R} package \texttt{mmds}.
+Given the performance of the method in simulation, several data sets were analysed using the method. 
 
-[[\textbf{LEN}: is further detail needed for any of these?TKTKTK]]
+[[TKTKTK BLAH BLAH BLAH more stuff here]]
+
 
 \subsection{Williams and Thomas (2007) cetacean survey}
 
 \citeb{williams} study several species of cetaceans off the coast of British Columbia. In particular look at the data for three species: harbour seal (in water), harbour porpoise and humpback whale (with truncation at 500m, 500m and 2000m respectively). Results are summarised in Table \ref{williams-table} and detection functions for the best (in an AIC sense) models are shown in Figure \ref{williams-detfcts}.
 
 \begin{table}
-\caption{Comparison of the results for the \citeb{williams} data. W\&T indicates the results reported in \citeb{williams}, other results are from mixture models where the number of mixture components was selected by AIC. $\cos(x)$ indicates a Cosine adjustment of order $x$.}
 \centering
 \begin{tabular}{c c c c c c}
-\hline \hline
 Species & Model & AIC & $\hat{P_a}$ & $\% CV \hat{P_a}$ & K-S $p$\\
 \hline
 Harbour seal & Hn+$\cos(2)$ (W\&T) & 2771.05 & 0.425 & 7.55 & 0.515\\
@@ -225,8 +222,8 @@ Harbour porpoise & Hr (W\&T) & 690.66 & 0.212 & 32.0 & 0.99\\
  & Hn 2-pt & 692.09 & 0.254 & 17.5 & 0.99\\
 Humpback & Hn+$\cos(2)$ (W\&T) & 1033.06 & 0.386 & 12.64 & 0.672 \\
  & Hn 2-pt & 1035.94 & 0.381 & 15.6 & 0.649 \\
-\hline
 \end{tabular}
+\caption{Comparison of the results for the \citeb{williams} data. W\&T indicates the results reported in \citeb{williams}, other results are from mixture models where the number of mixture components was selected by AIC. $\cos(x)$ indicates a Cosine adjustment of order $x$.}
 \label{williams-table}
 \end{table}
 
@@ -288,10 +285,8 @@ Best mixture model according to AIC was a two point mixture with observer and mi
 
 
 \begin{table}
-\caption{Results for the three data sets with covariates. Bold indicates lowest AIC for each set. In each set the final model is the lowest AIC model reported in the original analysis (in Distance). Kolmogorov-Smirnov test $p$-values (KS $p$) are also given as in \citeb[Section 11.11]{ADS}. Results are from ($i$) the wood ant data from \citeb{ants} with truncation at 25m; ($ii$) the long-finned pilot whales \citeb{pike} with truncation at 3000m, (cont.) denotes that the covariate was included in the model as continuous, otherwise covariates entered the model as factors; ($iii$) the amakihi data from \citeb{amakihi} with truncation at 82.5m.}
 \centering
 \begin{tabular}{c l c c c c}
-\hline \hline
 Model & Covariates & AIC & $\hat{P_a}$ & $\% CV \hat{P_a}$ & K-S $p$\\
 \hline
  & ($i$) \textit{Ants} & & & & \\
@@ -321,13 +316,19 @@ Hn 2-pt & \texttt{obs} + \texttt{mas} & 10778.07 & 0.28 & 5.93 & 0.14\\
 Hn 2-pt & \texttt{has} + \texttt{mas} & 10809.17 & 0.28 & 6.53 & 0.43 \\
 Hn 2-pt & \texttt{obs} + \texttt{has} + \texttt{mas} & 10784.5 & 0.28 & 7.62 & 0.35\\
 Hr & \texttt{obs} + \texttt{mas} & \textbf{10777.72} & 0.3 & 2.65 & 0.036 \\
-\hline
-\hline
 \end{tabular}
+\caption{Results for the three data sets with covariates. Bold indicates lowest AIC for each set. In each set the final model is the lowest AIC model reported in the original analysis (in Distance). Kolmogorov-Smirnov test $p$-values (KS $p$) are also given as in \citeb[Section 11.11]{ADS}. Results are from ($i$) the wood ant data from \citeb{ants} with truncation at 25m; ($ii$) the long-finned pilot whales \citeb{pike} with truncation at 3000m, (cont.) denotes that the covariate was included in the model as continuous, otherwise covariates entered the model as factors; ($iii$) the amakihi data from \citeb{amakihi} with truncation at 82.5m.}
 \label{big-results-table}
 \end{table}
 
-\section{Discussion}
+
+\section{Software implementation - \texttt{mmds}}
+
+TKTKTK
+
+[[\textbf{LEN}: Will be in next version of Distance?!]]
+
+\section{Conclusion}
 \label{s:discuss}
 
 [[\textbf{LEN}: I've put some stuff here but it's a bit rough at the moment. ]]
@@ -340,7 +341,7 @@ In simulation we observed that using a 3-point mixture was not a good surrogate 
 
 All the models discussed in this article are available as an \textsf{R} package, \texttt{mmds} which is available from [[TKTKTK somewhere!]].
 
-[[\textbf{LEN}: Will be in next version of Distance?!]]
+
 
 [[\textbf{LEN}: Not sure about this yet, need to think about it...]]
 
@@ -351,30 +352,6 @@ g(x) = \int_\mathbf{R} \varphi(\kappa) g_\kappa(x,\mathbf{Z}; \theta, \kappa) \t
 where $\varphi(\kappa)$ is some function which controls the mixing of $g_\kappa$. Such an approach may present significant computation issues, however the benefits for model fitting may be considerable. Provided that an appropriate function can be chosen for $\varphi$, more flexible models could be used whilst keeping the number of parameters low. In addition, a combination of both finite and continuous mixtures could be used, echoing the work of \citeb{morgan08} in capture-recapture.
 
 
-\section*{Acknowledgements}
-
-
-Both authors would like to thank David Borchers, who suggested the parametrisation for the mixture proportions as well as\ldots
-
-Rob Williams, Dan Pike , the amakihi people and the ant people for the data. [[\textbf{LEN}: can you put in the right people to thank here?]]
-
-
-%  Here, we create the bibliographic entries manually, following the
-%  journal style.  If you use this method or use natbib, PLEASE PAY
-%  CAREFUL ATTENTION TO THE BIBLIOGRAPHIC STYLE IN A RECENT ISSUE OF
-%  THE JOURNAL AND FOLLOW IT!  Failure to follow stylistic conventions
-%  just lengthens the time spend copyediting your paper and hence its
-%  position in the publication queue should it be accepted.
-
-%  We greatly prefer that you incorporate the references for your
-%  article into the body of the article as we have done here 
-%  (you can use natbib or not as you choose) than use BiBTeX,
-%  so that your article is self-contained in one file.
-%  If you do use BiBTeX, please use the .bst file that comes with 
-%  the distribution.
-
-%\begin{thebibliography}{}
-%
 %\bibitem{ } Beavers, S. C., and Ramsey, F. L. (1998). Detectability analysis in transect surveys. \textit{Journal of Wildlife Management} \textbf{62}(3), pp. 948--957.
 %
 %

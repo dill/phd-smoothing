@@ -31,13 +31,13 @@ for(simt in c("","conf-")){
 res<-data.frame(Score=as.numeric(res[,1]),
                 type=res[,2],
                 sim=res[,3],
-                Model=res[,4])
+                Method=res[,4])
 
 theme_set(theme_bw())
 p<-ggplot(res)
-p<-p+geom_histogram(aes(x=Score,fill=Model))
+p<-p+geom_histogram(aes(x=Score,fill=Method))
 p<-p+facet_grid(type~sim,scales="free_y")
-p<-p+labs(x="",y="")
+p<-p+labs(x="EDF",y="Frequency")
 
 p<-p+opts(panel.grid.major=theme_blank(),
           panel.grid.minor=theme_blank(),
@@ -46,5 +46,5 @@ p<-p+opts(panel.grid.major=theme_blank(),
           panel.background=theme_rect())
 print(p)
 
-#ggsave("sim-edf.pdf",height=7,width=7)
+ggsave("sim-edf.pdf",height=7,width=7)
 
