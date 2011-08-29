@@ -41,7 +41,7 @@ p<-ggplot(res)
 p<-p+geom_histogram(aes(x=EDF,fill=Method),alpha=0.7,
                      binwidth=2,position="identity")
 
-p<-p+facet_grid(type~sim,scales="free_y")
+p<-p+facet_grid(sim~type,scales="free_y")
 p<-p+labs(x="EDF",y="Frequency")
 p<-p+opts(panel.grid.major=theme_blank(),
           panel.grid.minor=theme_blank(),
