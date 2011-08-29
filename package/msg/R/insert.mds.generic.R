@@ -17,13 +17,13 @@ insert.mds.generic<-function(mds.obj,new.points,old.points,dist.metric="euclidea
 
    # mahalanobis distances
    if(dist.metric=="mahalanobis"){
-
       cov.mat<-solve(cov(big.points))
       new.dist<-apply(big.points,1,mahalanobis,x=big.points,
                       cov=cov.mat,inverted=TRUE)[ind,]
    }else if(dist.metric=="hamming"){
       new.dist<-hamming.distance(big.points)[ind,]
-
+   }else if(dist.metric=="spearman"){
+      new.dist<-as.matrix(spearman.dist(as.matrix(big.points)))[ind,]
    }else{
    # Euclidean
       new.dist<-as.matrix(dist(big.points,method=dist.metric,diag=T,upper=T))[ind,]

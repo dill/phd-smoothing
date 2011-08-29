@@ -59,7 +59,7 @@ p<-p+geom_abline(slope=1)
 print(p)
 
 ### ggsave!
-ggsave("mps-dim-edf.pdf")
+ggsave("mps-dim-edf.pdf",width=6,height=3)
 
 
 

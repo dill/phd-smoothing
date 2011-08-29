@@ -15,7 +15,7 @@ gam.mds.fit<-function(response,D,mds.dim=NULL,k=100,mds.dim.bnds=NULL,family=gau
    #  samp.points    sample points, needed if the above is specified    
    #  method         method= for gam() -- GCV.Cp and ML
    #  dist.metric    distance metric, anything allowable by dist() + 
-   #                  "mahalanobis" + "hamming"
+   #                  "mahalanobis" + "hamming" + "spearman"
    #  select         do variable selection
 
    # Return - list
@@ -134,6 +134,8 @@ gam.fitter<-function(response,D,mds.dim,k,family,samp.points=NULL,grid.points=NU
          D.grid<-apply(grid.points,1,mahalanobis,x=grid.points,cov=cov(grid.points))
       }else if(dist.metric=="hamming"){
          D.grid<-hamming.distance(grid.points)
+      }else if(dist.metric=="spearman"){
+         D.grid<-spearman.dist(as.matrix(grid.points))
       }else{
          D.grid<-as.matrix(dist(grid.points,method=dist.metric))
       }
