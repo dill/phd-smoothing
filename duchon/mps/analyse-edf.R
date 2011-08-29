@@ -21,7 +21,7 @@ names(bedf)<-c("Method","EDF","n")
 
 theme_set(theme_bw())
 p<-ggplot(bedf)
-p<-p+geom_histogram(aes(EDF,fill=Method))
+p<-p+geom_histogram(aes(EDF,fill=Method),position="identity",alpha=0.7)
 #p<-p+facet_grid(method~n)#,scale="free_y")
 p<-p+facet_wrap(~n,nrow=1)#,scale="free_y")
 p<-p+labs(y="Frequency")
