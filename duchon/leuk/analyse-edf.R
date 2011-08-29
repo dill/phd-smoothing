@@ -36,20 +36,21 @@ res<-data.frame(EDF=as.numeric(res[,1]),
                 Method=res[,5],
                 dim=res[,2])
 
-#theme_set(theme_bw())
-#p<-ggplot(res)
-#p<-p+geom_histogram(aes(x=EDF,fill=Method))
-#p<-p+facet_grid(type~sim,scales="free_y")
-#p<-p+labs(x="EDF",y="Frequency")
-#
-#p<-p+opts(panel.grid.major=theme_blank(),
-#          panel.grid.minor=theme_blank(),
-#          legend.background=theme_blank(),
-#          legend.key=theme_blank(),
-#          panel.background=theme_rect())
-#print(p)
-#
-#ggsave("sim-edf.pdf",height=7,width=7)
+theme_set(theme_bw())
+p<-ggplot(res)
+p<-p+geom_histogram(aes(x=EDF,fill=Method),alpha=0.7,
+                     binwidth=2,position="identity")
+
+p<-p+facet_grid(type~sim,scales="free_y")
+p<-p+labs(x="EDF",y="Frequency")
+p<-p+opts(panel.grid.major=theme_blank(),
+          panel.grid.minor=theme_blank(),
+          legend.background=theme_blank(),
+          legend.key=theme_blank(),
+          panel.background=theme_rect())
+print(p)
+
+ggsave("leuk-edf.pdf",height=7,width=7)
 
 
 res$dim<-as.numeric(as.character(res$dim))
@@ -66,6 +67,7 @@ p<-p+labs(x="Dimension")
 p<-p+geom_abline(slope=1)
 print(p)
 
+ggsave("leuk-dim-edf.pdf",height=7,width=7)
 
 
 
