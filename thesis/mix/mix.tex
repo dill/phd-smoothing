@@ -24,13 +24,17 @@ Denoting the detection function $g$, as before, consider a sum of $J$ mixture (d
 \begin{equation*}
 g(x,\mathbf{Z}; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j g_j(x,\mathbf{Z}; \bm{\theta}_j),
 \end{equation*}
-where $\sum_{j=1}^J \phi_j = 1$, $\bm{\phi}$ is a vector of all of the $\phi_j$s. As in \secref{intro-DS}, the distance is denoted $x$, the $\bm{\theta}_j$s are vectors of parameters for function $g_j$ and $\bm{\theta}$ is a vector of all of the $\bm{\theta}_j$s and $\mathbf{Z}$ is an $n\times K$ matrix of covariates.
+where $\sum_{j=1}^J \phi_j = 1$, $\bm{\phi}$ is a vector of all of the $\phi_j$s. As in \secref{intro-DS}, the distance is denoted $x$, the $\bm{\theta}_j$s are vectors of parameters for function $g_j$, $\bm{\theta}$ is a vector of all of the $\bm{\theta}_j$s and $\mathbf{Z}$ is an $n\times K$ matrix of covariates.
 
-Here we let $g_j$ be half-normal functions, although other monotonic functions such as hazard-rate could be chosen (and the $g_j$s need not all have the same form):
+Here all of the $g_j$s are chosen to be half-normal functions, although other monotonic functions such as hazard-rate could be chosen (and the $g_j$s need not all have the same form). A non-covariate $J$-point mixture model would then be written as:
 \begin{equation*}
-g(x,\mathbf{Z}; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j \exp \Big( - \frac{x^2}{2\sigma_j^2} \Big).
+g(x; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j \exp \Big( - \frac{x^2}{2\sigma_j^2} \Big).
 \end{equation*}
-Covariates can be included in a similar way to \cite[Chapter 3]{ADS}, where the covariates affect the scale parameter $\sigma$. Here it is assumed that each mixture component has a different scale but that the covariates affect the scale parameters in the same way, in particular this means that the ``intercept'' term in the covariate model is different for each mixture component but the other covariates are estimated jointly for all components. Other more complex models with different covariates in each mixture component may be possible, but only the simplest model is considered here.
+So here $\bm{\theta} = (\sigma_1, \ldots, \sigma_J)$ and there are no covariates so $\mathbf{Z}$ is not included.
+
+\subsubsection{Covariates}
+
+Covariates can be included in a similar way to \cite[Chapter 3]{ADS}, where the covariates effect the scale parameter $\sigma$. Here it is assumed that each mixture component has a different scale but that the covariates affect the scale parameters in the same way, in particular this means that the ``intercept'' term in the covariate model is different for each mixture component but the other covariates are estimated jointly for all components. Other more complex models with different covariates in each mixture component may be possible, but only the simplest model is considered here.
 
 Analogously to \secref{intro-ds-covar}, using $i$ to subscript each observation, the formulation for the scale parameter $\sigma_{ij}$, is therefore:
 \begin{equation*}
@@ -40,12 +44,11 @@ where $z_{ik}$ is the $k^\text{th}$ covariate for the $i^\text{th}$ observation.
 \begin{equation*}
 \sigma_{ij} = \exp( \beta_{0j} + \beta_1 z_{i1}),
 \end{equation*}
-and then $\bm{\theta}_j = (\beta_{0j}, \beta_1)$. Note the similarity to (\ref{intro-ds-covar-model}).
-
+and then $\bm{\theta}_j = (\beta_{0j}, \beta_1)$. If the model was a 2-point mixture, $\bm{\theta} = (\beta_{01}, \beta_{02}, \beta_1)$. Note the similarity to (\ref{intro-ds-covar-model}).
 
 \subsection{Likelihood}
 
-For line transects, given a set of perpendicular distances $\{x_i; i=1,\ldots,n\}$ and associated covariate vectors $\bm{z}_i$, the likelihood is given by:
+For line transects, given a set of perpendicular distances $\{x_i; i=1,\ldots,n\}$ and associated covariate vectors $\bm{z}_i$ (the row of $\mathbf{Z}$ corresponding to observation $i$), the likelihood is given by:
 \begin{align*}
 \mathcal{L}(\bm{\theta},\bm{\phi}; \mathbf{x},\mathbf{Z}) &= \prod_{i=1}^n f(x_i,\bm{z}_i; \bm{\theta},\bm{\phi})\\
 &= \prod_{i=1}^n \frac{g(x_i,\bm{z}_i; \bm{\theta},\bm{\phi})}{\mu_i}\\
