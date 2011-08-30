@@ -52,7 +52,7 @@ A typical example of line transect data is shown in figure \ref{ds-lt-example}. 
 \end{figure}
 
 \subsection{Point transects}
-Line transects are not the only way of collecting data for a distance sampling analysis; point transects may also be used. When using point transects the observer stands at one of a series ($m$, say) of points and observes the objects surrounding him/her. Again, distances to the objects ($r_i$) are recorded. An \textit{effective radius} ($\rho$) is then calculated, analogously to $\mu$ and then object density can be written as:
+Line transects are not the only way of collecting data for a distance sampling analysis; point transects may also be used. When using point transects the observer stands at one of a series ($m$, say) of points and observes the objects surrounding him/her. Again, distances to the objects ($r_i$) are recorded. An \textit{effective radius} ($\rho$) is then calculated (analogously to $\mu$) and then object density can be written as:
 \begin{equation*}
 \hat{D}=\frac{n}{m \pi \hat{\rho}^2}=\frac{n}{m\pi w^2\hat{P}_a}.
 \end{equation*}
@@ -227,18 +227,22 @@ The effective strip width, $\mu_i$ is now expressed as:
 \mu_i = \int_0^w g(x ; \sigma_i) \text{d}x,
 \label{intro-ds-mu-covar}
 \end{equation}
-and following from the relation between $\mu$ and $P_a$, above we define:
+that is, that the effective strip width depends on the covariate values. So in the covariate case there is no single probability of detection, instead the per observation (equivalently, per unique covariate combination) probability of detection can be calculated for line transects:
 \begin{equation*}
-P_a(\bm{z}_i) = \frac{\int_0^w g(x ; \sigma_{i}) \text{d}x}{w}.
+p_i = \frac{\int_0^w g(x ; \sigma_{i}) \text{d}x}{w}.
 \end{equation*}
-Similarly for point transects, the probability of detection and $\nu$ are given as:
+For point transects, the probability of detection and effective area are given as:
 \begin{equation*}
-P_a(\bm{z}_i) =\frac{2}{w^2}\int_0^w r g(r; \sigma_i) \text{d}r, \qquad \nu(\bm{z}_i) = \int_0^w r g(r; \sigma_i) \text{d}r
+p_i =\frac{2}{w^2}\int_0^w r g(r; \sigma_i) \text{d}r, \qquad \nu_i = \int_0^w r g(r; \sigma_i) \text{d}r
 \end{equation*}
 
-With this formulation, abundance can be estimated by a Horvitz-Thomspon-like estimator (\cite[pp. 53-56]{thompson}, \cite[p. 23]{ADS}):
+Using this formulation, population size can be found from a Horvitz-Thompson-like estimator (\cite[pp. 53-56]{thompson}, \cite[p. 23]{ADS}):
 \begin{equation*}
-\hat{N} = \sum_{i=1}^n \frac{1}{P_a(\bm{z}_i)}.
+N = \sum_{i=1}^n \frac{1}{c_i p_i},
+\end{equation*}
+where $c_i$ is probability of the $i^\text{th}$ observation being within the sampled area, and $p_i$ is the probability of the $i\text{th}$ observation being detected given it is within the sampled area (\cite[p. 38]{ADS}).  A standard summary statistic is the \textit{average detection probability} for an animal within the covered region, $P_a$, which is given by:
+\begin{equation*}
+P_a = n/N.
 \end{equation*}
 
 \subsection{Other considerations}
