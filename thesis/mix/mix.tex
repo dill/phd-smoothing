@@ -11,28 +11,28 @@ Distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating 
 
 As was shown in \secref{intro-DS}, estimating the detection function is key to distance sampling. Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fit to data, in particular non-monotone detection functions (as seen in \secref{intro-ds-mono}), in particular in figure \ref{fig1}.
 
-Mixture models allow for flexible monotone functions to be used to model the detection function (see figure \ref{sim-detfcts}).
-
-In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section, we describe the models.  We then illustrate their use by applying them to simulated data, and then to real data from a number of studies.  We compare results of CDS and mixture model detection functions. We finish with a discussion of the utility of these new methods.
+In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section the models are described and following from that the optimization procedure and tricks used. Sections \ref{mmds-rims} and \ref{s:data} show the results of a simulation study and then analysis of real data, respectively. The final section gives some concluding remarks.
 
 \section{Finite mixture model detection functions}
+
+Following on from the definitions of the detection functions given in \secref{intro-DS}, this section shows how from the definition of a mixture model detection function, the likelihood can be found for covariate and non-covariate models of both line and point transect data.
 
 \subsection{Formulation}
 \label{s:detfcts}
 
-Denoting the detection function as $g$, we consider a sum of $J$ mixture components $g_j$, scaled by some mixture proportions $\phi_j$:
+Denoting the detection function $g$, as before, consider a sum of $J$ mixture (detection function) components $g_j$, scaled by some mixture proportions $\phi_j$:
 \begin{equation*}
 g(x,\mathbf{Z}; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j g_j(x,\mathbf{Z}; \bm{\theta}_j),
 \end{equation*}
-where $\sum_{j=1}^J \phi_j = 1$. The distance is denoted $x$, the $\bm{\theta}_j$s are vectors of parameters for function $g_j$, $\bm{\theta}$ is a vector of all of the $\bm{\theta}_j$s, $\bm{\phi}$ is a vector of all of the $\phi_j$s. $\mathbf{Z}$ is an $n\times K$ matrix of covariates.
+where $\sum_{j=1}^J \phi_j = 1$. The distance is denoted $x$, the $\bm{\theta}_j$s are vectors of parameters for function $g_j$, $\bm{\theta}$ is a vector of all of the $\bm{\theta}_j$s and $\bm{\phi}$ is a vector of all of the $\phi_j$s. $\mathbf{Z}$ is an $n\times K$ matrix of covariates.
 
 Here we let $g_j$ be half-normal functions, although other monotonic functions such as hazard-rate could be chosen (and the $g_j$s need not all have the same form):
 \begin{equation*}
 g(x,\mathbf{Z}; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j \exp \Big( - \frac{x^2}{2\sigma_j^2} \Big).
 \end{equation*}
-Covariates can be included in a similar way to \cite[Chapter 3]{ADS} TKTKTK, where the covariates affect the scale parameter $\sigma$. We assume that each mixture component has a different scale but that the covariates affect the scale parameters in the same way. Other more complex models may be possible.
+Covariates can be included in a similar way to \cite[Chapter 3]{ADS}, where the covariates affect the scale parameter $\sigma$. Here it is assumed that each mixture component has a different scale but that the covariates affect the scale parameters in the same way, in particular this means that the ``intercept'' term in the covariate model is different for each mixture component but the other covariates are estimated jointly for all components. Other more complex models with different covariates in each mixture component may be possible, but only the simplest model is considered here.
 
-Using $i$ to subscript each observation, our formulation for the scale parameter $\sigma_{ij}$, is therefore:
+Analogously to \secref{intro-ds-covar}, using $i$ to subscript each observation, the formulation for the scale parameter $\sigma_{ij}$, is therefore:
 \begin{equation*}
 \sigma_{ij} = \exp( \beta_{0j} + \sum_{k=1}^K \beta_k z_{ik}),
 \end{equation*}
@@ -40,7 +40,7 @@ where $z_{ik}$ is the $k^\text{th}$ covariate for the $i^\text{th}$ observation.
 \begin{equation*}
 \sigma_{ij} = \exp( \beta_{0j} + \beta_1 z_{i1}),
 \end{equation*}
-and then $\bm{\theta}_j = (\beta_{0j}, \beta_1)$. 
+and then $\bm{\theta}_j = (\beta_{0j}, \beta_1)$. Note the similarity to (\ref{intro-ds-covar-model}).
 
 
 \subsection{Likelihood}
@@ -127,6 +127,7 @@ Note that we only need as many $\alpha_p$s as we had $\phi_j$s, so we do not req
 
 
 \section{Simulations}
+\label{mmds-sims}
 
 Extensive simulations were carried out to ensure that both parameters could be recovered and that abundance estimates were unbiased. The latter is more important than the former since our primary interest is estimating abundance. Each simulation involved generating 200 replicate datasets from a specified mixture model using rejection sampling, fitting each dataset with 1-, 2-, and 3-point mixture models for the detection function, and in each case recording estimated parameter values and abundance from the model with the lowest AIC.
 

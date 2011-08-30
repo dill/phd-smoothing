@@ -266,10 +266,10 @@ Simulation studies will be used extensively to evaluate the proposed methods. In
 \end{equation*}
 which (if there are $n_p$ prediction points) can be approximated by:
 \begin{equation}
-\hat{\text{MSE}}(\hat{f}) = \frac{1}{n_p} \sum_{i=1}^{n_p} \left \{\hat{f}(\mathbf{x}_i) - z_i \right \}^2.
+\widehat{\text{MSE}}(\hat{f}) = \frac{1}{n_p} \sum_{i=1}^{n_p} \left \{\hat{f}(\mathbf{x}_i) - z_i \right \}^2.
 \label{DEFN-MSE}
 \end{equation}
-The $z_i$s could be the data (in which case $n_p=n$ and the indexing is the same as for the data) or if how well $\hat{f}$ approximates a known function is being tested then $z_i=f(\mathbf{x}_i)$ where $f$ is the true function that $\hat{f}$ approximates. It makes more sense to evaluate $z_i$ which are not the data since an $\hat{f}$ that simply interpolates will have zero MSE, but may still be a very bad model for the unobserved locations. When MSE is mentioned from now on, it will be with reference to the quantity defined in (\ref{DEFN-MSE}).
+The $z_i$s could be the data (in which case $n_p=n$ and the indexing is the same as for the data) or if how well $\hat{f}$ approximates a known function is being tested then $z_i=f(\mathbf{x}_i)$ where $f$ is the true function that $\hat{f}$ approximates. It makes more sense to evaluate $z_i$ which are not the data since an $\hat{f}$ that simply interpolates will have zero MSE, but may still be a very bad model for the unobserved locations. When MSE is mentioned from now on, it will be with reference to $\widehat{\text{MSE}}$ in (\ref{DEFN-MSE}).
 
 A nice feature of the MSE is that it can be decomposed in the following way (\cite[p. 24]{elements}):
 \begin{equation*}
@@ -568,9 +568,9 @@ So an estimator of density may be written as:
 \hat{D}=\frac{n}{2L \int_0^w \hat{g}(x) \text{d}x}.
 \end{equation*}
 The detection function is one of the functions described in \secref{intro-ds-detefct} and so only its parameter(s) must be estimated ($\bm{\theta}$, say). However to first form the likelihood, the probability density function must be defined. Note that the expected number of objects at a distance $x$ from the transect line (including those not observed) is independent of $x$. This then implies that the shape of the density functions is the same as that of the detection function and can therefore be obtained by rescaling (\cite[p. 38]{IDS}). So, the PDF of the perpendicular distance data, conditional on the object being observed is then:
-\begin{equation}
+\begin{equation*}
 f(x;\bm{\theta}) = \frac{g(x;\bm{\theta})}{\int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{g(x;\bm{\theta})}{\mu}.
-\end{equation}
+\end{equation*}
 %As an aside, note that by the assumption, above, $g(0;\bm{\theta})=1$, so:
 %\begin{equation}
 %f(0;\bm{\theta}) = \frac{g(0;\bm{\theta})}{\int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{1}{\mu}.
@@ -588,32 +588,32 @@ The log-likelihood can then be used as an objective function in an optimisation 
 Point transects follow an analogous explanation to line transects. Instead of effective strip width, we look at effective radius. This effective radius, $\rho$ is defined in the same way as $\mu$: that there are as many objects missed within $\rho$ as observed beyond. Related to the effective radius is the \textit{effective area of detection}, $\nu=\pi \rho^2$.
 
 For line transects, an infinitesimal strip has area $L\text{d}x$ (that is the length of the line, multiplied by an infinitesimal distance perpendicular to the line) and this value is independent of $x$. However, in the point transect case an incremental annulus depends on $r$ (the distance from the point), such an annulus has area $2\pi r \text{d}r$. So, the effective area of detection is therefore defined as:
-\begin{equation}
+\begin{equation*}
 \nu = 2 \pi \int_0^w r g(r) \text{d}r.
-\end{equation}
+\end{equation*}
 Then, following through the arguments above, we can define the PDF as:
-\begin{equation}
+\begin{equation*}
 f(r) = \frac{r g(r)}{\int_0^w r g(r) \text{d}r},
-\end{equation}
+\end{equation*}
 and hence: 
-\begin{equation}
+\begin{equation*}
 f(r) = \frac{2 \pi r g(r)}{\nu},
-\end{equation}
+\end{equation*}
 a more rigorous proof of this is given in \citeb[p. 54]{IDS}.
 
 By analogy to the line transect case the relation between $\nu$ and $P_a$ in the point transect case is
-\begin{equation}
+\begin{equation*}
 P_a=\frac{\nu}{\pi w^2}
-\end{equation}
+\end{equation*}
 so
-\begin{equation}
+\begin{equation*}
 f(r) = \frac{2 \pi r g(r)}{\pi w^2 P_a}.
-\end{equation}
+\end{equation*}
 So again, a likelihood can be formed:
-\begin{align}
+\begin{align*}
 \mathcal{L}(\bm{\theta}; \bm{r}) &= \prod_{i=1}^n f(r_i;\bm{\theta}),\\
 &= \prod_{i=1}^n \frac{2 \pi r g(r;\bm{\theta})}{\nu}.
-\end{align}
+\end{align*}
 As above, the log of this expression can then be used in an optimisation procedure to find the MLEs of the parameters.
 
 
@@ -631,44 +631,44 @@ One can very easily think of the case in which one or more factors affect the de
 \label{ds-covarex}
 \end{figure}
 
-
-Considering a detection function modelled by a half-Normal, we can write that:
-\begin{equation}
+Considering a detection function modelled by a half-Normal, $g$ is written as:
+\begin{equation*}
 g(x; \sigma) = \exp\left (\frac{-x^2}{2\sigma^2}\right ),
-\end{equation}
-now, say that two covariates have been collected, $z_{i,\text{sex}}$ and $z_{i,\text{Beau}}$ indicating the sex of the animal and the Beaufort sea state when the animal was observed. Also recorded are the distances $x_i$. The covariates can be included in the analysis by considering $\sigma$ as a linear combination of these covariates, so we can either consider their to be one $\sigma$ per unique covariate combination:
+\end{equation*}
+now, say that two covariates have been collected, $z_{i,\text{sex}}$ and $z_{i,\text{Beau}}$ indicating the sex of the animal and the Beaufort sea state when the animal was observed. Also recorded are the distances $x_i$. The covariates can be included in the analysis by considering $\sigma$ as a linear combination of these covariates, so either $\sigma$ per unique covariate combination can be considered:
 \begin{equation}
 \sigma_i = \exp( \beta_0 + \beta_1 z_{i,\text{sex}} + \beta_2 z_{i,\text{Beau}}),
+\label{intro-ds-beaufort-covar-model}
 \end{equation}
-or that $\sigma$ is a function of the covariates and corresponding parameters:
+The objective is now obtaining estimates of $(\beta_0, \beta_1, \beta_2)$.
+
+More generally the notation for the detection function is $g(x ; \sigma(\bm{z}; \bm{\beta}))$ where $\bm{z}$ is the $K$-vector of the covariates $z_1, \dots, z_K$ related to the observation $x$. The complete set of covariates for all observations is stored in $Z$, an $n \cross K$ matrix. The scale function is referred to as $\sigma(\bm{z}; \bm{\beta})$ to clarify when covariates are used. The more general form of (\ref{intro-ds-beaufort-covar-model}) is then:
 \begin{equation}
-\sigma(z_{i,\text{sex}}, z_{i,\text{Beau}}; \beta_1, \beta_2) = \exp(\beta_0 + \beta_1 z_{i,\text{sex}} + \beta_2 z_{i,\text{Beau}}).
+\sigma_{i} = \exp( \beta_{0} + \sum_{k=1}^K \beta_k z_{ik}).
+\label{intro-ds-covar-model}
 \end{equation}
-Of course, these expressions are equivalent, the latter will be used throughout for clarity. We are now interested in obtaining estimates of $(\beta_0, \beta_1, \beta_2)$.
 
-More generally the notation for the detection function is $g(x ; \sigma(\bm{z}; \bm{\beta}))$ where $\bm{z}$ is the $K$-vector of the covariates $z_1, \dots, z_K$ related to the observation $x$. The complete set of covariates for all observations is stored in $Z$, an $n \cross K$ matrix. The scale function is referred to as $\sigma(\bm{z}; \bm{\beta})$ to clarify when covariates are used.
-
-This covariate formulation can be thought of as a generalisation of the non-covariate model, the latter simply being the case where there is only an intercept term. This is equivalent to log-transforming the scale parameter.
+This covariate formulation can be thought of as a generalisation of the non-covariate model, the latter simply being the case where there is only an intercept term. This is equivalent to $\log$-transforming the scale parameter.
 
 This formulation fits nicely into the likelihood expressions above, the evaluations of the detection function are as above, but the calculation of $\mu$ (and therefore $P_a$) changes. It is now the case that we think of both of these quantities as functions of the covariates, as we did for $\sigma$.
 
 The effective strip width, $\mu$ is now expressed as:
-\begin{equation}
+\begin{equation*}
 \mu(\bm{z}_i) = \int_0^w g(x ; \sigma(\bm{z}; \bm{\beta})) \text{d}x,
-\end{equation}
+\end{equation*}
 and following from the relation between $\mu$ and $P_a$, above we define:
-\begin{equation}
+\begin{equation*}
 P_a(\bm{z}_i) = \frac{\int_0^w g(x ; \sigma(\bm{z}; \bm{\beta})) \text{d}x}{w}.
-\end{equation}
+\end{equation*}
 Similarly for point transects, the probability of detection and $\nu$ are given as:
-\begin{equation}
+\begin{equation*}
 P_a(\bm{z}_i) =\frac{2}{w^2}\int_0^w r g(r; \sigma(\bm{z}; \bm{\beta})) \text{d}r, \qquad \nu(\bm{z}_i) = \int_0^w r g(r; \sigma(\bm{z}; \bm{\beta})) \text{d}r
-\end{equation}
+\end{equation*}
 
 With this formulation, abundance can be estimated by a Horvitz-Thomspon-like estimator (\cite[pp. 53-56]{thompson}, \cite[p. 23]{ADS}):
-\begin{equation}
+\begin{equation*}
 \hat{N} = \sum_{i=1}^n \frac{1}{P_a(\bm{z}_i)}.
-\end{equation}
+\end{equation*}
 
 \subsection{Other considerations}
 \subsubsection{Line and point placement}
