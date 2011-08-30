@@ -299,7 +299,7 @@ Hn 2-pt & \texttt{habitat} + \texttt{species} & 749.05 & 0.152 & 19.85 & 0.94\\
 Hn 2-pt & \texttt{habitat} + \texttt{nest.size} & \textbf{737.27} & 0.179 & 22.47 & 0.72\\
 Hn 2-pt & \texttt{nest.size} + \texttt{species} & 741.92 & 0.210 & 18.09 & 0.77\\
 Hn 2-pt & \texttt{nest.size} + \texttt{species} + \texttt{habitat} & 739.77 & 0.178 & 18.9 & 0.68 \\
-Hr & \texttt{nest.size} + \texttt{habitat} & 745.2 & 0.194 & 10.6 & 0.95\\
+Hr & \texttt{habitat} + \texttt{nest.size} & 745.2 & 0.194 & 10.6 & 0.95\\
  & ($ii$) \textit{Long-finned pilot whales} & & & & \\
 Hn 2-pt & None & 1298.42 & 0.295 & 23.6 & 0.95 \\
 Hn 2-pt & \texttt{BSS} & 1286.6 & 0.209 & 22.06 & 0.82 \\
@@ -325,40 +325,20 @@ Hr & \texttt{obs} + \texttt{mas} & \textbf{10777.72} & 0.3 & 2.65 & 0.036 \\
 
 \section{Software implementation - \texttt{mmds}}
 
-TKTKTK
-
-[[\textbf{LEN}: Will be in next version of Distance?!]]
+All the models discussed in this article are available as an \textsf{R} package, \texttt{mmds} which is available from \url{http://github.com/dill/mmds} along with documentation. Mixture models detection functions will be available in the next version of the software package Distance (\cite{distance-software}) as another option for modelling the detection function.
 
 \section{Conclusion}
 \label{s:discuss}
 
-[[\textbf{LEN}: I've put some stuff here but it's a bit rough at the moment. ]]
+This chapter has investigated and demonstrated the utility of detection functions constructed from mixtures of half-normals in both line and point transect distance sampling. The method was also extended to include covariates. The formulation presented here for mixture detection functions can be simply ``dropped in'' to the existing theory and make a handy addition to the literature when there are issues with non-monotonicity.
 
-The article has investigated and demonstrated the utility of detection functions constructed from mixtures of half-normals in both line and point transect distance sampling. We also show that covariates can be included in such models easily. These mixture detection functions can be simply ``dropped in'' to the existing theory.
+It has been shown that the method performs well on both simulated and real data. In many cases the proposed model outperforms the existing CDS models, which is surprising given that the mixture models in question often had more parameters than the CDS models. It should be noted however, that in simulation at small sample sizes models will not fit data generated from them particularly well. This problem can be avoided in practise by using AIC forward selection for the number of mixtures, ensuring model parsimony.
 
-We have shown that the method performs well on both simulated and real data. In many cases the proposed model outperforms the existing CDS models, which is surprising given that the mixture models in question often had more parameters than the CDS models. It should be noted however, that in simulation at small sample sizes models will not fit data generated from them particularly well. We avoid this problem by using AIC forward selection for the number of mixtures, ensuring model parsimony.
-
-In simulation we observed that using a 3-point mixture was not a good surrogate for missing covariate structure in the model. We also saw that 2-point mixtures were generally chosen by AIC as good models and that the construction of a true 3-point mixture is quite tricky. In the examples in section \ref{s:data}, 2-point mixtures consistently provided the best fit, even in the case of the amakihi which was a very large data set ($n=1243$). Only examination of further data will show whether 3-point and higher mixtures can be supported in real data, however we note that in CDS when the key function with adjustment series formulation is used, detection functions with $5$ or more parameters are rarely selected by AIC and a 3-point mixture with no covariates requires $5$ parameters.
-
-All the models discussed in this article are available as an \textsf{R} package, \texttt{mmds} which is available from [[TKTKTK somewhere!]].
-
-
-
-[[\textbf{LEN}: Not sure about this yet, need to think about it...]]
+In simulation 3-point mixtures did not appear to be good surrogates for missing covariate structure in the model. In general 2-point mixtures were chosen by AIC as good models and that the construction of a true 3-point mixture is quite tricky. In the examples in \secref{s:data}, 2-point mixtures consistently provided the best fit, even in the case of the amakihi which was a very large data set ($n=1243$). Only examination of further data will show whether 3-point and higher mixtures can be supported in real data, however in CDS analyses when the key function with adjustment series formulation is used, detection functions with $5$ or more parameters are rarely selected by AIC and a 3-point mixture with no covariates requires $5$ parameters.
 
 Further work will include extending these models further to include continuous mixtures. In that case the detection function can be modelled as:
 \begin{equation*}
 g(x) = \int_\mathbf{R} \varphi(\kappa) g_\kappa(x,\mathbf{Z}; \theta, \kappa) \text{d}\kappa
 \end{equation*}
 where $\varphi(\kappa)$ is some function which controls the mixing of $g_\kappa$. Such an approach may present significant computation issues, however the benefits for model fitting may be considerable. Provided that an appropriate function can be chosen for $\varphi$, more flexible models could be used whilst keeping the number of parameters low. In addition, a combination of both finite and continuous mixtures could be used, echoing the work of \citeb{morgan08} in capture-recapture.
-
-
-%\bibitem{ } Beavers, S. C., and Ramsey, F. L. (1998). Detectability analysis in transect surveys. \textit{Journal of Wildlife Management} \textbf{62}(3), pp. 948--957.
-%
-%
-%\bibitem{ } Dempster, A.P., Laird,  N. M. and Rubin, D. B. (1977). Maximum Likelihood from Incomplete Data via the EM Algorithm. \textit{Journal of the Royal Statistical Society: Series B (Methodological)} \textbf{39}(1), 1--38.
-%
-%
-%
-
 

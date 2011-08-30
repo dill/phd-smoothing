@@ -1,6 +1,6 @@
 % thesis?
 
-\documentclass[mitthesis,12pt]{report}
+\documentclass[12pt]{report}
 \usepackage{baththesis}
 
 \usepackage{amsmath, amssymb, amsfonts, url, natbib, bm, rotating, multirow, graphicx, psfrag, appendix}
@@ -84,12 +84,12 @@
 
 \maketitle
 \begin{abstract} 
-This thesis is split into two parts:
-\begin{enumerate}
-	\item \textbf{Smoothing over complex regions}:
-	\item \textbf{Mixture model detection functions for distance sampling}:
-\end{enumerate}
+This thesis is about statistical ecology, in particular it is about assessing the distribution of animals and plants in some fixed area. The models presented here address problems that practitioners face in their work and will hopefully be found to be useful. Two topics will be addressed, the first concerns smoothing the spatial distribution of biological populations, in particular when the shape of the survey area is complicated. The second introduces a new set of functions to model the probability of detection in distance sampling.
 \end{abstract}
+
+\section*{Blak}
+
+
 
 \tableofcontents
 
@@ -97,7 +97,7 @@ This thesis is split into two parts:
 
 \listoftables
 
-\chapter{An Introduction}
+\chapter{Introduction to finite area smoothing}
 %\begin{quotation}
 %``The major justification for the existence of any form of advanced voluntary organised education should be that it enables users to distort time and location in the learning process.'' 
 %
@@ -136,6 +136,10 @@ This thesis is split into two parts:
 %\end{quotation}
 
 \input{gds/gds}
+
+\chapter{Introduction to distance sampling}
+\input{intro/intro-ds}
+
 
 \chapter{Mixture model distance sampling detection functions}
 % "it's another laser in your intergalactic battle cruiser" - Len Thomas
