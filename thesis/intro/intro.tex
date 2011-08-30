@@ -685,7 +685,7 @@ Distance sampling is unlike most methods in statistics, in that the quantity whi
 
 Distance sampling benefits from a relatively simple field procedure, a wealth of literature and easy to use software for analysis. Distance sampling has also been adapted for many different scenarios, including analysing data which was not initially part of a survey (incidental data).
 
-Non-covariate distance sampling, as described above, is commonly referred to as CDS (conventional distance sampling) and covariate distance sampling as MCDS (multiple covariate distance sampling. Other variants exist, for example mark-recapture distance sampling (MRDS, see \cite{mrdspaper}) and spatial distance sampling models (see chapter 4 of \cite{ADS}).
+Non-covariate distance sampling, as described above, is commonly referred to as CDS (conventional distance sampling) and covariate distance sampling as MCDS (multiple covariate distance sampling. Other variants exist, for example mark-recapture distance sampling (MRDS, \cite{mrdspaper}) and spatial distance sampling models (\cite[chapter 4]{ADS}).
 
 \subsection{Monotonicity}
 \label{intro-ds-mono}
@@ -693,48 +693,26 @@ One potential pitfall of both CDS and MCDS is that  it is possible to formulate 
 
 Constraining the likelihood is appealing here, however it is obviously always preferable to perform unconstrained optimisation if possible. Using a class of functions to model the detection function which were both flexible and did not exhibit the undesirable property of non-monotonicity could offer a more physically realistic and convincing alternative to the conventional way of performing distance analyses.
 
-Finally, note that although constraining the shape of the detection function is possible, it does not necessarily lead to monotonic detection functions. Figure \ref{humpback-nonmono} shows a detection function fitted to humpback whale data (taken from \cite{williams}). Here a half-Normal key function with a cosine adjustment term was fitted to the data and, although constraints were used, the function is still non-monotonic.
+Although constraining the shape of the detection function is possible, it does not necessarily lead to monotonic detection functions since the constraints can only be applied at a finite number of points. This can lead to constraints missing the non-monotonic points in the function. An example from \citeb{williams} is shown in the first panel of figure \ref{fig1}. Here a half-normal detection function was fit with one second order cosine adjustment term to humpback whale sightings. The second and third panels in figure \ref{fig1} show a detection function when covariate data was included in the model. In this case for long-finned pilot whales (\cite{pike}) the Beaufort sea state was added as a covariate, the first plot shows that the detection function, when averaged over the covariate values, shows some non-monotonic behaviour. However, in the third panel the marginal detection function at 25\%, 50\% and 75\% quantiles of the covariate are shown and here the non-monotonicity is particularly pronounced. Given the above, a formulation that guarantees monotonicity from the outset is appealing.
 
-% example of non-monotonic detection function - humpback
 \begin{figure}
 \centering
-% trim order l b r t
-\includegraphics{intro/figs/humpback-nonmono.pdf}\\
-\caption{Humpback whale data from \citeb{williams} with a half-Normal key function with a cosine adjustment overlaid. Constraints have failed to ensure that the function is monotonic. Figure taken from \citeb{williams}.}
-\label{humpback-nonmono}
+\includegraphics[width=\textwidth]{mix/figs/figure1.pdf}
+\caption{Two examples of detection functions which are not monotone. The first first panel is data from humpback whale (reproduced from data in \citeb{williams}), a half-normal detection function with cosine adjustments provided the best fit to the data, even with constraints in place, the detection function is non-monotonic. The second and third panels are plots for the long-finned pilot whale data taken from \cite{pike}. In the second panel the detection function is averaged over the covariate values and the third shows marginal detection function for quantiles of the Beaufort sea sate covariate (the model was a half-normal detection function), showing that the non-monotonicity gets worse at higher levels of the covariate.}
+\label{fig1}
 \end{figure}
-
-
-
 
 \subsection{Mixture models}
-Recently developments, particularly in mark-recapture (\cite{pledger2000}, \cite{dorazio03}, \cite{pledger2005} and \cite{morgan08}) have shown that mixture models can be an extremely useful and flexible method of modelling heterogeneity in biological populations.
 
-Covariates provide some information on those factors which may effect the detectability of individuals, modelling some of the heterogeneity in the detection process. Adjustment terms attempt to perform a similar task (though in an admittedly blunter fashion) by smoothing the function of distance in a semi-parametric way. A combination of the two approaches is possible although some have philosophical opposition to it (Jeff Laake, personal communication). One would like to both handle heterogeneity with both the data at hand (in the form of covariates) whilst also ``smoothing away'' residual effects of unobserved states in the population (while maintaining monotonicity).
+Recently developments, particularly in mark-recapture (\cite{pledger2000}, \cite{dorazio03}, \cite{pledger2005} and \cite{morgan08}) have shown that mixture models can be an extremely useful and flexible method of modelling heterogeneity in biological populations. Their main utility has been in better accounting for between-individual heterogeneity which can cause severe bias if unmodelled (\cite{Link2003}). 
 
+In distance sampling bias due to unmodelled heterogeneity is not severe unless the heterogeneity is extreme (\cite[pp. 389-392]{ADS}) and provided that the detection at zero distance is certain and a flexible detection function model is used. So called \textit{pooling robustness} allows abundance estimates of the whole population to have low bias (although abundance estimates of subpopulations, e.g. males or females alone, may be biased). As noted in \citeb[pp. 391]{ADS} it is important that the model used for the detection function is sufficiently flexible to accommodate the detection functions resulting from pooling data. Mixture models offer the potential for flexible modelling in this way and also have the appealing property that if the individual parts of the mixture model (the mixture components) are each monotonic decreasing then a sum of these functions will also be monotonic decreasing. Each constituent component of the mixture model is simple but the combinations yield a great many possible shapes (see figure \ref{sim-detfcts}), while at the same time constrained optimization is avoided.
 
-TKTKTK get rid of the `` two classes'' stuff here
-
-Mixture models provide models that can handle these situations in a parsimonious way. Consider the following example: it is known that for a particular species the female is much easier to observe than the male (for example, in a song bird the female might be more vocal) however the two sexes are indistinguishable to an observer, so no covariate can be recorded. The two sexes form two distinct, unobserved classes in the sample. Since the female is easier to observe than the male, the two classes will have different detection functions. A distance sampling analysis using adjustment terms will attempt to model the average of the two detection functions, rather than each individually. Instead one could use a mixture model for the detection function. A weighted combination of two functions could then be used to describe the two different classes and their proportions in the sample. 
-
-The logical extension of this approach is to include covariates in the mixture model too. Say, for example, that it is possible to identify the age of the animal but not the sex, the age can be included as a covariate and the ages classes can again be modelled using the mixture. Note that there is no classification going on here: there is no decision over whether observations are, say, male or female. Rather, the proportions of each are being estimated along with the parameters of their respective detection functions.
-
-% example of composite detection function
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics{intro/figs/malefemale-detfct.pdf}\\
-\caption{A detection function (solid line) composed of two other detection functions (dashed lines) representing two parts of a population. The spike could represent less vocal males and the detection function with the wider shoulder could represent the more vocal (and hence more easily observable) females (for example).Taken from \citeb{amakihi}.}
-\label{ds-malefemale-detfct}
-\end{figure}
-
-Figure \ref{ds-malefemale-detfct} shows the effect that might be seen when one subsection of the population (say females) are more detectable than another (males). Where the information on sex is available, a covariate analysis should be able to separate these two populations. If it is not, a CDS analysis will yield unsatisfactory results.
-
-If only monotonic functions are used in the mixture then a monotonic detection function will result as any sum of monotonic functions is, itself, monotonic. This avoids the problems of constrained optimisation inherent in the ``key function plus adjustment terms'' formulation currently used.
+%Covariates provide some information on those factors which may effect the detectability of individuals, modelling some of the heterogeneity in the detection process. Adjustment terms attempt to perform a similar task (though in an admittedly blunter fashion) by smoothing the function of distance in a semi-parametric way. A combination of the two approaches is possible although some have philosophical opposition to it (Jeff Laake, personal communication). One would like to both handle heterogeneity with both the data at hand (in the form of covariates) whilst also ``smoothing away'' residual effects of unobserved states in the population (while maintaining monotonicity).
 
 Finally, the approach is also interesting for its own sake. There is no current literature on the use of mixture models as detection functions for distance sampling. Many detection function forms have been proposed (for example, \cite{buckland92} and  \cite{gammadetfct}), each having their own merits and pitfalls. Therefore, there may be useful and unexplored properties of using a mixture model for the detection function that have not been previously considered.
 
-
+A mixture model approach to distance sampling detection functions is developed further in chapter \ref{chap-mmds}.
 
 
 

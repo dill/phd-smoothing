@@ -1,3 +1,4 @@
+\label{chap-mmds}
 
 %\def\bSig\mathbf{\Sigma}
 %\newcommand{\VS}{V\&S}
@@ -6,20 +7,11 @@
 \section{Introduction}
 \label{s:intro}
 
-Distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating the size and/or density of biological populations. Estimating the detection function is key to distance sampling.  The most common approach, often called ``conventional distance sampling'', is based on methods developed by \citeb{buckland92}. 
+Distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating the size and/or density of biological populations. The most common approach, referred to as conventional distance sampling (CDS), is based on methods developed by \citeb{buckland92}. A commonly used extension to this methodology allows for the probability of detection to vary with covariates as well as just distance from the observer (multiple covariate distance sampling, MCDS, \cite[chapter 3]{ADS}). 
 
-Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fit to data, in particular non-monotone detection functions. The usual way to work around this is to constrain the detection function. Current implementations perform this by evaluating a set of constraints at each stage of the optimization procedure (usually performed via a Newton method on the log likelihood), this is expensive computationally and can be ineffective (as was seen in \secref{intro-ds-mono} and below in figure \ref{fig1}. Covariate models for the detection function (\secref{intro-ds-covar}) are not currently constrained at all. This situation is undesirable and can be problematic (especially in the covariate case where quantile and marginal plots may not reveal the non-monotonicity).
+As was shown in \secref{intro-DS}, estimating the detection function is key to distance sampling. Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fit to data, in particular non-monotone detection functions (as seen in \secref{intro-ds-mono}), in particular in figure \ref{fig1}.
 
-One problem with constraining the detection function to be monotonic is that the constraints can only be applied at a finite number of points. This can lead to constraints missing the non-monotonic points in the function. An example from the recent literature (\cite{williams}) is shown in the first panel of figure \ref{fig1}. Here a half-normal detection function was fit with one second order cosine adjustment term to humpback whale sightings. The second and third panels in figure \ref{fig1} show a detection function when covariate data was included in the model. [[no constraints on the covariates in distance, levels]] In this case for long-finned pilot whales (\cite{pike}) the Beaufort sea state was added as a covariate, the first plot shows that the detection function, when averaged over the covariate values, shows some non-monotonic behaviour. However, in the third panel the marginal detection function at 25\%, 50\% and 75\% quantiles of the covariate are shown and here the non-monotonicity is particularly pronounced. Given the above, a formulation that guarantees monotonicity from the outset is appealing.
-
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{mix/figs/figure1.pdf}
-\caption{Two examples of detection functions which are not monotone. The first first panel is data from humpback whale (taken from \citeb{williams}), a half-normal detection function with cosine adjustments provided the best fit to the data, even with constraints in place, the detection function is non-monotonic. The second and third panels are plots of the detection function averaged over the covariate values and the marginal detection function for quantiles of the Beaufort sea sate covariate (the model was a half-normal detection function); the non-monotonicity gets worse at higher levels of the covariate.}
-\label{fig1}
-\end{figure}
-
-Mixture models have recently been applied in the capture-recapture literature following the work of \citeb{pledger2000}, \citeb{dorazio03}, \citeb{pledger2005} and \citeb{morgan08}. Their main utility is in better accounting for between-individual heterogeneity which can cause severe bias if unmodelled (Link, 2003). In distance sampling this problem does not arise provided that the detection at zero distance is certain and a flexible detection function model is used (\cite[section 11.12]{ADS} TKTKTK). Mixture models offer the potential for flexible modelling since, if the individual parts of the mixture model (the mixture components) are each monotonic decreasing then a sum of these functions will also be monotonic decreasing. Such an approach is appealing since each function is simple but the combinations yield a great many possible shapes (see figure \ref{sim-detfcts}).
+Mixture models allow for flexible monotone functions to be used to model the detection function (see figure \ref{sim-detfcts}).
 
 In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section, we describe the models.  We then illustrate their use by applying them to simulated data, and then to real data from a number of studies.  We compare results of CDS and mixture model detection functions. We finish with a discussion of the utility of these new methods.
 
