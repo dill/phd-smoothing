@@ -6,7 +6,7 @@ This thesis is about statistical ecology, in particular it is about assessing th
 
 This chapter exists to provide some background on the methods and techniques used as well an outline of the problems that are to be tackled throughout the rest of the thesis. Two topics will be addressed in the later chapters, the first concerns fine-resolution spatial estimates of the distribution of biological populations in space -- finite area smoothing. The second is a more coarse measure of density calculated via a widely used, inexpensive method -- distance sampling.
 
-This introduction proceeds as follows: first, section (\ref{intro-GAM}) gives an introduction to smoothing using splines in two dimensions, then section \ref{intro-FAS} goes on to talk about existing approaches to spatial smoothing in a finite area. Finally section \ref{intro-DS} introduces distance sampling.
+This introduction proceeds as follows: first, section \ref{intro-GAM} gives an introduction to smoothing using splines in two dimensions, then section \ref{intro-FAS} goes on to talk about existing approaches to spatial smoothing in a finite area. Finally section \ref{intro-DS} introduces distance sampling.
 
 \section{Smoothing in two dimensions using splines}
 \label{intro-GAM}
@@ -652,17 +652,18 @@ This covariate formulation can be thought of as a generalisation of the non-cova
 
 This formulation fits nicely into the likelihood expressions above, the evaluations of the detection function are as above, but the calculation of $\mu$ (and therefore $P_a$) changes. It is now the case that we think of both of these quantities as functions of the covariates, as we did for $\sigma$.
 
-The effective strip width, $\mu$ is now expressed as:
-\begin{equation*}
-\mu(\bm{z}_i) = \int_0^w g(x ; \sigma(\bm{z}; \bm{\beta})) \text{d}x,
-\end{equation*}
+The effective strip width, $\mu_i$ is now expressed as:
+\begin{equation}
+\mu_i = \int_0^w g(x ; \sigma_i) \text{d}x,
+\label{intro-ds-mu-covar}
+\end{equation}
 and following from the relation between $\mu$ and $P_a$, above we define:
 \begin{equation*}
-P_a(\bm{z}_i) = \frac{\int_0^w g(x ; \sigma(\bm{z}; \bm{\beta})) \text{d}x}{w}.
+P_a(\bm{z}_i) = \frac{\int_0^w g(x ; \sigma_{i}) \text{d}x}{w}.
 \end{equation*}
 Similarly for point transects, the probability of detection and $\nu$ are given as:
 \begin{equation*}
-P_a(\bm{z}_i) =\frac{2}{w^2}\int_0^w r g(r; \sigma(\bm{z}; \bm{\beta})) \text{d}r, \qquad \nu(\bm{z}_i) = \int_0^w r g(r; \sigma(\bm{z}; \bm{\beta})) \text{d}r
+P_a(\bm{z}_i) =\frac{2}{w^2}\int_0^w r g(r; \sigma_i) \text{d}r, \qquad \nu(\bm{z}_i) = \int_0^w r g(r; \sigma_i) \text{d}r
 \end{equation*}
 
 With this formulation, abundance can be estimated by a Horvitz-Thomspon-like estimator (\cite[pp. 53-56]{thompson}, \cite[p. 23]{ADS}):
