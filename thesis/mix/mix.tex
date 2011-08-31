@@ -11,7 +11,7 @@ Distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating 
 
 As was shown in \secref{intro-DS}, estimating the detection function is key to distance sampling. Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fit to data, in particular non-monotone detection functions (as seen in \secref{intro-ds-mono}), in particular in figure \ref{fig1}.
 
-In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section the models are described and following from that the optimization procedure and tricks used. Sections \ref{mmds-rims} and \ref{s:data} show the results of a simulation study and then analysis of real data, respectively. The final section gives some concluding remarks.
+In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section the models are described and following from that the optimization procedure and tricks used. Sections \ref{mmds-sims} and \ref{s:data} show the results of a simulation study and then analysis of real data, respectively. The final section gives some concluding remarks.
 
 \section{Finite mixture model detection functions}
 
@@ -52,11 +52,11 @@ and then $\bm{\theta}_j = (\beta_{0j}, \beta_1)$. If the model was a 2-point mix
 \subsubsection{Line transects}
 
 For line transects, given a set of perpendicular distances $\{x_i; i=1,\ldots,n\}$ and associated covariate vectors $\bm{z}_i$ (the rows of $\mathbf{Z}$), the likelihood is given by:
-\begin{align*}
-\mathcal{L}(\bm{\theta},\bm{\phi}; \mathbf{x},\mathbf{Z}) &= \prod_{i=1}^n f(x_i,\bm{z}_i; \bm{\theta},\bm{\phi})\\
-&= \prod_{i=1}^n \frac{g(x_i,\bm{z}_i; \bm{\theta},\bm{\phi})}{\mu_i}\\
-&= \prod_{i=1}^n \frac{\sum_{j=1}^J \phi_j g_j(x_i,\bm{z}_i; \bm{\theta}_j)}{\mu_i}
-\end{align*}
+\begin{align}
+\mathcal{L}(\bm{\theta},\bm{\phi}; \mathbf{x},\mathbf{Z}) &= \prod_{i=1}^n f(x_i,\bm{z}_i; \bm{\theta},\bm{\phi}) \notag \\
+&= \prod_{i=1}^n \frac{g(x_i,\bm{z}_i; \bm{\theta},\bm{\phi})}{\mu_i} \notag \\
+&= \prod_{i=1}^n \frac{\sum_{j=1}^J \phi_j g_j(x_i,\bm{z}_i; \bm{\theta}_j)}{\mu_i} \label{lt-lik}
+\end{align}
 where $\mu_i$, the effective strip width for an observation with the same covariates as observation $i$, is given by substituting (\ref{mix-detfct}) into (\ref{intro-ds-mu-covar}):
 \begin{align*}
 \mu_{i} &= \int_0^w  g(x,\bm{Z}; \bm{\theta}) \text{d}x,\\
@@ -67,11 +67,11 @@ where $\mu_i$, the effective strip width for an observation with the same covari
 \subsubsection{Point transects}
 
 For point transects, with radial distances $\{r_i; i=1,\ldots,n\}$ and associated covariate vectors $\bm{z}_i$ (the rows of $\mathbf{Z}$), the likelihood is:
-\begin{align*}
-\mathcal{L}(\bm{\theta},\bm{\phi}; \mathbf{r},\mathbf{Z}) &= \prod_{i=1}^n f(r_i,\bm{z}_i; \bm{\theta},\bm{\phi})\\
-&= \prod_{i=1}^n \frac{2 \pi r_i g(r_i,\bm{z}_i; \bm{\theta},\bm{\phi})}{\nu_i}\\
-&= \prod_{i=1}^n \frac{2 \pi r_i \sum_{j=1}^J \phi_j g_j(x_i,\bm{z}_i; \bm{\theta}_j)}{\nu_i}
-\end{align*}
+\begin{align}
+\mathcal{L}(\bm{\theta},\bm{\phi}; \mathbf{r},\mathbf{Z}) &= \prod_{i=1}^n f(r_i,\bm{z}_i; \bm{\theta},\bm{\phi}) \notag \\
+&= \prod_{i=1}^n \frac{2 \pi r_i g(r_i,\bm{z}_i; \bm{\theta},\bm{\phi})}{\nu_i} \notag \\
+&= \prod_{i=1}^n \frac{2 \pi r_i \sum_{j=1}^J \phi_j g_j(x_i,\bm{z}_i; \bm{\theta}_j)}{\nu_i} \label{pt-lik}
+\end{align}
 where the effective area of detection for an observation with covariate vector $\mathbf{z}_i$, $\nu_i$ is defined as:
 \begin{align*}
 \nu_i &= 2\pi \int_0^w  r g(r,\bm{Z}; \bm{\theta}) \text{d}r,\\
@@ -85,37 +85,28 @@ Parameters are estimated using maximum likelihood. In practice maximization is p
 
 \subsection{Estimating population size}
 
-[[TKTKTK revise and update !!!!]] 
-
-In distance sampling, population size can be found from a Horvitz-Thompson-like estimator
-\begin{equation*}
-N = \sum_{i=1}^n \frac{1}{c_i p_i},
-\end{equation*}
-where $c_i$ is probability of the $i^\text{th}$ observation being within the sampled area, and $p_i$ is the probability of the $i\text{th}$ observation being detected given it is within the sampled area (\cite[p. 38]{ADS}).  For line transects, $p_i$ is given by
+As in \secref{intro-ds-pop-size}, estimates of population size can be found from a Horvitz-Thompson-like estimator, all that is needed is the $p_i$s, then (\ref{HT-ds-est}) can be used. For line transects the $p_i$s are given by:
 \begin{equation*}
 p_i = \frac{1}{w} \sum_{j=1}^J \phi_j \int_0^w  g_j(x,\mathbf{Z}; \bm{\theta}_j) \text{d}x,
 \end{equation*}
-and for point transects by
+and for point transects:
 \begin{equation*}
 p_i = \frac{2\pi}{w^2} \sum_{j=1}^J \phi_j \int_0^w  r g_j(r,\mathbf{Z}; \bm{\theta}_j) \text{d}r.
 \end{equation*}
-A standard summary statistic is the average detection probability for an animal within the covered region, $P_a$, which is given by:
-\begin{equation*}
-P_a = n/N.
-\end{equation*}
+Again, average detection probability for an animal within the covered region, $P_a$ can be used as a standard summary statistic.
 
-Variances in both $N$ and $P_a$ were found for both non-covariate models (\cite[Appendix C]{yellowbook} TKTKTK) and covariate models (\cite[pp. 38-43]{ADS}) using standard methods set out in the literature. TKTKTK DO SOMETHING ABOUT THIS!!!
+[[[Variances in both $N$ and $P_a$ were found for both non-covariate models (\cite[Appendix C]{yellowbook} TKTKTK) and covariate models (\cite[pp. 38-43]{ADS}) using standard methods set out in the literature. TKTKTK DO SOMETHING ABOUT THIS!!!]]]
 
 \section{Optimization}
 \label{s:optimization}
 
-As noted in the literature (for example, \cite[TKTKTK PAGES]{BDA}, \cite{robert}), mixture model likelihoods are notorious for being multimodal. There is also a fundamental issue regarding the identifiably of such models in terms of the labelling used; if the labels of the (non-identical) parameter pairs $(\theta_1,\phi_1)$, $(\theta_2, \phi_2)$ are switched, then there is no change in the value of the likelihood, but the position of the value is clearly different. This can cause serious problems when finding MLEs of the parameters. To combat this a mix of optimization routines was to attempt to explore the parameter space as  much as possible.
+As noted in the literature (for example, \cite[463-480]{BDA}, \cite{robert}), mixture model likelihoods are notorious for being multimodal. This multimodality can cause serious problems when finding MLEs of the parameters. To combat this a mix of optimization routines was to attempt to explore the parameter space as  much as possible.
 
 First, simulated annealing (\cite[pp. 549-554]{numrec}) was used to explore the parameter space (for 500 iterations) then after that a quasi-Newton method (BFGS, \cite{bfgs}) was used to find the maxima (the implementations in the \textsf{R} function \texttt{optim()} were used). These two steps were run 5 times and the model with the lowest AIC was selected as the final model. This two step approach appears to be satisfactory in most cases. To aid the optimization, analytic derivatives were also found; these can be found in appendix \ref{app-mixderivs}.
 
 \subsection{Parametrization of the mixture proportions}
 
-When using 2-point mixtures, the constraint that the mixture proportions must sum to unity is enforced by definition (since $\phi_2=1-\phi_1$). However, in $J$-point mixtures when $J>2$ ensuring that the proportions sum to 1 is not guaranteed. The obvious way to get around this would be to add a penalty to the likelihood, should the optimization procedure propose values for the $\phi_j$s that are not in accordance with this condition. This is both inefficient and ugly. Given the problems inherent in optimizing mixture likelihoods in general, adding penalization to the Instead, a parametrization is used for the mixture proportions which yields $\phi_j$s that comply.
+When using 2-point mixtures, the constraint that the mixture proportions must sum to unity is enforced by definition (since $\phi_2=1-\phi_1$). However, in $J$-point mixtures when $J>2$ ensuring that the proportions sum to 1 is not guaranteed. The obvious way to get around this would be to add a penalty to the likelihood, should the optimization procedure propose values for the $\phi_j$s that are not in accordance with this condition. This approach is not appealing since the point of using mixtures here is to avoid penalizing or constraining the likelihood if possible. Given the problems inherent in optimizing mixture likelihoods in general, adding penalization only further complicates matters. Instead, a parametrization (due to David Borchers) is used for the mixture proportions which yields $\phi_j$s that comply.
 
 Rather than estimating the $\phi_j$s, estimate $\alpha_p$s, where the relationship between the two is:
 \begin{equation*}
@@ -153,26 +144,27 @@ Extensive simulations were carried out to ensure that both parameters could be r
 
 \subsection{Rejection sampling scheme to simulate distances}
 
-Before going into the details of the simulation a method for generating distance data from mixture detection functions needed to be found. The cumulative distribution function of the mixture model cannot be inverted so the only option was to use rejection sampling ([[TKTKTK rejection sampling text]]). This is rather wasteful computationally, but does produce the necessary distances. 
+Before going into the details of the simulation a method for generating distance data from mixture detection functions needed to be found. The cumulative distribution function of the mixture model cannot be inverted so the only option was to use rejection sampling (also known as the accept-reject algorithm, \cite[pp. 51-53]{montecarlostats}). This is rather wasteful computationally since the proposal distribution used here is only a uniform on $(0,w)$, a proposal closer to the target could be used to increase the speed (however, this is not a major concern here).The rejection sampling scheme for $n$ samples from a mixture model detection function is as follows. 
 
-The rejection sampling scheme for $n$ samples from line transect data is as follows. Until there are $n$ samples, perform the steps:
+Until there are $n$ samples, perform the steps:
 \begin{enumerate}
 \item Generate $X \sim \text{Uniform}(0,w)$. 
-\item Generating $U \sim \text{Uniform}(0,1)$ ad accept $X$ as coming from the PDF of distances, $f$, if 
+\item Generate $U \sim \text{Uniform}(0,1)$.
+\item Accept $X$ as coming from the PDF of distances, $f$, if 
 \begin{equation*}
 U \leq \frac{f(X,\mathbf{z}_i; \bm{\theta}, \bm{\phi})}{(1/w) M}\\
 \end{equation*}
-where $M$ is the maximum of $f$ and $1/w$ is the PDF of the proposal for $X$. Acceptance means that $X$ is within the envelope of $f$.
+where $M$ is the maximum of $f$ and $1/w$ is the PDF of the proposal for $X$. Acceptance means that $X$ is within the ``envelope'' of $f$.
 \end{enumerate}
 
-In the line transect case, it is known that that the maximum value of $f$ is $1/\mu$ (since $\mu=1/f(0)$ and f(0) is the maximum of $f$). So $M=1/\mu$ (or $1/\mu_i$ in the covariate case). For point transects the maximum value is unknown, so for each simulation the maximum value of $f$ was found via numerical optimization of $f$ (using the \textsf{R} function \texttt{optimize()}). 
+In the line transect case, it is known that that the maximum value of $f$ is $1/\mu$ (since $\mu=1/f(0)$ and f(0) is the maximum of $f$), so $M=1/\mu$ (or $1/\mu_i$ in the covariate case). For point transects the maximum value of $f$ is unknown, so for each simulation the maximum was found via numerical optimization (using the \textsf{R} function \texttt{optimize()}). 
 
 \subsection{Simulation settings}
 
 Clearly there are many options in terms of which simulation settings to use. Four sets of simulations were run, which give a fairly broad range of possible scenarios.
 \begin{enumerate}
 	\item \textit{Non-covariate 2-point detection functions for line transect data}. Four different detection functions were tested, and are shown in the first row of Figure \ref{sim-detfcts}. The first two are deliberately fairly easy to fit. The third should be harder, testing the behaviour of the model when one of the parameters is hard to estimate (the scale parameter of one of the mixture components is very large relative to the truncation distance). Finally, the fourth detection function has a large spike, which is similar to that in some of the data we analyse in section \ref{s:data}.
-	\item \textit{Non-covariate 2-point detection functions for point transect data}.  The detection functions were as above, with data generated as if it came from point transects. The pdfs are given in the second row of Figure \ref{sim-detfcts}; the dotted lines indicate the component pdfs scaled such that the area under each curve is one.
+	\item \textit{Non-covariate 2-point detection functions for point transect data}.  The detection functions were as above, with data generated as if it came from point transects. The PDFs are given in the second row of Figure \ref{sim-detfcts}; the dotted lines indicate the component PDFs scaled such that the area under each curve is one.
 	\item \textit{Non-covariate 3-point detection functions for line transect data}. Two different models for the detection functions were used. They are shown in the third row of Figure \ref{sim-detfcts}. The first is much like the second line transect detection function, enabling us to investigate the efficacy of model selection. The second is a more complex shape that could only be created using a 3-point mixture; it has the added complication (as with the third line transect simulation) that one of the components may be non-identifiable.
 	\item \textit{Covariate 2-point detection functions for line transect data}. Two different models were tested, the first of which has a binary factor covariate: half of the observations had covariate value 1 and half had covariate value 0. The second model had a continuous covariate, whose values were generated from a standard normal distribution function. Detection functions are shown in the fourth row of Figure \ref{sim-detfcts}, along with the marginal detection functions for the levels/quantiles of the covariates. One goal was to test the properties of the estimator in the presence of covariates, and for these runs we included the covariate in all models fit.  However, we additionally wished to evaluate the performance of the mixture model formulation in cases where a covariate affects detectability but the covariate is not available to the surveyor.  We therefore fit the same simulated datasets with mixture models that did not include covariates, and compared the resulting estimates to their with-covariate counterparts.
 \end{enumerate}
@@ -180,7 +172,7 @@ Clearly there are many options in terms of which simulation settings to use. Fou
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{mix/figs/sim-detfct.pdf}
-\caption{Plots of the models used in the simulation. Top row: detection functions for the line transect simulations with no covariates (solid lines) and their constituent mixture components (dashed lines). Second row: pdfs for the point transect simulations with no covariates (bold lines), with associates component pdfs, rescaled so the area under each curve is one; the detection functions are as in the top row. Third row: two 3-point mixtures for non-covariate line transect data, again with components as dashed lines. Fourth row, two covariate models, the first two panels are for a binary covariate, the second two for a continuous covariate; first panels in each pair show the detection function averaged over the covariates (along with the mixture components, similarly averaged) and the second panels show marginal detection functions with the levels (or quantiles) of the detection function.}
+\caption{Plots of the models used in the simulation. Top row: detection functions for the line transect simulations with no covariates (solid lines) and their constituent mixture components (dashed lines). Second row: PDFs for the point transect simulations with no covariates (bold lines), with associates component PDFs, rescaled so the area under each curve is one; the detection functions are as in the top row. Third row: two 3-point mixtures for non-covariate line transect data, again with components as dashed lines. Fourth row, two covariate models, the first two panels are for a binary covariate, the second two for a continuous covariate; first panels in each pair show the detection function averaged over the covariates (along with the mixture components, similarly averaged) and the second panels show marginal detection functions with the levels (or quantiles) of the detection function.}
 \label{sim-detfcts}
 \end{figure}
 
@@ -188,7 +180,7 @@ Clearly there are many options in terms of which simulation settings to use. Fou
 
 Results from the simulation study are shown in figure \ref{sim-boxplots}, the boxplots therein are of the estimated average detection probability, $\hat{P}_a$. The number under each boxplot gives the proportion of AIC best models that were of the same form as the true model (i.e. same number of mixture components and the same covariates). For the first row (line transects with no covariates) we can see that in scenarios 1 and 3, both the true model and true probability of detection were found at even low sample sizes, whereas in scenarios 2 and 4 there was a positive bias in the estimates of the probability of detection as well as a lower proportion of ``correct'' models being selected by AIC. In scenario 2 and 4 most of the weight (0.7 and 0.6, respectively) is given to the larger mixture component, thus the smaller component is swamped; this would make the simulated data look as if it were generated from a 1-point mixture.
 
-This effect can also be seen in the point transect simulations, but more severely. In this case one can see from the second row of figure \ref{sim-detfcts} that the pdfs of the distances look very much like only one of the components of the mixture. Fitting only a 1-point mixture to data from a 2-point mixture has lead to a positive bias in the detection probabilities, however this is only to expected given that data generated from such models would look like a 1-point mixture.
+This effect can also be seen in the point transect simulations, but more severely. In this case one can see from the second row of figure \ref{sim-detfcts} that the PDFs of the distances look very much like only one of the components of the mixture. Fitting only a 1-point mixture to data from a 2-point mixture has lead to a positive bias in the detection probabilities, however this is only to expected given that data generated from such models would look like a 1-point mixture.
 
 The 3-point mixtures show that detection function specified in scenario 1 can be easily represented using a smaller number of mixture terms. At sample sizes of 120 and lower, a 1-point mixture model dominated (around 150 of the AIC selected models were 1-point mixtures) then at the two higher sample sizes, 2-point mixtures dominated. Scenario 2 seemed more like a ``true'' 3-point data set, although only at the two larger sample sizes was a 3-point model selected more than half of the time. Interestingly at the lower sample sizes, a 2-point mixture was selected more often than 1-point (137, 173 and 182 times for the lowest three sample sizes). This effect may be due to the large, potentially non-identifiable, scale parameter being confounded with the other parameters, although this did not appear to be problematic in the scenario 2 of the line transect non-covariate models, above.
 
@@ -197,7 +189,7 @@ The covariate models again show an initial positive bias in $\hat{P}_a$ but do s
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{mix/simulations/pa-plot.pdf}
+\includegraphics[width=6.5in]{mix/simulations/pa-plot.pdf}
 \caption{Simulation results: boxplots of the estimated detection probabilities for the best model (by AIC score). Layout is as in Figure \ref{sim-detfcts}. Grey lines indicate the true value of the average detection probability. Numbers underneath each boxplot give the proportion of AIC best models that were of the same form as the model that the data was simulated from (e.g. in covariate case 1 the proportion of AIC best models that were two point mixtures that included the covariate in the model).}
 \label{sim-boxplots}
 \end{figure}
@@ -246,15 +238,12 @@ As well as distances, three covariates were recorded: habitat type (\texttt{habi
 
 As can be seen from Table \ref{big-results-table}, the best model by AIC was a 2-point mixture with nest size and habitat as covariates. This is not that surprising given the best CDS model (selected by AIC) in Distance was a hazard-rate with the same covariates. What is rather surprising is that the best mixture model had a better AIC than the hazard-rate, even though it has 1 more parameter. This is particularly encouraging since one might expect that mixtures would give good fits but would not achieve lower AIC scores due to the number of parameters required.
 
-[[\textbf{LEN}: probably want to use the same binning here as in the paper?? Do you have it?]]
-
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{mix/analyses/ants-nesthab.pdf}
 \caption{Plot of the detection functions for the AIC best model for the ants data set (2-point mixture with nest size and habitat as covariates). The first panel shows the average detection function (dashed lines are the two mixture components of the detection function, averaged over covariate values). The second and third panels show the quantiles (25\%, 50\% and 75\%) of nest size and the levels of habitat type respectively.}
 \label{ants-nesthab}
 \end{figure}
-
 
 \subsection{Long-finned pilot whales}
 
@@ -278,7 +267,7 @@ The best model by AIC score was a 2-point mixture with \texttt{BSS2} as a covari
 \centering
 \includegraphics[width=\textwidth]{mix/analyses/amakihi-om.pdf}\\
 \includegraphics[width=0.4\textwidth]{mix/analyses/amakihi-om-pdf.pdf}
-\caption{Plots of the (AIC) best model for the amakihi data. Top row: detection function averaged over covariates (dashed lines are each mixture component averaged over covariates), marginal detection function showing the levels of observer (averaged over the values of minutes after sunrise) and marginal detection function for the quantiles minutes after sunrise (averaged over the levels of observer). Bottom row: pdf of distances averaged over the covariate values.}
+\caption{Plots of the (AIC) best model for the amakihi data. Top row: detection function averaged over covariates (dashed lines are each mixture component averaged over covariates), marginal detection function showing the levels of observer (averaged over the values of minutes after sunrise) and marginal detection function for the quantiles minutes after sunrise (averaged over the levels of observer). Bottom row: PDF of distances averaged over the covariate values.}
 \label{amakihi}
 \end{figure}
 
@@ -325,7 +314,7 @@ Hr & \texttt{obs} + \texttt{mas} & \textbf{10777.72} & 0.3 & 2.65 & 0.036 \\
 
 \section{Software implementation - \texttt{mmds}}
 
-All the models discussed in this article are available as an \textsf{R} package, \texttt{mmds} which is available from \url{http://github.com/dill/mmds} along with documentation. Mixture models detection functions will be available in the next version of the software package Distance (\cite{distance-software}) as another option for modelling the detection function.
+All the models discussed in this article are available as an \textsf{R} package, \texttt{mmds} which is available from \url{http://github.com/dill/mmds} along with documentation. Mixture models detection functions will be available in the next version of the software package Distance (\cite{distance-software}) as an additional option for modelling the detection function.
 
 \section{Conclusion}
 \label{s:discuss}
@@ -334,11 +323,11 @@ This chapter has investigated and demonstrated the utility of detection function
 
 It has been shown that the method performs well on both simulated and real data. In many cases the proposed model outperforms the existing CDS models, which is surprising given that the mixture models in question often had more parameters than the CDS models. It should be noted however, that in simulation at small sample sizes models will not fit data generated from them particularly well. This problem can be avoided in practise by using AIC forward selection for the number of mixtures, ensuring model parsimony.
 
-In simulation 3-point mixtures did not appear to be good surrogates for missing covariate structure in the model. In general 2-point mixtures were chosen by AIC as good models and that the construction of a true 3-point mixture is quite tricky. In the examples in \secref{s:data}, 2-point mixtures consistently provided the best fit, even in the case of the amakihi which was a very large data set ($n=1243$). Only examination of further data will show whether 3-point and higher mixtures can be supported in real data, however in CDS analyses when the key function with adjustment series formulation is used, detection functions with $5$ or more parameters are rarely selected by AIC and a 3-point mixture with no covariates requires $5$ parameters.
+In simulation 3-point mixtures did not appear to be good surrogates for missing covariate structure in the model. In general 2-point mixtures were chosen by AIC as good models and that the construction of a true 3-point mixture is quite tricky. In the examples in \secref{s:data}, 2-point mixtures consistently provided the best fit, even in the case of the amakihi which was a very large data set ($n=1243$). Only examination of further data will show whether 3-point and higher mixtures can be supported in real data, however in CDS analyses when the key function with adjustment series formulation is used, detection functions with 5 or more parameters are rarely selected by AIC and a 3-point mixture with no covariates requires 5 parameters.
 
-Further work will include extending these models further to include continuous mixtures. In that case the detection function can be modelled as:
+A possible extension the methodology would be to allow continuous mixtures. In that case the detection function can be modelled as:
 \begin{equation*}
-g(x) = \int_\mathbf{R} \varphi(\kappa) g_\kappa(x,\mathbf{Z}; \theta, \kappa) \text{d}\kappa
+g(x) = \int_\mathbb{R} \varphi(\kappa) g_\kappa(x,\mathbf{Z}; \theta, \kappa) \text{d}\kappa
 \end{equation*}
 where $\varphi(\kappa)$ is some function which controls the mixing of $g_\kappa$. Such an approach may present significant computation issues, however the benefits for model fitting may be considerable. Provided that an appropriate function can be chosen for $\varphi$, more flexible models could be used whilst keeping the number of parameters low. In addition, a combination of both finite and continuous mixtures could be used, echoing the work of \citeb{morgan08} in capture-recapture.
 
