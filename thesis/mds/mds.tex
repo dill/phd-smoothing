@@ -2,39 +2,39 @@
 \label{chap-mds}
 \section{Introduction}
 
-Following the work of the previous chapter, the objective is now to find a mapping of the data into a new space which causes minimum distortion to the points in that new space. At the same time the mapping must also effectively separate those parts of the original domain which are subject to leakage. This balance (between making sure the model overcomes leakage whilst at the same time does not cause artefacts in the smooth) is essential to the success of the approach. The \sch\ transform approach, of dictating the transformed domain from the outset is clearly not flexible enough for general use, however a method that depends on the shape of original domain may have more promise.
+Following the work of the previous chapter, the objective is now to find a mapping of the data into a new space which causes minimum distortion to the points in that new space. At the same time the mapping must also effectively separate those parts of the original domain which are subject to leakage. This balance (between making sure the model overcomes leakage whilst at the same time does not cause artefacts in the smooth) is essential to the success of the approach. The \sch\ transform approach, of dictating the transformed domain from the outset is clearly not flexible enough for general use. A method that depends on the shape of original domain may have more promise.
 
 \subsection{Proposition}
 
-Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) (\cite{gower1966}) is a method used in multivariate analysis. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}). The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225), or could instead be distances that occur in the data naturally through experimental setup,  for example comparative distances between stimuli response in a psychophysical experiment (\cite{torgerson}). Here we concentrate on geographical distances.
+Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) (\cite{gower1966}) is a method commonly used in multivariate analysis. It is closely related to techniques such as PCA (\cite{chatfieldcollins}, p. 200) and canonical correspondence analysis (\cite{terbraak}). The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225), or could instead be distances that occur in the data naturally through experimental setup,  for example comparative distances between stimuli response in a psychophysical experiment (\cite{torgerson}). The focus here is obviously on geographical distances.
 
-MDS takes this matrix of distances and projects the data in such a way that Euclidean inter-point distances in the projection are approximately the same as the distances in the matrix (\cite{chatfieldcollins}, p. 187). If the matrix of distances is of rank $m$ then the projection can be in $m-1$ or less dimensions; a projection into 2 dimensions is a typical choice, since it is easily visualised. For this reason one can also think of MDS as a dimension reduction technique, finding a projection of a data cloud into lower dimensional space, while still retaining information about the dissimilarities between the points.
+MDS takes this matrix of distances and projects the data in such a way that Euclidean inter-point distances in the projection are approximately the same as the distances in the matrix (\cite{chatfieldcollins}, p. 187). If the matrix of distances is of rank $n$ then the projection can be in $n-1$ or less dimensions; a projection into 2 dimensions is a typical choice, since it is easily visualised. For this reason one can also think of MDS as a dimension reduction technique, finding a projection of a data cloud into lower dimensional space, while still retaining information about the dissimilarities between the points.
 
-When MDS is performed on some categorised set of dissimilarities (as is often the case in social science and psychology) it is referred to as non-metric MDS, where as on a continuous scale it is known as metric MDS. Though they have different names, the calculations are identical (aside from the method of finding the distances). Discussion here will focus on metric MDS.
+When MDS is performed on some categorised set of dissimilarities (as is often the case in social science and psychology) it is referred to as non-metric MDS, where as on a continuous scale it is known as metric MDS. Discussion here will focus on metric MDS.
 
-Multidimensional scaling offers a framework for finite area smoothing over a region with a complex boundary. Given the set of distances between points in a domain, we can project those points into a configuration such that the distances between those points are approximately preserved. Now, if the Euclidean metric were to be used to calculate the distances between the points then the result from the projection would be identical (up to rotation and translation) to the starting point configuration (provided that we projected back into the same number of dimensions). However, if it were possible to use a metric that took into account the distance within the boundary (a within-area distance) then the Euclidean distances between points in the resulting configuration would be (approximately) the same as the within-area distances. This would lead to distances used by the basis functions of the smoother to be approximately the within-area distances.
+Multidimensional scaling provides a way to transform a domain in a similar way to \sch. Given the set of distances between points in a domain, we can project those points into a configuration such that the distances between those points are approximately preserved. Now, if the Euclidean metric were to be used to calculate the distances between the points then the result from the projection would be identical (up to rotation and translation) to the starting point configuration (provided that we projected back into the same number of dimensions). However, if it were possible to use a metric that took into account the distance within the boundary (a within-area distance) then the Euclidean distances between points in the resulting configuration would be (approximately) the same as the within-area distances. This would lead to distances used by the basis functions of the smoother to be approximately the within-area distances.
 
 Justification for this approach is as follows. In many applications within-area distances is meaningful, given that there is some reasoning behind why certain parts of the domain should not affect one another. Biological populations respect the intrinsic structure of these domains and in general do not respect Euclidean geometry in their movement patterns (for example, they move around obstacles, avoid predators and track prey). When within-area distances are meaningful, it makes sense to use this information about the structure of the domain rather than somewhat arbitrarily choose Euclidean geometry and discard this extra informaton. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
 
 \subsection{Procedure}
 \label{mdsproc}
-Given a sample $\{\bm{x}_i, z_i : i=1\dots n\}$, the set of points in the domain over which smoothing is to be performed, $\bm{x}_i$ is the location (a $k$-vector, although here 2-vectors are assumed throughout) of the $i^\text{th}$ point with response $z_i$ (assumed to be univariate). Here, finding an MDS configuration of a set of points consists of: $i$) calculating the within-area distances between the points, $ii$) forming the distance matrix and, $iii$) actually performing the MDS projection.
+First take the sample locations $\mathbf{x}_i = (x_{1i}, x_{2i})$ (as in \secref{intro-basic-setup}) (which for MDS could be $k$-vector, although here 2-vectors are assumed throughout this chapter) of the $i^\text{th}$ point with response $z_i$. Here, finding an MDS configuration of a set of points consists of: $i$) calculating the within-area distances between the points, $ii$) forming the distance matrix and, $iii$) actually performing the MDS projection.
 
 The whole proposed procedure is as follows:
 
 \begin{enumerate}
-\item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to find the initial MDS configuration; they are discarded afterward. Representative points could be a sparse grid over the domain or a subset of $\{\bm{x}_i : i=1\dots n\}$. More detail and justification is provided in \secref{grids}, below.
+\item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to find the initial MDS configuration; they are discarded afterward. Representative points could be a sparse grid over the domain or a subset of $\{\mathbf{x}_i : i=1\dots n\}$. More detail and justification is provided in \secref{grids}, below.
 
-\item Using the MDS configuration obtained above along with Gower's interpolation (see \secref{gowers}) to obtain the location of the sample in the MDS configuration: $\{\bm{x}_i^*, z_i : i=1\dots n\}$.
+\item Using the MDS configuration obtained above along with Gower's interpolation (see \secref{gowers}) to obtain the location of the sample in the MDS configuration: $\{\mathbf{x}_i^*, z_i : i=1\dots n\}$.
 
-\item Smooth $\{\bm{x}_i^*, z_i : i=1\dots n\}$ using a penalised regression spline.
+\item Smooth $\{\mathbf{x}_i^*, z_i : i=1\dots n\}$ using a penalised regression spline.
 
-\item To predict at a location $\bm{x_j}$ in the original domain, use Gower's interpolation to obtain the point's location in the MDS space: $\bm{x}_j^*$. Predict $\hat{z}_j$ at $\bm{x}_j$ using the smooth at $\bm{x}_j^*$.
+\item To predict at a location $\mathbf{x_j}$ in the original domain, use Gower's interpolation to obtain the point's location in the MDS space: $\mathbf{x}_j^*$. Predict $\hat{f}(\mathbf{x}_j)$.
 \end{enumerate}
 
 This approach is referred to as \mdsap\ (MultiDimensional Scaling with Regression Splines) throughout the chapter.
 
-The rest of this chapter is structured as follows: in \secref{MDStechdet} a technical overview of MDS is given, along with technical details of how the MDS configuration is calculated; \secref{mdsdist} focuses on how the within-area distances are found; \secref{mdssims} shows some examples of this method on simulated data. Sections \ref{mds-faster} and \ref{mds-penadjust} show some improvements to the initial method and further simulations, \secref{mds-problems} details remaining problems. Finally, \secref{mds-conc} draws the topic to a conclusion and lays out areas of further work and interest.
+The rest of this chapter is structured as follows: in \secref{MDStechdet} a technical overview of MDS is given, along with technical details of how the MDS configuration is calculated; \secref{mdsdist} focuses on how the within-area distances are found; \secref{mdssims} shows some examples of this method on simulated data. Sections \ref{mds-faster} and \ref{mds-penadjust} show some improvements to the initial method and further simulations, \secref{mds-problems} details remaining problems. Finally, \secref{mds-conc} draws the chapter to a conclusion and lays out areas of further work for the next chapter.
 
 
 \section{Technical details}
@@ -46,26 +46,26 @@ The basic concept behind MDS as used here is to take the data, calculate their w
 
 First define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a symmetric $n \cross n$ matrix, $\mathbf{D}$, with \ijth element $d^2_{ij}$. For the moment let us assume that $\mathbf{D}$ is known and $d_{ij}$ is the Euclidean distance between points $i$ and $j$. 
 
-\cite{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \cite{principlesofMA}, pp. 104-108 and \cite{chatfieldcollins}, pp. 189-200.
+\citeb{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \cite{principlesofMA}, pp. 104-108 and \cite{chatfieldcollins}, pp. 189-200.
 
-First, suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{\mathbf{X}}^*$. Now let $\mathbf{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbf{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbf{S}$ is:
+First, suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{\mathbf{X}}^*$. Now let $\mathbb{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbb{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbb{S}$ is:
 \begin{equation}
-s_{ij} = \bm{x}_i\tr{\bm{x}_j},
+\mathbb{S}_{ij} = \bm{x}_i\tr{\bm{x}_j},
 \label{selem}
 \end{equation}
-$\mathbf{S}$ is an $(n\cross n)$ matrix. Note that we may only find $\tilde{\mathbf{X}}^*$ up to a translation and rotation, so it is assumed that the values in $\tilde{\mathbf{X}}^*$ have been centred about the origin.
+$\mathbb{S}$ is an $(n\cross n)$ matrix. Note that we may only find $\tilde{\mathbf{X}}^*$ up to a translation and rotation, so it is assumed that the values in $\tilde{\mathbf{X}}^*$ have been centred about the origin.
 
-We now wish to relate $\mathbf{D}$ to $\mathbf{S}$. First, note that that \ijth element of $\mathbf{D}$ is 
+We now wish to relate $\mathbf{D}$ to $\mathbb{S}$. First, note that that \ijth element of $\mathbf{D}$ is 
 \begin{equation}
 d_{ij}^2 = (\bm{x}_i-\bm{x}_j)\tr{(\bm{x}_i-\bm{x}_j)} = \bm{x}_i\tr{\bm{x}_i} + \bm{x}_j\tr{\bm{x}_j}  -2 \bm{x}_i\tr{\bm{x}_j}.
 \label{dij}
 \end{equation}
 Using \eqn{selem}, we can re-write \eqn{dij} as
 \begin{equation}
-\mathbf{D}=\bm{s}_\text{diag}\tr{\bm{1}} + \bm{1}\tr{\bm{s}_\text{diag}} -2\mathbf{S}.
+\mathbf{D}=\text{diag}\left(\mathbb{S}\right)\tr{\bm{1}} + \bm{1}\tr{\text{diag}\left(\mathbb{S}\right)} -2\mathbb{S}.
 \label{dijmat}
 \end{equation}
-where $\bm{1}$ is an $n \cross 1$ vector of 1s and $\bm{s}_\text{diag}$ is the $n \cross 1$ vector of diagonal elements of $\mathbf{S}$.
+where $\bm{1}$ is an $n \cross 1$ vector of 1s and $\text{diag}\left(\mathbb{S}\right)$ is the $n \cross 1$ vector of diagonal elements of $\mathbb{S}$.
 
 Define:
 \begin{equation}
@@ -75,39 +75,39 @@ where $\mathbf{I}$ is the identity matrix, as usual, and $\bm{1}\tr{\bm{1}}$ is 
 
 By pre- and post-multiplying any matrix by $\mathbf{H}$ the matrix is double centred (such that row and column means are 0). Pre- and post-multiplying \eqn{dijmat} by $\mathbf{H}$ yields:
 \begin{equation}
-\mathbf{H}\mathbf{D}\mathbf{H} = -2\mathbf{H}\mathbf{S}\mathbf{H}.
+\mathbf{H}\mathbf{D}\mathbf{H} = -2\mathbf{H}\mathbb{S}\mathbf{H}.
 \end{equation}
-The first two terms in on the right hand side of \eqn{dijmat} are zero since the rows of $\bm{s}_\text{diag}\tr{\bm{1}}$ and the columns of  $\bm{1}\tr{\bm{s}_\text{diag}}$ are constant. Since $\mathbf{S}$ is already centred so $\mathbf{H}\mathbf{S}\mathbf{H}=\mathbf{S}$. Rearranging, the following relation between $\mathbf{S}$ and $\mathbf{D}$ holds:
+The first two terms in on the right hand side of \eqn{dijmat} are zero since the rows of $\text{diag}\left(\mathbb{S}\right)\tr{\bm{1}}$ and the columns of  $\bm{1}\tr{\text{diag}\left(\mathbb{S}\right)}$ are constant. Since $\mathbb{S}$ is already centred so $\mathbf{H}\mathbb{S}\mathbf{H}=\mathbb{S}$. Rearranging, the following relation between $\mathbb{S}$ and $\mathbf{D}$ holds:
 \begin{equation}
-\mathbf{S} = -\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.
+\mathbb{S} = -\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.
 \end{equation}
 
-Now there is a relation between $\mathbf{D}$ and $\mathbf{S}$, we can concentrate on dealing with $\mathbf{S}$. In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbf{S}$. There are many options for matrix decomposition. One option for factoring $\mathbf{S}$ is to use the Cholesky decomposition, however, with MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $s_{ij}$. For that reason we use the eigen-decomposition.
+Now there is a relation between $\mathbf{D}$ and $\mathbb{S}$, we can concentrate on dealing with $\mathbb{S}$. In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbb{S}$. There are many options for matrix decomposition. One option for factoring $\mathbb{S}$ is to use the Cholesky decomposition, however, with MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $\mathbb{S}_{ij}$. For that reason we use the eigen-decomposition.
 
-Finding the eigen-decomposition of $\mathbf{S}$, we obtain $\mathbf{S}=\mathbf{U}\mathbf{\Lambda}\tr{\mathbf{U}}$. Here $\mathbf{U}$ is the $n \cross n$ orthogonal matrix of eigenvectors and $\mathbf{\Lambda}$ is the $n \cross n$ diagonal matrix of eigenvalues. Then an $\tilde{\mathbf{X}}^*$ satisfying \eqn{selem} may be computed as:
+Finding the eigen-decomposition of $\mathbb{S}$, we obtain $\mathbb{S}=\mathbf{U}\mathbf{\Lambda}\tr{\mathbf{U}}$. Here $\mathbf{U}$ is the $n \cross n$ matrix orthogonal columns which are the eigenvectors of $\mathbb{S}$ and $\mathbf{\Lambda}$ is the $n \cross n$ diagonal matrix of eigenvalues of $\mathbb{S}$. Then an $\tilde{\mathbf{X}}^*$ satisfying \eqn{selem} may be computed as:
 \begin{equation}
 \tilde{\mathbf{X}}^*=\mathbf{U}\mathbf{\Lambda}^{\frac{1}{2}}.
 \end{equation}
 
-Following these steps $\tilde{\mathbf{X}}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions, and in general multidimensional scaling is performed to reduce the dimensionality of the data, so we must now reduce the dimensionality of $\tilde{\mathbf{X}}^*$. To represent the space using two dimensions the directions with the two largest eigenvalues are chosen and the others discarded. These two largest eigenvalues and their associated eigenvectors constitute the two largest sources of variation in distance (since they are the two largest contributions to $\mathbf{S}$) this gives the two dimensional representation of the data. 
+Following these steps $\tilde{\mathbf{X}}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions, and in general multidimensional scaling is performed to reduce the dimensionality of the data, so we must now reduce the dimensionality of $\tilde{\mathbf{X}}^*$. To represent the space using two dimensions the directions with the two largest eigenvalues are chosen and the others discarded. These two largest eigenvalues and their associated eigenvectors constitute the two largest sources of variation in distance (since they are the two largest contributions to $\mathbb{S}$) this gives the two dimensional representation of the data. 
 
 Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a 2-dimensional representation has been obtained. More generally, we can find the $k$-dimensional MDS representation of the space by just taking the first $k$ columns of $\tilde{\mathbf{X}}^*$.
 
-In summary, to calculate the MDS configuration of a set of points (given their inter-point distances) we merely need to double centre the matrix of distances, perform an eigen-decomposition on the resulting matrix, and finally truncate that matrix to the first $k$ columns.
+In summary, to calculate the MDS configuration of a set of points (given their inter-point distances) we merely need to double centre the matrix of distances, perform an eigen-decomposition on the resulting matrix, and finally truncate the eigen-decomposition and find the new point set.
 
 For finite area smoothing, $d_{ij}$ should be the shortest distance between the points, given the path between any pair of points remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. 
 
-One can think of the justification in the following way: given that the distances in $\mathbf{D}$ obey the triangle inequality, all of the points in $\mathbf{D}$ ($n$ of them if $\mathbf{D}$ is $n \cross n$) may be represented by MDS in $n$ dimensional Euclidean space (at worst). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in $n$-dimensional space with no loss of information about the distances. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points in $\mathbf{D}$ as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
+One can think of the justification in the following way: given that the distances in $\mathbf{D}$ obey the triangle inequality, all of the points in $\mathbf{D}$ ($n$ of them if $\mathbf{D}$ is $n \cross n$) may be represented by MDS in $n$ dimensional Euclidean space (at worst). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in higher dimensions. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points in $\mathbf{D}$ as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
 
-Note that an additive constant can be computed and added to the non-diagonal entries of $\mathbf{D}$ to ensure that the eigenvalues of $\mathbf{S}$ are non-negative. However, this does not occur in any of the examples shown here.
+Note that an additive constant can be computed and added to the non-diagonal entries of $\mathbf{D}$ to ensure that the eigenvalues of $\mathbb{S}$ are non-negative. However, this does not occur in any of the examples shown here.
 
 \subsection{Gower's interpolation} 
 \label{gowers}
-Given the setup in \secref{mdsproc}, once the MDS configuration has been found further points will need to be inserted into our MDS representation. For example when further data is collected, or in order to predict over points not in the initial grid. In this case we would like to insert those new points into the configuration given by MDS. A number of methods have been developed over the past 40 years; Gower's interpolation (\cite{gower1968}) is covered here.
+Given the setup in \secref{mdsproc}, once the MDS configuration has been found further points will need to be inserted into our MDS representation. For example when further data is collected, or in order to predict over points not in the initial grid. In this case we would like to insert those new points into the configuration given by MDS. This can be performed by Gower's interpolation (\cite{gower1968}).
 
 Say we have some point, $x_{\text{new}}$ and we wish to find its location, $x^*_{\text{new}}$ in the MDS configuration. The position of $x^*_{\text{new}}$ is at a Euclidean distance from the points in $\mathbf{X}^*$ which is approximately the same as the within-area distance between $x_{\text{new}}$ and the points in the non-transformed space, $\mathbf{X}$. 
 
-Note that here we are assuming that a 2 dimensional projection has been used in the initial MDS configuration, Gower's interpolation remains valid for the case in which the initial MDS projection is $k$-dimensional.
+Note that here it is assumed that a 2 dimensional projection has been used in the initial MDS configuration, Gower's interpolation remains valid for the case in which the initial MDS projection is $k$-dimensional.
 
 \subsubsection{Gower's interpolation formula}
 
@@ -119,20 +119,20 @@ x^*_{\text{new}} = \frac{1}{2} \mathbf{\Lambda}^{-1} \tr{(\mathbf{X}^*)} \mathbb
 Here $\mathbf{\Lambda}$ ($2 \cross 2$) and $\tr{(\mathbf{X}^*)}$ ($2 \cross n$) are as above, $\mathbb{D}$ ($n \cross 1$) is the vector of centred within-area distances from the points in the original configuration to $x_{\text{new}}$.
 
 % Thesis fact: this paragraph infact represents about 3 months of work :(
-In Gower's paper, he defines the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\bm{d}$ as:
+In \citeb{gower1968} the $i^\text{th}$ element of $\mathbb{D}$ is defined as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\bm{d}$ as:
 \begin{equation}
-d_{i} = -(d^2_{i,n+1}-\text{diag}(\mathbf{S})_{ii}).
+d_{i} = -(d^2_{i,n+1}-\text{diag}(\mathbb{S})_{ii}).
 \end{equation}
-Since $\mathbf{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
+Since $\mathbb{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
 
 Gower's interpolation extends simply to the case when $m$ new points are inserted by making $x^*_{\text{new}}$ as $2 \cross m$ matrix and $\mathbb{D}$ an $n \cross m$ matrix.
 
 
 \subsection{Practical considerations}
 
-Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points, when the Euclidean metric is used to calculate the distances between the points. Extensive testing on a number of different domains has confirmed this.
+Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points, when the Euclidean metric is used to calculate the distances between the points. 
 
-Before performing any analysis we must test that the method will be reliable and that the mapping that MDS produces is smooth (in terms of the spatial coordinates that it produces). I first motivate the need for using a grid as a start point for the MDS configuration, and then show that the mapping produces smooth lines when within-area distances are used.
+Before performing any analysis we must test that the method will be reliable and that the mapping that MDS produces  is smooth (in terms of the spatial coordinates that it produces). First, the need for using a grid as a start point for the MDS configuration is shown, and then that the mapping produces smooth lines when within-area distances are used.
 
 \subsubsection{Using grids to compute the initial MDS configuration}
 \label{grids}
@@ -153,7 +153,7 @@ A simple example of this problem is show in \fig{tshape}. Here, a regular grid h
 % generated using figs/gridtest.R
 \end{figure}
 
-Although the cases show in \fig{tshape} are somewhat pathological, looking at more reasonable situations still leads to wildly different results. In \fig{tshaperand} the black and green points make up the original MDS configuration; the five green points are chosen at random. The red points are then inserted. As can be seen in these four typical realisations, the shape of the MDS space is dependent on those points used to create the initial MDS configuration.
+Although the cases shown in \fig{tshape} are somewhat pathological, looking at more reasonable situations still leads to wildly different results. In \fig{tshaperand} the black and green points make up the original MDS configuration; the five green points are chosen at random. The red points are then inserted. As can be seen in these four typical realisations, the shape of the MDS space is dependent on those points used to create the initial MDS configuration.
 
 % showing the the grid is necessary using the T shape (random samples
 \begin{figure}
@@ -165,7 +165,7 @@ Although the cases show in \fig{tshape} are somewhat pathological, looking at mo
 % generated using figs/gridtest.R
 \end{figure}
 
-Hence, although there are the usual problems with predicting outside of the data, the added problem of the instability of MDS insertion can only confound results further. (Again, this is mentioned at the end of Gower's paper).
+Hence, although there are the usual problems with predicting outside of the data, the added problem of the instability of MDS insertion can only confound results further (\cite{gower1968}).
 
 This problem can be rectified by using an appropriately spaced grid over the domain to calculate the eigen-decomposition, thus ensuring that the whole domain is covered. The base MDS configuration is then stable, provided that the grid is fine enough to catch all of the important features in the boundary of the domain.
 
@@ -199,7 +199,7 @@ Following from this, it is important to make sure that the MDS space is smooth i
 \centering
 % trim order l b r t
 \includegraphics[width=5in]{mds/figs/wt2-grid-samp.pdf} \\
-\caption{Inserted grid when 250 randomly chosen points are used to create the initial MDS configuration. The right panel shows a zoom of the far right part of the configuration. Comparing this to that of \fig{wt2-grid-full}, one can see that the features on the right have been squashed together.}
+\caption{Inserted grid when 250 randomly chosen points are used to create the initial MDS configuration. The right panel shows a zoom of the far right part of the configuration. Comparing this to that of \fig{wt2-grid-full}, one can see that the features on the right have been slightly squashed together.}
 \label{wt2-grid-samp}
 % generated using wt2-grid.R
 \end{figure}
@@ -212,11 +212,11 @@ In conclusion, the mapping can be both reliable and also produces a smooth confi
 
 So far we have assumed that the matrix of distances $D$ is known, this section describes (what the author believes to be) novel algorithm to find the within-area distances.
 
-In order to perform multidimensional scaling the matrix of distances must be found. Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled by the objects residing in the domain of interest.
+In order to perform MDS, the matrix of distances must be found. Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled by the objects residing in the domain of interest.
 
-Note that we are only considering paths between point pairs in simple polygons (ie. those polygons without holes). Although this is a limits the types of domains that can be addressed it does make the shortest path algorithm simpler since the shortest path is unique (see \secref{app-unique-sp}).
+Note that we are paths between point pairs in simple polygons (i,e. those polygons without holes) are considered. Although this is a limits the types of domains that can be addressed it does make the shortest path algorithm simpler since the shortest path is unique (see appendix \ref{app-unique-sp}).
 
-There are several methods available to calculate within-area distances, however given that the domain of interest is any arbitrary polygon (provided that there are no holes in the polygon) this limits the number of applicable. The two most promising possibilities were the geodesic methods used by \cite{wangranalli} (see also \secref{intro-leakageapproaches}) and the $\text{A}^*$ algorithm (\cite{astarpaper}) which is a generalisation of Dijkstra's algorithm (\cite{dijkstra}). However, both of these algorithms rely on the discretization of the domain of interest. As stated in \secref{intro-leakageapproaches}, this discretization of the domain is undesirable since the results then become dependent on the resolution of the discretization of the domain, even if a high enough resolution can be used the computational cost becomes prohibitively expensive for such methods. It would be preferable to have an elementary (ie. not relying on complex data structures or theory) algorithm for finding the shortest path within the polygon.
+There are several methods available to calculate within-area distances, however given that the domain of interest is any arbitrary simple polygon this limits the number of applicable. The two most promising possibilities are the geodesic methods used by \cite{wangranalli} (see also \secref{intro-leakageapproaches}) and the $\text{A}^*$ algorithm (\cite{astarpaper}) which is a generalisation of Dijkstra's algorithm (\cite{dijkstra}). However, both of these algorithms rely on the discretization of the domain of interest. As stated in \secref{intro-leakageapproaches}, this discretization of the domain is undesirable since the results then become dependent on the resolution of the discretization of the domain, even if a high enough resolution can be used the computational cost becomes prohibitively expensive for such methods. It would be preferable to have an elementary (ie. not relying on complex data structures or theory) algorithm for finding the shortest path within the polygon.
 
 Let the domain boundary be some polygon, $\Gamma$. Given that there is no direct path within the domain between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path (ie. an ordered set of edges and vertices), $\mathcal{P}$:
 
@@ -254,17 +254,17 @@ Further theoretical properties of this algorithm can be found in \appref{app-WAD
 \section{Simulation experiments}
 \label{mdssims}
 
-In order to investigate the efficacy of \mdsap, a series of simulation experiments were performed. In all cases the results for \mdsap\ were compared to those of the current best method (the soap film smoother) and the standard approach of a \tprs\ was used (which will not account for leakage).
+In order to investigate the efficacy of \mdsap, a series of simulation experiments were performed. In all cases the results for \mdsap\ were compared to those of the current best method (the soap film smoother) and the standard approach that does not account for leakage (\tprs).
 
 The \textsf{R} packages \texttt{mgcv} and \texttt{soap} with additional bespoke software for finding the within-area distances were used. In all cases smoothing parameter estimation was performed using GCV (see \secref{GAMfitting}).
 
 \subsection{The Ramsay horseshoe}
 
-Again, we start with the modified Ramsay horseshoe since it clearly illustrates the problem of leakage; if a general method is to be useful it must first perform well on even a simple case such as this.
+If a general method is to be useful it must first perform well on even a simple case such as the modified Ramsay horseshoe since it clearly illustrates the problem of leakage.
 
 \subsubsection{Setup}
 
-For the horseshoe, samples of 250 points with normal errors (at 3 levels:  $\sigma= $ 0.1, 1 and 10) were taken. (These are the settings used in \cite{soap}.) Using these samples, three models were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the EDF and MSE recorded for each replicate. The three models fitted were as follows:
+For the horseshoe, samples of 250 points with normal errors (at 3 levels: 0.1, 1 and 10) were taken. (These are the settings used in \cite{soap}.) Using these samples, three models were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the EDF and MSE recorded for each replicate. The three models fitted were as follows:
 
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate \tprs\  with basis size 100.
@@ -272,31 +272,31 @@ For the horseshoe, samples of 250 points with normal errors (at 3 levels:  $\sig
 \item \emph{\mdsap}: Used a thin plate spline of basis dimension 100. The initial MDS grid was 20 points wide by 10 points tall.
 \end{enumerate} 
 
-Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex. This should not cause a major difference in results even if the soap film used the full boundary and \mdsap\ used only the reduced set of edges, since objective is to allow the smoother to get a broad idea of the topology of the domain, rather than the minutiae of the boundary features.
+Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex. This should not cause a major difference in results even if the soap film used the full boundary and \mdsap\ used only the reduced set of edges, since objective is to allow the smoother to get a broad idea of the topology of the domain, rather than the minutiae of the boundary features. In the simulations presented here, the soap film smoother and \mdsap\ used the same boundary.
 
 \subsubsection{Results}
 
-Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, where $\sigma=1$ with a sample size of 250. Both the soap film smoother and \mdsap\ are able to reproduce the main features of the true horseshoe function due to their ability to respect the boundary (in the case of the soap film) or the geometry of the domain (in the case of \mdsap). The \tprs\ shows leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and \mdsap\ have significantly smaller average MSE. When the noise level is high the \mdsap\ outperforms the soap film smoother in MSE terms (and is less variable).
+Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, where the noise level was 1 with a sample size of 250. Both the soap film smoother and \mdsap\ are able to reproduce the main features of the true horseshoe function due to their ability to respect the boundary (in the case of the soap film) or the geometry of the domain (in the case of \mdsap). The \tprs\ shows leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and \mdsap\ have significantly smaller average MSE. When the noise level is high the \mdsap\ outperforms the soap film smoother in MSE terms (and is less variable).
 
 \begin{table}[ht]
 \centering
 \begin{tabular}{c c c c}
  & & MSE & \\ 
-$\sigma$ & \mdsap & Soap film & Thin plate\\ 
+Noise level & \mdsap & Soap film & Thin plate\\ 
 \hline
 0.1  & 0.0032 (3$\cross10^{-5}$) & 0.0022 (3$\cross10^{-5}$) & 0.0402 (0.0008) \\ 
 1  & 0.0436 (0.0015) & 0.0482 (0.0014) & 0.2306 (0.0024) \\ 
-10  & 2.0652 (0.1215) & 3.0702 (0.2382) & 3.3713 (0.1133) \\ 
+10  & 2.0652 (0.121) & 3.070 (0.238) & 3.371 (0.113) \\ 
 \end{tabular}
 \begin{tabular}{c  c c c }
 &  & EDF & \\ 
-$\sigma$ & \mdsap & Soap film & Thin plate\\ 
+Noise level & \mdsap & Soap film & Thin plate\\ 
 \hline
-0.1 & 47.613 (0.3497) & 39.164 (0.26) & 92.5996 (0.1020)\\ 
-1  & 8.3828 (0.3452) & 11.868 (0.4010) & 46.607 (0.4238)\\ 
-10 & 5.0577 (0.3324) & 5.5863 (0.2876) & 5.9786 (0.2511)\\ 
+0.1 & 47.613 (0.35) & 39.164 (0.26) & 92.6 (0.102)\\ 
+1  & 8.383 (0.345) & 11.868 (0.401) & 46.607 (0.424)\\ 
+10 & 5.058 (0.332) & 5.586 (0.288) & 5.979 (0.251)\\ 
 \end{tabular}
-\caption{Mean MSE and estimated degrees of freedom (EDF) for the three models fitted to the modified Ramsay horseshoe function with standard errors (in brackets) over 200 realisations. Sample size was 250 with error levels given in the column marked $\sigma$.}
+\caption{Mean MSE and estimated degrees of freedom (EDF) for the three models fitted to the modified Ramsay horseshoe function with standard errors (in brackets) over 200 realisations. Sample size was 250 with noise levels given above.}
 \label{ramsayresultstable}
 \end{table}
 
@@ -306,7 +306,7 @@ The EDFs in table \ref{ramsayresultstable} show that \mdsap\ fits a less complex
 \begin{figure}
 \centering
 \includegraphics[width=6in]{mds/figs/mds-ramsay-boxplot.pdf} \\
-\caption{Boxplots of the logarithm of the MSE per realisation of the Ramsay horseshoe for \mdsap\, the soap film smoother and \tprs\ for error levels $\sigma=$ 0.1, 1 and 10 (left to right, respectively). In all cases, a Wilcoxon signed rank test showed that MSEs for \mdsap\ and \tprs\ were significantly different from the soap film smoother ($\text{p-value} < 10^{-2}$).}
+\caption{Boxplots of the logarithm of the MSE per realisation of the Ramsay horseshoe for \mdsap\, the soap film smoother and \tprs\ for noise levels 0.1, 1 and 10 (left to right, respectively). In all cases, a Wilcoxon signed rank test showed that MSEs for \mdsap\ and \tprs\ were significantly different from the soap film smoother ($\text{p-value} < 10^{-2}$).}
 \label{mds-ramsay-boxplot}
 % generated using phd-smoothing/mds/sim/ramsay-boxplots.R
 % Wilcoxon test in phd-smoothing/mds/sim/ramsay-wilcox.R
