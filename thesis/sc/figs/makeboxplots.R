@@ -1,6 +1,6 @@
 # make some boxplots
 
-pdf(file="sc-mses-boxplot.pdf",width=4,height=6)
+#pdf(file="sc-mses-boxplot.pdf",width=4,height=6)
 
 # make the text look better for printout
 par(cex.lab=0.75)
@@ -45,6 +45,6 @@ boxplot(mse~labs,data=dat,main="")#,xlab=xlab)
 #axis(3,label=NULL)
 #axis(4,label=NULL)
 
-legend(0.25,-2,xlab,bty="n",cex=0.9)
+#legend(0.25,-2,xlab,bty="n",cex=0.9)
 
-dev.off()
+#dev.off()

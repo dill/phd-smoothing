@@ -53,28 +53,29 @@ tru <- matrix(fs.test(xx,yy),m,n) ## truth
 fs.centre.eval<-fs.test(fs.centreline$x,fs.centreline$y)
 
 # read the points in
-mapped.centreline<-read.csv("../ramseysim/centrelinemapped.csv",header=F)
+mapped.centreline<-read.csv("../ramsaysim/centrelinemapped.csv",header=F)
 names(mapped.centreline)<-c("x","y")
 
 # load the prevertices, as mapped by matlab
-preverts<-read.csv("../ramseysim/ramsayprevertices.csv",header=F)
+preverts<-read.csv("../ramsaysim/ramsayprevertices.csv",header=F)
 names(preverts)<-c("x","y") 
 
 # load data
-predback.real<-read.csv("../matlab/preal.csv",header=F)
-predback.imag<-read.csv("../matlab/pimag.csv",header=F)
+predback.real<-read.csv("../../matlab/preal.csv",header=F)
+predback.imag<-read.csv("../../matlab/pimag.csv",header=F)
 predgrid<-data.frame(v=predback.real[[1]],w=predback.imag[[1]])
 
 # output
-pdf("../sc-writeup/figs/altcentrelinelineplots.pdf",5,2)
+#pdf("../sc-writeup/figs/altcentrelinelineplots.pdf",5,2)
+pdf("altcentrelinelineplots.pdf",6,3)
 
 ## now do some plotting of these...
 # in the original domain
-par(mfrow=c(1,3),cex=0.5)
-plot(fs.centreline$y,fs.centre.eval,type="l",main="",asp=1,xlab="y",ylab="f")
+par(mfrow=c(1,3),cex=0.7,las=1)
+plot(fs.centreline$y,fs.centre.eval,type="l",main="",asp=1,xlab=expression(x[2]),ylab="f")
 
 # in the transformed domain
-plot(mapped.centreline$y,fs.centre.eval,type="l",main="",xlab="y*",ylab="f")
+plot(mapped.centreline$y,fs.centre.eval,type="l",main="",xlab=expression(x[2]^"*"),ylab="f")
 
 # finally do this for the "natural" coordinates
 source("../ramsay.alt.debug.R")

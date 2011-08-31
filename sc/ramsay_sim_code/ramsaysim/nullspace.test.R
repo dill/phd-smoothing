@@ -40,8 +40,9 @@ curve.x<-curve.x[length(curve.x):1]
 fs.centreline<-list(x=c(r.leg.x,curve.x,leg.x),y=c(leg.y.t,curve.y,leg.y.b))
 
 # test
-pdf("../sc-writeup/figs/horseshoecentreline.pdf",6,3)
-par(mfrow=c(1,2))
+#pdf("../sc-writeup/figs/horseshoecentreline.pdf",6,3)
+pdf("horseshoecentreline.pdf",6,3)
+par(mfrow=c(1,2),las=1,cex=0.7)
 fsb <- fs.boundary()
 m<-300;n<-150 
 xm <- seq(-1,4,length=m);yn<-seq(-1,1,length=n)
@@ -60,16 +61,16 @@ fs.centre.eval<-fs.test(fs.centreline$x,fs.centreline$y)
 
 
 # read the points in
-mapped.centreline<-read.csv("../ramseysim/centrelinemapped.csv",header=F)
+mapped.centreline<-read.csv("../ramsaysim/centrelinemapped.csv",header=F)
 names(mapped.centreline)<-c("x","y")
 
 # load the prevertices, as mapped by matlab
-preverts<-read.csv("../ramseysim/ramsayprevertices.csv",header=F)
+preverts<-read.csv("../ramsaysim/ramsayprevertices.csv",header=F)
 names(preverts)<-c("x","y") 
 
 # load data
-predback.real<-read.csv("../matlab/preal.csv",header=F)
-predback.imag<-read.csv("../matlab/pimag.csv",header=F)
+predback.real<-read.csv("../../matlab/preal.csv",header=F)
+predback.imag<-read.csv("../../matlab/pimag.csv",header=F)
 predgrid<-data.frame(v=predback.real[[1]],w=predback.imag[[1]])
 
 
@@ -80,19 +81,19 @@ lines(c(preverts$y,preverts$y[1]),c(preverts$x,preverts$x[1]),lwd=3,asp=1)
 dev.off()
 
 # output
-pdf("../sc-writeup/figs/centrelinelineplots.pdf",5,3)
+pdf("centrelinelineplots.pdf",5,3)
 
 ## now do some plotting of these...
 # in the original domain
-par(mfrow=c(1,3),cex=0.5)
+par(mfrow=c(1,3),cex=0.7,las=1)
 #plot(fs.centre.eval,type="l",main="",ylab="",xlab="")
 #plot(fs.centreline$x,fs.centre.eval,type="l",main="")
-plot(fs.centreline$y,fs.centre.eval,type="l",main="",asp=1,xlab="y",ylab="f")
+plot(fs.centreline$y,fs.centre.eval,type="l",main="",asp=1,xlab=expression(x[2]),ylab="f")
 
 # in the transformed domain
 #plot(fs.centre.eval,type="l",main="",ylab="",xlab="")
 #plot(mapped.centreline$x,fs.centre.eval,type="l",main="")
-plot(mapped.centreline$y,fs.centre.eval,type="l",main="",xlab="y*",ylab="f")
+plot(mapped.centreline$y,fs.centre.eval,type="l",main="",xlab=expression(x[2]^"*"),ylab="f")
 
 
 # finally do this for the "natural" coordinates

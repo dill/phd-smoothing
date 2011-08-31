@@ -177,10 +177,10 @@ Starting values for the algorithm are evenly spaced vertices around the edge of 
 
 \subsubsection{Forwards map}
 
-Calculating the forwards map is simply a case of evaluating $\varphi$ at the necessary points. If we wish to find the point on polygon ($w$), given some known point on the disk ($w^*$), we compute:
+Calculating the forwards map is simply a case of evaluating $\varphi$ at the necessary points. To find the location of a point $w$ in $W$ given a point $w^*$ in $W^*$, compute:
 \begin{equation}
 \label{forwardsmap}
-w=\varphi(w^*) = w_0 + C \int_{w^*_0}^{w^*} \prod_{k=1}^{n} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta,
+w=\varphi(w^*) = w_0 + C \int_{w^*_0}^{w^*} \prod_{k=1}^{K} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta,
 \end{equation}
 where $w^*_0$ is any point in the closed disk such that $w_0 = \varphi(w^*_0)$ is known and non-infinite. We may choose any point since the integrand is analytic throughout the mapping and hence the integral is path-independent (\cite[p. 27]{driscoll}). A common choice for $w_0$ is the centre of the polygon.
 
@@ -193,7 +193,7 @@ To calculate the backwards mapping, there are two possible approaches: (i) using
 \label{scivp}
 \frac{dw^*}{dw}=\frac{1}{\varphi^{-1}(w^*)} \quad \text{and} \quad \varphiinv(w_0)=w^*_0.
 \end{equation}
-In fact a combination of these methods are used. Solving \eqn{scivp} approximately gives the starting values for the Newton iterations which are significantly faster (since $\varphi^{-1}$ is cheaper than $\varphi$ to compute) (\cite[p. 29]{driscoll}).
+In practise a combination of these methods are used. Solving \eqn{scivp} approximately gives the starting values for the Newton iterations which are significantly faster (since $\varphi^{-1}$ is cheaper than $\varphi$ to compute) (\cite[p. 29]{driscoll}).
 
 The only problem with this is that the path from $w_0$ to the point to map, $w$, must lie entirely inside the polygon. Whether this is true is not known, since after the mapping has been computed, the only known points are the vertices (at which the IVP is singular). So, to combat this, all points on the path are checked sequentially. This computation, although inelegant, is fast compared to the IVP/Newton iterations.
 
@@ -220,7 +220,7 @@ An example of using the backwards map to find the transformed co-ordinates from 
 \label{sch-crowding}
 
 \subsubsection{The crowding problem}
-When the polygon is elongated or has many vertices, the mapped vertices may be positioned too closely in the transformed domain. This effect is referred to as \emph{crowding} and can be observed in \fig{crowdeddisk}. In elongated regions prevertices can be located exponentially close such that they are indistinguishable in finite precision arithmetic (\cite{howell90}).
+When the polygon is elongated or has many vertices, the mapped vertices may be positioned too closely in the transformed domain. In elongated regions prevertices can be located exponentially close such that they are indistinguishable in finite precision arithmetic (\cite{howell90}). This effect is referred to as \emph{crowding} and can be observed in \fig{crowdeddisk}. 
 
 % Crowded mapping diagram
 \begin{figure} [tbp]
@@ -232,19 +232,19 @@ When the polygon is elongated or has many vertices, the mapped vertices may be p
 
 \subsubsection{Fixing crowding}
 
-If the crowding is caused by $\Gamma$ being elongated then a  primitive fix is to map to an elongated domain such as the rectangle or plane. This approach is suggested in \citeb{howell90} however, as they point out, this does not eliminate all crowding and problems can still occur when there are strongly acute peninsulae in the polygon. Mapping to an elongated domain also does not fix problems which occur when mapping from T- or H-shaped domains (so-called ``multiply elongated'' domains).
+If the crowding is caused by $\Gamma$ being elongated then a  primitive fix is to map to an elongated domain such as the rectangle or plane. This approach is suggested in \citeb{howell90} however, as they point out, this does not eliminate all crowding and problems can still occur when there are acute peninsulae in the polygon. Mapping to an elongated domain also does not fix problems which occur when mapping from T- or H-shaped domains (so-called ``multiply elongated'' domains).
 
-In order to combat this problem more effectively, \citeb{vavasis96} propose the CRDT (cross-ratios of the Delaunay triangulation) algorithm (see below). Each set of prevertices has $n-3$ degrees of freedom hence, there is a three parameter family of possible vertex arrangements that all map to the same polygon. The most stable of these \emph{embeddings} should be used. The M\"{o}bius transformation relates the embeddings to one another.
+In order to combat this problem more effectively, \citeb{vavasis96} propose the CRDT (cross-ratios of the Delaunay triangulation) algorithm (see below). Each set of prevertices has $K-3$ degrees of freedom hence, there is a three parameter family of possible vertex arrangements that all map to the same polygon. The most stable of these embeddings should be used.
 
 This idea can be extended by noting that the polygon is identical when additional vertices are added between the current ones, provided that the internal angle associated with the new vertex is $\pi$. These extra vertices also do not change the \sch\ formula since in \eqn{unitscmap} $\alpha_k=1$ for an angle of $\pi$. Adding these extra vertices allows us to control the aspect ratio of the mapping.
 
 In the solution to the \sch\ parameter problem given in \secref{sc-parprob}, conditions on the side lengths and orientations of the polygon are enforced. The CRDT algorithm imposes conditions about quadrilateral sections of the polygon and the diagonals of the polygon. First a Delaunay triangulation of the domain is performed and then pairs of triangles are merged into quadrilaterals. A measure is then defined (the \emph{cross-ratio}) which specifies a set of non-linear equations to be solved. These equations enforce the constraint that the cross-ratio in mapped polygon comes out correctly. 
 
-Putting all of these ideas together gives the CRDT algorithm (\cite[pp. 30-39]{driscoll}). We first add edges to the polygon with internal angle $\pi$ to remove enlongated parts of the domain and then triangulate the domain. Once the domain is triangulated we find the cross-ratio:
+Putting all of these ideas together gives the CRDT algorithm (\cite[pp. 30-39]{driscoll}). First adding edges to the polygon with internal angle $\pi$ to remove elongated parts of the domain and once the domain is triangulated the cross-ratio is found:
 \begin{equation}
 \rho(a,b,c,d) = \frac{(d-a)(b-c)}{(c-d)(a-b)},
 \end{equation}
-for each of the $n-3$ quadrilaterals in the polygon (where $a,b,c,d$ are prevertices). Then, analogously to \eqn{optimizeme} we set up a series of equations, specifying that the cross-ratios remain the same in the polygon and the transform of the rectangle back to the polygon. We then wish to solve for the values of $\rho$ for the original domain in the same manner as we solved for side lengths in the original problem. 
+for each of the $K-3$ quadrilaterals in the polygon (where $a,b,c,d$ are prevertices). Then, analogously to \eqn{optimizeme} a series of equations are set up specifying that the cross-ratios remain the same in the polygon and the transform of the rectangle back to the polygon. Then solving for the values of $\rho$ for the original domain in the same manner as we solved for side lengths in the original problem. 
 
 In \fig{uncrowdeddisk} the CRDT method is used with a rectangular domain, crowding has been alleviated to some degree. The point density, as well as vertex density seems to be more uniform than in \fig{crowdeddisk}.
 
@@ -256,7 +256,7 @@ In \fig{uncrowdeddisk} the CRDT method is used with a rectangular domain, crowdi
 \label{uncrowdeddisk}
 \end{figure}
 
-The downside of using CRDT is that it may add too many vertices to maintain the aspect ratio, so the algorithm takes longer to run than the one specified in \secref{algorithmsketch} since it tends to be cubic in the number of vertices (\cite{driscoll05}). This is offset against the fact that the problem becomes tractable.
+The downside of using CRDT is that it may add too many vertices to maintain the aspect ratio, so the algorithm takes longer to run than the one specified in \secref{algorithmsketch} since it tends to be cubic in the number of vertices (\cite{driscoll05}). 
 
 \section{Simulation experiments}
 
@@ -264,7 +264,7 @@ In order to test the efficacy of the \sch\ transform for the purposes of smoothi
 
 \subsection{Ramsay horseshoe}
 
-The most obvious candidate for simulation is the Ramsay horseshoe (see \secref{ramsayfunc}). In order to map the horseshoe, we first draw a rough bounding box around the shape. In order to map as simple a domain as possible, to begin with a bounding box was used as the $W$ domain remapped via the \texttt{evalinv()} function from the \emph{SC Toolbox}. This is shown in \fig{hswithboundingbox}. The bounding box is then transformed to the rectangle. 
+The most obvious candidate for simulation is the Ramsay horseshoe (see \secref{ramsayfunc}). In order to map as simple a domain as possible, to begin with a bounding box was used as the $W$ domain remapped via the \texttt{evalinv()} function from the \emph{SC Toolbox}. This is shown in \fig{hswithboundingbox}. The bounding box was then transformed to the rectangle. 
 
 \begin{figure}
 \centering
@@ -275,13 +275,13 @@ The most obvious candidate for simulation is the Ramsay horseshoe (see \secref{r
 % generated by /phd-smoothing/sc-writeup/figs/hswithboundingbox.R
 \end{figure}
 
-A sample of 1000 points was then taken from the horseshoe and noise added to the data. First the $x$,$y$ coordinates of the sampled points were expressed as complex numbers of the form $w=x+iy$. The sample was then mapped into $W^*$, creating a new set of coordinates $w^*=x^*+iy^*$. Smoothing was then performed over the responses in the $W^*$ domain using the \texttt{gam()} function in \texttt{mgcv}. 
+A sample of 1000 points was then taken from the horseshoe and noise added to the data. First the coordinates of the sampled points were expressed as complex numbers of the form (i.e. $w=x_1+ix_2$. The sample was then mapped into $W^*$, creating a new set of coordinates ($w^*=x_1^*+ix_2^*$). Smoothing was then performed over the responses in the $W^*$ domain using the \texttt{gam()} function in \texttt{mgcv}. 
 
 \begin{figure}
 \centering
 % trim order l b r t
 \includegraphics[width=6in]{sc/figs/compsmooth.pdf} \\
-\caption{A typical set of predictions using P-splines on the transformed domain (top right), thin plate splines on the transformed domain (bottom left) and soap film smoother (bottom right) for the Ramsay horseshoe (top left). Sample size was 250, noise level was set to $\sigma=1$.}
+\caption{A typical set of predictions using P-splines on the transformed domain (top right), thin plate splines on the transformed domain (bottom left) and soap film smoother (bottom right) for the Ramsay horseshoe (top left). Sample size was 250, noise level was set to 1.}
 \label{compsmooth}
 % generated by figs/pspline.soap.comp.hs.R
 \end{figure}
@@ -302,17 +302,17 @@ Sample size & Noise level \\
 1000 & 1 \\
 1000 & 2 \\
 \end{tabular}
-\caption{Setup for the simulations using the \sch\ transform for the Ramsay horseshoe. Noise level ($\sigma$) is the number a random deviate from a standard Normal distribution was multiplied by before being added to the true test function.}
+\caption{Setup for the simulations using the \sch\ transform for the Ramsay horseshoe. Noise level is the number a random deviate from a standard Normal distribution was multiplied by before being added to the value from true test function.}
 \label{scramsimtable}
 \end{table}
 
-\Tabref{scramsimtable} shows the settings for noise level and sample size of the simulations. Mean squared error between the true function and the fitted model was used to evaluate the performance of the models. In the following tables we provide the mean squared error over a prediction grid of 1000 points averaged over 1000 generated data sets. The fits on the transformed domain and the soap film have much smaller MSE than the thin plate spline, except in one case, \sch\ with P-splines for sample size 100 and noise level 0.3. Looking closer at the results for this model, there were two results where the MSE was 54.68 and 437.99 which, when removed, put the MSE back to 0.03003, which seems much more reasonable. These results were presumably due to the P-splines having the same knot setup for each realisation, giving a poor model when there was not enough data. This shows one of the many disadvantages of a knot-based approach.
+\Tabref{scramsimtable} shows the settings for noise level and sample size of the simulations. Mean squared error between the true function and the fitted model was used to evaluate the performance of the models. In the following tables we provide the mean squared error over a prediction grid of 1000 points averaged over 1000 generated data sets. The fits on the transformed domain and the soap film have much smaller MSE than the thin plate spline, except in one case, \sch\ with P-splines for sample size 100 and noise level 0.3. Looking closer at the results for this model, there were two results where the MSE was 54.68 and 437.99 which, when removed, put the MSE back to 0.03003, which seems much more reasonable. These results were presumably due to the P-splines' gridded knot setup, giving a poor fit where there was not enough data. This shows one of the many disadvantages of a knot-based approach.
 
 \begin{figure}
 \centering
 % trim order l b r t
 \includegraphics{sc/figs/sc-mses-boxplot.pdf} \\
-\caption{Boxplots of the logarithm of mean MSE from 1000 points on a prediction grid from 1000 simulations for the Ramsay horseshoe. Models fitted were \sch\ transform with P-splines and \tprs, the soap film smoother, and \tprs\ (with the untransformed domain). Error level was set to 0.3.}
+\caption{Boxplots of the logarithm of mean MSE from 1000 points on a prediction grid from 1000 simulations for the Ramsay horseshoe. Models fitted were \sch\ transform with P-splines and \tprs, the soap film smoother, and \tprs\ (with the untransformed domain). Noise level was set to 0.3.}
 \label{scram1000boxplots}
 % generated by sc/figs/makeboxplots.R
 \end{figure}
@@ -336,9 +336,9 @@ Sample size & Noise level & TPRS & SC + P-spline& SC + TPRS & Soap film\\
 % generated by /phd-smoothing/sc-writeup/tablecode/ramsay.sim.results.table.R
 \end{sidewaystable}
 
-\Tabref{scramsayres} shows the results from the simulations for the horseshoe. The \sch\ transform yields results which are comparable, it not better, than the soap film. Once we get to 100 samples the method performance degrades over all methods. Although this seems initially encouraging, it is worth bearing in mind at this point that in domains like the horseshoe it is obvious what the transform should be.
+\Tabref{scramsayres} shows the results from the simulations for the horseshoe. The \sch\ transform yields results which are comparable, it not better, than the soap film. At a sample size of 100 performance degrades for all methods. Although this seems initially encouraging, it is worth bearing in mind at this point that in domains like the horseshoe it is obvious what the transform should be.
 
-Indeed, this can be seen by looking at the predicted values for the model in the $W^*$ domain. \Fig{hsvisgam} shows predictions from the fitted surface alongside the true values when the domain has been put into its ``natural'' coordinate system. The coordinate system for the fitted values is the \sch\ transformed system and for the true values the system is the major and minor axes of the shape (ie. one axis along the central curve of the shape and the other perpendicular to that). In the plot, the strong linear trend along the major axis of the horseshoe can be seen in both cases, making this a rather trivial smoothing problem. The smooth is being calculated in a close approximation to its natural domain. Such an approximation would not be as easy to find for a less regular, more realistic domain.
+Indeed, this can be seen by looking at the predicted values for the model in the $W^*$ domain. \Fig{hsvisgam} shows predictions from the fitted surface alongside the true values when the domain has been put into its ``natural'' coordinate system. The coordinate system for the fitted values is the \sch\ transformed system and for the true values the system is the major and minor axes of the shape (i.e. one axis along the central curve of the shape and the other perpendicular to that). In the plot, the strong linear trend along the major axis of the horseshoe can be seen in both cases, making this a rather trivial smoothing problem. The smooth is being calculated in a close approximation to its natural domain. Such an approximation would not be as easy to find for a less regular, more realistic domain.
 
 \begin{figure}
 \centering
@@ -351,17 +351,17 @@ Indeed, this can be seen by looking at the predicted values for the model in the
 
 \subsubsection{Alternate Ramsay horseshoe}
 \label{sc-alt-horsehoe}
-The second domain tested was the alternate version of the Ramsay horseshoe from \citeb{soap}. For this domain the gradient runs across the short axis of the horseshoe (see \fig{altramsayhorseshoe}). The same simulation setup was used as for the first domain.
+The second domain tested was the alternate version of the Ramsay horseshoe from \citeb{soap}. For this domain there is a ridge running along the major axis of the horseshoe (see \fig{altramsayhorseshoe}). The same simulation setup was used as for the first domain.
 
 \begin{figure}
 \centering
 % trim order l b r t
 \includegraphics[trim=0.5in 1in 0in 0.5in]{sc/figs/altramsayhorseshoe.pdf} \\
-\caption{Heatmap of the alternate version of the Ramsay horseshoe.}
+\caption{Heatmap of the alternate version of the Ramsay horseshoe. Unlike the previous horseshoe there is a ridge running along the major axis of the shape.}
 \label{altramsayhorseshoe}
 \end{figure}
 
-For the alternative horseshoe we begin to see the soap film creep ahead of the transformation method (see \tabref{scaltramsayresultstable}). Although the MSEs are of approximately the same order (as are the standard errors), the soap film has a lower average MSE for more models now. 
+The alternative horseshoe begins to see the soap film creep ahead of the transformation method (see \tabref{scaltramsayresultstable}). Although the MSEs are of approximately the same order (as are the standard errors), the soap film has a lower average MSE for more models now. 
 
 Looking at \fig{altramsaycomp} and show that the \sch\ mapping with P-splines captures the overall structure of the shape better than the soap film smoother, which is rather patchy in its reproduction of the alternate horseshoe. Although the P-spline fit ignores the gradient at the ends of the shape. The \sch\ with \tprs\ basis appears worst here, not capturing any of the main features of the domain.
 
@@ -395,7 +395,7 @@ Sample size & Noise level & TPRS & SC + P-spline& SC + TPRS & Soap film\\
 \centering
 % trim order l b r t
 \includegraphics[width=6in]{sc/figs/altramsaycomp.pdf}\\
-\caption{Typical realisations of the fit to the alternate Ramsay horseshoe for each method. Clockwise from top left: the original figure, the function estimated by the \sch\ transform with P-splines, function estimated by the \sch\ transform with thin plate splines and finally the soap film estimate. Error set to $\sigma=1$.}
+\caption{Typical realisations of the fit to the alternate Ramsay horseshoe for each method. Clockwise from top left: the original figure, the function estimated by the \sch\ transform with P-splines, function estimated by the \sch\ transform with thin plate splines and finally the soap film estimate. Noise level was 1.}
 \label{altramsaycomp}
 % generated by /phd-smoothing/sc-writeup/figs/altramsaycompare.R 
 \end{figure}
@@ -403,7 +403,7 @@ Sample size & Noise level & TPRS & SC + P-spline& SC + TPRS & Soap film\\
 
 \subsubsection{The effect of the \sch\ transform on the domain}
 
-The \sch\ transform's distortion of the domain is performing well in some situations with some bases but not others. To investigate the effect of the distortion on the domain, the mapping of a straight line in the $W$ domain can be plotted along with its equivalent line in the $W^*$ domain. It is also useful to look at the response along that line in both the transformed and untransformed coordinate systems and see how this compares to looking at the response in the horseshoe's natural coordinate system.
+The \sch\ transform's distortion of the domain causes increase performance of some of the smoothers in some situations but not others. To investigate the effect of the distortion on the domain, the mapping of a straight line in the $W$ domain can be plotted along with its equivalent line in the $W^*$ domain. It is also useful to look at the response along that line in both the transformed and untransformed coordinate systems and see how this compares to looking at the response in the horseshoe's natural coordinate system.
 
 \begin{figure}
 \centering
@@ -414,9 +414,9 @@ The \sch\ transform's distortion of the domain is performing well in some situat
 % generated by /phd-smoothing/thesis/sc/nullspace.test.R 
 \end{figure}
 
-\Fig{horseshoecentreline} shows the line that was evaluated along the centre of the horseshoe and its equivalent line in the transformed domain. We can see from this that a line that is straight in the domain has a bump in it in the transform. The curvature does not appear to be particularly extreme in this case, however, one can imagine that this could get significantly worse for regions with more complicated boundaries.
+\Fig{horseshoecentreline} shows a line along the centre of the horseshoe and its equivalent line in the transformed domain. We can see from this that a line that is straight in the domain (in the sense that it runs parallel to the boundary) has a bump in it in the transform. The curvature does not appear to be particularly extreme in this case, however, one can imagine that this could get significantly worse for regions with more complicated boundaries.
 
-\Fig{centrelinelineplot} shows the evaluations of the horseshoe function over the line plotted against three coordinate systems. The first plot shows the function evaluations on the $W$ domain as a response to change in $y$. The second on the $W^*$ domain, as a response to $y^*$, in the transformed coordinate system. The final plot is in the horseshoe's natural domain, ie. the value the horseshoe takes as a function of distance along the major axis of the shape. From these plots one can see the quality of approximation to the natural domain of the horseshoe the \sch\ transform affords. Only two minor kinks occur in the line. Looking at where the kinks occur, they correspond exactly to those kinks in \fig{horseshoecentreline}. This change in gradient comes from change from 1-dimensional to 2-dimensional travel along the line.
+\Fig{centrelinelineplot} shows the evaluations of the horseshoe function along the line plotted against three coordinates. The first plot shows the function evaluations on the $W$ domain as a response to change in $x_2$. The second on the $W^*$ domain, as a response to $x_2^*$, in the transformed coordinate system. The final plot is in the horseshoe's natural domain, i.e. the value the horseshoe takes as a function of distance along the major axis of the shape. From these plots one can see the quality of approximation to the natural domain of the horseshoe the \sch\ transform provides. Only two minor kinks occur in the line. Looking at where the kinks occur, they correspond exactly to those kinks in \fig{horseshoecentreline}. 
 
 \begin{figure}
 \centering
@@ -427,7 +427,7 @@ The \sch\ transform's distortion of the domain is performing well in some situat
 % generated by /phd-smoothing/ramseysim/nullspace.test.R 
 \end{figure}
 
-\Fig{altcentrelinelineplot} shows analogous plots to \fig{centrelinelineplot} and backs up this hypothesis. The second panel shows the mapping of the $y$ component of the centreline against the response and the third panel shows the same in the horseshoe's own domain. The two plots appear to be indistinguishable.
+\Fig{altcentrelinelineplot} shows analogous plots to \fig{centrelinelineplot} for the alternate Ramsay horseshoe and backs up this hypothesis. The second panel shows the mapping of the $x_2$ component of the centreline against the response and the third panel shows the same in the horseshoe's own domain. The two plots appear to be indistinguishable, aside from the change in scale on the horizontal axis.
 
 \begin{figure}
 \centering
@@ -440,19 +440,19 @@ The \sch\ transform's distortion of the domain is performing well in some situat
 
 \subsection{Two peninsula domain}
 
-Looking at a more realistic domain should highlight potential problems with a \sch\ transform approach. The domain in the top left corner of \fig{sc-wigglytop2-real} shows a domain which is supposed to replicate some of the features of such a domain.
+Looking at a more realistic domain highlights potential problems with a \sch\ transform approach. The domain in the top left corner of \fig{sc-wigglytop2-real} shows a domain which is supposed to replicate some of the features of such a domain.
 
 % realization
 \begin{figure}
 \centering
 % trim order l b r t
 \includegraphics[width=6in]{sc/figs/wigglytop2-real.pdf} \\
-\caption{The domain with two peninsulae. From top left, clockwise: truth, fit from \sch\ transform with \tprs, soap film smoother fit, and \tprs\ fit for typical realisations. Sample size was 500 and the noise level was set to 0.02 when the rectangular mapping was used.}
+\caption{The peninsulae domain. From top left, clockwise: truth, fit from \sch\ transform with \tprs, soap film smoother fit, and \tprs\ fit for typical realisations. Sample size was 500 and the noise level was 0.02. For the \sch\ transformed domains, the rectangular mapping was used.}
 \label{sc-wigglytop2-real}
 % generated by wigglytop2 fit.irregular.R
 \end{figure}
 
-The CRDT algorithm was used for the \sch\ mapping, extra vertices introduced into the polygon with angle $\pi$, are shown, along with the mapping in \fig{wigglytop2-numbered}. From this figure one can see that although there is no crowding in the numerical sense of \citeb{driscoll}, there is significant ``bunching-up'' of the vertices. Without even performing the mapping, it would seem that this would introduce odd artefacts into the smooth.
+The CRDT algorithm was used for the \sch\ mapping, extra vertices introduced into the polygon with angle $\pi$, are shown, along with the mapping in \fig{wigglytop2-numbered}. From this figure one can see that although there is no crowding in the numerical sense of \citeb{driscoll}, there is significant ``bunching-up'' of the vertices. This would indicate that odd artefacts might be introduced into the smooth.
 
 Several combinations of vertex mappings and knots were tried. The result of this was that the vertices chosen to map to the corners of the rectangle were those shown in pink in \fig{wigglytop2-numbered}. For the soap film smoother a 15 by 15 grid of internal knots was used, of which 109 were inside the region. The cyclic spline around the boundary used 49 knots. Clearly this is the kind of domain in which the soap film smoother performs well (when the chance of leakage is high).
 
@@ -476,7 +476,7 @@ Several combinations of vertex mappings and knots were tried. The result of this
 % generated by thesis/sc/figs/wt2-pointmap.R
 \end{figure}
 
-Looking at the realisations in \fig{sc-wigglytop2-real}, it is easy to see that the \sch\ transform causes a huge distortion in the surface. The contour lines in the upper right pane of the figure show how the distortions have pushed the data points around, causing a very bad fit. It also looks as though the smooth has created a ridge across the domain, which is clearly unwanted. The \tprs\ and the transform method both smooth over the details in the first peninsula. The soap film smoother is vastly superior to either method in this situation as can be seen in the boxplots in \fig{wigglytop2-boxplots}.
+Looking at the realisations in \fig{sc-wigglytop2-real}, one can see that the \sch\ transform causes a huge distortion in the surface. The contour lines in the upper right pane of the figure show how the distortions have pushed the data points around, causing a very bad fit. It also looks as though there is a ridge across the smooth over the domain, which is clearly unwanted. The \tprs\ and the transform method both smooth over the details in the first peninsula. The soap film smoother is vastly superior to either method in this situation as can be seen in the boxplots in \fig{wigglytop2-boxplots}.
 
 % boxplot
 \begin{figure}[p]
@@ -488,12 +488,9 @@ Looking at the realisations in \fig{sc-wigglytop2-real}, it is easy to see that 
 % generated by makeboxplots.R
 \end{figure}
 
+\Fig{wigglytop2-boxplots} also shows the results of using the simpler bounding polygon shown in \fig{wigglytop2-bbox-numbered} with the \sch\ mapping (again mapping to the rectangle) as  an attempt to reduce the distortions seen in \fig{sc-wigglytop2-real}. Although the median $\log(\text{MSE})$ was reduced, there was a massive increase in variability; there is no significant increase in performance by attempting to use the bounding polygon. Although this ironed out some of the artifacts in the smooth, \fig{wigglytop2-bbox-real} shows that new features appear. It appears that the \sch\ transform does not perform well in such a situation.
 
-\Fig{wigglytop2-boxplots} also shows the results of using the simpler bounding polygon shown in \fig{wigglytop2-bbox-numbered} with the \sch\ mapping (again mapping to the rectangle) as  an attempt to reduce the distortions seen in \fig{sc-wigglytop2-real}. Although the median $\log(\text{MSE})$ was reduced, there was a massive increase in variability; there is no significant increase in performance by attempting to use the bounding polygon. Although this ironed out some of the artifacts in the smooth, \fig{wigglytop2-bbox-real} shows that new features appear. Patently, there is no advantage in using the \sch\ transform in this situation.
-
-
-
-\begin{figure}
+\begin{figure}[t]
 \centering
 % trim order l b r t
 \includegraphics[width=3in]{sc/figs/wigglytop2-bbox-numbered.png} \\
@@ -508,7 +505,7 @@ Looking at the realisations in \fig{sc-wigglytop2-real}, it is easy to see that 
 \centering
 % trim order l b r t
 \includegraphics[width=6in]{sc/figs/wigglytop2-bbox-real.pdf} \\
-\caption{The domain with two peninsulae. Truth and typical realisations for (clockwise from top right) a \tprs\ fit to the \sch\ transformed domain using the bounding box, the soap film smoother, and a \tprs\ on the untransformed domain. Sample size was 500 and the noise level was set to 0.02.}
+\caption{The domain with two peninsulae. Truth and typical realisations for (clockwise from top right) a \tprs\ fit to the \sch\ transformed domain using the bounding box, the soap film smoother, and a \tprs\ on the untransformed domain. Sample size was 500 and the noise level was 0.02.}
 \label{wigglytop2-bbox-real}
 % generated by wigglytop2-bbox fit.irregular.R
 \end{figure}
@@ -517,15 +514,15 @@ Looking at the realisations in \fig{sc-wigglytop2-real}, it is easy to see that 
 \section{Conclusions}
 \label{sc-conclusions}
 
-Domain morphing-type techniques undeniably show some promise when it comes to the problem of smoothing over complex regions. Yet the \sch\ mapping is not the correct transformation to use for  all domains. What has been seen here is that the mapping is too prescriptive in its morphing of the domain. There is nothing special about the shape that the polygon is morphed to, it's just a convenient shape to smooth over. The restriction to only use the unit disk, rectangle, etc. constrains the technique, causing phenomena which are as bad (if not worse) than the leakage we initially wanted to avoid.
+Domain morphing-type techniques undeniably show some promise when it comes to the problem of smoothing over complex regions. Yet the \sch\ mapping is not the correct transformation to use for  all domains. What has been seen here is that the mapping is too prescriptive in its morphing of the domain. There is nothing special about the shape that the polygon is morphed to, it is just a convenient shape to smooth over. The restriction to only use the unit disk, rectangle, etc. constrains the technique, causing phenomena which are as bad (if not worse) than the leakage we initially wanted to avoid.
 
-Crowding (in a technical sense) can be allayed by using the CRDT algorithm, but the spatial inhomogeneity caused by using the \sch\ transform is still a stumbling block for the smoother. This, fundamental problem of mapping between domains is exacerbated by using a restricted set of shapes to map into. It would be preferable to minimise the distortion to the distribution of points in space and using a less regular domain for $W^*$, rather than having a pre-specified domain, which causes the spatial inhomogeneity.
+Crowding (in a technical sense) can be avoided by using the CRDT algorithm, but the spatial inhomogeneity caused by using the \sch\ transform is still a stumbling block for smoothing. This, fundamental problem of mapping between domains is exacerbated by using a restricted set of shapes to map into. It would be preferable to minimise the distortion to the distribution of points in space and using a less regular domain for $W^*$, rather than having a pre-specified domain, which causes the spatial inhomogeneity.
 
-The point maps above show that the \sch\ transform can clearly split the domain, drawing apart those areas of the domain which were causing the leakage previously. In the case of the Ramsay horseshoe, the transformation that is needed is obvious; the problem occurs when the transformation is not obvious. With the peninsula domain, it is not clear what an appropriate domain to map into would look like, or even the proximities of which parts of the domain could be traded off against each other. Certainly, the rectangle or unit disk are not the shapes which immediately come to mind.
+The point map in figure \ref{wt2-points} shows that the \sch\ transform can clearly split the domain, drawing apart those areas of the domain which were causing the leakage previously. In the case of the Ramsay horseshoe, the transformation that is needed is obvious. Problems occur when the transformation is not obvious. With the peninsula domain, it is not clear what an appropriate domain to map into would look like even if the \sch\ transform could map to an arbitrary shape. Certainly, the rectangle or unit disk are not the shapes which immediately come to mind.
 
-Fortunately, all is not lost. This brief foray into conformal mapping has provided plenty of insights into how smoothers will act under mapping schemes. It has also given an appreciation of the criteria which dictate the utility of a transformation-based method, especially the degree to which the density of space is manipulated.
+Fortunately, all is not lost. This brief foray into conformal mapping has provided plenty of insights into how smoothers will act under mapping schemes. It has also given an appreciation of the criteria which dictate the utility of a transformation-based method, especially with regard to how smoothing behaves when space is distorted.
 
-With these points in mind, the next step is to find a general mapping scheme for domains with complex boundaries which is not too prescriptive, causes minimum distortions to the distribution of space but minimises the effects of leakage.
+With these points in mind, the next step is to find a general mapping scheme for domains with complicated boundaries which is not too prescriptive, causes minimum distortions to the distribution of space but minimises the effects of leakage.
 
 
 
