@@ -58,30 +58,30 @@ This proof was adapted from the one given in lecture notes by Leonidas Guibas av
 %
 \subsection{The algorithm terminates at the shortest path}
 
-By definition it is clear that the algorithm must terminate at the point at which no further DELETE or ALTER steps will shorten the path. However, what is not clear is that it will terminate at the shortest path within the domain.
-
-Say we have a locally optimal path, $P_l$. This path is locally optimal in the sense that any small perturbation of the points in $P_l$ does not yield a shorter path (i.e. the algorithm has converged) but the vertices of $P_l$ are not all identical to those of the unique (globally) shortest path $P_o$. The following argument shows that $P_l$ cannot exist. 
-
-As in the above proof of the uniqueness of the shortest path, consider the loop $L$, formed by taking the first and last disjoint vertices of $P_l$ and $P_o$ and those points between, those points in $L$ belonging to $P_o$ are denoted $L_o$ and similarly those points belonging to $P_l$ are denoted $L_l$ (i.e. intersection of $L_l$ and $L_o$ are the start and ends of the disjointness). It must always be possible to move the points in $L_l$ towards $L_o$ smoothly (i.e. continuously through space) since there are no holes in the domain. This deformation must always continuously reduce the overall path length of $P_l$.
-
-Now it remains to be shown that such a deformation can be performed by using the DELETE and ALTER steps. 
-
-Now consider $L$ which forms an envelope of all possible path segments shorter than $L_l$ (since it is bound on one side by $L_o$ the true shortest path and it is possible to smoothly deform from $L_l$ to $L_o$. 
-
-Any proposed path must lie within $L$ since its start and end points lie on $L_l$.
-
-Accepted paths must lie in $L$ since otherwise the path would be longer than $L_l$ and could not be accepted.
-
-
-Thinking only about ALTER steps (since a DELETE step is simply an ALTER step where the replacement path is the start and end points only), at least one path can be proposed and must be selected. 
-
-A path proposed by ALTER must include 
-
-If this were not the case then it would imply $L_l$ could not be shortened by drawing straight lines between a point pair and tracing the boundary. 
-
-
-
-Is moving one point enough? Can I make a slippery slope argument that if I can move one point a bit then I can move them all? The movement needs to be by an ALTER step.
+%%By definition it is clear that the algorithm must terminate at the point at which no further DELETE or ALTER steps will shorten the path. However, what is not clear is that it will terminate at the shortest path within the domain.
+%%
+%%Say we have a locally optimal path, $P_l$. This path is locally optimal in the sense that any small perturbation of the points in $P_l$ does not yield a shorter path (i.e. the algorithm has converged) but the vertices of $P_l$ are not all identical to those of the unique (globally) shortest path $P_o$. The following argument shows that $P_l$ cannot exist. 
+%%
+%%As in the above proof of the uniqueness of the shortest path, consider the loop $L$, formed by taking the first and last disjoint vertices of $P_l$ and $P_o$ and those points between, those points in $L$ belonging to $P_o$ are denoted $L_o$ and similarly those points belonging to $P_l$ are denoted $L_l$ (i.e. intersection of $L_l$ and $L_o$ are the start and ends of the disjointness). It must always be possible to move the points in $L_l$ towards $L_o$ smoothly (i.e. continuously through space) since there are no holes in the domain. This deformation must always continuously reduce the overall path length of $P_l$.
+%%
+%%Now it remains to be shown that such a deformation can be performed by using the DELETE and ALTER steps. 
+%%
+%%Now consider $L$ which forms an envelope of all possible path segments shorter than $L_l$ (since it is bound on one side by $L_o$ the true shortest path and it is possible to smoothly deform from $L_l$ to $L_o$. 
+%%
+%%Any proposed path must lie within $L$ since its start and end points lie on $L_l$.
+%%
+%%Accepted paths must lie in $L$ since otherwise the path would be longer than $L_l$ and could not be accepted.
+%%
+%%
+%%Thinking only about ALTER steps (since a DELETE step is simply an ALTER step where the replacement path is the start and end points only), at least one path can be proposed and must be selected. 
+%%
+%%A path proposed by ALTER must include 
+%%
+%%If this were not the case then it would imply $L_l$ could not be shortened by drawing straight lines between a point pair and tracing the boundary. 
+%%
+%%
+%%
+%%Is moving one point enough? Can I make a slippery slope argument that if I can move one point a bit then I can move them all? The movement needs to be by an ALTER step.
 
 
 %
