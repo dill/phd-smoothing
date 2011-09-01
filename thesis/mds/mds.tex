@@ -774,7 +774,7 @@ Using a 3-D \tprs\ the artefacts are less prominent and the surface looks much m
 \section{Problems with the methodology so far}
 \label{mds-problems}
 
-At this point two outstanding issues must be addressed. The first is that, following the experiments above, there are issues with artefacts in the smooths produced by \mdsap\ when a low dimensional projection is taken. The effect of these artefacts is decreased when the projection is taken into higher dimensions, however, the artefacts are still problematic in some way and high dimensional smoothing can be rather tricky. 
+At this point two outstanding issues must be addressed. The first is that, following the experiments above, there are issues with artefacts in the smooths produced by \mdsap\ when a low dimensional projection is used. The effect of these artefacts is decreased when the projection is taken into higher dimensions, however, the artefacts are still problematic in some way and high dimensional smoothing can be rather tricky. 
 
 What follows is an explanation of why the artefacts occur, and how high dimensional smoothing can help. This section explores these two problems, explains what is going wrong and sets out what is needed for a solution.
 
@@ -783,15 +783,15 @@ What follows is an explanation of why the artefacts occur, and how high dimensio
 
 The simulations show that when using \mdsap\ there is no big advantage of using the adjusted penalty scheme over the non-adjusted one. Before running the simulations, several different functions of the MDS point density ($\mathcal{L}^*$) were compared. All resulted in worse smooths (in MSE terms) than the function that was finally settled on.
 
-An explanation for why the penalty adjustment doesn't offer much improvement can be found by investigating the good performance of the 3-D projection model. 
+Investigating the good performance of the 3-D projection model goes some way to explaining why the penalty adjustment doesn't offer much improvement.
 
 Looking at the plots of the prediction points in MDS space for the peninsulae domain (\fig{wt2-2d-proj} and \fig{wt2-3d-proj}) it is easy to see that in two dimensions, the first peninsula has been squashed to a line. 
 
-By truncating $\tilde{\mathbf{X}}^*$ in the MDS procedure (\secref{MDStechdet}) the information in $\mathbf{D}$ relating to thhe width of the peninsula has been lost. Projecting into higher dimensions reduces the truncation (smaller eigenvalues of $\mathbf{D}$ and their corresponding eigenvectors are use to construct $\tilde{\mathbf{X}}^*$) and as such more information about the relative positions of the points is introduced (this can be seen for the peninsula domain in \fig{wt2-3d-proj}). The adjusted penalty attempts to account for this squashing by allowing a more flexible model to be fit in that area. However, what is not taken into account is that some of the points in the peninsula are projected on top of (or on the wrong side of) one another. In other words, the 2-D MDS projection makes the points lose their ordering. 
+By truncating $\tilde{\mathbf{X}}^*$ in the MDS procedure (\secref{MDStechdet}) the information in $\mathbf{D}$ relating to the width of the peninsula has been lost. Projecting into higher dimensions reduces the truncation (smaller eigenvalues of $\mathbf{D}$ and their corresponding eigenvectors are use to construct $\tilde{\mathbf{X}}^*$) and as such more information about the relative positions of the points is introduced (this can be seen for the peninsula domain in \fig{wt2-3d-proj}). The adjusted penalty attempts to account for this squashing by allowing a more flexible model to be fit in that area. However, what is not taken into account is that some of the points in the peninsula are projected on top of (or on the wrong side of) one another. In other words, the 2-dimensional MDS projection makes the points lose their ordering. 
 
-As a simple, unidimensional example, take three points, $a, b, \text{ and } c$ in the top line of \fig{linedia}. The projection could squash them in the way shown on the second line, in this case the penalty adjustments as described in \citeb{wood2000} could be used to correct the model. However, with MDS the situation shown in the bottom line of \fig{linedia} (changing the order of $a, b, \text{and}\ c$) can occur. This phenomena is also mentioned in \cite{elements}, pp. 572--573.
+As a simple, unidimensional example, take three points, $a, b, \text{ and } c$ in the top line of \fig{linedia}. The projection could squash them in the way shown on the second line, in this case the penalty adjustments as described in \citeb{wood2000} could be used to correct the model. However, with MDS the situation shown in the bottom line of \fig{linedia} (changing the order of $a, b, \text{and}\ c$) can occur. This phenomena is also mentioned in \citeb[pp. 572-573]{elements}.
 
-In the MDS projection we can see this happening in the peninsula described above. The projection takes a side-on view of the peninsula, making the points lose their ordering. In this case, the penalty adjustment can't save the model. If the ordering of the points is not guaranteed, then the smoother's job is potentially impossible, especially when one thinks of a 2-D extension of \fig{linedia}.
+In the MDS projection we can see this happening for the peninsulae domain in figure \ref{wt2-3d-proj}. The projection takes a side-on view of the peninsula, making the points lose their ordering. In this case, the penalty adjustment can't save the model. If the ordering of the points is not guaranteed, then the smoother's job is potentially impossible, especially when one thinks of a 2-D extension of \fig{linedia}.
 
 \begin{figure}
 \centering
@@ -801,12 +801,12 @@ In the MDS projection we can see this happening in the peninsula described above
 % generated by thesis/mds/figs/linedia.R
 \end{figure}
 
-\subsection{Why moving to higher dimensions is not the solution}
+\subsection{Why moving to higher dimensions is tricky}
 \label{nohigherdim}
 
 In the two cases above, moving into three dimensions allowed \mdsap\ to more accurately reproduce the true function. Counteracting the phenomenon above (where the ordering of the points is lost), the extra dimension allows us to see the ``width'' of parts of the domain that we take a side view of in the 2-D projection.
 
-It seems then that there is some milage in taking a 3-dimensional projection to solve this problem without the need for penalty adjustments. However, unfortunately, this is not the case in general. \Fig{mds-comb} shows a long domain with three peninsulae at each end. The MDS projection of the domain in two dimensions gives the points in \fig{mds-comb-2d}. There are only four peninsulae in this figure, not the six which were in the original. Using the colours in \fig{mds-comb} and \fig{mds-comb-2d}, one can see the separation of the larger peninsulae and that the smaller peninsulae have been positioned end-to-end. Given that there could be interesting features in the response in these smaller peninsulae and that therefore leakage would be undesirable, this behaviour seems extremely undesirable (and may well be worse than simply incurring leakage by using a standard smoother).
+It seems then that there is some milage in taking a 3-dimensional projection to solve this problem without the need for penalty adjustments. However, unfortunately, this is not the case in general. \Fig{mds-comb} shows a long domain with three peninsulae at each end. The MDS projection of the domain in two dimensions gives the points in \fig{mds-comb-2d}. There are only four peninsulae in this figure, not the six which were in the original. Using the colours in \fig{mds-comb} and \fig{mds-comb-2d}, one can see the separation of the larger peninsulae and that the smaller peninsulae have been positioned end-to-end. Given that there could be interesting features in the response in these smaller peninsulae and that therefore leakage would be undesirable. This behaviour may well be worse than simply incurring leakage by using a standard smoother.
 
 \begin{figure}
 \centering
@@ -847,36 +847,36 @@ Although these plots are illustrative, a quantitative measure of how well the wi
 % Results here are in mds/counter/run-DRcomp.R
 Looking at this measure for the domain considered in this section (the ``comb''), peninsulae domain (from \secref{mds-wt2-sim}) and the Aral sea as dimension of projection is increased yields some interesting results. These are summarised in \tabref{increasek}. The table indicates that there is some optimum number of dimensions ($k$) to project into, such that adding a further dimension gives only a negligible decrease in the spectral norm. 
 
-The ``optimal'' $k$ (in a spectral norm sense) is not common to all of the domains. For the peninsulae domain there is a large decrease (roughly halving each time) up to four dimensions, but the Aral sea appears to settle down after three. However, it's clear that the spectral norm is not the best guide for this given that for the ``comb'' domain, four dimensions appears to be optimal but \fig{mds-comb-3d} shows that this doesn't offer much separation in the peninsulae. The spectral norm doesn't offer a direct solution to the issue of dimension selection but it does at least offer the insight that there is some dimensional beyond which an increase in dimension only offers marginal returns. Considering dimension selection separately from smoothing is sure to cause difficulties, since a point set that approximates the distances in $\mathbf{D}$ well does not give an guarantees about the quality of the resulting smooth. A dimension selection criteria must also take this into account.
+The ``optimal'' $k$ (in a spectral norm sense) is not common to all of the domains. For the peninsulae domain there is a large decrease (roughly halving each time) up to four dimensions, but the Aral sea appears to settle down after three. However, it's clear that the spectral norm is not the best guide for this given that for the ``comb'' domain, four dimensions appears to be optimal but \fig{mds-comb-3d} shows that this doesn't offer much separation in the peninsulae. The spectral norm doesn't offer a direct solution to the issue of dimension selection but it does at least offer the insight that there is some dimensional beyond which an increase in dimension only offers marginal returns. Considering dimension selection separately from smoothing is sure to cause difficulties, since a point set that approximates the distances in $\mathbf{D}$ well does not give an guarantees about the quality of the resulting smooth. It seems that a dimensional selection method that also takes into account the response will be useful in this case.
 
 \begin{table}[htb]
 \centering
 \begin{tabular}{c c c c c}
 $k$ & Comb  & Peninsulae & Aral\\ 
 \hline
-1  &  3610.210  &  109.1344  &  1519.736 \\ 
-2  &  1280.189  &  54.60339  &  347.2212 \\ 
-3  &  459.9464  &  22.06782  &  128.2021 \\ 
-4  &  457.1626  &  12.16595  &  119.5486 \\ 
-5  &  456.0698  &  10.23667  &  117.6430 \\ 
-6  &  452.4361  &  9.95791  &  116.6678 \\ 
-7  &  450.9335  &  9.873292  &  116.1673 \\ 
-8  &  450.5587  &  9.853141  &  115.5955 \\ 
-9  &  449.8825  &  9.789696  &  115.3094 \\ 
-10  &  449.4629 &  9.746579  &  115.1879 \\ 
+1  &  3610.210  &  109.134  &  1519.736 \\ 
+2  &  1280.189  &  54.603  &  347.221 \\ 
+3  &  459.946  &  22.068  &  128.202 \\ 
+4  &  457.163  &  12.166  &  119.549 \\ 
+5  &  456.07  &  10.237  &  117.643 \\ 
+6  &  452.436  &  9.958  &  116.668 \\ 
+7  &  450.934  &  9.873  &  116.167 \\ 
+8  &  450.559  &  9.853  &  115.596 \\ 
+9  &  449.883  &  9.79  &  115.309 \\ 
+10  &  449.463 &  9.747  &  115.188 \\ 
 \end{tabular}
 \caption{Mean squared difference between the matrix of within-area distances and Euclidean distance in a $k$-dimensional MDS projection of the points for each of the domains detailed in \secref{nohigherdim}.}
 \label{increasek}
 \end{table}
 
-Moving into continually higher dimensions is appealing, but practically it is rather more taxing. As the dimension of the problem is increased, the order of the penalty in the GAM increases too (see \secref{GAMpenalties} and \secref{gds-tprstoduchon}). As this happens, the dimension of the nullspace of the penalty increases, meaning that both the number and complexity of the unpenalised functions in the model increases. This will not lead to a parsimonious model being fitted to the data.
+Moving into continually higher dimensions is appealing, but practically it is rather more taxing. As the dimension of the problem is increased, the order of the derivative in the spline penalty increases too (see \secref{GAMpenalties} and \secref{gds-tprstoduchon}). As this happens, the dimension of the nullspace of the penalty increases, meaning that both the number and complexity of the unpenalised functions in the model increases. An increasingly large space of unpenalized functions is certainly unappealing, but the next chapter will investigate how to work around such issues.
 
 \section{Conclusion}
 \label{mds-conc}
 
 This chapter has investigated the utility of using a combination of multidimensional scaling and penalised regression splines to combat the phenomenon of leakage in spatial smoothing. This was with a view to \mdsap\ being a less complex, faster, alternative to soap film smoothing, with an equally interesting motivating physical model.
 
-Considering these goals, first, the model certainly seems less complex. Provided that one knows about spline smoothing (which one would have to know to use soap too) and about multidimensional scaling (which is commonly taught outside of statistics, in biology, ecology or computer science) the method is relatively easy to get to grips with. No understanding of differential equations is required, nor is there any need to create knots which are both the case for soap film smoothing. The physical model is still quite close to that which was outlined in \secref{intro-leakageapproaches} part 4: the idea of morphing the domain into a shape which does not suffer from leakage.
+Considering these goals, first, the model certainly seems less complex. Provided that one knows about spline smoothing (which one would have to know to use soap too) and about multidimensional scaling (which is commonly taught outside of statistics, in biology, ecology or computer science) the method is relatively easy to get to grips with. No understanding of differential equations is required, nor is there any need to create knots (unlike soap film smoothing). The physical model is still quite close to that which was outlined in \secref{intro-leakageapproaches} part 4: the idea of morphing the domain into a shape which does not suffer from leakage.
 
 In comparison to using the \sch\ transform, \mdsap\ has the disadvantage of not being a functional mapping. Having a fixed functional form makes the \sch\ transform extremely fast since only a single function evaluation is needed to map a single point. In comparison, having to find the within-area distances is rather involved. However, the speed-ups presented in \secref{mds-faster} greatly enhance the utility of the method from a practical viewpoint. \mdsap\ and soap film smoothing differ in how their computational time is divided. The main computational burden of the soap film smoother is in solving the PDEs needed to form the basis and from that calculating the penalty matrix (see table \ref{wt2itime} and part 3 of \secref{intro-leakageapproaches}), prediction is merely a case of evaluation. \mdsap\ on the other hand, spends the bulk of its computational time on finding the within-area distances for both fitting and prediction (comparing the ``thin plate'' and ``MDS+RS(\textit{pp})'' columns of table \ref{wt2itime}). The advantage of this is that since the distance calculation is effectively a black box from the perspective of the smoothing, if a faster routine for distance calculation were to be used there would be no difference in the results (provided that the routine calculated the distances exactly and did not rely on a discritization of the domain) but the computational time to calculate the final smooth would be significantly reduced. This approach also opens up the possibility of other distance metrics being used to form the distance matrix (as will be seen in \secref{gds-gds-examples}).
 
