@@ -12,13 +12,15 @@ par(cex.axis=0.75,las=1,mgp=c(2,0.75,0),mar=c(2,3,1,1))
 mses<-c()
 
 # model names
-mod.names<-c("tprs","mds\n+tp","mds\n+cr","mds\n 3D","mds\n+adj","soap")
+#mod.names<-c("tprs","mds\n+tp","mds\n+cr","mds\n 3D","mds\n+adj","soap")
+mod.names<-c("tprs","mds\n+tp","mds\n 3D","mds\n+adj","soap")
 
 cols<-c()
 for(err.lev in c("0.35","0.9","1.55")){
 
    mse<-read.csv(paste("wt2-mse-250-",err.lev,".csv",sep=""))
    mse<-mse[,-1]
+mse<-mse[,-3]
    names(mse)<-mod.names
    mse<-mse[1:200,] # why???
 spurious<-c(111,135,157)
