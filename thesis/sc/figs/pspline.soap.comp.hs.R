@@ -14,8 +14,8 @@ xx <- rep(xm,n);yy<-rep(yn,rep(m,n))
 tru <- fs.test(xx,yy) 
 
 # read in the predicition grid from matlab
-predback.real<-read.csv("../../../sc/matlab/preal.csv",header=F)
-predback.imag<-read.csv("../../../sc/matlab/pimag.csv",header=F)
+predback.real<-read.csv("preal.csv",header=F)
+predback.imag<-read.csv("pimag.csv",header=F)
 prediction.grid<-data.frame(v=predback.real[[1]],w=predback.imag[[1]])
 
 # bit of faffing with titles
@@ -77,34 +77,32 @@ fv <- predict(b,newdata=data.frame(v=xx,w=yy),block.size=-1)
 
 ############ First figure, two image plots
 pdf("compsmooth.pdf",width=4,height=2.9)
-par(mfrow=c(2,2),mar=c(2,1.9,1.8,1.5))
-
+par(mfrow=c(2,2),mar=c(1.8,1.5,1.8,1.5),las=1,mgp=c(3,0.5,0))
 
 names(fsb[[1]])<-c("x","y")
 
 image(xm,yn,matrix(fs.test(xx,yy),m,n),col=heat.colors(100),xlab="",ylab="",
-      asp=1,main="truth",lwd=2,las=1,cex.axis=0.5)
+      asp=1,main="truth",lwd=2,cex.axis=0.5,cex.title=0.7)
 contour(xm,yn,matrix(fs.test(xx,yy),m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb[[1]],lwd=2)
 
 
 # sc+ps mapping example
 image(xm,yn,matrix(fv.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,asp=1,main="sc+ps",las=1)
+      cex.axis=0.5,asp=1,main="sc+ps",cex.title=0.7)
 contour(xm,yn,matrix(fv.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb[[1]],lwd=2)
 
 # sc+tp
 image(xm,yn,matrix(fv.tp.mapped,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,asp=1,main="sc+tp",las=1)
+      cex.axis=0.5,asp=1,main="sc+tprs",cex.title=0.7)
 contour(xm,yn,matrix(fv.tp.mapped,m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb[[1]],lwd=2)
 
 # soap
 image(xm,yn,matrix(fv,m,n),col=heat.colors(100),xlab="",ylab="",
-      cex.axis=0.5,main="soap",asp=1,las=1)
+      cex.axis=0.5,main="soap",asp=1,cex.title=0.7)
 contour(xm,yn,matrix(fv,m,n),levels=seq(-5,5,by=.25),add=TRUE,labcex=0.3,lwd=0.5)
 lines(fsb[[1]],lwd=2)
 
 dev.off()
-

@@ -50,5 +50,3 @@ lines(horse$x[c(1,8)],horse$y[c(1,8)],lwd=3)
 lines(horse,lwd=3)
 
 dev.off()
-
-
