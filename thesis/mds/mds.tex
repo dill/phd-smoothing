@@ -16,7 +16,7 @@ Multidimensional scaling provides a way to transform a domain in a similar way t
 
 Justification for this approach is as follows. In many applications within-area distances is meaningful, given that there is some reasoning behind why certain parts of the domain should not affect one another. Biological populations respect the intrinsic structure of these domains and in general do not respect Euclidean geometry in their movement patterns (for example, they move around obstacles, avoid predators and track prey). When within-area distances are meaningful, it makes sense to use this information about the structure of the domain rather than somewhat arbitrarily choose Euclidean geometry and discard this extra informaton. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
 
-\subsection{Procedure}
+\subsection{Proposed procedure}
 \label{mdsproc}
 First take the sample locations $\mathbf{x}_i = (x_{1i}, x_{2i})$ (as in \secref{intro-basic-setup}) (which for MDS could be $k$-vector, although here 2-vectors are assumed throughout this chapter) of the $i^\text{th}$ point with response $z_i$. Here, finding an MDS configuration of a set of points consists of: $i$) calculating the within-area distances between the points, $ii$) forming the distance matrix and, $iii$) actually performing the MDS projection.
 
@@ -95,9 +95,9 @@ Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix obtained from 
 
 In summary, to calculate the MDS configuration of a set of points (given their inter-point distances) we merely need to double centre the matrix of distances, perform an eigen-decomposition on the resulting matrix, and finally truncate the eigen-decomposition and find the new point set.
 
-For finite area smoothing, $d_{ij}$ should be the shortest distance between the points, given the path between any pair of points remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. 
+For finite area smoothing, $d_{ij}$ should be the shortest distance between the points $i$ and $j$ such that the path remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. 
 
-One can think of the justification in the following way: given that the distances in $\mathbf{D}$ obey the triangle inequality, all of the points in $\mathbf{D}$ ($n$ of them if $\mathbf{D}$ is $n \cross n$) may be represented by MDS in $n$ dimensional Euclidean space (at worst). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in higher dimensions. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points in $\mathbf{D}$ as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
+One can think of the justification in the following way: given that the distances in $\mathbf{D}$ obey the triangle inequality, all of the points from such $\mathbf{D}$ is computed ($n$ of them if $\mathbf{D}$ is $n \cross n$) may be represented by MDS in $n$ dimensional Euclidean space (at worst). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in higher dimensions. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points in $\mathbf{D}$ as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
 
 Note that an additive constant can be computed and added to the non-diagonal entries of $\mathbf{D}$ to ensure that the eigenvalues of $\mathbb{S}$ are non-negative. However, this does not occur in any of the examples shown here.
 
@@ -212,11 +212,11 @@ In conclusion, the mapping can be both reliable and also produces a smooth confi
 
 So far we have assumed that the matrix of distances $D$ is known, this section describes (what the author believes to be) novel algorithm to find the within-area distances.
 
-In order to perform MDS, the matrix of distances must be found. Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled by the objects residing in the domain of interest.
+In order to perform MDS, the matrix of distances must be found. Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled between points residing in the domain of interest.
 
-Note that we are paths between point pairs in simple polygons (i,e. those polygons without holes) are considered. Although this is a limits the types of domains that can be addressed it does make the shortest path algorithm simpler since the shortest path is unique (see appendix \ref{app-unique-sp}).
+Note that paths between point pairs in simple polygons (i,e. those polygons without holes) are considered. Although this limits the types of domains that can be addressed, it does make the shortest path algorithm simpler, since the shortest path is unique (see appendix \ref{app-unique-sp}).
 
-There are several methods available to calculate within-area distances, however given that the domain of interest is any arbitrary simple polygon this limits the number of applicable. The two most promising possibilities are the geodesic methods used by \cite{wangranalli} (see also \secref{intro-leakageapproaches}) and the $\text{A}^*$ algorithm (\cite{astarpaper}) which is a generalisation of Dijkstra's algorithm (\cite{dijkstra}). However, both of these algorithms rely on the discretization of the domain of interest. As stated in \secref{intro-leakageapproaches}, this discretization of the domain is undesirable since the results then become dependent on the resolution of the discretization of the domain, even if a high enough resolution can be used the computational cost becomes prohibitively expensive for such methods. It would be preferable to have an elementary (ie. not relying on complex data structures or theory) algorithm for finding the shortest path within the polygon.
+There are several methods available to calculate within-area distances, however given that the domain of interest is any arbitrary simple polygon this limits the number that are applicable. The two most promising possibilities are the geodesic methods used by \cite{wangranalli} (see also \secref{intro-leakageapproaches}) and the $\text{A}^*$ algorithm (\cite{astarpaper}) which is a generalisation of Dijkstra's algorithm (\cite{dijkstra}). However, both of these algorithms rely on the discretization of the domain of interest. As stated in \secref{intro-leakageapproaches}, this discretization of the domain is undesirable since the results then become dependent on the resolution of the discretization of the domain, even if a high enough resolution can be used the computational cost becomes prohibitively expensive for such methods. It would be preferable to have an elementary (ie. not relying on complex data structures or theory) algorithm for finding the shortest path within the polygon.
 
 Let the domain boundary be some polygon, $\Gamma$. Given that there is no direct path within the domain between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path (ie. an ordered set of edges and vertices), $\mathcal{P}$:
 
@@ -499,14 +499,14 @@ Prediction & 155.400 & 53.511 & 29.395 & 0.125\\
 \end{table}
 
 
-\section{Using penalty adjustments to correct for squashing}
+\section{Using penalty adjustments to correct for\\ squashing}
 \label{mds-penadjust}
 
 The higher MSEs shown in \tabref{wt2resultstable} at lower noise levels might be explained by the change in density of points in the domain after it has been transformed into MDS space and the way in this changes the measure of smoothness. In this case adjusting the penalty in order to take into account the change in point density in MDS space might improve performance.
 
-\citeb{wood2000} shows that given some transform of a variable, $x_2$ say, such that $x_{2i}^\prime=x_{2i}/k$, then $f(x_1,x_2^\prime k)$ will give the same fit as $f(x_1,x_2)$ (ie. the fit will be the same under the new coordinates). In this case the penalty will change to:
+\citeb{wood2000} shows that given some transform of a variable, $x_2$ say, such that $x_{2i}^\prime=x_{2i}/k$, then $f(x_1,x_2^\prime k)$ will give the same fit as $f(x_1,x_2)$ (ie. the fit will be the same under the new coordinates), if the penalty is changed to:
 \begin{equation}
-\int\int_\mathbb{R}^2 \Big( \frac{\partial^2 f}{\partial x_1^2} \Big)^2 + 2k\Big( \frac{\partial^2 f}{\partial x_1 \partial x_2} \Big)^2 + k^3\Big( \frac{\partial^2 f}{\partial x_2^2} \Big)^2 \text{d}x_1 \text{d}x_2,
+\int\int_\mathbb{R}^2 \left ( \frac{\partial^2 f}{\partial x_1^2} \right )^2 + 2k\left ( \frac{\partial^2 f}{\partial x_1 \partial x_2} \right )^2 + k^3\left ( \frac{\partial^2 f}{\partial x_2^2} \right )^2 \text{d}x_1 \text{d}x_2,
 \label{adjustedintegral}
 \end{equation}
 from the usual \tprs\ penalty (see \secref{GAMtprspenalty}).
@@ -517,7 +517,7 @@ Such a function should allow the smoothness to be adapted according to the degre
 
 Given that the function $\mathcal{L}^*(x_1,x_2)$ is known, the penalty is given as:
 \begin{equation}
-\int\int_{\Gamma^\prime} \mathcal{L}^*(x_1,x_2) \Big( \Big(\frac{\partial^2 f(x_1,x_2)}{\partial x_1^2}\Big)^2 + 2\Big(\frac{\partial^2 f(x_1,x_2)}{\partial x_1 \partial x_2}\Big)^2 + \Big(\frac{\partial^2 f(x_1,x_2)}{\partial x_2^2}\Big)^2\Big) \text{d}x_1 \text{d}x_2.
+\int\int_{\Gamma^\prime} \mathcal{L}^*(x_1,x_2) \left \{ \left (\frac{\partial^2 f(x_1,x_2)}{\partial x_1^2}\right )^2 + 2\left (\frac{\partial^2 f(x_1,x_2)}{\partial x_1 \partial x_2}\right )^2 + \left (\frac{\partial^2 f(x_1,x_2)}{\partial x_2^2}\right )^2\right \} \text{d}x_1 \text{d}x_2.
 \label{kdeadjust}
 \end{equation}
 Note the change of integration domain from $\mathbb{R}^2$ to $\Gamma^\prime$ (the transformed domain), as well as the pre-multiplication by the density function.
@@ -589,22 +589,23 @@ In this example $\mathcal{L}^*(x)$ was simply calculated using the inverse of th
 \subsection{Penalty adjustments in two dimensions}
 
 Using a similar procedures as for one dimension, the two dimensional case can be addressed. Again looking at the $ij^\text{th}$ element of $\mathbf{S}$, for the two dimensional case we have:
-\begin{equation*}
-\mathbf{S}_{ij}=\int\int_\Gamma^\prime \mathcal{L}^*(x_1,x_2) \Big( \frac{\partial^2 b_i(x_1,x_2)}{\partial x_1^2}\frac{\partial^2 b_j(x_1,x_2)}{\partial x_1^2}+2\frac{\partial^2 b_i(x_1,x_2)}{\partial x_1 \partial x_2}\frac{\partial^2 b_j(x_1,x_2)}{\partial x_1 \partial x_2}+\frac{\partial^2 b_i(x_1,x_2)}{\partial x_2^2}\frac{\partial^2 b_j(x_1,x_2)}{\partial x_2^2} \Big) \text{d}x\text{d}x_2.
-\end{equation*}
+\begin{align*}
+\mathbf{S}_{ij}= \int\int_{\Gamma^\prime} \mathcal{L}^*(x_1,x_2) \Bigg ( & \frac{\partial^2 b_i(x_1,x_2)}{\partial x_1^2}\frac{\partial^2 b_j(x_1,x_2)}{\partial x_1^2}+2\frac{\partial^2 b_i(x_1,x_2)}{\partial x_1 \partial x_2}\frac{\partial^2 b_j(x_1,x_2)}{\partial x_1 \partial x_2}+ \\ 
+& \frac{\partial^2 b_i(x_1,x_2)}{\partial x_2^2}\frac{\partial^2 b_j(x_1,x_2)}{\partial x_2^2} \Bigg )  \text{d}x_1\text{d}x_2.
+\end{align*}
 Matrices analogous to \eqn{oneDD} can be constructed using the finite differences from \eqn{bfinitediff} for differentials $x_1$ and $x_2$ individually and
 \begin{equation*}
 \frac{\partial^2 b_i(x_1,x_2)}{\partial x_1 \partial x_2} = \frac{ b_i(x_1+\epsilon,x_2+\epsilon) - b_i(x_1+\epsilon,x_2) - b_i(x_1,x_2+\epsilon) + b_i(x_1,x_2)}{\epsilon^2},
 \end{equation*}
 for the cross term. The matrices then take the form:
 \begin{equation*}
-[\mathbf{D}_{x_1}]_{kj}=\sqrt{\mathsf{K}(x_{1k},x_{2k})} \frac{\partial^2 b_j(x_{1k},x_{2k})}{\partial x_1^2},
+[\mathbf{D}_{x_1}]_{kj}=\sqrt{\mathcal{L}^*(x_{1k},x_{2k})} \frac{\partial^2 b_j(x_{1k},x_{2k})}{\partial x_1^2},
 \end{equation*}
 \begin{equation*}
-[\mathbf{D}_{x_2}]_{kj}=\sqrt{\mathsf{K}(x_{1k},x_{2k})} \frac{\partial^2 b_j(x_{1k},x_{2k})}{\partial x_2^2},
+[\mathbf{D}_{x_2}]_{kj}=\sqrt{\mathcal{L}^*(x_{1k},x_{2k})} \frac{\partial^2 b_j(x_{1k},x_{2k})}{\partial x_2^2},
 \end{equation*}
 \begin{equation*}
-[\mathbf{D}_{x_1 x_2}]_{kj}=\sqrt{\mathsf{K}(x_{1k},x_{2k})} \frac{\partial^2 b_j(x_{1k},x_{2k})}{\partial x_1 \partial x_2}.
+[\mathbf{D}_{x_1 x_2}]_{kj}=\sqrt{\mathcal{L}^*(x_{1k},x_{2k})} \frac{\partial^2 b_j(x_{1k},x_{2k})}{\partial x_1 \partial x_2}.
 \end{equation*}
 So we may then express $\mathbf{S}$ as:
 \begin{equation*}

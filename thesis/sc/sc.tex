@@ -2,7 +2,7 @@
 \label{chap-sc}
 \section{Introduction}
 
-As discussed in \secref{intro-FAS}, leakage can be problematic for spatial smoothing. Since leakage is caused by the smooth not respecting the boundary of the domain of interest, one way of approaching this would be to change the boundary in such a way that the new boundary is easier for the smoother to deal with (for example reducing the number and/or severity of peninsulae) and therefore reducing leakage.
+As discussed in \secref{intro-FAS}, leakage can be problematic for spatial smoothing. Since leakage is caused by the smooth not respecting the boundary of the domain of interest, one way of approaching this would be to smoothly transform the domain in such a way that the new boundary is easier for the smoother to deal with (for example reducing the number and/or severity of peninsulae) and therefore reducing leakage.
 
 This chapter investigates the efficacy of using a conformal mapping to transform the domain in which we wish to perform smoothing. The mapping takes points in the domain of the data ($W$) to a domain on which it is easier to smooth ($W^*$). In particular the utility of the \sch\ transform is examined (elaborating on \cite{eilerstalk}).
 
@@ -57,6 +57,7 @@ The second section of this chapter explains the technical details of the mapping
 This section gives some of the mathematical and computational details required to calculate the \sch\ mapping. The primary reference is \citeb{driscoll}, which covers almost all aspects of the \sch\ transform.
 
 \subsection{Nomenclature}
+\label{sc-nomen}
 
 The polygon is first defined formally along with its associated quantities, as they will be referred to throughout the rest of the chapter.
 
@@ -99,11 +100,11 @@ The forwards map, $\varphi$, is determined up to translation, scaling, and rotat
 \subsubsection{The upper half-plane}
 \label{sc-parprob}
 
-When mapping $\Gamma$ to $H^+$, set $\varphi(\infty) = w_K$ without any loss of generality. \citeb[p. 10]{driscoll} then gives the following formula formula:
+When mapping $\Gamma$ to $H^+$, set $\varphi(\infty) = w_K$ without any loss of generality. \citeb[p. 10]{driscoll} then gives the following formula:
 \begin{equation}
-\varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K-1} (\zeta-w^*_k)^{\alpha_k-1} d\zeta.
+\varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K-1} \left (\zeta-w^*_k \right )^{\alpha_k-1} d\zeta.
 \end{equation}
-Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been calculated. These control the scaling, translation, and rotation of the transform.
+where the $\alpha_k$ are as in \secref{sc-nomen}. Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been calculated. These control the scaling, translation, and rotation of the transform.
 
 Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into $H^+$ is rather odd from a smoothing perspective. Given two adjacent points near $w_K$, their spacing on the upper half-plane is huge in comparison to two adjacent points near the other vertices. For this reason the $H^+$ mapping is not pursued further here.
 
@@ -112,7 +113,7 @@ Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathe
 The formula for the unit disk looks very similar to that for $H^+$ but the product now runs over all prevertices. The integrand is simply a constant multiple of the $H^+$ case. This is merely to avoid problems in the calculation of the branch cuts (\cite[p. 12]{driscoll}).
 \begin{equation}
 \label{unitscmap}
-\varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K} (1 - \frac{\zeta}{w^*_k})^{\alpha_k-1} d\zeta.
+\varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K} \left (1 - \frac{\zeta}{w^*_k} \right )^{\alpha_k-1} d\zeta.
 \end{equation}
 As above, $A$ and $C$ are complex constants responsible for scaling, translation, and rotation.
 
@@ -130,12 +131,12 @@ to map a rectangle to the upper half-plane. The computation of this map is expen
 
 To compute the map, the prevertices, $w^*_k$ must be found. Since the complex constants just control scaling, translation, and rotation, we can compute them after computing the $w^*_k$. We achieve this iteratively by approximating the $w^*_k$ then mapping those points back to the polygon to give an estimate to $\Gamma$, $\Gamma^\prime$. 
 
-To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ we use the following set of equations:
+To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ the following set of equations are used:
 \begin{equation}
 \label{optimizeme}
-\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} = 0, \qquad \text{for } k=3,\dots,K-1.
+\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} \qquad \text{for } k=3,\dots,K-1.
 \end{equation}
-Here $\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert$ is the distance between the $k^{\text{th}}$ and $(k+1)^{\text{th}}$ vertex.  We find this by integrating along the line between the points within $W$.
+Here $\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert$ is the distance between the $k^{\text{th}}$ and $(k+1)^{\text{th}}$ vertex. This is found by integrating along the line between the points within $W$. See also \secref{algorithmsketch}.
 
 Intuitively, we are comparing the side lengths of the polygon in order to evaluate approximation of $\Gamma$ in each iteration (\cite[A-3]{snider}). Both of these measures are scaled by the distance between the first two vertices (in their respective domains).
 
@@ -180,7 +181,7 @@ Starting values for the algorithm are evenly spaced vertices around the edge of 
 Calculating the forwards map is simply a case of evaluating $\varphi$ at the necessary points. To find the location of a point $w$ in $W$ given a point $w^*$ in $W^*$, compute:
 \begin{equation}
 \label{forwardsmap}
-w=\varphi(w^*) = w_0 + C \int_{w^*_0}^{w^*} \prod_{k=1}^{K} (1 - \frac{\zeta}{w^*_k})^{-\theta_k} d\zeta,
+w=\varphi(w^*) = w_0 + C \int_{w^*_0}^{w^*} \prod_{k=1}^{K} \left (1 - \frac{\zeta}{w^*_k} \right )^{-\alpha_k-1} d\zeta,
 \end{equation}
 where $w^*_0$ is any point in the closed disk such that $w_0 = \varphi(w^*_0)$ is known and non-infinite. We may choose any point since the integrand is analytic throughout the mapping and hence the integral is path-independent (\cite[p. 27]{driscoll}). A common choice for $w_0$ is the centre of the polygon.
 
@@ -232,9 +233,9 @@ When the polygon is elongated or has many vertices, the mapped vertices may be p
 
 \subsubsection{Fixing crowding}
 
-If the crowding is caused by $\Gamma$ being elongated then a  primitive fix is to map to an elongated domain such as the rectangle or plane. This approach is suggested in \citeb{howell90} however, as they point out, this does not eliminate all crowding and problems can still occur when there are acute peninsulae in the polygon. Mapping to an elongated domain also does not fix problems which occur when mapping from T- or H-shaped domains (so-called ``multiply elongated'' domains).
+If the crowding is caused by $\Gamma$ being elongated then a  primitive fix is to map to an elongated domain such as the rectangle or plane. This approach is suggested in \citeb{howell90}, however, as they point out, this does not eliminate all crowding and problems can still occur when there are acute peninsulae in the polygon. Mapping to an elongated domain also does not fix problems which occur when mapping from T- or H-shaped domains (so-called ``multiply elongated'' domains).
 
-In order to combat this problem more effectively, \citeb{vavasis96} propose the CRDT (cross-ratios of the Delaunay triangulation) algorithm (see below). Each set of prevertices has $K-3$ degrees of freedom hence, there is a three parameter family of possible vertex arrangements that all map to the same polygon. The most stable of these embeddings should be used.
+In order to combat this problem more effectively, \citeb{vavasis96} propose the CRDT (cross-ratios of the Delaunay triangulation) algorithm (see below). Each set of prevertices has $K-3$ degrees of freedom, hence there is a three parameter family of possible vertex arrangements that all map to the same polygon. The most stable of these embeddings should be used.
 
 This idea can be extended by noting that the polygon is identical when additional vertices are added between the current ones, provided that the internal angle associated with the new vertex is $\pi$. These extra vertices also do not change the \sch\ formula since in \eqn{unitscmap} $\alpha_k=1$ for an angle of $\pi$. Adding these extra vertices allows us to control the aspect ratio of the mapping.
 
@@ -264,7 +265,7 @@ In order to test the efficacy of the \sch\ transform for the purposes of smoothi
 
 \subsection{Ramsay horseshoe}
 
-The most obvious candidate for simulation is the Ramsay horseshoe (see \secref{ramsayfunc}). In order to map as simple a domain as possible, to begin with a bounding box was used as the $W$ domain remapped via the \texttt{evalinv()} function from the \emph{SC Toolbox}. This is shown in \fig{hswithboundingbox}. The bounding box was then transformed to the rectangle. 
+The most obvious candidate for simulation is the Ramsay horseshoe (see \secref{ramsayfunc}). In order to map as simple a domain as possible, initially a bounding box was used as the $W$ domain remapped via the \texttt{evalinv()} function from the \emph{SC Toolbox}. This is shown in \fig{hswithboundingbox}. The bounding box was then transformed to the rectangle. 
 
 \begin{figure}
 \centering
@@ -281,7 +282,7 @@ A sample of 1000 points was then taken from the horseshoe and noise added to the
 \centering
 % trim order l b r t
 \includegraphics[width=6in]{sc/figs/compsmooth.pdf} \\
-\caption{A typical set of predictions using P-splines on the transformed domain (top right), thin plate splines on the transformed domain (bottom left) and soap film smoother (bottom right) for the Ramsay horseshoe (top left). Sample size was 250, noise level was set to 1.}
+\caption{A typical set of predictions using P-splines on the transformed domain (top right), thin plate splines on the transformed domain (bottom left) and soap film smoother (bottom right) for the Ramsay horseshoe (top left). Sample size was 250, the standard deviation of the Gaussian noise added to the samples was set to 1.}
 \label{compsmooth}
 % generated by figs/pspline.soap.comp.hs.R
 \end{figure}
@@ -363,7 +364,7 @@ The second domain tested was the alternate version of the Ramsay horseshoe from 
 
 The alternative horseshoe begins to see the soap film creep ahead of the transformation method (see \tabref{scaltramsayresultstable}). Although the MSEs are of approximately the same order (as are the standard errors), the soap film has a lower average MSE for more models now. 
 
-Looking at \fig{altramsaycomp} and show that the \sch\ mapping with P-splines captures the overall structure of the shape better than the soap film smoother, which is rather patchy in its reproduction of the alternate horseshoe. Although the P-spline fit ignores the gradient at the ends of the shape. The \sch\ with \tprs\ basis appears worst here, not capturing any of the main features of the domain.
+Figure \ref{altramsaycomp} shows that the \sch\ mapping with P-splines captures the overall structure of the shape better than the soap film smoother, which is rather patchy in its reproduction of the alternate horseshoe. Although the P-spline fit ignores the gradient at the ends of the shape. The \sch\ with \tprs\ basis appears worst here, not capturing any of the main features of the domain.
 
 \begin{sidewaystable}[hp]
 \begin{tabular}{c c c c c c}\\
