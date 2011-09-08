@@ -58,55 +58,51 @@ This proof was adapted from the one given in lecture notes by Leonidas Guibas av
 %
 \subsection{The algorithm terminates at the shortest path}
 
-%%By definition it is clear that the algorithm must terminate at the point at which no further DELETE or ALTER steps will shorten the path. However, what is not clear is that it will terminate at the shortest path within the domain.
-%%
-%%Say we have a locally optimal path, $P_l$. This path is locally optimal in the sense that any small perturbation of the points in $P_l$ does not yield a shorter path (i.e. the algorithm has converged) but the vertices of $P_l$ are not all identical to those of the unique (globally) shortest path $P_o$. The following argument shows that $P_l$ cannot exist. 
-%%
-%%As in the above proof of the uniqueness of the shortest path, consider the loop $L$, formed by taking the first and last disjoint vertices of $P_l$ and $P_o$ and those points between, those points in $L$ belonging to $P_o$ are denoted $L_o$ and similarly those points belonging to $P_l$ are denoted $L_l$ (i.e. intersection of $L_l$ and $L_o$ are the start and ends of the disjointness). It must always be possible to move the points in $L_l$ towards $L_o$ smoothly (i.e. continuously through space) since there are no holes in the domain. This deformation must always continuously reduce the overall path length of $P_l$.
-%%
-%%Now it remains to be shown that such a deformation can be performed by using the DELETE and ALTER steps. 
-%%
-%%Now consider $L$ which forms an envelope of all possible path segments shorter than $L_l$ (since it is bound on one side by $L_o$ the true shortest path and it is possible to smoothly deform from $L_l$ to $L_o$. 
-%%
-%%Any proposed path must lie within $L$ since its start and end points lie on $L_l$.
-%%
-%%Accepted paths must lie in $L$ since otherwise the path would be longer than $L_l$ and could not be accepted.
-%%
-%%
-%%Thinking only about ALTER steps (since a DELETE step is simply an ALTER step where the replacement path is the start and end points only), at least one path can be proposed and must be selected. 
-%%
-%%A path proposed by ALTER must include 
-%%
-%%If this were not the case then it would imply $L_l$ could not be shortened by drawing straight lines between a point pair and tracing the boundary. 
-%%
-%%
-%%
-%%Is moving one point enough? Can I make a slippery slope argument that if I can move one point a bit then I can move them all? The movement needs to be by an ALTER step.
+By definition it is clear that the algorithm must terminate at the point at which no further DELETE or ALTER steps will shorten the path. However, what is not clear is that it will terminate at the shortest path within the domain.
+
+Say we have a locally optimal path, $P_l$. This path is locally optimal in the sense that any small perturbation of the points in $P_l$ does not yield a shorter path (i.e. the algorithm has converged) but the vertices of $P_l$ are not all identical to those of the unique (globally) shortest path $P_o$. The following argument shows that $P_l$ cannot exist. 
+
+As in the above proof of the uniqueness of the shortest path, consider the loop $L$, formed by taking the first and last disjoint vertices of $P_l$ and $P_o$ and those points between, those points in $L$ belonging to $P_o$ are denoted $L_o$ and similarly those points belonging to $P_l$ are denoted $L_l$ (i.e. intersection of $L_l$ and $L_o$ are the start and ends of the disjointness). It must always be possible to move the points in $L_l$ towards $L_o$ smoothly (i.e. continuously through space) since there are no holes in the domain. This deformation must always continuously reduce the overall path length of $P_l$.
+
+Now it remains to be shown that such a deformation can be performed by using the DELETE and ALTER steps. 
+
+Now consider $L$ which forms an envelope of all possible path segments shorter than $L_l$ (since it is bound on one side by $L_o$ the true shortest path and it is possible to smoothly deform from $L_l$ to $L_o$. 
+
+Any proposed path must lie within $L$ since its start and end points lie on $L_l$.
+
+Accepted paths must lie in $L$ since otherwise the path would be longer than $L_l$ and could not be accepted.
 
 
-%
-%If it is possible to go from $L_l$ to $L_o$ using only DELETE steps then we are done. However, if it is not possible to go between the locally and globally optimal paths using only DELETE steps then that implies that the boundary is in the way (only the boundary, since there are no holes).  In that case then ALTER steps must be used. If ALTER steps are used then they must be at least one ALTER proposed path that reduces the overall length of $P_l$ since  there is nothing between $L_o$ and $L_l$ the f
-%
-%Consider L, any proposed path within $L$ will give a shorter path since it will reduce the size of $L$. All paths proposed by ALTER lie within L (since their start and end points are vertices of L and their constituent points must be inside L by the DELETE after the INIT). So, the ALTER step must reduce the path, then you can always go from $L_l$ to $L_o$
-%
-%
-%If the ALTER step cannot find a path along an encroaching boundary segment that decreases the total path length (i.e. that a local optimum does exist)
-%
-%
-%If it could not be performed using DELETE and ALTER steps then..!!!!
-%
-%
-%Can't propose a new shorter subpath using ALTER => 
-%
-%
-%In L run INIT part of ALTER
-%
-%
-%In any of the three cases above we can always smoothly deform $L_l$ to $L_o$, since there are no obstacles (i.e. holes) between the two paths (and at each stage, this deformation must always reduce the overall path length of $P_l$). Since there are no obstacles between $L_l$ and $L_o$, it is possible to triangulate the area bounded by $L$ and therefore go from $L_l$ to $L_o$ via a series of DELETE steps. 
-%
-%
-%So, it is always possible to move from a locally optimal path to a globally optimal path this implies that there are no locally optimal paths and therefore that the path given by the algorithm is the unique shortest path.
-%
+Thinking only about ALTER steps (since a DELETE step is simply an ALTER step where the replacement path is the start and end points only), at least one path can be proposed and must be selected. 
+
+A path proposed by ALTER must include 
+
+If this were not the case then it would imply $L_l$ could not be shortened by drawing straight lines between a point pair and tracing the boundary. 
+
+
+
+Is moving one point enough? Can I make a slippery slope argument that if I can move one point a bit then I can move them all? The movement needs to be by an ALTER step.
+
+
+
+If it is possible to go from $L_l$ to $L_o$ using only DELETE steps then we are done. However, if it is not possible to go between the locally and globally optimal paths using only DELETE steps then that implies that the boundary is in the way (only the boundary, since there are no holes).  In that case then ALTER steps must be used. If ALTER steps are used then they must be at least one ALTER proposed path that reduces the overall length of $P_l$ since  there is nothing between $L_o$ and $L_l$ the f
+
+Consider L, any proposed path within $L$ will give a shorter path since it will reduce the size of $L$. All paths proposed by ALTER lie within L (since their start and end points are vertices of L and their constituent points must be inside L by the DELETE after the INIT). So, the ALTER step must reduce the path, then you can always go from $L_l$ to $L_o$
+
+
+If the ALTER step cannot find a path along an encroaching boundary segment that decreases the total path length (i.e. that a local optimum does exist)
+
+
+If it could not be performed using DELETE and ALTER steps then..!!!!
+
+
+Can't propose a new shorter subpath using ALTER => 
+
+
+In L run INIT part of ALTER
+
+
+In any of the three cases above we can always smoothly deform $L_l$ to $L_o$, since there are no obstacles (i.e. holes) between the two paths (and at each stage, this deformation must always reduce the overall path length of $P_l$). 
 
 
 
@@ -114,64 +110,50 @@ This proof was adapted from the one given in lecture notes by Leonidas Guibas av
 
 
 
-%By definition the path must get shorter at each iteration up until the point at which the algorithm terminates.
-%
-%To show that the path is the shortest path when the algorithm terminates, it is satisfactory to show that each individual triple is optimal. This is true since if the path is shortest then each sub-path (triplet) must also be shortest, otherwise it would be possible to shorten one or more of the triplets and obtain a shorter total path.
-%
-%First it is necessary to break down the possible scenarios for each triplet and then show the possible outcomes for each fo these.
-%
-%Given the triplet $(v_{i}, v_{i+1}, v_{i+2})$ there are four possible options:
+By definition the path must get shorter at each iteration up until the point at which the algorithm terminates.
+
+All cases where ALTER can propose new paths (in the sense of 4, above) are more complicated versions of the situation shown in the first panel of figure \ref{app-WAD-alterstep-dia}. The key features in the figure are that the point $v_{i+1}$ can be replaced with the point $v_{i+1}^*$. This is the simplest case when the ALTER step can be used. 
+
+The other cases shown in the other two panels show two possible situations.
+
+Only need ALTER when the path ``sticks'' to the wrong side of the boundary. This doesn't happen when ALTER is run for a second time, because that would require that there are islands.
+
+The ALTER step creates a path which consists of the minimal number of vertices of the boundary that it is necessary to touch in order to traverse that boundary. The DELETE sub-step will remove any unnecessary points, there will never be a need to remove further points of run ALTER on sub-paths of the proposed path since ARGHHHH
+
+fix endpoints, gives envelope, LATER gives shortest within envelope path.... ????
+
+
+
+
+In essence the ALTER step is finding a convex hull around the boundary and the points $v_{i}$ and $v_{i+2}$ with respect to the boundary.
+
+
+WHYWHYWHY
+
+
+
+One can think of the ALTER step as like taking a string and laying it on the boundary, then gradually pulling it taught from $v_i$ and $v_{i+2}$. This is equivalent to tracing the boundary, the string will have kinks at the vertices of the boundary (creating $\mathcal{P}_I$) and then removing the triangles is like pulling the string, leaving only those vertices that are absolutely necessary for the path (running DELETE on $\mathcal{P}_I$ to get $\mathcal{P}_{ID}$.)
+
+
+
+%However all situations reduce to an essentially similar situation. It is useful to think of taking the point $v_{i+1}^*$ and adding extra vertices and edges at that point, expanding from there creating a more complex boundary. Henceforth this set of boundary points are referred to as the ``obstacle'', these are the grey shaded areas in figure \ref{app-WAD-alterstep-dia}. With this in mind, two situations arise:
 %\begin{enumerate}
-%   \item Trivially $v_{i}=v_{i+1}=v_{i+2}$, in which case the DELETE step will remove all but $v_{i}$.
-%   \item One of $v_{i}=v_{i+1}$, $v_{i}=v_{i+2}$ or $v_{i+1}=v_{i+2}$, again the DELETE step will remove the duplicate vertex.
-%   \item $(v_{i}, v_{i+1}, v_{i+2})$ form a triangle. The DELETE step will remove $v_{i+1}$.
-%   \item $(v_{i}, v_{i+1}, v_{i+2})$ do not form a triangle. In this case there is some ``obstacle'' between $v_{i}$ and $v_{i+2}$ (ie. there is not a straight line path between $v_i$ and $v_{i+2}$). In this case ALTER is used to navigate the path around the obstacle.
+%   \item The grey obstacle is a concave, ie. the shortest path is simply a staight line between two points on the boundary which avoid all of the other vertices on the boundary that make up the obstacle (the second panel in figure \ref{app-WAD-alterstep-dia}. In this case since we can split the area ``under'' the two end points into triangles (since polygons can always be triangulated CITE TKTKTK), the DELETE step removes all of the extra path elements.
+%   \item The grey obstacle is convex after removing any triangles created by tracing the boundary, ie. more than the two end points are required to form a path around the obstacle. This is shown in the third panel in figure \ref{app-WAD-alterstep-dia}. In this case, tracing the boundary and removing triangles in the path will still yield the shortest path. We can always obtain the shortest path by tracing the boundary and removing triangles since there cannot be any ALTER steps needed (since that would imply holes) and then the path can simply be minimized by DELETE steps.
 %\end{enumerate}
-%
-%In cases 1-3, it is clear by definition that the new path will be shorter. The final case is now covered in detail; in essence this amounts to showing that all subpaths proposed by ALTER are shortest paths.
-%
-%All cases where ALTER can propose new paths (in the sense of 4, above) are more complicated versions of the situation shown in the first panel of figure \ref{app-WAD-alterstep-dia}. The key features in the figure are that the point $v_{i+1}$ can be replaced with the point $v_{i+1}^*$. This is the simplest case when the ALTER step can be used. 
-%
-%The other cases shown in the other two panels show two possible situations.
-%
-%Only need ALTER when the path ``sticks'' to the wrong side of the boundary. This doesn't happen when ALTER is run for a second time, because that would require that there are islands.
-%
-%The ALTER step creates a path which consists of the minimal number of vertices of the boundary that it is necessary to touch in order to traverse that boundary. The DELETE sub-step will remove any unnecessary points, there will never be a need to remove further points of run ALTER on sub-paths of the proposed path since ARGHHHH
-%
-%fix endpoints, gives envelope, LATER gives shortest within envelope path.... ????
-%
-%
-%
-%
-%In essence the ALTER step is finding a convex hull around the boundary and the points $v_{i}$ and $v_{i+2}$ with respect to the boundary.
-%
-%
-%WHYWHYWHY
-%
-%
-%
-%One can think of the ALTER step as like taking a string and laying it on the boundary, then gradually pulling it taught from $v_i$ and $v_{i+2}$. This is equivalent to tracing the boundary, the string will have kinks at the vertices of the boundary (creating $\mathcal{P}_I$) and then removing the triangles is like pulling the string, leaving only those vertices that are absolutely necessary for the path (running DELETE on $\mathcal{P}_I$ to get $\mathcal{P}_{ID}$.)
-%
-%
-%
-%%However all situations reduce to an essentially similar situation. It is useful to think of taking the point $v_{i+1}^*$ and adding extra vertices and edges at that point, expanding from there creating a more complex boundary. Henceforth this set of boundary points are referred to as the ``obstacle'', these are the grey shaded areas in figure \ref{app-WAD-alterstep-dia}. With this in mind, two situations arise:
-%%\begin{enumerate}
-%%   \item The grey obstacle is a concave, ie. the shortest path is simply a staight line between two points on the boundary which avoid all of the other vertices on the boundary that make up the obstacle (the second panel in figure \ref{app-WAD-alterstep-dia}. In this case since we can split the area ``under'' the two end points into triangles (since polygons can always be triangulated CITE TKTKTK), the DELETE step removes all of the extra path elements.
-%%   \item The grey obstacle is convex after removing any triangles created by tracing the boundary, ie. more than the two end points are required to form a path around the obstacle. This is shown in the third panel in figure \ref{app-WAD-alterstep-dia}. In this case, tracing the boundary and removing triangles in the path will still yield the shortest path. We can always obtain the shortest path by tracing the boundary and removing triangles since there cannot be any ALTER steps needed (since that would imply holes) and then the path can simply be minimized by DELETE steps.
-%%\end{enumerate}
 
 
-%\begin{figure}
-%\centering
-%\includegraphics[width=6in]{app-WAD/figs/alterstep-proof.pdf} \\
-%\caption{three panels!}
-%\label{app-WAD-alterstep-dia}
-%% generated by thesis/app-WAD/figs/makealterstepdia.R
-%\end{figure}
-%
-%
-%Since the ALTER step is optimal locally that shows that all triplets are are optimal and hence the whole path is optimal. So paths are shortest paths.
-%
+\begin{figure}
+\centering
+\includegraphics[width=6in]{app-WAD/figs/alterstep-proof.pdf} \\
+\caption{three panels!}
+\label{app-WAD-alterstep-dia}
+% generated by thesis/app-WAD/figs/makealterstepdia.R
+\end{figure}
+
+
+Since the ALTER step is optimal locally that shows that all triplets are are optimal and hence the whole path is optimal. So paths are shortest paths.
+
 
 
 \subsection{The computational complexity of the algorithm}
