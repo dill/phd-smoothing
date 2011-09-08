@@ -15,7 +15,7 @@ Integrating these methods into a GAM (which is desirable so that other terms and
    \item Kriging could be used to smooth in high dimensions, however there are technical limitations on the number of dimensions that are possible. In particular ensuring that the semivariogram remains positive definite (\cite{boisvert}). Although there has been work using MDS to obtain isotropic distances for semivariogram estimation, there has not been work on how to deal with the mean field when it is non-constant, incorporating a trend into the mean field when it has been projected into high dimensions will lead to similar difficulties as in the spline smoothing case. This is covered in more detail in \secref{gds-krig}, below.
 \end{enumerate}
 
-All of the methods listed above have problems that thin plate splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions. Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
+All of the methods listed above have problems that thin plate splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions (see figure \ref{nullspace-dim}). Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalised functions in the resulting smooths. 
 
 When originally proposing thin plate splines in his seminal 1977 paper, Duchon actually describes a much more general set of interpolation methods; thin plate splines are just a particular example of these. This chapter illustrates how a more general version of the thin plate spline (henceforth referred to as Duchon splines) can be used for high dimensional smoothing whilst avoiding a large and complex penalty nullspace.
 
@@ -23,7 +23,7 @@ The next section goes into the technical detail of how Duchon splines work and h
 
 \section{Using Duchon splines for reliable high dimensional smoothing}
 
-This section starts from the definition of the thin plate spline penalty and shows how one can motivate the more general Duchon spline penalty. Although this is not strictly mathematically rigorous, the aim is to show how the penalty works and that the main differences between it and the thin plate spline. A full technical exposition (from a mathematical rather than statistical point of view) is given in \citeb{duchon77}. This section goes on to show how (once reliable high dimensional smoothing can be performed) the size of the MDS projection dimension can be selected.
+This section starts from the definition of the thin plate spline penalty and shows how one can motivate the more general Duchon spline penalty. The aim is to show how the penalty works and that the main differences between it and the thin plate spline. A full technical exposition (from a mathematical rather than statistical point of view) is given in \citeb{duchon77}. This section goes on to show how (once reliable high dimensional smoothing can be performed) the size of the MDS projection dimension can be selected.
 
 \subsection{From thin plate splines to Duchon splines}
 \label{gds-tprstoduchon}
@@ -39,15 +39,16 @@ It can then be shown that the thin plate spline basis minimizes (\ref{tprs-pen})
 f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
 \end{equation*}
 where the first summation is a series of (local) radial basis functions ($i$ indexing the $n$ data) and the second summation are a set of (global) linearly independent polynomials of degree less than $m$. The terms in the second summation are unpenalised (since their derivatives are zero).  There are $M$ of these polynomials lying in the nullspace of the penalty, where $M$ is given by:
-\begin{equation*}
+\begin{equation}
 M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}.
-\end{equation*}
+\label{gds-bigm}
+\end{equation}
 In the cases presented so far, $d$ (the MDS projection dimension) is known and $m$ is dictated by $d$, since $2m>d$. $M$ therefore increases very quickly with the number of dimensions; this is shown by the blue line in figure \ref{nullspace-dim}. As more functions are included in the nullspace, the more and more complex (because of their linear independence) the functions are. A large number of increasing complex, global functions which are unpenalized pose a serious threat to the fitting of parsimonious models.
 
 \begin{figure}
 \centering
 \includegraphics[width=3in]{gds/figs/nullspace-dim.pdf} \\
-\caption{Relationship between smoothing dimension ($d$) and the nullspace dimension ($M$) when $m=2$ for thin plate regression splines (blue) and Duchon splines (red). Note that as the nullspace dimension increases, the complexity of those functions in the nullspace increases too.}
+\caption{Relationship between smoothing dimension ($d$) and the nullspace dimension ($M$) when $m$ (the derivative penalty order) is set to 2 for thin plate regression splines (blue) and Duchon splines (red). Note that as the nullspace dimension increases, the complexity of those functions in the nullspace increases too. For the thin plate splines a combination of the continuity condition that $2m>d$ and the form of $M$ (see (\ref{gds-bigm})) makes the size of the nullspace increase very quickly with smoothing dimension.}
 \label{nullspace-dim}
 % generated by thesis/mds/figs/nullspace-dim.R
 \end{figure}
