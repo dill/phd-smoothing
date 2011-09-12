@@ -9,34 +9,26 @@ library(ggplot2)
 
 
 # sc+ps 
-dat<-read.csv(paste("ramsay/pspline.results.txt",sep=""))
-dat<-cbind(dat,rep("sc+ps",nrow(dat)))
+dat<-read.csv(paste("altramsay/pspline.results.txt",sep=""))
 dat<-dat[,-1]
+dat<-data.frame(mse=dat[,1],model=rep("sc+ps",nrow(dat)))
 big.dat<-dat
-names(big.dat)<-c("mse","model")
 
 # soap
-dat<-read.csv(paste("ramsay/results.file.txt",sep=""))
-dat<-cbind(dat,rep("soap",nrow(dat)))
+dat<-read.csv(paste("altramsay/pspline.results.txt",sep=""))
 dat<-dat[,-1]
-dat<-dat[,-2]
-names(dat)<-c("mse","model")
+dat<-data.frame(mse=dat[,2],model=rep("soap",nrow(dat)))
 big.dat<-rbind(big.dat,dat)
 
 # sc+tp
-dat<-read.csv(paste("ramsay/tp-noisey-0.5.results.txt",sep=""))
-dat<-cbind(dat,rep("sc+tp",nrow(dat)))
-dat<-dat[,-1]
-names(dat)<-c("mse","model")
+dat<-read.csv(paste("altramsay/tp-noisey-0.5.results.txt",sep=""))
+dat<-data.frame(mse=dat[,2],model=rep("sc+tp",nrow(dat)))
 big.dat<-rbind(big.dat,dat)
 
 # tprs
-dat<-read.csv(paste("ramsay/tp-0.3-1000.results.txt",sep=""))
-dat<-cbind(dat,rep("tprs",nrow(dat)))
-dat<-dat[,-1]
-names(dat)<-c("mse","model")
+dat<-read.csv(paste("altramsay/alttp-0.3-1000.results.txt",sep=""))
+dat<-data.frame(mse=dat[,2],model=rep("tprs",nrow(dat)))
 big.dat<-rbind(big.dat,dat)
-
 
 mse<-cbind(big.dat$mse[1:1000],
            big.dat$mse[1001:2000],
@@ -75,7 +67,7 @@ sample.sizes<-c(500,250,100)
 
 for(my.size in sample.sizes){
 
-   dat<-read.csv(paste("ramsay/sample.size.",my.size,".results.txt",sep=""))
+   dat<-read.csv(paste("altramsay/sample.size.",my.size,".results.txt",sep=""))
    dat<-dat[,-1]
    dat<-c(dat[,1],dat[,2])
    dat<-data.frame(mse=dat,
@@ -83,10 +75,10 @@ for(my.size in sample.sizes){
                            rep("sc+ps",length(dat)/2)))
 
    
-   dat1<-read.csv(paste("ramsay/tp-sample.size.",my.size,".results.txt",sep=""))
+   dat1<-read.csv(paste("altramsay/tp-sample.size.",my.size,".results.txt",sep=""))
    dat1<-data.frame(mse=dat1[,2],model=rep("sc+tp",nrow(dat1)))
 
-   dat2<-read.csv(paste("ramsay/tp-0.3-",my.size,".results.txt",sep=""))
+   dat2<-read.csv(paste("altramsay/alttp-0.3-",my.size,".results.txt",sep=""))
    dat2<-data.frame(mse=dat2[,2],model=rep("tprs",nrow(dat2)))
 
    dat<-rbind(dat,dat1,dat2)
@@ -125,7 +117,7 @@ error.levels<-c(0.5,1,2)
 
 for(my.error in error.levels){
    # read in the table
-   dat<-read.csv(paste("ramsay/noisey-",my.error,".results.txt",sep=""))
+   dat<-read.csv(paste("altramsay/noisey-",my.error,".results.txt",sep=""))
    dat<-dat[,-1]
    dat<-c(dat[,1],dat[,2])
    dat<-data.frame(mse=dat,
@@ -135,10 +127,10 @@ for(my.error in error.levels){
    names(dat)<-c("mse","model")
 
    # read in the tp stuff    
-   dat1<-read.csv(paste("ramsay/tp-noisey-",my.error,".results.txt",sep=""))
+   dat1<-read.csv(paste("altramsay/tp-noisey-",my.error,".results.txt",sep=""))
    dat1<-data.frame(mse=dat1[,2],model=rep("sc+tp",nrow(dat1)))
 
-   dat2<-read.csv(paste("ramsay/tp-",my.error,"-1000.results.txt",sep=""))
+   dat2<-read.csv(paste("altramsay/alttp-",my.error,"-1000.results.txt",sep=""))
    dat2<-data.frame(mse=dat2[,2],model=rep("tprs",nrow(dat2)))
 
    dat<-rbind(dat,dat1,dat2)
@@ -177,11 +169,11 @@ theme_set(theme_bw())
 p<-ggplot(big.dat)
 p<-p+geom_boxplot(aes(y=log(mse),x=model,fill=cols),outlier.size=1)
 p<-p+facet_wrap(noise~n,ncol=4)#,scales="free_y")
-p<-p+scale_fill_manual(value = c("green","red","white"),legend=FALSE)
+p<-p+scale_fill_manual(value = c("red","white","green"),legend=FALSE)
 p<-p+opts(panel.grid.major=theme_blank(),
                     panel.grid.minor=theme_blank(),
                     panel.background=theme_rect())
 p<-p+labs(x="Method",y="log(mean MSE per realisation)")
 print(p)
 
-ggsave(file="ramsay-boxplot.pdf",height=4,width=8)
+ggsave(file="altramsay-boxplot.pdf",height=4,width=8)
