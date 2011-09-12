@@ -377,16 +377,26 @@ The simulations consisted of 200 realisations of 250 samples from the surface in
 
 Looking at a typical realisation in \fig{wt2-comp-0.9} (noise level = 0.9, SNR = 0.75, sample size 250), the \tprs\ can be seen showing signs on leakage across the two main peninsulae, whereas \mdsap\ and the soap film do not show this. However the \tprs\ does reproduce the peak in the lower right much more faithfully, the other two smoothing over it. In this realisation, \mdsap\ deals with the values inside the peninsula a little better than the soap film smoother (the contour lines are closer to those in the true function). On the other hand, the soap film captures the shape of the lower right peak slightly more accurately.
 
-Table \ref{wt2resultstable} gives the MSE and EDF for the models above averaged over 200 realisations. There is not a massive difference between the results in MSE terms, the soap film smoother consistently has a lower MSE, although not by much. The soap film also tends to fit simpler models than the other two approaches. The boxplots of the logarithm of the per-realisation MSEs are shown in \fig{mds-wt2-boxplot}.
+Figures \ref{mds-wt2-boxplot} and \ref{mds-wt2-boxplot-edf} show boxplots of the MSE and EDF for the models above. There is not a massive difference between the results in MSE terms, the soap film smoother consistently has a statistically significantly lower MSE (at the 0.01 level). The soap film also tends to fit simpler models than the other two approaches except at the highest noise level.
 
 % boxplot for wt2
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{mds/figs/mds-wt2-boxplot.pdf} \\
-\caption{Boxplots of the logarithm of the MSE per realisation of the peninsula domain for the MDS approach, soap film smoother and \tprs\ for noise levels 0.35, 0.9 and 1.55 (left to right, respectively). A paired Wilcoxon signed rank test shows that the MSEs for the two other models were significantly different from the soap film smoother at the 0.01 level.}
+\caption{Boxplots of the logarithm of the MSE per realisation of the peninsula domain for the MDS approach (``mds+tp''), soap film smoother (``soap'') and \tprs\ (``tprs'') for noise levels 0.35, 0.9 and 1.55. A paired Wilcoxon signed rank test shows that the MSEs for the two other models were significantly different from the soap film smoother at the 0.01 level.}
 \label{mds-wt2-boxplot}
 % generated using phd-smoothing/mds/sim/boxplot-wt2-1.R
 \end{figure}
+
+% EDF boxplot for wt2
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{mds/figs/mds-wt2-boxplot-edf.pdf} \\
+\caption{Boxplots of the EDF for each model per realisation of the peninsula domain for the MDS approach(``mds+tp''), soap film smoother (``soap'') and \tprs\ (``tprs'') for noise levels 0.35, 0.9 and 1.55.}
+\label{mds-wt2-boxplot-edf}
+% generated using phd-smoothing/mds/sim/boxplot-wt2-1-edf.R
+\end{figure}
+
 
 %\begin{table}[t]
 %\centering
@@ -680,51 +690,61 @@ Using the same setup as in \secref{mds-wt2-sim}, for each error level (0.35, 0.9
 
 The models that were fitted were:
 \begin{enumerate}
-\item \emph{TPRS}: \tprs\ with basis size 140.
-\item \emph{MDS+TP}: \mdsap\ using a \tprs\ with basis size 140.
-\item \emph{MDS+3D}: \mdsap\ using a 3-dimensional \tprs\ with basis size 140. Here MDS was used to project the data into three dimensions rather than two.
-\item \emph{MDS+ADJ}: \mdsap\ using a \tprs\ with basis size 140, with penalty adjustments.
-\item \emph{Soap film smoother}: using 109 internal knots evenly spaced on a grid over the domain, with boundary basis size 60.
+\item \emph{tprs}: \tprs\ with basis size 140.
+\item \emph{mds+tp}: \mdsap\ using a \tprs\ with basis size 140.
+\item \emph{mds 3D}: \mdsap\ using a 3-dimensional \tprs\ with basis size 140. Here MDS was used to project the data into three dimensions rather than two.
+\item \emph{mds+adj}: \mdsap\ using a \tprs\ with basis size 140, with penalty adjustments.
+\item \emph{soap}: soap film smoother using 109 internal knots evenly spaced on a grid over the domain, with boundary basis size 60.
 \end{enumerate}
 
-As can be seen in \tabref{bigwt2resultstable}, the results from MDS+ADJ are actually worse than those from just MDS+TP in all but the lowest noise case. \Fig{big-wt2-mses} shows box plots of these results.
+The results from mds+adj are actually worse than those from just mds+tp in all but the lowest noise case. \Fig{big-wt2-mses} shows boxplots of these results.
 
-However, all is not lost, MDS+3D is competitive across the board, beating the soap film smoother in some cases. In the high noise case the MDS+TP has a lower and less variable MSE than MDS+CR, this may well be due to the \tprs\ enforcing the isotopy in a high-noise case and this constraint has lead to a less wiggly model being fitted, which happens to be closer to the truth in this case. As for the 3-D projection, the plots in \fig{wt2-3d-proj} show that the additional dimension allows for further separation of both a large and small peninsulae, which should help with the anisotropy as well as leakage.
+However, all is not lost, MDS+3D seems competitive across the board, but is always significantly worse than the soap film smoother (by a paired Wilcoxon signed rank test on the MSEs).  As for the 3-dimensional projection, the plots in \fig{wt2-3d-proj} show that the additional dimension allows for further separation of both a large and small peninsulae, which should help with the anisotropy as well as leakage. As would be expected, the method using the adjusted penalty had a lower EDF than the other methods aside from the vanilla thin plate splines (see figure \ref{big-wt2-edfs}). Interestingly the model using the 3-dimensional projection also has a low EDF, showing that there may be some utility in using such a method especially considering its relatively low MSE.
 
 A Wilcoxon signed rank test, matching pairs between realisations showed that there was a significant difference between the MSE of each model and the soap film smoother. As can be seen from \fig{big-wt2-mses}, soap outperforms all of the other methods on this domain, with MDS+3D coming in second. 
 
-Finally, note that there were three realisations omitted (for all models) in \tabref{bigwt2resultstable} and \fig{big-wt2-mses}. In these realisations the soap film smoother failed to fit the model due to knot placement. These can be safely removed as, in practise, the computer would inform the user that the knot placement was not appropriate and the knot layout could be altered.
+Finally, note that there were three realisations omitted (for all models) in figures \ref{big-wt2-mses} and \ref{big-wt2-edfs}. In these realisations the soap film smoother failed to fit the model due to knot placement. These can be safely removed as, in practise, the computer would inform the user that the knot placement was not appropriate and the knot layout could be altered.
 
-\begin{sidewaystable}[p]
-\centering
-\begin{tabular}{c c c c c c}
- & &  MSE  & & &\\ 
-Noise level  & tprs & mds+tp & mds+tp 3D & mds+tp+adj & soap\\ 
-\hline
-0.35  & 0.0832 (1e-04) & 0.0713 (5e-05) &  0.0579 (5e-05) & 0.0697 (5e-05) & 0.0598 (0.00032) \\ 
-0.9  & 0.1957 (0.00017) & 0.1788 (0.00013) & 0.1478 (0.00014) & 0.1875 (0.00017) & 0.1616 (0.00201) \\ 
-1.55  & 0.3576 (0.00035) & 0.285 (0.00027) & 0.2765 (0.00032) & 0.3509 (4e-04) & 0.245 (0.00034) \\
-\end{tabular}
-\begin{tabular}{c c c c c c}
- & &  EDF  & & &\\ 
-Noise level  & tprs & mds+tp & mds+tp 3D & mds+tp+adj & soap\\ 
-\hline
-0.35  & 77.8675 (0.03803) & 80.5454 (0.04111) & 61.3458 (0.05324) & 73.3275 (0.03707) & 55.2464 (0.04684)\\ 
-0.9  & 47.0214 (0.0378) & 34.357 (0.05645)  & 30.5807 (0.04027) & 40.409 (0.03805) & 29.6874 (0.04514) \\
-1.55  & 31.8803 (0.03843) & 18.3575 (0.03865) & 19.7871 (0.03128) & 26.6778 (0.03572) & 20.3529 (0.03171)\\ 
-\end{tabular}
-\caption{Mean MSE and EDF for the five models fitted to the peninsula domain with standard errors (in brackets) over 197 realisations.}
-\label{bigwt2resultstable}
-\end{sidewaystable}
+%\begin{sidewaystable}[p]
+%\centering
+%\begin{tabular}{c c c c c c}
+% & &  MSE  & & &\\ 
+%Noise level  & tprs & mds+tp & mds+tp 3D & mds+tp+adj & soap\\ 
+%\hline
+%0.35  & 0.0832 (1e-04) & 0.0713 (5e-05) &  0.0579 (5e-05) & 0.0697 (5e-05) & 0.0598 (0.00032) \\ 
+%0.9  & 0.1957 (0.00017) & 0.1788 (0.00013) & 0.1478 (0.00014) & 0.1875 (0.00017) & 0.1616 (0.00201) \\ 
+%1.55  & 0.3576 (0.00035) & 0.285 (0.00027) & 0.2765 (0.00032) & 0.3509 (4e-04) & 0.245 (0.00034) \\
+%\end{tabular}
+%\begin{tabular}{c c c c c c}
+% & &  EDF  & & &\\ 
+%Noise level  & tprs & mds+tp & mds+tp 3D & mds+tp+adj & soap\\ 
+%\hline
+%0.35  & 77.8675 (0.03803) & 80.5454 (0.04111) & 61.3458 (0.05324) & 73.3275 (0.03707) & 55.2464 (0.04684)\\ 
+%0.9  & 47.0214 (0.0378) & 34.357 (0.05645)  & 30.5807 (0.04027) & 40.409 (0.03805) & 29.6874 (0.04514) \\
+%1.55  & 31.8803 (0.03843) & 18.3575 (0.03865) & 19.7871 (0.03128) & 26.6778 (0.03572) & 20.3529 (0.03171)\\ 
+%\end{tabular}
+%\caption{Mean MSE and EDF for the five models fitted to the peninsula domain with standard errors (in brackets) over 197 realisations.}
+%\label{bigwt2resultstable}
+%\end{sidewaystable}
 
 % big wt2 sim MSEs
-\begin{sidewaysfigure}
+\begin{figure}
 \centering
-\includegraphics[width=9.5in]{mds/figs/big-mds-wt2-boxplot.pdf} \\
-\caption{Logarithm of per realisation average mean squared error for the double peninsulae domain. Models are in groups of five for each error level (0.35,0.9,1.55). In all cases, a Wilcoxon signed rank test showed that MSEs for all models were significantly different from the soap film smoother ($\text{p-value} < 10^{-6}$).}
+\includegraphics[width=\textwidth]{mds/figs/big-mds-wt2-boxplot.pdf} \\
+\caption{Logarithm of per realisation average mean squared error for the double peninsulae domain. Models are in groups of five for each error level (0.35,0.9,1.55). In all cases, a Wilcoxon signed rank test showed that MSEs for all models were significantly different from the soap film smoother (at the 0.01 level).}
 \label{big-wt2-mses}
 % generate /phd-smoothing/mds/sim/boxplot-wt2.R
-\end{sidewaysfigure}
+\end{figure}
+
+% big wt2 sim MSEs
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{mds/figs/big-mds-wt2-boxplot-edf.pdf} \\
+\caption{Per realisation EDFs for the double peninsulae domain. Models are in groups of five for each error level (0.35,0.9,1.55).}
+\label{big-wt2-edfs}
+% generate /phd-smoothing/mds/sim/boxplot-wt2-edf.R
+\end{figure}
+
 
 
 \subsubsection{Aral sea}
@@ -754,7 +774,7 @@ Although the leakage is avoided, there appear to be some strange artefacts in th
 
 \begin{figure}
 \centering
-\includegraphics[width=6.25in]{mds/figs/aral-pp.pdf} \\
+\includegraphics[width=\textwidth]{mds/figs/aral-pp.pdf} \\
 \caption{The prediction points for the Aral sea data set (left), with their projection into MDS space (right).}
 \label{aral-pp}
 % generated by phd-smoothing/mds/aral/pointplot.R
@@ -837,7 +857,7 @@ Adding an extra dimension could help. Taking a 3-dimensional projection, \fig{md
 
 \begin{figure}
 \centering
-\includegraphics[width=6in]{mds/figs/comb-3d.pdf} \\
+\includegraphics[width=\textwidth]{mds/figs/comb-3d.pdf} \\
 \caption{The MDS projection of the domain in \fig{mds-comb} into three dimensions. Note that there is still no separation in for the smaller peninsulae.}
 \label{mds-comb-3d}
 % generated by thesis/mds/figs/comb.R
