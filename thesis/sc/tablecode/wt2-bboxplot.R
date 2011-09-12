@@ -72,4 +72,4 @@ p<-p+opts(panel.grid.major=theme_blank(),
 p<-p+labs(x="Method",y="log(mean MSE per realisation)")
 print(p)
 
-ggsave(file="wt2-boxplot.pdf",height=4,width=4)
+ggsave(file="wt2-boxplot.pdf",height=5,width=5)
