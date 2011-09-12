@@ -110,7 +110,7 @@ Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathe
 
 \subsubsection{Unit disk}
 
-The formula for the unit disk looks very similar to that for $H^+$ but the product now runs over all prevertices. The integrand is simply a constant multiple of the $H^+$ case. This is merely to avoid problems in the calculation of the branch cuts (\cite[p. 12]{driscoll}).
+The formula for the unit disk looks very similar to that for $H^+$ but the product now runs over all $K$ prevertices. The integrand is simply a constant multiple of the $H^+$ case (see also \cite[p. 12]{driscoll}).
 \begin{equation}
 \label{unitscmap}
 \varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K} \left (1 - \frac{\zeta}{w^*_k} \right )^{\alpha_k-1} d\zeta.
@@ -150,7 +150,7 @@ The scaling factor, $C$, (from \eqn{unitscmap}) may be calculated using:
 \begin{equation}
 C=\frac{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert}{\vert w_2 - w_1\vert}.
 \end{equation}
-Otherwise, we can assume that up to scaling and rotation that $w_1$ and $w_2$ are correct. In which case it is know that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense). 
+If $C$ is not calculated then it is know that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense) and so the mapping is correct up to scaling and rotation. 
 
 $A$ is the image of the base point of the integration and is usually written as $w_0$. For computational reasons this is usually the prevertex nearest to the point $w^*$ which is to be mapped in \eqn{unitscmap}  (\cite[p. 27]{driscoll}).
 
@@ -198,14 +198,14 @@ In practise a combination of these methods are used. Solving \eqn{scivp} approxi
 
 The only problem with this is that the path from $w_0$ to the point to map, $w$, must lie entirely inside the polygon. Whether this is true is not known, since after the mapping has been computed, the only known points are the vertices (at which the IVP is singular). So, to combat this, all points on the path are checked sequentially. This computation, although inelegant, is fast compared to the IVP/Newton iterations.
 
-An example of using the backwards map to find the transformed co-ordinates from a square to the unit disk is given in \fig{squaredomain}. An irregular nonagon is given in \fig{irregdomain}.
+An example of using the backwards map to find the transformed co-ordinates from a square to the unit disk is given in \fig{squaredomain}. An irregular nonagon is given in \fig{irregdomain}. Note that in these two diagrams the CRDT method described in \secref{sc-crdt} was used rather than the method given in \secref{sc-mapping-problem} where the three vertices are fixed on the circle.
 
 
 % Square domain mapping diagram
 \begin{figure} [bp]
 \centering
 \includegraphics[scale=0.5]{sc/figs/squaredomain.pdf}
-\caption{A regular grid of points over the square region (left). The right panel shows the mapping of these points under the \sch\ transformation to the unit disk.}
+\caption{A regular grid of points over the square region (left). The right panel shows the mapping of these points under the \sch\ transformation to the unit disk using the CRDT method described in \secref{sc-crdt}.}
 \label{squaredomain}
 \end{figure}
 
@@ -213,7 +213,7 @@ An example of using the backwards map to find the transformed co-ordinates from 
 \begin{figure} [tbp]
 \centering
 \includegraphics[scale=0.5]{sc/figs/irregulardomain.pdf}
-\caption{A regular grid of points over region bound by a irregular nonagon (left). The right panel shows the mapping of these points under the \sch\ tranformation to the unit disk.}
+\caption{A regular grid of points over region bound by a irregular nonagon (left). The right panel shows the mapping of these points under the \sch\ tranformation to the unit disk using the CRDT method described in \secref{sc-crdt}}
 \label{irregdomain}
 \end{figure}
 
@@ -232,6 +232,7 @@ When the polygon is elongated or has many vertices, the mapped vertices may be p
 \end{figure}
 
 \subsubsection{Fixing crowding}
+\label{sc-crdt}
 
 If the crowding is caused by $\Gamma$ being elongated then a  primitive fix is to map to an elongated domain such as the rectangle or plane. This approach is suggested in \citeb{howell90}, however, as they point out, this does not eliminate all crowding and problems can still occur when there are acute peninsulae in the polygon. Mapping to an elongated domain also does not fix problems which occur when mapping from T- or H-shaped domains (so-called ``multiply elongated'' domains).
 

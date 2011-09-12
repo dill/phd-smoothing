@@ -73,6 +73,16 @@ Depending on the situation, the penalty should have a different amount of influe
 \label{lambda-ex}
 \end{figure}
 
+The expression for the penalty given in (\ref{intro-2d-objfcn}) looks like it might require a rather large amount of integration and that such a penalty would take a long time to compute however, it can be shown (\cite[p. 126]{simonbook}) that the integral can be written as:
+\begin{equation}
+\int\int \lvert \lvert P f(\mathbf{x}) \rvert \rvert^2 \text{d}\mathbf{x} = \bm{\beta}^\text{T} \mathbf{S} \bm{\beta},
+\end{equation}
+where the $ij^\text{th}$ element of $\mathbf{S}$ is the integral of the product of the appropriate derivatives (in the above example, second) of the $i^\text{th}$ and $j^\text{th}$ basis functions. Put more mathematically:
+\begin{equation}
+\mathbf{S}_{ij} = \int \int \left(P\mathbf{b}_{i}(\mathbf{x})\right ) \left (P\mathbf{b}_{j}(\mathbf{x}) \right )^\text{T}  \text{d}\mathbf{x}.
+\label{pen-quadform}
+\end{equation}
+So in this case the penalty matrix $\mathbf{S}$ only needs to be computed once and so computation of the penalty is only a case of calculating the quadratic form in (\ref{pen-quadform}).
 
 \subsection{Spline bases}
 
@@ -210,7 +220,7 @@ So far only smooths of two geographical coordinates with normal errors in the re
 
 \subsection{Higher dimensional smooths}
 
-Although in the above, the focus has been on including on geographical coordinates as explanatory variables, other covariates (or combinations of covariates) can be included in an additive way. The notation above is simply extended in this case and all of the above results hold, simply by defining $f(\mathbf{x})=\sum_k f_k(\mathbf{x}^{(k)})$ for smooths $f_k$ of corresponding covariates ($\mathbf{x}^{(k)}$) and the smoother matrix $\mathbf{S}$ is replaced by $\mathbf{S}= \sum_k \lambda_k \mathbf{S}_k$ where, rather than only having one smoothing parameter ($\lambda$), there are many smoothing parameters ($\lambda_k$). With such additive models identifiability becomes an issue since each of the $f_k$ can only be found up to some additive constant (since one could add a value, $a$ to $f_1$, say and then subtract it from $f_2$ leading to the same model as if $a$ were not included. To get around this problem \textit{identifiability constraints} are used to ensure that the models are identifiable: ensuring that the sum of the values of each function at the observed values is zero (for linear functions this means that the function passes through the origin). As seen in the thin plate spline case, the order of the penalty can be changed (and, indeed, is required to change) according to the number of dimensions that smoothing takes place in. Ensuring that the derivative order in the penalty is high enough to prevent overly complex functions being unpenalized is essential. Smoothing in high dimensions can be unreliable and numerically tricky but not impossible (as will be seen later in chapter \ref{chap-gds}).
+Although in the above, the focus has been on including on geographical coordinates as explanatory variables, other covariates (or combinations of covariates) can be included in an additive way. The notation in (\ref{intro-2d-objfcn}) and (\ref{pen-quadform}) is simply extended in this case and all of the above results hold, simply by defining $f(\mathbf{x})=\sum_k f_k(\mathbf{x}^{(k)})$ for smooths $f_k$ of corresponding covariates ($\mathbf{x}^{(k)}$) and the smoother matrix $\mathbf{S}$ is replaced by $\mathbf{S}= \sum_k \lambda_k \mathbf{S}_k$ where, rather than only having one smoothing parameter ($\lambda$), there are many smoothing parameters ($\lambda_k$). With such additive models identifiability becomes an issue since each of the $f_k$ can only be found up to some additive constant (since one could add a value, $a$ to $f_1$, say and then subtract it from $f_2$ leading to the same model as if $a$ were not included. To get around this problem \textit{identifiability constraints} are used to ensure that the models are identifiable: ensuring that the sum of the values of each function at the observed values is zero (for linear functions this means that the function passes through the origin). As seen in the thin plate spline case, the order of the penalty can be changed (and, indeed, is required to change) according to the number of dimensions that smoothing takes place in. Ensuring that the derivative order in the penalty is high enough to prevent overly complex functions being unpenalized is essential. Smoothing in high dimensions can be unreliable and numerically tricky but not impossible (as will be seen later in chapter \ref{chap-gds}).
 
 \subsection{Generalized additive models}
 \label{intro-extending-gams}
@@ -326,7 +336,7 @@ Leakage occurs when a smoother inappropriately links two pats of a domain (\cite
 
 The problem of leakage arises because of the way in which the smoother measures how near objects are to one another. Most smoothing techniques use the Euclidean metric to measure the distance between data. Clearly though, this approach is a flawed: biological populations do not conform to Euclidean geometry in their movement patterns and hence their observed positions will reflect this. Just as whales no not uniformly distribute themselves across sea and glacier, fish do not lay their eggs on land. Natural and man-made barriers carve up the landscape (and seascape), partitioning biological populations; spatial models should take this into account.
 
-The distribution of the population may be smooth, just not necessarily over $\mathbb{R}^2$ (\cite{wangranalli}). Correctly modelling the structure of the domain (implicitly or explicitly) improves inference since more information can be used.
+The distribution of the population may be smooth, just not necessarily over $\mathbb{R}^2$ (\cite{wangranalli}). Modelling the structure of the domain correctly by embedding the extra information relating to the shape of the boundary (whether this be implicitly or explicitly) allows for more accurate inference.
 
 \subsection{Ramsay's horseshoe function as a benchmark for finite area smoothing}
 
