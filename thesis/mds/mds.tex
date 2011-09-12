@@ -276,47 +276,55 @@ Note that due to time and computational restrictions, the boundary was reduced f
 
 \subsubsection{Results}
 
-Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, where the noise level was 1 with a sample size of 250. Both the soap film smoother and \mdsap\ are able to reproduce the main features of the true horseshoe function due to their ability to respect the boundary (in the case of the soap film) or the geometry of the domain (in the case of \mdsap). The \tprs\ shows leakage as expected. This is reflected in table \ref{ramsayresultstable} where we see that the soap film smoother and \mdsap\ have significantly smaller average MSE. When the noise level is high the \mdsap\ outperforms the soap film smoother in MSE terms (and is less variable).
+Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, where the noise level was 1 with a sample size of 250. Both the soap film smoother and \mdsap\ are able to reproduce the main features of the true horseshoe function due to their ability to respect the boundary (in the case of the soap film) or the geometry of the domain (in the case of \mdsap). The \tprs\ shows leakage as expected. When the noise level is high the \mdsap\ outperforms the soap film smoother in MSE terms (and is less variable).
 
-\begin{table}[t]
-\centering
-\begin{tabular}{c c c c}
- & & MSE & \\ 
-Noise level & \mdsap & Soap film & Thin plate\\ 
-\hline
-0.1  & 0.0032 (3$\cross10^{-5}$) & 0.0022 (3$\cross10^{-5}$) & 0.0402 (0.0008) \\ 
-1  & 0.0436 (0.0015) & 0.0482 (0.0014) & 0.2306 (0.0024) \\ 
-10  & 2.065 (0.121) & 3.070 (0.238) & 3.371 (0.113) \\ 
-\end{tabular}
-\begin{tabular}{c  c c c }
-&  & EDF & \\ 
-Noise level & \mdsap & Soap film & Thin plate\\ 
-\hline
-0.1 & 47.613 (0.35) & 39.164 (0.26) & 92.6 (0.102)\\ 
-1  & 8.383 (0.345) & 11.868 (0.401) & 46.607 (0.424)\\ 
-10 & 5.058 (0.332) & 5.586 (0.288) & 5.979 (0.251)\\ 
-\end{tabular}
-\caption{Mean MSE and estimated degrees of freedom (EDF) for the three models fitted to the modified Ramsay horseshoe function with standard errors (in brackets) over 200 realisations. Sample size was 250 with noise levels given above.}
-\label{ramsayresultstable}
-\end{table}
+%\begin{table}[t]
+%\centering
+%\begin{tabular}{c c c c}
+% & & MSE & \\ 
+%Noise level & \mdsap & Soap film & Thin plate\\ 
+%\hline
+%0.1  & 0.0032 (3$\cross10^{-5}$) & 0.0022 (3$\cross10^{-5}$) & 0.0402 (0.0008) \\ 
+%1  & 0.0436 (0.0015) & 0.0482 (0.0014) & 0.2306 (0.0024) \\ 
+%10  & 2.065 (0.121) & 3.070 (0.238) & 3.371 (0.113) \\ 
+%\end{tabular}
+%\begin{tabular}{c  c c c }
+%&  & EDF & \\ 
+%Noise level & \mdsap & Soap film & Thin plate\\ 
+%\hline
+%0.1 & 47.613 (0.35) & 39.164 (0.26) & 92.6 (0.102)\\ 
+%1  & 8.383 (0.345) & 11.868 (0.401) & 46.607 (0.424)\\ 
+%10 & 5.058 (0.332) & 5.586 (0.288) & 5.979 (0.251)\\ 
+%\end{tabular}
+%\caption{Mean MSE and estimated degrees of freedom (EDF) for the three models fitted to the modified Ramsay horseshoe function with standard errors (in brackets) over 200 realisations. Sample size was 250 with noise levels given above.}
+%\label{ramsayresultstable}
+%\end{table}
 
-The EDFs in table \ref{ramsayresultstable} show that \mdsap\ fits a less complex model than the thin plate spline on average, and for the two higher error situations, has a lower EDF than the soap film. Given that this is coupled with a lower MSE, it appears that \mdsap\ simultaneously yields both a more accurate and less complex model than the soap film for the horseshoe when there is a high level of noise. When noise is lower, the soap film and \mdsap\ MSEs are still of the same order. \Fig{mds-ramsay-boxplot} shows the logarithm of the per-realisation average MSE for each of the models at each error level.
+The EDFs in figure \ref{edf-mds-ramsay-boxplot} show that \mdsap\ fits a less complex model than the thin plate spline on average, and for the two higher error situations, has a lower EDF than the soap film. Given that this is coupled with a lower MSE, it appears that \mdsap\ simultaneously yields both a more accurate and less complex model than the soap film for the horseshoe when there is a high level of noise. When noise is lower, the soap film and \mdsap\ MSEs are still roughly of the same order. \Fig{mds-ramsay-boxplot} shows the logarithm of the per-realisation average MSE for each of the models at each error level.
 
 % boxplot for Ramsay
 \begin{figure}
 \centering
 \includegraphics[width=6in]{mds/figs/mds-ramsay-boxplot.pdf} \\
-\caption{Boxplots of the logarithm of the MSE per realisation of the Ramsay horseshoe for \mdsap\, the soap film smoother and \tprs\ for noise levels 0.1, 1 and 10 (left to right, respectively). In all cases, a Wilcoxon signed rank test showed that MSEs for \mdsap\ and \tprs\ were significantly different from the soap film smoother ($\text{p-value} < 10^{-2}$).}
+\caption{Boxplots of the logarithm of the MSE per realisation of the Ramsay horseshoe for \mdsap\ (``mds''), the soap film smoother (``soap'') and \tprs\ (``tprs'') for noise levels 0.1, 1 and 10 (left to right). As previously a paired Wilcoxon signed rank test showed that MSEs for \mdsap\ and \tprs\ were significantly different from the soap film smoother (at the 0.01 level) where the colours above indicate whether the MSE was better (green) or worse (red).}
 \label{mds-ramsay-boxplot}
-% generated using phd-smoothing/mds/sim/ramsay-boxplots.R
-% Wilcoxon test in phd-smoothing/mds/sim/ramsay-wilcox.R
+% generated using phd-smoothing/mds/sim/boxplot-ramsay.R
 \end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=6in]{mds/figs/edf-mds-ramsay-boxplot.pdf} \\
+\caption{Boxplots of the EDF per realisation of the Ramsay horseshoe for \mdsap\ (``mds''), the soap film smoother (``soap'') and \tprs\ (``tprs'') for noise levels 0.1, 1 and 10.}
+\label{edf-mds-ramsay-boxplot}
+% generated using phd-smoothing/mds/sim/boxplot-ramsay-edf.R
+\end{figure}
+
 
 % Ramsay fit with error=1 
 \begin{figure}
 \centering
 \includegraphics[width=6in]{mds/figs/ramsay-fit-1.pdf} \\
-\caption{Top left: truth for the (modified) Ramsay horseshoe. Others: a typical realisation of fits from the three models when 250 points sampled with noise level set to 1.}
+\caption{From top left clockwise: truth for the (modified) Ramsay horseshoe (``truth''), \mdsap\ (``MDS''), the soap film smoother (``soap'') and thin plate splines (``tprs'') when 250 points sampled with noise level set to 1.}
 \label{mds-ramsay-fit-1}
 % generated (roughly) using ramsay-smooth-test.R
 \end{figure}
