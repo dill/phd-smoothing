@@ -1,5 +1,12 @@
 # make some boxplots - now with added ggplot2!
+# this is the first fig with just mds+rs soap and tprs
+
+
 library(ggplot2)
+
+
+# make the text look better for printout
+par(cex.axis=0.75,las=1,mgp=c(2,0.75,0),mar=c(2,3,1,1))
 
 # stick all of the results into one matrix
 mses<-c()
@@ -19,10 +26,13 @@ for(err.lev in c("0.35","0.9","1.55")){
    spurious<-c(111,135,157)
    mse<-mse[-spurious,]
 
+   # remove 3d, adj
+   mse<-mse[,-c(3,4)]
+
    # extra Wilcoxon test stuff
-   for(i in 1:4){
-      pv<-wilcox.test(mse[,5],mse[,i],paired=TRUE)$p.value
-      med<-median(mse[,i]-mse[,5])
+   for(i in 1:2){
+      pv<-wilcox.test(mse[,3],mse[,i],paired=TRUE)$p.value
+      med<-median(mse[,i]-mse[,3])
       if(pv<0.01 & med>0){
          cols<-c(cols,rep("red",nrow(mse)))
       }else if(pv<0.01 & med<0){
@@ -30,6 +40,7 @@ for(err.lev in c("0.35","0.9","1.55")){
       }else{
          cols<-c(cols,rep("white",nrow(mse)))
       }
+#      cat("soap vs. ",mod.names[i],pv,"\n")
    }
    cols<-c(cols,rep("white",nrow(mse)))
 
@@ -38,13 +49,8 @@ for(err.lev in c("0.35","0.9","1.55")){
 
    mses<-rbind(mses,cbind(mse,cols))
 
-
 }
 
-
-# 3 spurious soap results, remove them
-#spurious<-c(111,135,157)
-#mses<-mses[-spurious,]
 
 # some names
 names(mses)<-c("method","mse","noise","col")
@@ -62,4 +68,4 @@ p<-p+labs(x="Method",y="log(mean MSE per realisation)")
 print(p)
 
 
-ggsave(file="big-mds-wt2-boxplot.pdf",width=10,height=5)
+ggsave(file="mds-wt2-boxplot.pdf",width=8,height=5)

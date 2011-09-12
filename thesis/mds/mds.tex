@@ -382,33 +382,33 @@ Table \ref{wt2resultstable} gives the MSE and EDF for the models above averaged 
 % boxplot for wt2
 \begin{figure}
 \centering
-\includegraphics[width=6in, trim=0in 0.5in 0in 0in]{mds/figs/mds-wt2-boxplot.pdf} \\
-\caption{Boxplots of the logarithm of the MSE per realisation of the peninsula domain for the MDS approach, soap film smoother and \tprs\ for noise levels 0.35, 0.9 and 1.55 (left to right, respectively). A Wilcoxon signed rank test shows that the MSEs for \tprs\ were significantly different from those of the soap film smoother ($\text{p-value} < 10^{-2}$) at all noise levels. For \mdsap\ the two lower noise cases were significantly different from the soap film smoother, but not when the noise level was set to1.55 ($\text{p-value} = 0.024$).}
+\includegraphics[width=\textwidth]{mds/figs/mds-wt2-boxplot.pdf} \\
+\caption{Boxplots of the logarithm of the MSE per realisation of the peninsula domain for the MDS approach, soap film smoother and \tprs\ for noise levels 0.35, 0.9 and 1.55 (left to right, respectively). A paired Wilcoxon signed rank test shows that the MSEs for the two other models were significantly different from the soap film smoother at the 0.01 level.}
 \label{mds-wt2-boxplot}
-% generated using phd-smoothing/mds/sim/wt2-boxplots.R
+% generated using phd-smoothing/mds/sim/boxplot-wt2-1.R
 \end{figure}
 
-\begin{table}[t]
-\centering
-\begin{tabular}{c c c c c}
- &  & MSE  & &\\ 
-Noise level & \mdsap & Soap film & Thin plate\\ 
-\hline
-0.35  & 0.07 (0.00062) & 0.0539 (5e-04) &0.082 (0.00104)\\
-0.9  & 0.177 (0.00184) & 0.131 (0.00197) &0.194 (0.00241)\\
-1.55  & 0.286 (0.00438) & 0.236 (0.00434) &0.351 (0.00471)\\
-\end{tabular}
-\begin{tabular}{c c c c c}
- &  & EDF  & &\\ 
-Noise level & \mdsap & Soap film & Thin plate\\ 
-\hline
-0.35 &80.904 (0.571) & 55.698 (0.514) & 77.962 (0.467)\\ 
-0.9 &35.019 (0.764) & 29.717 (0.575) & 48.051 (0.476)\\ 
-1.55 &19.463 (0.573) & 20.292 (0.366) & 32.272 (0.48)\\ 
-\end{tabular}
-\caption{Mean MSE and EDF for the three models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
-\label{wt2resultstable}
-\end{table}
+%\begin{table}[t]
+%\centering
+%\begin{tabular}{c c c c c}
+% &  & MSE  & &\\ 
+%Noise level & \mdsap & Soap film & Thin plate\\ 
+%\hline
+%0.35  & 0.07 (0.00062) & 0.0539 (5e-04) &0.082 (0.00104)\\
+%0.9  & 0.177 (0.00184) & 0.131 (0.00197) &0.194 (0.00241)\\
+%1.55  & 0.286 (0.00438) & 0.236 (0.00434) &0.351 (0.00471)\\
+%\end{tabular}
+%\begin{tabular}{c c c c c}
+% &  & EDF  & &\\ 
+%Noise level & \mdsap & Soap film & Thin plate\\ 
+%\hline
+%0.35 &80.904 (0.571) & 55.698 (0.514) & 77.962 (0.467)\\ 
+%0.9 &35.019 (0.764) & 29.717 (0.575) & 48.051 (0.476)\\ 
+%1.55 &19.463 (0.573) & 20.292 (0.366) & 32.272 (0.48)\\ 
+%\end{tabular}
+%\caption{Mean MSE and EDF for the three models fitted to the peninsula domain with standard errors (in brackets) over 200 realisations.}
+%\label{wt2resultstable}
+%\end{table}
 
 As with the Ramsay horseshoe, it is interesting to see what the projection into MDS space has done to the distribution of the points in the domain. \Fig{wt2-2d-proj} shows points in the domain in Euclidean space and MDS space. There appears to be some high concentrations of points in the far left peninsula and in the right side in the MDS space. This is due to the projection of the points into 2-dimensional space, which can be easily seen in \fig{wt2-3d-proj} where the points have been projected into 3-dimensional space. This shows that there is separation between the smaller peninsulae in higher dimensions that cannot be seen in the 2-dimensional projection.
 
