@@ -75,20 +75,25 @@ Since taking the Fourier transform of the derivatives has allowed us to think of
 \end{equation}
 the function $w$ can then be used to pick out particularly high frequencies and penalise those more than the lower frequency ones. Setting $w(\boldsymbol{\tau})=1, \forall \boldsymbol{\tau}$ allows us to recover (\ref{tprs-pen}).
 
-Duchon suggests the use of $w(\boldsymbol{\tau})= \lvert \boldsymbol{\tau} \rvert^{2s}$. This will still give a minimizer of the same form as the thin plate spline functions in (\ref{tprs-basis}) but $M$ will change. First writing down this penalty:
+Duchon suggests the use of $w(\boldsymbol{\tau})= \lvert \boldsymbol{\tau} \rvert^{2s}$. This will still give a minimizer of broadly the same form as the thin plate spline functions in (\ref{tprs-basis}) but $M$ will change. First writing down this penalty:
 \begin{equation}
 \breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^d} \lvert \boldsymbol{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\left ( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \left (\boldsymbol{\tau} \right ) \right )^2 \text{d} \boldsymbol{\tau}.
 \label{duchon-penalty}
 \end{equation}
-Here the smoother (less complex) frequency components of the radial basis functions are penalized less, since they do a similar job to the global polynomials. Those parts of  the radial basis functions perform the function of the polynomials which were not included due to reduced nullspace size. The penalty allows the use of a reduced nullspace (in both size and complexity terms) while not sacrificing the continuity of $f$. 
+The less complex (more smooth) frequency components of the basis functions are penalized less. This allows some of the fequencies of  the radial basis functions to do the job of the polynomials which were not included due to reduced nullspace size. The penalty allows the use of a reduced nullspace (in both size and complexity terms) while not sacrificing the continuity of $f$. 
 
-Again, (\ref{tprs-pen}) can be recovered from this penalty (by setting $s=0$). When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$. So $s$ can be used to allow high dimensional smoothing, while still using lower-order penalties without yielding discontinuous functions. One can therefore think of $s$ as a kind of ``fudge factor'' that allows the conditions on $m$ and $d$ to be relaxed. Given some fixed combination of $m$ and $d$, an $s$ can be found by simply calculating:
+Again, (\ref{tprs-pen}) can be recovered from this penalty (by setting $s=0$). When $s>0$ higher frequencies are penalised more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$ (this replaces the condition that $2m>d$ for thin plate splines). So $s$ can be used to allow high dimensional smoothing, while still using lower-order penalties without yielding discontinuous functions. One can therefore think of $s$ as a kind of ``fudge factor'' that allows the conditions on $m$ and $d$ to be relaxed. Given some fixed combination of $m$ and $d$, an $s$ can be found by simply calculating:
 \begin{equation}
-s=d/2-m.
+s>d/2-m.
 \label{duchon-s-eqn}
 \end{equation}
+For the examples below, the smallest integer $s$ is used with $m=2$, so:
+\begin{equation}
+s=d/2-1.
+\label{duchon-s-eqn2}
+\end{equation}
 
-The red line in figure \ref{nullspace-dim} gives the number of functions in penalty (\ref{duchon-penalty}). For plotting $m=2$ so the derivative order is constant as the dimensionality increases, leading to a linear increase in nullspace size with the smoothing dimension.
+The red line in figure \ref{nullspace-dim} gives the number of functions that lie in the nullspace of penalty (\ref{duchon-penalty}), i.e. the result of using (\ref{duchon-s-eqn2}) with (\ref{gds-bigm}). For plotting $m=2$ so the derivative order is constant as the dimensionality increases, leading to a linear increase in nullspace size with the smoothing dimension.
 
 %[[\textbf{SIMON} : If I can construct some kind of proof that the MDS projection of within-area distances always leads to a manifold then I'll say something here about how that leads to the following \ldots In any small region a 2-dimensional manifold will look like $\mathbb{R}^2$, in the same small region the smoother's behaviour will closely approximate a regular thin plate regression spline with $m=2$ on the tangent space of the manifold (as the smoothing parameter tends to zero, at least).]]
 
@@ -100,9 +105,9 @@ With the addition of Duchon splines to the \mdsap\ we are now in a position to p
 
 \subsection{Choosing MDS projection dimension}
 
-With Duchon's basis, it is now possible to smooth a space of any dimension whilst using second order derivatives in the penalty, simply by picking $s$ according to (\ref{duchon-s-eqn}). For the within-area distance cases considered here, the resulting MDS configurations look like 2-dimensional manifolds. Indeed, it is reasonable to assume that the projection space will look like a 2-dimensional manifold at least locally since near every point the neighbouring points will be mostly Euclidean rather than within-area distances. 
+With Duchon's basis, it is now possible to smooth over any number of dimensions whilst using second order derivatives in the penalty, simply by picking $s$ according to (\ref{duchon-s-eqn}). For the within-area distance cases considered here, the resulting MDS configurations look like 2-dimensional manifolds. Indeed, it is reasonable to assume that the projection space will look like a 2-dimensional manifold at least locally since near every point the neighbouring points will be mostly Euclidean rather than within-area distances. 
 
-Picking the dimension of the MDS projection is now a concern since there is no reason to believe that simply going to higher and higher dimensions will yield better results. For reasons of model parsimony, even if very high dimensional models it is still preferable to use the simplest possible model.
+Picking the dimension of the MDS projection is now a concern since there is no reason to believe that simply going to higher and higher dimensions will yield better results. For reasons of model parsimony, it is preferable to use as low a projection dimension as possible.
 
 \subsubsection{Using the spectral norm}
 
@@ -141,7 +146,7 @@ So the score used to select dimension is:
 \text{ML}_P = -2 \hat{l} + 2(d+1)
 \end{equation*}
 
-The extra penalty can be justified in the following way: it is possible that an increase in dimension (which adds much more complexity into the model) will give only a slight increase in the likelihood. This model would be taken as ``best'' even though it only offers a small improvement on a much simpler model. To avoid these models the penalty above is added.
+The extra penalty can be justified in the following way: it is possible that an increase in dimension (which adds much more complexity into the model) will give only a slight increase in the likelihood. This model would be taken as ``best'' even though it only offers a small improvement on a much simpler model. To avoid these models being selected, the penalty above is added.
 
 There is, of course, no guarantee that there will always be a clear minimum to find or even that either score will be unimodal in projection dimension. As with all automated methods, diagnostics (for example the plots of score against dimension) should be used.
 
@@ -231,8 +236,8 @@ The website Public Whip (\url{http://www.publicwhip.org.uk/}) provides data from
     Tell no & MP voted against the motion and was a teller & -1 \\ 
   \end{tabular}
 \caption{Coding of UK MP voting data. For the purposes of the analysis here the teller's votes are counted as if they voted since we are interested in how voting can be used to predict part affiliation. Note that ``both'' is perfectly possible, and occurs when the MP walks through both the ``Aye'' and ``No'' gates, this can correspond to the MP abstaining (as with ``Missing'') or to nullify a mis-cast vote.}
-\end{centering}
 \label{voting-code}
+\end{centering}
 \end{table}
 
 Euclidean distances between the MPs were found and used to form the distance matrix. Multidimensional scaling was then used to project these distances into MDS space (dimension selection was performed by optimizing the GCV or $\text{ML}_P$ score). The party affiliation (simplified to Labour party versus not Labour party) was then predicted using a logit link.
@@ -261,8 +266,8 @@ Of the 1273 divisions in the 1997--2001 parliament, 17 of them were declared  as
 28 November 1997 &  Wild Mammals (Hunting with Dogs) Bill\\
   \end{tabular}
 \caption{Free votes in the 1997-2001 parliament (see \cite{freevotes}).}
-\end{centering}
 \label{free-vote-description}
+\end{centering}
 \end{table}
 
 Using the free vote data, MPs were sampled, \mdsds\ fitted to the data and prediction of party affiliation made for those MPs not in the sample. This was repeated for 200 realisations with sample sizes of 200, 300, 400 and 500.
@@ -285,7 +290,7 @@ For all models the error distribution was binomial and a logit link was used. To
 \begin{figure}
 \centering
 \includegraphics[width=6in]{gds/figs/mp-mse.pdf} \\
-\caption{Boxpot of MSE per model for the MP free vote data set at varying sample sizes. The MSE for the lasso was significantly different (and smaller) than all of the other models by a pairwise Wilcoxon signed rank test.}
+\caption{Boxpot of MSE per model for the MP free vote data set at varying sample sizes. The MSE for the lasso was significantly different (and smaller) than all of the other models by a pairwise Wilcoxon signed rank test (at the 0.01 level).}
 \label{gds-mps-mse}
 % generated by duchon/mps/analyse-mps.R
 \end{figure}
@@ -293,7 +298,7 @@ For all models the error distribution was binomial and a logit link was used. To
 \begin{figure}
 \centering
 \includegraphics[width=6in]{gds/figs/mp-brier.pdf} \\
-\caption{Boxplot of Brier score per model for the MP free vote data set at varying sample sizes. The Brier score for the lasso was significantly different (and smaller) than all of the other models by a pairwise Wilcoxon signed rank test.}
+\caption{Boxplot of Brier score per model for the MP free vote data set at varying sample sizes. The Brier score for the lasso was significantly different (and smaller) than all of the other models by a pairwise Wilcoxon signed rank test (at the 0.01 level).}
 \label{gds-mps-brier}
 % generated by duchon/mps/analyse-mps.R
 \end{figure}
@@ -382,7 +387,7 @@ The GCV score appears to have a minima somewhere between 5 and 11 dimensions, wh
 % generated by duchon/breast/analyse-dimselect.R
 \end{figure}
 
-This analysis shows that although \mdsds\ can be used for generalized distance smoothing in a microarray setting, it is fair from conclusive that the methods out performs the lasso. Choice of the metric used to calculate the distances has a large influence on the results (preliminary results using Euclidean distance were much worse in terms of the results from the LOOCV). It would be interesting to investigate the behaviour of the $\text{ML}_P$ score further on larger data sets to see why such high dimensional models are chosen. The study here is rather small and specialized, therefore it is hard to draw a conclusion about how \mdsds\ will perform in other situations, although its performance here against the lasso (technique that has been in development for considerably longer) is encouraging. The final analysis again looks at microarray data in an attempt to further investigate the utility of \mdsds\ for microarray data.
+This analysis shows that although \mdsds\ can be used for generalized distance smoothing in a microarray setting, it is far from conclusive that the methods out performs the lasso. Choice of the metric used to calculate the distances has a large influence on the results (preliminary results using Euclidean distance were much worse in terms of the results from the LOOCV). It would be interesting to investigate the behaviour of the $\text{ML}_P$ score further on larger data sets to see why such high dimensional models are chosen. The study here is rather small and specialized, therefore it is hard to draw a conclusion about how \mdsds\ will perform in other situations, although its performance here against the lasso (technique that has been in development for considerably longer) is encouraging. The final analysis again looks at microarray data in an attempt to further investigate the utility of \mdsds\ for microarray data.
 
 \subsubsection{Leukemia microarrays}
 
@@ -512,8 +517,7 @@ The next chapter will move off the topic of smoothing, so presented here is a su
 
 At each stage of the work presented in this thesis the models became more refined and a more nuanced view of how the problem should be addressed was developed. Moving from a strictly functional mapping based on the boundary to one that relies on the shape of the domain was key to finding a reliable transformation that avoided the problem of crowding (moving from the \sch\ transform to MDS). The next big step was the realisation that the point configurations produced by MDS have problems with ordering and these can be avoided by projecting into higher dimensions. The final breakthrough was using Duchon splines to perform this high dimensional smoothing reliably.
 
-The previous chapters have taken a simple idea (using domain morphing to combat leakage) and moved forward, along the way finding a set of properties for transformation methods.
- if they are to be useful for spatial smoothing. These properties are:
+The previous chapters have taken a simple idea (using domain morphing to combat leakage) and moved forward, along the way finding a set of properties for transformation methods that are necessary  if they are to be useful for spatial smoothing. These properties are:
 \begin{enumerate}
 \item The mapping of points must be smooth, there should be no sudden jumps or gaps. Points that are near one-another in the original space must be near one-another in the transformed space. See \secref{mds-smoothness}.
 \item The transformation must not squash space too much. Squashing points so they are numerically indistinguishable (crowding) must be absolutely avoided, but less severe compressions of space can also cause problems. See \secref{sch-crowding} and \secref{mds-penadjust}.
@@ -532,11 +536,13 @@ The speed of the algorithm for finding the within-area distances is still an iss
 
 The within-area distance algorithm given in \secref{mdsdist} can only find shortest paths for simple polygons. This excludes domains with islands in them, which obviously occur in ship-board studies. This could be worked-around using other shortest path algorithms, the behaviour of MDS (especially in higher dimensions) in such situations is unknown.
 
-The advantage of seeing the distance generation as a black box procedure is that any procedure that can generate the necessary distance can be used. Aside from the discrete space approximation algorithms mentioned in \secref{mdsdist}, other measures can be used while still keeping in a roughly spatial context. One interesting approach might be to use distances in three dimensions, finding the shortest path over say a mountain range, which might be equivalent to minimizing changes in altitude. Alternatively, a cost based distance approach that takes into account fuel cost or taking into account difficult conditions (e.g. a bog or ford that can be crossed but at additional cost in terms of effort or time). These two extensions can be considered as roughly equivalent, since one could thinking of cost as an ``altitude'' that must also be minimized along with distance in the plane. One issue with such general cost-distance approach might be that the ``distance'' measure could turn out to be non-metric. That is, that the distance from A to B is not the same as the distance from B to A. In this case non-metric MDS must be used, this relies only on the rankings of the data and discards other information, clearly this is undesirable.
+The advantage of seeing the distance generation as a black box procedure is that any procedure that can generate the necessary distance can be used. Aside from the discrete space approximation algorithms mentioned in \secref{mdsdist}, other measures can be used while still keeping in a roughly spatial context. One interesting approach might be to use distances in three dimensions, finding the shortest path over say a mountain range, which might be equivalent to minimizing changes in altitude. Alternatively, a cost based distance approach that takes into account fuel cost or taking into account difficult conditions (e.g. a bog or ford that can be crossed but at additional cost in terms of effort or time). These two extensions can be considered as roughly equivalent, since one could thinking of cost as an ``altitude'' that must also be minimized along with distance in the plane. One issue with such general cost-distance approach might be that the ``distance'' measure could turn out to be non-metric. That is, that the distance from A to B is not the same as the distance from B to A. In this case non-metric MDS must be used, this relies only on the rankings of the data and discards other information, which is probably undesirable.
 
 \subsection{Generalised distance smoothing}
 
-Moving on to the more general distance smoothing that was seen in the last part of this chapter, in principle such an extension seems like the obvious next move. Using general distances is appealing since most measurements have an arbitrary zero point (with the exception of some physical quantities, e.g. temperature). So what is really of interest in most situations is the differences between the observations and using these quantities directly makes sense. However, the problems that were faced when trying to implement this were clustered around the problem of how to measure the distances. Choosing the certain metrics gave better results than others, so the selection of the metric was down to trying many different options and seeing which was best (for some value of best). The lack of any kind of continuum for the various possible distance measures means that a combination subject specific knowledge and testing  must be used rather than automation to find the appropriate distance measure.
+Moving on to the more general distance smoothing presented in the last part of this chapter, in principle such an extension seems like the obvious next move. Using general distances is appealing since most measurements have an arbitrary zero point (with the exception of some physical quantities, e.g. temperature). So what is really of interest in most situations is the differences between the observations and using these quantities directly makes sense. This is especially true in medical studies since there is evidence that those who are genetically similar are at risk of the same diseases, even if it is not known which genes in particular are indicators of the disease.
+
+However, the problems that were faced when trying to implement this were clustered around the problem of how to measure the distances. Choosing certain metrics gave better results than others, so the selection of the metric was down to trying many different options and seeing which was best (for some value of best). The lack of any kind of continuum for the various possible distance measures means that a combination subject specific knowledge and testing must be used (rather than automation) to find the appropriate distance measure.
 
 Even if a ``correct'' distance measure can be found, there is no guarantee that the resulting model will capture the key parts of the data. This is due to the nature of MDS, as touched in section \ref{gds-gds-examples}. MDS is based on taking the eigen-decomposition of the distance matrix, then using those eigenvectors with the largest eigenvalues to represent the points. Those directions with the largest eigenvalues are not necessarily those with the best predictive power. Using scores to select the number of dimensions overcomes this to some degree but because of the hierarchical nature of the projection only the number of dimensions can be selected. Of course, one could imagine the situation where the full MDS projection was found (in, say $n-1$ dimensions) and then variable selection could be performed on all of the possible combinations. This is not appealing if only because the computational burden of performing the necessary subset selection. Using a full projection also rather subverts the point of the MDS, it would surely be easier to use a more traditional variable selection technique in that case.
 
