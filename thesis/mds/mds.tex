@@ -671,7 +671,7 @@ In order to find calculate the point density in MDS space, the following steps a
 The $+1$ in the denominator avoids division by zero when evaluating $\mathcal{L}^*(x_1,x_2)$. The fact that $\mathcal{L}^*(x_1,x_2)$ is then a piecewise function should not be too worrying since the aim here is to address the broader problems with the change in spatial density, not the fine-gained details.
 \end{enumerate}
 
-Note that the power is now $\frac{3}{2}$. This is since we do not know the contraction/expansion in each direction individually, but rather the overall change in area. As such we use $\frac{3}{2}$ rather than the cubic on $x$ and $y$ and unitary on the cross term.
+Note that the power is now $\frac{3}{2}$. This is since we do not know the contraction/expansion in each direction individually, but rather the overall change in area. As such we use $\frac{3}{2}$ rather than the cubic on $x$ and $y$ and unitary on the cross term. Several other options were also tested (including changing the power and $+1$ in the denominator) however it was found that the above formulation worked best and so only those results are shown here.
 
 \begin{figure}
 \centering
@@ -884,29 +884,39 @@ Adding an extra dimension could help. Taking a 3-dimensional projection, \fig{md
 Although these plots are illustrative, a quantitative measure of how well the within-area distances are being approximated by the MDS projection is desirable. Given the eigen-decomposition attempts to minimise the spectral norm, this is the logical metric to use. The spectral norm may be calculated as the the square root of the largest eigenvalue of $\mathbf{D}-\mathbf{D}_\text{E}$ where $\mathbf{D}$ is the matrix of within-area distances (as above) and $\mathbf{D}_\text{E}$ is the matrix of Euclidean distances in MDS space.
 
 % Results here are in mds/counter/run-DRcomp.R
-Looking at this measure for the domain considered in this section (the ``comb''), peninsulae domain (from \secref{mds-wt2-sim}) and the Aral sea as dimension of projection is increased yields some interesting results. These are summarised in \tabref{increasek}. The table indicates that there is some optimum number of dimensions ($k$) to project into, such that adding a further dimension gives only a negligible decrease in the spectral norm. 
+Looking at this measure for the domain considered in this section (the ``comb''), peninsulae domain (from \secref{mds-wt2-sim}) and the Aral sea as dimension of projection is increased yields some interesting results. These are summarised in figure \ref{increasek}. The plot indicates that there is some optimum number of dimensions ($k$) to project into, such that adding a further dimension gives only a negligible decrease in the spectral norm. 
 
 The ``optimal'' $k$ (in a spectral norm sense) is not common to all of the domains. For the peninsulae domain there is a large decrease (roughly halving each time) up to four dimensions, but the Aral sea appears to settle down after three. However, it's clear that the spectral norm is not the best guide for this given that for the ``comb'' domain, four dimensions appears to be optimal but \fig{mds-comb-3d} shows that this doesn't offer much separation in the peninsulae. The spectral norm doesn't offer a direct solution to the issue of dimension selection but it does at least offer the insight that there is some dimensional beyond which an increase in dimension only offers marginal returns. Considering dimension selection separately from smoothing is sure to cause difficulties, since a point set that approximates the distances in $\mathbf{D}$ well does not give an guarantees about the quality of the resulting smooth. It seems that a dimensional selection method that also takes into account the response will be useful in this case.
 
-\begin{table}[htb]
+%\begin{table}[htb]
+%\centering
+%\begin{tabular}{c c c c c}
+%$k$ & Comb  & Peninsulae & Aral\\ 
+%\hline
+%1  &  3610.210  &  109.134  &  1519.736 \\ 
+%2  &  1280.189  &  54.603  &  347.221 \\ 
+%3  &  459.946  &  22.068  &  128.202 \\ 
+%4  &  457.163  &  12.166  &  119.549 \\ 
+%5  &  456.07  &  10.237  &  117.643 \\ 
+%6  &  452.436  &  9.958  &  116.668 \\ 
+%7  &  450.934  &  9.873  &  116.167 \\ 
+%8  &  450.559  &  9.853  &  115.596 \\ 
+%9  &  449.883  &  9.79  &  115.309 \\ 
+%10  &  449.463 &  9.747  &  115.188 \\ 
+%\end{tabular}
+%\caption{Mean squared difference between the matrix of within-area distances and Euclidean distance in a $k$-dimensional MDS projection of the points for each of the domains detailed in \secref{nohigherdim}.}
+%\label{increasek}
+%\end{table}
+
+\begin{figure}
 \centering
-\begin{tabular}{c c c c c}
-$k$ & Comb  & Peninsulae & Aral\\ 
-\hline
-1  &  3610.210  &  109.134  &  1519.736 \\ 
-2  &  1280.189  &  54.603  &  347.221 \\ 
-3  &  459.946  &  22.068  &  128.202 \\ 
-4  &  457.163  &  12.166  &  119.549 \\ 
-5  &  456.07  &  10.237  &  117.643 \\ 
-6  &  452.436  &  9.958  &  116.668 \\ 
-7  &  450.934  &  9.873  &  116.167 \\ 
-8  &  450.559  &  9.853  &  115.596 \\ 
-9  &  449.883  &  9.79  &  115.309 \\ 
-10  &  449.463 &  9.747  &  115.188 \\ 
-\end{tabular}
-\caption{Mean squared difference between the matrix of within-area distances and Euclidean distance in a $k$-dimensional MDS projection of the points for each of the domains detailed in \secref{nohigherdim}.}
+\includegraphics[width=\textwidth]{mds/figs/eigenplot.pdf} \\
+\caption{Logarithm of the spectral norm of $\mathbf{D}-\mathbf{D}_E$ versus dimension for each of the domains detailed in \secref{nohigherdim}.}
 \label{increasek}
-\end{table}
+% generated by thesis/mds/figs/eigenplot.R
+\end{figure}
+
+
 
 Moving into continually higher dimensions is appealing, but practically it is rather more taxing. As the dimension of the problem is increased, the order of the derivative in the spline penalty increases too (see \secref{GAMpenalties} and \secref{gds-tprstoduchon}). As this happens, the dimension of the nullspace of the penalty increases, meaning that both the number and complexity of the unpenalised functions in the model increases. An increasingly large space of unpenalized functions is certainly unappealing, but the next chapter will investigate how to work around such issues.
 
