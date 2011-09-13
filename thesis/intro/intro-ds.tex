@@ -59,7 +59,7 @@ Line transects are not the only way of collecting data for a distance sampling a
 \end{equation*}
 again, the relation between these quantities will be explained below.
 
-An example of point transect data is given in figure \ref{ds-pt-example}. In contrast to the line transect case, there are very few observations near 0, they increase to a point and then fall off beyond that. Note that as the distance, $r$, from the point increases the area surveyed increases as $r^2$. Rescaling this histogram by the areas corresponding to the centre points of the bars will give a histogram that has a similar shape to that of figure \ref{ds-lt-example}.
+An example of point transect data is given in figure \ref{ds-pt-example}. In contrast to the line transect case, there are very few observations near 0, they increase to a point and then fall off beyond that. Note that as the distance, $r$, from the point increases the area surveyed increases as $r^2$. Rescaling this histogram by the distance to the midpoints of each bin will give a histogram that has a similar shape to that of figure \ref{ds-lt-example} (i.e. the rescaling accounts for the increasing area available to the observer as the distance from the point increases).
 
 % example of point transect data
 \begin{figure}
@@ -85,13 +85,13 @@ In order to ensure that estimation is unbiased several assumptions are made. The
 \section{The detection function}
 \label{intro-ds-detefct}
 
-One would expect that the probability of observing an animal would decrease as the distance of them from the observer increased (as in figures \ref{ds-lt-example} and \ref{ds-pt-example}). This is the relationship captured by the detection function ($g(x)$) which is defined as (\cite[p. 10]{IDS}):
+One would expect that the probability of observing an animal would decrease as the distance of them from the observer increased (as in figures \ref{ds-lt-example}). This is the relationship captured by the detection function ($g(x)$) which is defined as (\cite[p. 10]{IDS}):
 \begin{equation*}
 g(x)=\mathbb{P} (\text{object detected} | \text{object was at distance } x).
 \end{equation*}
 The assumption being that objects' detectability is a function of their distance from the observer. Before talking about models for $g(x)$, we look at the desirable properties.
 
-First, as stated in the assumptions above, objects on the line are detected with certainty, so $g(0)=1$. Second, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a \textit{shoulder}. This is physically realistic since the observer should see most things close to him/her (not just those directly under/in front of him/her). Third, it is also desirable that the model for the detection function is robust, in the sense that it is flexible and can take many plausible shapes. Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
+First, as stated in the assumptions above, objects on the line are detected with certainty, so $g(0)=1$. Second, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a \textit{shoulder}. This is physically realistic since the observer should see most things close to him/her (not just those directly under/in front of him/her). Third, it is also desirable that the model for the detection function is robust, in the sense that it is flexible and can take many plausible shapes (see \cite[page!!]{IDS}. Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
 
 We now must specify the functional form for $g$. \citeb{buckland92} gives a ``key function plus adjustment terms'' formulation for the detection function. The idea is that the key function is used as a starting point for the basic shape of the detection function. The adjustment terms consist of a series expansion that improve the fit of the model. The adjustment terms may not be necessary, in which case they may be left out of the model. The key function is usually selected as one of a uniform, half-Normal or hazard-rate (\cite{buckland85}) function. The adjustment terms are typically either even simple polynomials, Hermite polynomials or cosine functions. Further information can be found in \citeb[p. 47]{IDS}. Figure \ref{ds-detfct-examples} shows some possible detection functions.
 
@@ -219,7 +219,7 @@ More generally one can of the covariates $\mathbf{z}$ (a $K$-vector of $z_1, \do
 \label{intro-ds-covar-model}
 \end{equation}
 
-This covariate formulation can be thought of as a generalisation of the non-covariate model, the latter simply being the case where there is only an intercept term. This is equivalent to $\log$-transforming the scale parameter.
+This covariate formulation can be thought of as a generalisation of the non-covariate model, the latter simply being the case where there is only an intercept term. 
 
 This formulation fits nicely into the likelihood expressions above, the evaluations of the detection function are as above, but the calculation of $\mu$ (and therefore $p$) changes. 
 
@@ -280,7 +280,7 @@ Non-covariate distance sampling, as described above, is commonly referred to as 
 
 \section{Monotonicity}
 \label{intro-ds-mono}
-One potential pitfall of both CDS and MCDS is that  it is possible to formulate models which are not physically realistic. In particular it is possible to create models which are non-monotonic functions of distance. Data with a mode away from zero distance may occur when there has been heaping, when objects move prior to observation or just by chance. Fitting models to such ``bumps'' can cause bias in abundance estimates (\cite[p. 132]{IDS}). To get around this problem \citeb{distance-software} constrains the detection function to be monotonic. This is done by taking 10 equally spaced distances from $0$ to $w$ and checking that when the detection function is evaluated at each of these points they are less than the last ($g(x_i)\geq g(x_{i+1})$ for distances $x_1 \dots x_{10}$ where $x_1=0$). This is referred to as \textit{strong monotonicity}. Alternatively, \textit{weak monotonicity} may be enforced, where each point is checked only against the value of $g$ at the origin ($g(0)\geq g(x_i)$).
+One potential pitfall of both CDS and MCDS is that  it is possible to formulate models which are not physically realistic. In particular it is possible to create models for the detection function which are non-monotonic functions of distance. Data with a mode away from zero distance may occur when there has been heaping, when objects move prior to observation or just by chance. Fitting models to such ``bumps'' can cause bias in abundance estimates (\cite[p. 132]{IDS}). To get around this problem \citeb{distance-software} constrains the detection function to be monotonic. This is done by taking 10 equally spaced distances from $0$ to $w$ and checking that when the detection function is evaluated at each of these points they are less than the last ($g(x_i)\geq g(x_{i+1})$ for distances $x_1 \dots x_{10}$ where $x_1=0$). This is referred to as \textit{strong monotonicity}. Alternatively, \textit{weak monotonicity} may be enforced, where each point is checked only against the value of $g$ at the origin ($g(0)\geq g(x_i)$).
 
 Constrained optimization is appealing here, however it is obviously always preferable to perform unconstrained optimization if possible. Using a class of functions to model the detection function which were both flexible and did not exhibit the undesirable property of non-monotonicity could offer a more physically realistic and convincing alternative to the conventional way of performing distance analyses.
 
