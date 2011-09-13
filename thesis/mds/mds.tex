@@ -554,7 +554,7 @@ Before moving straight to the 2-dimensional case above, the method was tested in
 
 Before implementing this approach in full a a test was run in one dimension. The function:
 \be
-g(x)=0.2x^{11}(10(1-x))^6+10(10x)^3(1-x)^{10},
+g(x)=0.2x^{11}\left \{ 10(1-x) \right \}^6+10(10x)^3(1-x)^{10},
 \label{hardfcn}
 \ee
 was used and contracted by factors of $20,1,0.05,1$ over the regions $[0,0.4]$, $(0.4,0.6]$, $(0.6,0.8]$ and $(0.8,1]$, respectively. The function and its squashed form are shown in the top left and right panels (respectively) of \fig{1dadjust}. Evaluating 100, equally spaced, points over the interval $[0,1]$ using a \tprs\ and then predicting back onto the same points yielded the blue lines in the lower two plots. The left of these shows the prediction in the transformed space and the right in the original space. The green line was produced using a \tprs\ with the adjusted penalty matrix. As can be seen from the plot, the fit has been improved greatly, but how is the adjustment calculated?
@@ -666,7 +666,7 @@ In order to find calculate the point density in MDS space, the following steps a
 \item The interpolated points are then used to estimate the overall point density in MDS space by simply counting the number of points there were in each of a set of squares made from the integration grid, call is $\mathcal{L}(x_1,x_2)$. This is shown in \fig{densgrid} for the double peninsulae domain. 
 \item Then define $\mathcal{L}^*(x,y)$ as the function
 \begin{equation*}
-\mathcal{L}^*(x_1,x_2)=\frac{1}{(1+\mathcal{L}(x_1,x_2))^{3/2}}.
+\mathcal{L}^*(x_1,x_2)=\frac{1}{ \left \{ 1+\mathcal{L}(x_1,x_2) \right \}^{3/2}}.
 \end{equation*}
 The $+1$ in the denominator avoids division by zero when evaluating $\mathcal{L}^*(x_1,x_2)$. The fact that $\mathcal{L}^*(x_1,x_2)$ is then a piecewise function should not be too worrying since the aim here is to address the broader problems with the change in spatial density, not the fine-gained details.
 \end{enumerate}
