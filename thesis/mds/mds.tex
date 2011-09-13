@@ -520,7 +520,15 @@ Prediction & 155.400 & 53.511 & 29.395 & 0.125\\
 \section{Using penalty adjustments to correct for\\ squashing}
 \label{mds-penadjust}
 
-The higher MSEs shown in \tabref{wt2resultstable} at lower noise levels might be explained by the change in density of points in the domain after it has been transformed into MDS space and the way in this changes the measure of smoothness. In this case adjusting the penalty in order to take into account the change in point density in MDS space might improve performance.
+Figures \ref{wt2-2d-proj} and \ref{wt2-3d-proj} show that the points in the peninsulae domain have been squashed together in some areas. In particular, this occurs in the peninsulae themselves. Since the motivation here is to improve estimates in the peninsulae, it would be extremely unfortunate if the transformation was detrimental to the smoother's performance in these areas (albeit in a different way than was originally problematic). The squashing is similar to that seen in \secref{sch-crowding} when the \sch\ transform was used to transform the domain, although not as severe as the crowding seen there, this can still be problematic (as was seen in \secref{sc-penin}). 
+
+Uneven point density can cause problems for the smoother since the measure of smoothness will change.  Squashing space together may make the data appear more variable than it in fact is (see figure \ref{1dadjust} for a 1-dimensional example). Moving into two dimensions, an isotropic smooth seems like an unrealistic choice if the point densities are different in each dimension. One might expect that the amount of smoothing required would be a function of the density of points at that location.
+
+The higher MSEs shown in figure \ref{mds-wt2-boxplot} might be explained by the change in density of points in the domain after it has been transformed into MDS space. In this case adjusting the thin plate spline penalty in order to take into account the change in point density in MDS space might improve performance.
+
+An alternative approach would be to use a tensor product basis (of, for example, P-splines as was used in \secref{sc-sims}) where there is a separate smoothing parameter for each dimension. However, thin plate splines have other appealing properties (in particular the eigen-based approach of \cite{wood2003}, to avoid knot placement issues). A tensor product smooth may also still run into problems in each dimension with regard to the squashing of space. For these reasons, this section explores the utility of penalty adjustments based on point density for thin plate splines.
+
+\subsection{Overview}
 
 \citeb{wood2000} shows that given some transform of a variable, $x_2$ say, such that $x_{2i}^\prime=x_{2i}/k$, then $f(x_1,x_2^\prime k)$ will give the same fit as $f(x_1,x_2)$ (ie. the fit will be the same under the new coordinates), if the penalty is changed to:
 \begin{equation}
@@ -539,6 +547,8 @@ Given that the function $\mathcal{L}^*(x_1,x_2)$ is known, the penalty is given 
 \label{kdeadjust}
 \end{equation}
 Note the change of integration domain from $\mathbb{R}^2$ to $\Gamma^\prime$ (the transformed domain), as well as the pre-multiplication by the density function.
+
+Before moving straight to the 2-dimensional case above, the method was tested in one dimension.
 
 \subsection{Penalty adjustments in one dimension}
 
@@ -560,11 +570,11 @@ was used and contracted by factors of $20,1,0.05,1$ over the regions $[0,0.4]$, 
 
 \subsubsection{Penalty adjustment calculation}
 
-For the moment let us take $f$ to be a one dimensional smooth function. It may be decomposed into its basis functions and coefficients in the usual way:
+For the moment let us take $f$ to be a one dimensional smooth function. It may be decomposed into its basis functions and coefficients as seen in (\ref{intro-basisdecomp}):
 \begin{equation*}
 \hat{f}(x)=\sum_{j=1}^J \hat{\beta}_j b_j(x).
 \end{equation*}
-The $ij^\text{th}$ element of the penalty matrix (see \secref{GAMpenalties}) is given as:
+The $ij^\text{th}$ element of the penalty matrix (see \secref{GAMpenalties}) is then given as:
 \begin{equation*}
 \mathbf{S}_{ij}= \int_a^b \mathcal{L}^*(x) \frac{\partial^2 b_i(x)}{\partial x^2}\frac{\partial^2 b_j(x)}{\partial x^2} \text{d}x = \int_a^b \mathcal{L}^*(x) b^{\prime\prime}_i(x) b^{\prime\prime}_j(x) \text{d}x,
 \end{equation*}
@@ -636,12 +646,12 @@ x^\dagger_{2k}=a_{x_2}+\frac{(k-0.5)(b_{x_2}-a_{x_2})}{K},
 \end{equation*}
 for $k=1,\dots,K$. The integration grid may then be constructed as:
 \begin{equation*}
-\{x_{1k} : k=1,\dots,K\} = \{x^\dagger_{11},x^\dagger_{11},x^\dagger_{11},\dots, x^\dagger_{12}, x^\dagger_{12}, x^\dagger_{12},\dots, x^\dagger_{1K}, x^\dagger_{1K}, x^\dagger_{1K}\},
+\left \{x_{1k} : k=1,\dots,K \right \} = \left \{x^\dagger_{11},x^\dagger_{11},x^\dagger_{11},\dots, x^\dagger_{12}, x^\dagger_{12}, x^\dagger_{12},\dots, x^\dagger_{1K}, x^\dagger_{1K}, x^\dagger_{1K}\right \},
 \end{equation*}
 \begin{equation*}
-\{x_{2k} : k=1,\dots,K\} = \{x^\dagger_{11},x^\dagger_{22}, x^\dagger_{23},\dots, x^\dagger_{2K},x^\dagger_{11},x^\dagger_{22}, x^\dagger_{23},\dots, x^\dagger_{2K},\dots\}.
+\left \{x_{2k} : k=1,\dots,K \right \} = \left \{x^\dagger_{11},x^\dagger_{22}, x^\dagger_{23},\dots, x^\dagger_{2K},x^\dagger_{11},x^\dagger_{22}, x^\dagger_{23},\dots, x^\dagger_{2K},\dots\right \}.
 \end{equation*}
-Finally, those $(x_{1k},x_{2k})$ that do not lie inside the boundary in MDS space are removed leaving only those points that lie inside.
+Finally, those $(x_{1k},x_{2k})$ that do not lie inside the boundary in MDS space are removed leaving only those points that lie inside (so that the integration is performed over $\Gamma^\prime$).
 
 \subsubsection{Finding $\mathcal{L}^*$}
 
@@ -755,9 +765,9 @@ The Aral sea is located between Kazakhstan and Uzbekistan. It has been steadily 
 A \tprs, \mdsap\ and soap film were all fitted to the data. In summary the setup for each model was:
 
 \begin{enumerate}
-\item \emph{Thin plate spline}:  with basis size 70.
-\item \emph{Soap film smoother}: using a 12 by 12 grid of knots (74 were inside) and a boundary smooth with basis size 49.
-\item \emph{\mdsap}: \tprs\ with basis size 70.
+\item \emph{tprs}: thin plate spline with basis size 70.
+\item \emph{soap}: the soap film smoother using a 12 by 12 grid of knots (74 were inside) and a boundary smooth with basis size 49.
+\item \emph{mds}: \mdsap\ using thin plate regression splines with basis size 70.
 \end{enumerate}
 
 \begin{figure}

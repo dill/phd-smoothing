@@ -261,6 +261,7 @@ In \fig{uncrowdeddisk} the CRDT method is used with a rectangular domain, crowdi
 The downside of using CRDT is that it may add too many vertices to maintain the aspect ratio, so the algorithm takes longer to run than the one specified in \secref{algorithmsketch} since it tends to be cubic in the number of vertices (\cite{driscoll05}). 
 
 \section{Simulation experiments}
+\label{sc-sims}
 
 In order to test the efficacy of the \sch\ transform for the purposes of smoothing over complex regions, a series of simulation experiments were performed. The \emph{SC Toolbox} for MATLAB was used to perform the transform and the mapping of the points. These were then fed into \textsf{R} and models run using packages \texttt{mgcv} and \texttt{soap}.
 
@@ -461,6 +462,7 @@ The \sch\ transform's distortion of the domain causes increase performance of so
 \end{figure}
 
 \subsection{Two peninsula domain}
+\label{sc-penin}
 
 Looking at a more realistic domain highlights potential problems with a \sch\ transform approach. The domain in the top left corner of \fig{sc-wigglytop2-real} shows a domain which is supposed to replicate some of the features of such a domain.
 
