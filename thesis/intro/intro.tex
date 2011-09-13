@@ -276,7 +276,7 @@ which (if there are $n_p$ prediction points) can be calculated as:
 \end{equation}
 where $f(\mathbf{x}_i)$ is the ``true'' values of $f$ at the prediction points, $\mathbf{x}_i$.  It makes sense for $\mathbf{x}_i$ not to be the data since an $\hat{f}$ that simply interpolates will have zero MSE, but may still be a very bad model for the unobserved locations. When MSE is mentioned from now on, it will be with reference to $\widehat{\text{MSE}}$ in (\ref{DEFN-MSE}).
 
-To test to see if models' MSEs are significantly different, the Wilcoxon signed paired rank test is used in analysing the results from simulations.
+To test to see if models' MSEs are significantly different, the Wilcoxon signed paired rank test (e.g. \cite[pp.173-175]{wetherill}) is used in analysing the results from simulations.
 
 \subsection{The Brier score}
 \label{DEFN-brier}

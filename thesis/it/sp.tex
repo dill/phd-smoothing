@@ -77,13 +77,15 @@ The next two sections cover the technical details of the construction of the smo
 
 \subsection{A three-dimensional tensor product smoother for time and space \label{3D}}
 
-The construction of a three-dimensional scale invariant tensor product smoother of time and space is based on a marginal one-dimensional spline basis for time and a two-dimensional marginal smooth function for space, with associated quadratic penalties measuring their roughness. We omit the subscripts $i$ and $t$ for simplicity. Let us assume that we have two low-rank regression spline bases of any type to represent the smooth functions $f_\text{year}$ and $f_\text{space}$, we can write
-$$
+In order to create a a spatiotemporal smooth, tensor product smoother is used. This is a natural extension of the spatial tensor product given in \secref{GAMtensor}, however in this case the spatial smooth is isotropic (and treated effectively as one component) and the temporal component is  a marginal one-dimensional spline basis. This section gives the general construction of such a three-dimensional smoother.
+
+Omitting the subscripts $i$ and $t$ for simplicity, let us assume that we have two low-rank regression spline bases of any type to represent the smooth functions $f_\text{year}$ and $f_\text{space}$. We can then write:
+\begin{equation*}
 f_\text{year}(\texttt{year})=\sum_{l=1}^L \xi_l b_l(\texttt{year})=\textbf{X}_\text{year}\bm\xi \ \ \text{and} \ \ f_\text{space}(\texttt{n},\texttt{e})=\sum_{r=1}^R \varphi_r d_r(\texttt{n},\texttt{e})=\textbf{X}_\text{space}\bm\varphi,
-$$
+\end{equation*}
 where the $b_l(\texttt{year})$ and $d_r(\texttt{n},\texttt{e})$ are known cubic regression spline and soap film basis functions, with corresponding parameters $\xi_l$ and $\varphi_r$ and spline dimensions $L$ and $R$. $\textbf{X}_\text{year}$ and $\textbf{X}_\text{space}$ are marginal model matrices evaluating the basis functions with parameter vectors $\bm\xi$ and $\bm\varphi$. The expansion for $f_\text{space}$ and its roughness penalty do not correspond exactly to the expressions used to set up the model since, in this section, we are concerned with illustrating the construction of a three-dimensional scale invariant tensor product smoother. It is therefore convenient to keep the description of the two-dimensional marginal smoother for space and its quadratic penalty as simple as possible; a rigorous description will be given in the next section. 
 
-In order to set up a three-dimensional tensor product smoother for time and space we need $f_\text{year}(\texttt{year})$ to vary smoothly within the space dimensions. This can be achieved by allowing the parameters $\xi_l$ to vary smoothly with \texttt{n} and \texttt{e}. Using the spline set-up for $f_\text{space}(\texttt{n},\texttt{e})$ we may write (e.g. \cite[p. 163]{simonbook})
+In order to set up a three-dimensional tensor product smoother for time and space we need $f_\text{year}(\texttt{year})$ to vary smoothly within the space dimensions. This can be achieved by allowing the parameters $\xi_l$ to vary smoothly with \texttt{n} and \texttt{e}. Using the spline set-up for $f_\text{space}(\texttt{n},\texttt{e})$ we may write (analogously to \secref{GAMtensor}):
 $$
 \xi_l(\texttt{n},\texttt{e})=\sum_{r=1}^R \varphi_{lr} d_r(\texttt{n},\texttt{e})
 $$    
@@ -93,7 +95,7 @@ f(\texttt{year},\texttt{n},\texttt{e})=\sum_{l=1}^L \sum_{r=1}^R \varphi_{lr} d_
 $$
 For any particular set of observations of \texttt{year}, \texttt{n} and \texttt{e}, there exists a simple relationship between the matrix $\textbf{X}$ evaluating the tensor product smoother at these observations and the model matrices $\textbf{X}_\text{year}$ and $\textbf{X}_\text{space}$ evaluating the marginal smooths at the same observations. Ordering appropriately the parameters $\varphi_{lr}$ into a vector $\bm\theta$, the $i^{th}$ row of $\textbf{X}$ is given by $\textbf{X}_{i}=\textbf{X}_{\text{year},i}\otimes\textbf{X}_{\text{space},i}$, where $\otimes$ is the Kronecker product. 
 
-In the GAM context, it is necessary to quantify the roughness of the smooth functions in the model so that over-fitting can be accounted for and hence avoided during the parameter estimation process (e.g. Marra and Radice, 2010). As for the penalty associated with this tensor product basis, it is possible to start from roughness measures associated with the marginal smooths $f_\text{year}(\texttt{year})$ and $f_\text{space}(\texttt{n},\texttt{e})$. Suppose that functionals $J$ measuring the roughness of the smooth terms are available, and that these can be written as quadratic forms in the marginal parameters, we have that
+As for the penalty associated with this tensor product basis, it is possible to start from roughness measures associated with the marginal smooths $f_\text{year}(\texttt{year})$ and $f_\text{space}(\texttt{n},\texttt{e})$. Suppose that functionals $J$ measuring the roughness of the smooth terms are available, and that these can be written as quadratic forms in the marginal parameters, we have that
 $$
 J_\text{year}(f_\text{year})=\bm\xi^\text{T}\textbf{S}_\text{year}\bm\xi \ \ \text{and} \ \ J_\text{space}(f_\text{space})=\bm\varphi^\text{T}\textbf{S}_\text{space}\bm\varphi,
 $$
@@ -180,23 +182,7 @@ $$
 The solution of the PDEs above, yielding the basis and penalty, is the most computationally expensive part of the procedure. Knots to use for $\texttt{n}_k^*$ and $\texttt{e}_k^*$ must be specified; here we use a grid (further detail on our exact setup is given in Section \ref{ER}). In summary, we now have both the basis functions $a_j(\texttt{n}_i,\texttt{e}_i)$ and $g_j(\texttt{n}_i,\texttt{e}_i)$, and the penalties $\textbf{S}_\text{bnd}$ and $\textbf{S}_\text{int}$, forming $\textbf{S}^*_\text{space}$, for the soap film smoother. Soap basis functions and penalties can be obtained using the the \texttt{R} package \texttt{soap} which implements the ideas discussed in this section.
 
 The smooth function for $f_\texttt{space}$ obtained using the construction outlined above is rotationally invariant. Two smoothing parameters are estimated for the soap film (one for the interior and one for the boundary) but each controls the smoothness for both geographical directions at once (\cite{soap}). However, the tensor product smoother using the cubic regression spline basis for time and a soap film for space is not isotropic in space-time. This anisotropy is desirable since, as explained in Section \ref{MS}, the measurements of space and time are on different scales so it would not make sense to estimate one smoothing parameter for both the spatial and temporal components (e.g. \cite[p. 162]{simonbook}).
-
-
-\subsection{Parameter estimation \label{PE}}
-
-In model (\ref{PropM}), replacing $f$ with its tensor product expression yields a generalized linear model (GLM; McCullagh and Nelder, 1989) whose design matrix contains the spline bases representing the smooth component in the model. In principle such a model can simply be estimated by maximum likelihood (ML). However, in a smoothing spline context, unpenalized parameter estimation is likely to result in smooth component estimates that are too `wiggly', hence undermining the utility of such a model. This can be overcome by penalized ML, where the use of penalties allows for the suppression of that part of smooth term complexity which has no support from the data (e.g. Marra and Radice, 2010). Specifically, the model can be fitted by minimisation of
-\begin{equation}
-D(\bm\theta) + \bm\theta^\text{T}\textbf{S}^*\bm\theta \ \  \text{w.r.t.} \ \  \bm\theta,
-\label{Dev}
-\end{equation}
-where $\bm\theta$ contains all tensor product parameters associated with the one-dimensional spline basis for time and two-dimensional smoother for space, and $\textbf{S}^*=\sum_i \lambda_i \textbf{S}_i$, where the $\textbf{S}_i$ are matrices of known coefficients properly defined according to the results of the previous sections. The $\lambda_i$ are smoothing parameters. The model deviance, $D$, is defined as $2\phi(l_{\text{sat}}-l)$, where $\phi$ is a dispersion parameter, $l$ is the log-likelihood of the model and $l_{\text{sat}}$ the maximum value for the log-likelihood of the model with one parameter per datum. 
-
-Given values for the $\lambda_i$, minimisation of (\ref{Dev}) is straightforward. However, smoothing parameter estimation has to be addressed. This can be achieved by minimisation of a prediction error estimate, such as the generalized cross-validation (GCV) (Craven and Wahba, 1979), or by approximate restricted ML (REML) estimation (\cite{remlpaper}). Smoothing parameter selection via the GCV consists of minimizing 
-\begin{equation}
-V(\bm\lambda)=\frac{nD(\hat{\bm\theta})}{\left\{n-\text{tr}(\textbf{F})\right\}^2},
-\label{GCV1}
-\end{equation}
-where $n$ is the sample size, $\textbf{F}$ the usual hat matrix, and $\text{tr}(\textbf{F})$ represents the effective degrees of freedom of the penalized model. \citeb{simonbook} described a computational procedure to estimate smoothing parameters on the basis of criterion (\ref{GCV1}). As an alternative, approximate REML can be employed. Within this framework, the penalized likelihood estimates, $\hat{\bm\theta}$, can be seen as the posterior modes of the distribution of $\bm\theta|{\bf y}$ if $\bm\theta \sim \mathcal{N}(\textbf{0},\textbf{S}^{*-1}\phi)$, where $\textbf{S}^{*-1}$ is an appropriate generalized inverse. Viewing the spline parameters as random effects allows for the possibility to estimate the $\lambda_i$ via REML (Wahba, 1985). The recent work by Reiss and Ogden (2009) shows that at finite sample sizes GCV is prone to under-smoothing and is more likely to develop multiple minima than REML. Furthermore, it is well known that smoothing methods based on prediction error criteria, such as (\ref{GCV1}), are more affected by the presence of correlated errors than maximum likelihood-based smoothing procedures, such as REML (e.g. Krivobokova and Kauermann, 2007). Given the arguments above we opt for approximate REML, and use the \textsf{R} package \texttt{mgcv} for smoothing parameter selection (\cite{remlpaper}). 
+ 
 
 \subsection{Variance and trend estimation \label{VE}}
 
@@ -227,18 +213,14 @@ Small values for $N_b$ are typically tolerable. In practice, $N_b$ can be set to
 
 The model was implemented using the basis sizes (for the cubic and cyclic regression splines) and interior knots (for the soap film) given in Table \ref{soap-basis-table}. Note that separate models were used for each of main land, Sicily and Sardinia since the numerical routine used does not currently support tensor product smoothers with multiple penalties. 
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
 \begin{tabular}{c c c c}\\
-\hline
-\hline
 Region & Interior knots & Cyclic spline basis size & Cubic spline basis size\\
 \hline
 Main land & 41 (14x14) & 20 & 6\\
 Sardinia & 12 (5x6) & 8 & 6\\
 Sicily & 12 (6x6) & 10 & 6\\
-\hline
-\hline
 \end{tabular}
 \caption{Basis sizes per region for the smooth functions to be fit to the Italian data. For the interior (soap film) knots, the numbers in brackets show the initial grid, the other number gives the number of knots actually used (those inside the boundary).}
 \label{soap-basis-table}
@@ -263,16 +245,16 @@ Despite the lack of fit corresponding to those municipalities characterized by v
 
 As mentioned in the introductory section, Italy's national IRF was 6.5\% in 2008. Obviously, this number tells us nothing about specific local areas with particularly high or low levels of resident foreigners. As we move to smaller aggregations (e.g. regional or provincial level) the same argument holds: some information is lost. This kind of low resolution statistic can mask smaller-scale heterogeneity in the population. Our aim here is to capture exactly this spatial heterogeneity.
 
-At first glance, Figure \ref{Rd} shows the stark contrast between north and south. The maps also highlight the inhomogeneous spatial and temporal distribution of the IRF. However, as pointed out in the introduction, smoothed maps can give a much better picture of the distribution of the IRF. Smoothing the maps allows us to both separate out the signal and noise in the data, giving a an idea of the overall structure of the phenomena, as well as providing a trend information via a temporal component of the model. Figure \ref{fig1} shows smoothed spatiotemporal maps of the IRF in Italy for the period 2003-2008, obtained using the approach described in the previous sections. We can see that in 2003 northern and central Italy have the highest levels IRF. Over the subsequent years (2004-2008), the incidence spreads, forming four main areas where resident foreigners tend to live. Focusing on 2008, the most popular areas are in north Italy, specifically the Emilia-Romagna and Lombardy regions. These, although popular in 2003, appear to have greatly expanded. The second most attractive area is made up of the central Italian regions of Tuscany, Umbria, Marche and Lazio. The final two areas are composed of Liguria and Piedmont, and Veneto, Friuli-Venezia Giulia and Trentino-Alto Adige. These are located in the northwest and northeast of the country, respectively. There is also an interesting growth in the incidence at the Swiss and Austrian borders (from about 2\% in 2003 to about 4-5\% in 2008). Resident foreigners seem less attracted by the regions and islands of southern Italy. Returning to the Po Valley, the maps in Figure \ref{fig1} allow us to identify the presence of two large, well defined polarization patterns in the IRF, the first in the centre of the Po Valley and the second near Venice. The maps in Figure \ref{Rd} do not reveal these patterns.
+At first glance, Figure \ref{Rd} shows the stark contrast between north and south. The maps also highlight the inhomogeneous spatial and temporal distribution of the IRF. However, as pointed out in the introduction, smoothed maps can give a much better picture of the distribution of the IRF. Smoothing the maps allows us to both separate out the signal and noise in the data, giving a an idea of the overall structure of the phenomena, as well as providing a trend information via a temporal component of the model. Figure \ref{it-fig1} shows smoothed spatiotemporal maps of the IRF in Italy for the period 2003-2008, obtained using the approach described in the previous sections. We can see that in 2003 northern and central Italy have the highest levels IRF. Over the subsequent years (2004-2008), the incidence spreads, forming four main areas where resident foreigners tend to live. Focusing on 2008, the most popular areas are in north Italy, specifically the Emilia-Romagna and Lombardy regions. These, although popular in 2003, appear to have greatly expanded. The second most attractive area is made up of the central Italian regions of Tuscany, Umbria, Marche and Lazio. The final two areas are composed of Liguria and Piedmont, and Veneto, Friuli-Venezia Giulia and Trentino-Alto Adige. These are located in the northwest and northeast of the country, respectively. There is also an interesting growth in the incidence at the Swiss and Austrian borders (from about 2\% in 2003 to about 4-5\% in 2008). Resident foreigners seem less attracted by the regions and islands of southern Italy. Returning to the Po Valley, the maps in Figure \ref{it-fig1} allow us to identify the presence of two large, well defined polarization patterns in the IRF, the first in the centre of the Po Valley and the second near Venice. The maps in Figure \ref{Rd} do not reveal these patterns.
 
 \begin{figure}[tbp]
 	\centering
 		\includegraphics[width=\textwidth]{it/maps-Soap.pdf}
 	\caption{Spatiotemporal maps of the percentage incidence of resident foreigners in Italy over the years 2003-2008. These were obtained using model (\ref{PropM}) with a tensor product smoother based on a cubic regression spline basis for time and a soap film spline basis for space, and ISTAT data at a municipal level. Predictions were made over those points lying inside the study region from a 100 by 100 grid. The incidence is given as the ratio of the number of resident foreigners to the total resident population multiplied by 100. The colour scale ranges from an incidence of 0 (dark red) to an incidence of 12 (white). Blue lines indicate contours separated by a one unit change in incidence.}
-	\label{fig1}
+	\label{it-fig1}
 \end{figure}
 
-Figure \ref{trends} shows the estimated temporal trends for both the full Italian territory and broken down by area with 95\% confidence intervals. The trends for northern and central Italy are similar. However, those for southern Italy and the islands are much flatter. Northern and central Italy also show a faster growth in incidence. Such differences are supported by the confidence intervals. Overall, these trends reflect what we see in the maps in Figure \ref{fig1}, that there is a significant difference between northern/central Italy and the south of the country and its islands. Note that, since the approach outlined in Section \ref{VE} can not account for the presence of residual correlation structure, we expect the obtained confidence intervals not to be exactly representative than those that might be produced using some adjusted version of them. The most obvious approach would be to fit a GAMM with a carefully chosen correlation structure and use the resulting posterior covariance matrix in place of that reported in Section \ref{VE}. Unfortunately, as pointed out in the previous section, convergence problems prevented us from doing this. However, we doubt the conclusions would change.
+Figure \ref{trends} shows the estimated temporal trends for both the full Italian territory and broken down by area with 95\% confidence intervals. The trends for northern and central Italy are similar. However, those for southern Italy and the islands are much flatter. Northern and central Italy also show a faster growth in incidence. Such differences are supported by the confidence intervals. Overall, these trends reflect what we see in the maps in Figure \ref{it-fig1}, that there is a significant difference between northern/central Italy and the south of the country and its islands. Note that, since the approach outlined in Section \ref{VE} can not account for the presence of residual correlation structure, we expect the obtained confidence intervals not to be exactly representative than those that might be produced using some adjusted version of them. The most obvious approach would be to fit a GAMM with a carefully chosen correlation structure and use the resulting posterior covariance matrix in place of that reported in Section \ref{VE}. Unfortunately, as pointed out in the previous section, convergence problems prevented us from doing this. However, we doubt the conclusions would change.
 
 \begin{figure}[tbp]
 	\centering
@@ -285,7 +267,7 @@ The results presented in this section can be useful for policy-makers who may wa
 
 \subsection{Spatial economic attractiveness \label{diss}}
 
-The search for employment is well known to be among the main reasons that individuals move to another country (e.g. Fullin and Reyneri, 2011). In light of this, labor market and income indicators could help explain the spatial heterogeneity in the IRF observed in Figure \ref{fig1}. Unfortunately, the additional variables to be included into model (\ref{PropM}) are available at a different spatial resolution: such economic indicators (unemployment and employment rates as well as gross domestic product (GDP) per capita) are available at a provincial level (around 100 observations per year), while the IRF is available at a municipal level (approximately 8100 observations per year). 
+The search for employment is well known to be among the main reasons that individuals move to another country (e.g. Fullin and Reyneri, 2011). In light of this, labor market and income indicators could help explain the spatial heterogeneity in the IRF observed in Figure \ref{it-fig1}. Unfortunately, the additional variables to be included into model (\ref{PropM}) are available at a different spatial resolution: such economic indicators (unemployment and employment rates as well as gross domestic product (GDP) per capita) are available at a provincial level (around 100 observations per year), while the IRF is available at a municipal level (approximately 8100 observations per year). 
 
 \begin{figure}[tbp]
 \centering
@@ -309,9 +291,6 @@ By means of descriptive analysis, we also discussed which economic factors might
 
 Our results complement previous findings in the literature. Should some relevant economic variables become available at a municipal level, logical extensions incorporating covariate effects could be considered. It is notable that the modelling framework employed here did not allow us to consider a more complex model accounting for the presence of some moderate spatial structure in the residuals. This was due to convergence failures of the numerical routine used. Although our sensitivity analysis confirmed that this issue did not prevent us from obtaining reliable smoothed maps, it would be interesting to see whether an extension of the approach employed here incorporating spatial residual structure could be produced which would improve the results obtained in this article.
 
-\section*{Acknowledgements}
-
-We wish to thank Mark R. Taylor for his extremely helpful comments after reading an early draft of the work, and the Associate Editor and two anonymous referees for their constructive criticism which helped to improve the presentation of the article.
 
 \section*{Appendix \label{NEX}}
 
