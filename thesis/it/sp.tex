@@ -148,7 +148,7 @@ Note that the integration occurs only over $\Gamma$ rather than over the whole o
 $$
 \textbf{S}_\text{bnd} = \int_B \Big(\frac{\partial^2 f_\text{bnd}}{\partial r^2}\Big)^2 \text{d}r.
 $$
-[[TKTKTK say something about the cyclic spline basis]] see e.g. \cite{simonbook} PAGE for more details.
+[[TKTKTK say something about the cyclic spline basis]] see e.g. \cite[p. 149]{simonbook} for more details.
 
 The solution of the PDEs above, yielding the basis and penalty, is the most computationally expensive part of the procedure. Knots to use for $\texttt{n}_k^*$ and $\texttt{e}_k^*$ must be specified; here we use a grid (further detail on our exact setup is given in Section \ref{ER}). In summary, we now have both the basis functions $a_j(\texttt{n}_i,\texttt{e}_i)$ and $g_j(\texttt{n}_i,\texttt{e}_i)$, and the penalties $\textbf{S}_\text{bnd}$ and $\textbf{S}_\text{int}$, forming $\textbf{S}^*_\text{space}$, for the soap film smoother. Soap basis functions and penalties can be obtained using the the \texttt{R} package \texttt{soap} which implements the ideas discussed in this section.
 
