@@ -54,7 +54,7 @@ at municipality $i=1,\ldots,8094$ and year $t=2003,\ldots,2008$. $\phi$ is a dis
 
 Note that the data used here are collected per municipality but enter into the model as points which are located at the centroids of the municipalities (see Figure \ref{pointmap}). This change of support from areal to point data is not problematic and is desirable. In fact, our aim is to produce smoothed maps; using areal data would yield maps that are step functions for each municipality hence making it more difficult to see patterns in the data. Since we endeavour to make the maps as easily interpretable as possible, smoothing of points is a clear choice.
 
-The next two sections cover the technical details of the construction of the smoothers. First showing how a three-dimensional tensor product smoother can be constructed using a one-dimensional temporal smoother and a two-dimensional spatial smoother (in a similar way to that given in \secref{GAMtensor}). Then, second, the details of the construction of the two-dimensional smoother, using the soap film smoother.
+The next three sections cover the technical details of the construction of the smoothers. First showing how a three-dimensional tensor product smoother can be constructed using a one-dimensional temporal smoother and a two-dimensional spatial smoother (in a similar way to that given in \secref{GAMtensor}). Second, the cubic regression spline basis and penalty. Finally the details of the construction of the two-dimensional smoother, using the soap film smoother are given.
 
 \subsection{A three-dimensional tensor product smoother for time and space \label{3D}}
 
@@ -76,7 +76,7 @@ $$
 f(\texttt{year},\texttt{n},\texttt{e})=\sum_{l=1}^L \sum_{r=1}^R \varphi_{lr} d_r(\texttt{n},\texttt{e}) b_l(\texttt{year}). 
 $$
 
-To calculate the penalty, first let $J_\text{year}$ and $J_\text{space}$ be measures of the wigglyness of the functions $f_\text{year}$ and $f_\text{space}$ respectively. For $f_\text{year}$, the second-order cubic spline penalty evaluates $J_\text{year}(f_\text{year})=\int\left( \partial^2 f_\text{year}/\partial \texttt{year}^2 \right)^2 \text{d}\texttt{year}$. The penalty for the soap film smoother used for the spatial part of the tensor product is covered in the next section; for ease of explanation it is treated as a black box here.
+To calculate the penalty, first let $J_\text{year}$ and $J_\text{space}$ be measures of the wigglyness of the functions $f_\text{year}$ and $f_\text{space}$ respectively. For $f_\text{year}$, the second-order cubic spline penalty evaluates $J_\text{year}(f_\text{year})=\int\left( \partial^2 f_\text{year}/\partial \texttt{year}^2 \right)^2 \text{d}\texttt{year}$ (see the next section for more information on this basis). The penalty for the soap film smoother used for the spatial part of the tensor product is covered in the next section; for ease of explanation it is treated as a black box here.
 
 An overall penalty for the tensor product smoother can be obtained by applying the penalties of $f_\text{space}(\texttt{n},\texttt{e})$ to the varying coefficients of the marginal smooth $f_\text{year}(\texttt{year})$, $\xi_l(\texttt{n},\texttt{e})$,
 $$
@@ -92,8 +92,23 @@ $$
 $$
 where as usual, $\lambda_\text{space}$ and $\lambda_\text{year}$ are the smoothing parameters for time and space respectively. Smoothness selection was performed using the REML method of \citeb{remlpaper} as detailed in \secref{intro-otherGAMfit}.
 
-The next section shows how $f_\text{space}$ and $J_\text{space}$ can be constructed.   
+The next sections show how $f_\text{year}$ and $J_\text{year}$ then $f_\text{space}$ and $J_\text{space}$ can be constructed.   
 
+\subsection{Cubic regression splines}
+
+The temporal part of the smooth is constructed using a cubic regression spline basis. This basis is relatively simple and is therefore quite useful for univariate problems. As with P-splines (REF) cubic regression splines require knots. First defining $q-2$ knots $\{\texttt{year}_j^* : j=1,\ldots,q-2\}$ and the basis functions $b_j$ are defined as:
+\begin{equation*}
+b_j(\texttt{year}) = R(\texttt{year},\texttt{year}_j^*)
+\end{equation*}
+where:
+\begin{align*}
+R(x,z) =& \left\{ \left ( z-1/2 \right )^2 -1/12 \right\} \left\{ \left (x-1/2 \right )^2 - 1/12 \right \}/4 \\
+ & - \left\{ \left(\lvert x-z\rvert -1/2 \right)^4 -1/2\left(\lvert x-z \rvert -1/2 \right)^2 +7/240 \right\}/24.
+\end{align*}
+The associated penalty, $J_\text{year}$, is given by:
+\begin{equation*}
+J_\text{year}(f_\text{year})=\int\left( \frac{\partial^2 f_\text{year}}{\partial \texttt{year}^2} \right)^2 \text{d}\texttt{year}.
+\end{equation*}
 
 \subsection{The soap film smoother \label{SF}}
 
