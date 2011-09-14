@@ -32,9 +32,9 @@ Of particular interest here are smooth functions of space, and since the models 
 First, denote observations of the phenomena of interest as $z_i$, where $i$ indexes the samples $i=1,\ldots,n$, if there are $n$ samples (in the examples above this would be the chlorophyll level or the yearling whiting catch at a particular point). Each  $z_i$ is the realisation of some random variable $Z_i$, where $Z_i=\mu_i+\epsilon_i$, where $\mu_i=\mathbb{E}[Z_i]$, the expected value of the $i^\text{th}$ observation. Here $\epsilon_i$ is an error term and is assumed to be normally distributed with zero mean and some variance, $\sigma^2$. The spatial coordinates of the sample are also recorded, denote them $\mathbf{x}_i = (x_{i1}, x_{i2})$ (coordinates could be measured in latitude and longitude, or as kilometres North and East of some reference point, known as Northings and Eastings). The objective is to model the expected value of the response ($\mu_i$) using the coordinates at which the data were collected.
 
 We have assumed that the distribution of phenomena of interest varies smoothly in space, this is equivalent to saying that $\mu_i$ varies smoothly in space. If we let $f$ be some smooth function, then as $\mu_i = f(\mathbf{x}_i)$:
-\begin{equation}
+\begin{equation*}
 z_i = f(\mathbf{x}_i) + \epsilon_i.
-\end{equation}
+\end{equation*}
 The observations are a sum of a smoothly varying spatial component and some random error. The problem is now how to estimate $f$.
 
 One can imagine several possible ways of obtaining a suitable $f$, for example one might simply work through a large book of mathematical functions, tweaking parameters and hoping one would fit. Alternatively one might estimate $f$ as a kind of moving average of the values (for example LOESS, \cite{loess2}). The first option seems extremely time consuming (if it were even plausible) and the second will not give an ``explicit'' functional form at the end to slot into other procedures later. Rather than use either of these, a \textit{basis function} representation is used to form $f$. The idea is to build $f$ out of a sum of other known functions, ($b_j$s, say) scaled by coefficients ($\beta_k$, say) and then estimate these coefficients rather than the function as a whole. Mathematically:
@@ -182,9 +182,10 @@ where $\Delta^2 \beta_j = \beta_j -2\beta_{j-1} + \beta_{j-2}$ (the second diffe
 \label{GAMtensor}
 
 P-splines are defined only in one dimension, however, it is possible to build 2-dimensional (and higher) smooths from \textit{tensor products} of 1-dimensional smooths. This is made possible by thinking of each 1-dimensional basis as a marginal of a higher dimensional smooth. A spatial smooth of, say $x_1$ and $x_2$ can be constructed by first writing down the basis expansions for the marginal smooths of $x_1$ and $x_2$ (in general terms, since this applies to all splines not just P-splines):
-\begin{equation*}
+\begin{equation}
 f_{x_1}(x_1) = \sum_{j=1}^J \beta_j b_j(x_{1}), \quad  f_{x_2}(x_2) = \sum_{j=1}^J \delta_j d_j(x_{2}).
-\end{equation*}
+\label{intro-tensor-def}
+\end{equation}
 where the $\delta_j$ and $d_j$ are analogous to $\beta_j$ and $b_j$ and assuming that the basis size $J$ is the same for each direction (though this need not be the case). To make $f_{x_1}$ vary with $x_2$ we can then simply make the $\beta_j$s a function of $x_2$, the simplest way of doing this would be to define:
 \begin{equation*}
 \beta_j(x_2) = \sum_{j=1}^J \delta_j d_j(x_{2}).
@@ -249,6 +250,7 @@ with respect to $\bm{\beta}$, giving $\bm{\beta}^{[k]}$ and hence allowing the c
 This procedure is iterated to convergence of $\bm{\beta}$ for the given smoothing parameter(s). Further information on PIRLS in the GLM context can be found in chapter 1 of \citeb{GEEbook}.
 
 \subsubsection{Other GAM fitting methods}
+\label{intro-otherGAMfit}
 
 It has been observed (\cite{reissogden}) that GCV can sometimes have problems with multiple minima (i.e. the optimisation can get stuck at a non-optimal $\lambda$). An alternative to minimizing the GCV score is to use a likelihood-based method such as approximate REML or ML, which does not suffer from this problem (\cite{remlpaper}). The key to understanding restricted maximum likelihood or (marginal) maximum likelihood methods is the realisation that the estimates of the coefficients (the $\bm{\hat{\beta}}$) are the posterior modes of the distribution of $\bm{\beta}|\mathbf{z}$ if $\bm{\beta} \sim N(\mathbf{0},\mathbf{S}^-)$ (where $\mathbf{S}^-$ the generalized matrix inverse of $\mathbf{S}$). When the $\bm{\beta}$ are considered to be random variables, smoothing parameters can then be thought of as variance parameters and a likelihood can then be formed (this is known as the \textit{random effects formulation}).  This likelihood can then be optimized with respect to $\lambda$ in the same hierarchical way as with GCV above. At each iteration the optimal $\bm{\beta}$ is found via PIRLS.
 
