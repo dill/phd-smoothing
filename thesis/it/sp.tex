@@ -4,18 +4,26 @@ This chapter investigates one application of the smoothing methods described in 
 
 \section{Introduction \label{IN}}
 
-Many European countries have recently experienced a substantial increase in the proportion of immigrants in their populations. The incidence of resident foreigners calculated at a national level does not provide information on the local spatial and temporal distribution of the phenomenon. This information may be of crucial importance for planning local policies. In this paper we suggest a tool for practitioners to provide spatiotemporal maps representing the local distribution of the incidence of resident foreigners in the territory, and changes in spatial trends over time. We illustrate this with Italian data at a municipal level, for the period 2003-2008. To account for spatiotemporal interactions in the data, we propose using a generalized additive model incorporating a smoother of the time and space dimensions. Specifically, we set up a tensor product smoother combining a cubic regression spline basis for time and a soap film spline basis for space. This approach provides a consistent framework to produce spatiotemporal maps which could be effectively used by policy makers to decide the allocation of economic resources at a local level.
+Many European countries have recently experienced a substantial increase in the proportion of immigrants in their populations. The incidence of resident foreigners calculated at a national level does not provide information on the local spatial and temporal distribution of the phenomenon. This information may be of crucial importance for planning local policies. Using Italian data (at a municipal level) for the period 2003-2008, a tool for practitioners to provide spatiotemporal maps representing the local distribution of the incidence of resident foreigners in the territory, and changes in spatial trends over time is showcased. A tensor product smoother combining a cubic regression spline basis for time and a soap film spline basis for space is used to account for spatiotemporal interactions in the data. This approach provides a consistent framework to produce spatiotemporal maps which could be effectively used by policy makers to decide the allocation of economic resources at a local level.
 
-
-
-
-
-
-
-
-An increase in both political and academic interest has led to a large amount of research into international migration, both theoretical and empirical, exploring its causes and consequences. Several theories of migration have been proposed, from both a macro- and microeconomic point of view, based on different schools of thought. Among these are the neoclassical economic theory (e.g. Borjas, 1989; Massey \textit{et al.}, 1993), the assumptions regarding the new economics of migration (e.g. Stark and Bloom, 1985; Massey \textit{et al.} 1993), dual labor markets (e.g. Piore, 1979; Massey \textit{et al.} 1993) and world systems theory (e.g. Wallerstein, 1974; Hooghe \textit{et al.} 2008). In addition to theoretical work, many empirical studies have taken place. Examples include studies investigating the impact of resident foreigners on the labor market of the host country (e.g. Borjas, 2003, 2005; Borjas, Freeman and Katz, 1996; Card, 2005; Fullin and Reyneri, 2011), underemployment (Slack and Jensen, 2007), possible connections between immigration and nations' poverty rates (Raphael and Smolensky, 2009), transfer of identity from first to second generation immigrants (Casey and Dustmann, 2010), difference in education, earnings and employment between first and second generation immigrants (Algan \textit{et al.}, 2010), problems relating to the integration of different cultures and languages (e.g. Lazear, 1999; Contucci and Ghirlanda, 2007), and the tendency for immigrants to live in ethnic ``enclaves'' (Edin, Fredriksson and Aslund, 2003). 
+\subsection{Background}
   
-Manning (2010) has pointed out that many European countries have recently experienced a substantial increase in the proportion of immigrants in the population. Given a specific area such as municipality, province, region or nation, a measure of density of resident foreign population is the percentage incidence of resident foreigners (IRF), given as the ratio of the number of resident foreigners to the total resident population multiplied by 100 (e.g. Lowell, 2007; Coleman, 2008; Miguet, 2008). This gives a simple, well-known, demographic indicator for comparing different regions of a country in terms of number of resident foreigners per 100 resident inhabitants (e.g. OECD, 2004). 
+Many European countries have recently experienced a substantial increase in the proportion of immigrants in the population (\cite{Manning2010}). In particular this has increased since the introduction of the Schengen agreement (relaxing border controls within the EU) and the introduction of new EU members in 2007 [[TKTKTK other years]]. In Italy, the Italian National Statistical Office (ISTAT) gave the top three counties represented in terms of resident foreigners as Albania (13.6\%), Morocco (12.7\%) and Romania (8.9\%) in 2003. By 2008, Romania was top (20.5\%), followed by Albania (11.3\%) and Morocco (10.4\%). The significant increase of the Romanian population in Italy coincides with the country's entry to the European Union ($1^\text{st}$ January 2007). Currently, Romanian is the most numerous foreign nationality in 14 of the 20 Italian regions. Italy hosts the largest Romanian community outside Romania and almost half of the entire Romanian migrant stock. [[TKTKTK say something about how this causes tension]]
+
+Note that the issue of illegal foreigners is not covered here. This phenomenon and its respective quantification is an open topic of discussion in the studies of international migrations ([[TKTKTK errr]]e.g. Carter, 1999; Hillman and Weiss, 1999; Cangiano, 2008; Strozza, 2004). Several approaches have been proposed in literature to quantify this, but all are subject to criticism (especially with regard to the magnitude of errors in estimates). Here only official data on the resident foreign population is considered.
+
+Given a specific area such as municipality, province, region or nation, a measure of density of resident foreign population is the percentage incidence of resident foreigners (IRF), given as the ratio of the number of resident foreigners to the total resident population multiplied by 100 ([[TKTKTK pick one]]e.g. Lowell, 2007; Coleman, 2008; Miguet, 2008). This gives a simple, well-known, demographic indicator for comparing different regions of a country in terms of number of resident foreigners per 100 resident inhabitants. The resident foreign population includes all people (born in Italy or abroad) who declare their citizenship not to be Italian.
+
+Populations are of course temporally as well as spatially dynamic. The change in resident foreign population at a municipal level, at the end of a year, is determined by
+\begin{equation}
+RFP^{31^\text{st}} = RFP^{1^\text{st}} + (I_1 + I_2 + I_3+ I_4) - (D_1 + D_2 + D_3 + D_4 + AC),
+\label{it-rfp}
+\end{equation}
+where $RFP^{31^\text{st}}$ indicates the total number of resident foreigners at the end of December and $RFP^{1^\text{st}}$ the number of resident foreigners on the $1^\text{st}$ of January. $I_{1}$ denotes the number of people whose parents are foreigners (at least one of them being resident in the municipality), $I_{2}$ the number of foreign citizens who asked to transfer their residence from another Italian municipality to the current one, $I_{3}$ those who asked to transfer their residence from abroad, and $I_{4}$ refers to recording operations due to other reasons (e.g. foreigners mistakenly deleted from the registry of the municipality, because they were temporarily missing). $D_{1}$ represents the number of resident foreigners who died during the year, $D_{2}$ those who moved to a different municipality, $D_{3}$ those who moved abroad, $D_{4}$ refers to cancellations for other reasons (e.g. foreigners deleted from the registry of the municipality, because they were not present), and \textit{AC} denotes those resident foreigners who obtained Italian citizenship during the year. 
+ 
+According to ISTAT, the IRF has grown substantially, from 2.7\% in 2002 to 6.5\% in 2008. The IRF calculated on a national level does not say anything specific about the local spatial distribution of the phenomenon. Information on how the distribution of the IRF changes over time and space at a local level (e.g. municipal) may be of crucial importance for planning local policies (e.g. for the integration of resident foreigners in a host country). 
+
+Recently ISTAT has integrated the official statistics with a new public database (\url{http://demo.istat.it}), mainly based on administrative sources. The database gives the number of resident foreigners calculated as in (\ref{it-rfp}) at the end of December each year in each municipality (of which there are around 8100). Municipal level data is the highest resolution available at this time. For policy makers in the central public administration, geographical maps of the IRF at a municipal level for the whole territory can represent a useful tool providing an overview of the areas with a higher or lower presence of foreigners. One might therefore expect, for instance, that an area with a high density of resident foreigners might require more economic resources for integration's policies than an area with a lower density.
 
 \begin{figure}[tbp]
 	\centering
@@ -24,53 +32,21 @@ Manning (2010) has pointed out that many European countries have recently experi
 	\label{Rd}
 \end{figure}
 
-Here we consider the Italian case and aim to analyse the local distribution of the incidence of resident foreigners in the territory. According to the Italian National Statistical Office (ISTAT), the IRF has grown substantially, from 2.7\% in 2002 to 6.5\% in 2008. This phenomenon has had an impact on the population, especially from a socio-demographic point of view (see Section \ref{DEM} for details). The IRF calculated on a national level does not tell us anything specific about the local spatial distribution of the phenomenon. Information on how the distribution of the IRF changes over time and space at a local level (e.g. municipal) may be of crucial importance for planning local policies (e.g. for the integration of resident foreigners in a host country). It is clear that for each municipality the IRF is administrated and known from the municipal population registers. However, for policy makers in the central public administration, geographical maps of the IRF at a municipal level for the whole territory can represent a useful tool providing an overview of the areas with a higher or lower presence of foreigners. In this respect, we would expect, for instance, an area with a high density of resident foreigners to require more economic resources for integration's policies than an area with a lower density.
+Figure \ref{Rd} shows plots of the raw IRF data at a municipal level over the years 2003-2008 (these are, of course, averaged over a grid for plotting purposes). The features that stand out clearly are the marked difference between north and south, and the increase in the IRF over time. However, these maps make it difficult to detect any local spatial structure in the incidence. For example, the Po Valley (northern Italy) area is characterized by medium to high IRF levels in 2008 but it is not really possible to identify the existence of any clear polarization. This can be problematic for policy makers in the central public administration who may want to allocate economic resources as efficiently and effectively as possible. Previous studies analysing the distribution of resident foreign population in a territory have employed descriptive analysis and/or more or less complex linear modelling approaches ([[TKTKTK pick some]] e.g. Ward, 1969; McHugh, 1989; Greenwood and McDowel, 1991; Fonseca, 2008; De Graaff and Nijkamp, 2010; Longhi, Nijkamp and Poot, 2010). The aim here is to illustrate a tool for practitioners to provide clearer spatiotemporal maps representing the distribution of the IRF in a territory and changes in spatial trends over time, at a local level. 
 
-Our study uses Italian data for the period 2003-2008. Since 2003, ISTAT has provided a new public database with annual frequency of the number of resident foreigners at a municipal level. This represents the current maximum spatial and temporal detail available. Figure \ref{Rd} shows the empirical maps of the IRF at a municipal level over the years 2003-2008. The features that stand out clearly are the marked difference between north and south, and the increase in the IRF over time. However, these maps make it difficult to detect any local spatial structure in the incidence. For example, in the Po Valley (northern Italy), the area is characterized by medium-high IRF levels in 2008 but it is not really possible to identify the existence of any polarization. This can be problematic for policy makers in the central public administration who may want to allocate economic resources as efficiently and effectively as possible. We recall that studies analysing the distribution of resident foreign population in a territory have employed descriptive analysis and/or more or less complex linear modelling approaches (e.g. Ward, 1969; McHugh, 1989; Greenwood and McDowel, 1991; Fonseca, 2008; De Graaff and Nijkamp, 2010; Longhi, Nijkamp and Poot, 2010). Our aim here is to illustrate a tool for practitioners to provide clearer spatiotemporal maps representing the distribution of the IRF in a territory and changes in spatial trends over time, at a local level. 
+Since there is currently no relevant economic data are available at a municipal level, the response (IRF) is modelled using a smoother which is a function of only the spatial coordinates and time. The model is then used to create smoothed maps of the geographical area of interest over time. Two points are noteworthy here. First, since the coastline of Italy has a complex boundary, leakage (as described in \secref{intro-FAS}) is likely to occur and inappropriately linking parts of the domain could have serious policy implications. Second, looking at figure \ref{Rd}, there appears to be a strong temporal interaction (those places with high incidence increase their incidence over time) so the model used should account for a space-time interaction. These two goals can be achieved by using a generalized additive model incorporating a three-dimensional tensor product smoother combining a cubic regression spline basis function for the temporal trend and an isotropic soap film spline basis for the spatial component.
 
-Since there is currently no relevant economic data are available at a municipal level, the response (IRF) is modelled using a smoother which is a function of only the spatial coordinates and time. The model is then used to create smoothed maps of the geographical area of interest over time. Two points are noteworthy here. First, since the coastline of Italy has a complex boundary, leakage (as described in \secref{intro-FAS}) is likely to occur -- inappropriately linking parts of the domain could have serious policy implications. Second, because it is unlikely that the IRF occurs at similar strengths and patterns over the territory, the model used should account for a space-time interaction. These two goals can be achieved by using a generalized additive model incorporating a scale-invariant three-dimensional tensor product smoother combining a cubic regression spline basis function for the temporal trend and a soap film spline basis for the spatial component.
-
-
-\section{The structure and nature of the data on resident foreign population in Italy\label{SDC}}
-
-The entry of foreigners from some countries of the European Union (EU) into Italy is regulated by the Schengen agreements. These allow for the elimination of border controls, hence creating a common area of free movement among members (Broeders, 2007). Foreigners from a non-EU country must possess a visa or the necessary documents (further details are available from the Italian Ministry of the Interior at \url{http://www.interno.it}). 
  
-In studying a phenomenon linked to the international migration, it is important to distinguish between those individuals considered to be resident foreigners and those considered to be immigrants. The resident foreign population includes all people (born in Italy or abroad) who declare their citizenship not to be Italian. The immigrant population consists of all those born abroad who have declared themselves to be foreigners or Italian by naturalization. Foreigners born in Italy such as children born from foreign parents are excluded from immigrant population. The population census conducted by ISTAT in 2001 showed that foreigners and immigrants constitute roughly the same group: about 81\% of immigrants have been identified by foreign citizenship, and 88\% of foreigners are immigrants (since they were born abroad).
-
-In many countries, official statistics report the number of resident foreigners but not the number of immigrants (Coleman, 2008). Currently, the dynamics of immigration to Italy still allow the acceptance of a definition which does not distinguish between these two groups. This simplification is reasonable during the first phase of the immigration process in a country and when the majority of immigrants keep their own citizenship for a long period. Indeed, this is the case in Italy. The population census gives the best distinction between immigrants and foreigners. In this case the data can be analysed by birthplace, citizenship at birth and citizenship at the census time. 
- 
-Italian official statistics on the resident foreign population are mainly based on administrative sources. Recently ISTAT has integrated the official statistics with a new public database (\url{http://demo.istat.it}). The database gives the number of resident foreigners calculated at the end of December each year in each municipality (of which there are around 8100). Compared to provincial or regional data, municipal-level data offers far more detail on the spatial distribution of the IRF.
- 
-Populations are of course temporally as well as spatially dynamic. The change in resident foreign population at a municipal level, at the end of a year, is determined by
-$$
-RFP^{31^\text{st}} = RFP^{1^\text{st}} + (I_1 + I_2 + I_3+ I_4) - (D_1 + D_2 + D_3 + D_4 + AC),
-$$ 
-where $RFP^{31^\text{st}}$ indicates the total number of resident foreigners at the end of December and $RFP^{1^\text{st}}$ the number of resident foreigners on the $1^\text{st}$ of January. $I_{1}$ denotes the number of people whose parents are foreigners (at least one of them being resident in the municipality), $I_{2}$ the number of foreign citizens who asked to transfer their residence from another Italian municipality to the current one, $I_{3}$ those who asked to transfer their residence from abroad, and $I_{4}$ refers to recording operations due to other reasons (e.g. foreigners mistakenly deleted from the registry of the municipality, because they were temporarily missing). $D_{1}$ represents the number of resident foreigners who died during the year, $D_{2}$ those who moved to a different municipality, $D_{3}$ those who moved abroad, $D_{4}$ refers to cancellations for other reasons (e.g. foreigners deleted from the registry of the municipality, because they were not present), and \textit{AC} denotes those resident foreigners who obtained Italian citizenship during the year. 
-
-Acquisition of Italian citizenship by foreigners is regulated by law 91 of the $5^\text{th}$ of February 1992 and its subsequent amendments and additions. Foreigners can acquire Italian citizenship by marriage to an Italian or by naturalization. The latter case refers to the situation in which the foreigner has lived in the country from a certain period of time. Such a period varies dependent on the status of the person in question and the specific laws of each country. For example, in Italy, the period is at least 10 years for non-EU citizens, at least 4 years for EU citizens and at least 5 years for political refugees or stateless persons and adult individuals who have been adopted by Italian citizens. An exhaustive list of ways to obtain Italian citizenship is available on the Ministry of the Interior's website. Once foreigners have acquired Italian citizenship, they are included in the Italian population's statistics. However, our aim is to investigate and measure the incidence on the population of  residents who do not have Italian citizenship.
-
-We do not tackle the issue of illegal foreigners here. This phenomenon and its respective quantification is an open topic of discussion in the studies of international migrations (e.g. Carter, 1999; Hillman and Weiss, 1999; Cangiano, 2008; Strozza, 2004). Several approaches have been proposed in literature to quantify this, but all are subject to criticism (especially with regard to the magnitude of errors in estimates). Here we only consider official data on the resident foreign population. 
-
-\section{The resident foreign population's contribution to Italy's demography \label{DEM}}
-
-Bijak \textit{et al.} (2007) shows that in the absence of migration, many of the 27 European Union countries could see a decline in their non-immigrant populations up to 2052. In particular, with no migration they estimate that the population of Italy could decrease from 57 million in 2002 to about 43 million in 2052. The main causes of this decline may be linked to a low fertility rate and hence an aging population. 
-
-Looking at a traditional indicator of an elderly population, the ratio of old (over 64) to young (up to 14) in the total population was 143.4\% at the end of 2008 (156.2\% if we only consider individuals with Italian citizenship). The elderly population is about $43\%$ larger than the young population. Considering only the resident foreign population the ratio is 11.2\%. In the same year, the average age of foreigners resident in Italy was 31, while that of Italian citizens was 43. From this we can see that if we stratify by citizenship there is a substantial difference in the age structure of the population present in Italy.
-
-As for the low fertility rate, the latest data from ISTAT puts the average number of children per Italian woman of childbearing age (from 15 to 49 years) at 1.33, lower than the average of 2.05 children for foreign woman living in Italy. Combining the fertility rate for both Italian and foreign women, we obtain an average of 1.41. Coleman (2008) states that ``typically, in low-mortality populations a total fertility of about 2.04 is regarded as the `replacement level', that is, a level sufficient to replace the population in the long-run, ignoring migration''. Given the impact of resident foreigners on the population structure, the measure of total fertility (and hence the level of replacement) must take into account the contribution of immigrants (Coleman, 2008). In Italy, the increasing presence of resident foreigners over recent years has contributed not only to population growth but also to a reduction in average age and an increase in the total fertility rate. The profile of the nationalities of resident foreigners in Italy is changing. Based on elaborations of data from ISTAT, in 2003, the top three countries represented were Albania (13.6\%), Morocco (12.7\%) and Romania (8.9\%). In 2008, Romania was top (20.5\%), followed by Albania (11.3\%) and Morocco (10.4\%). The significant increase of the Romanian population in Italy coincides with the country's entry to the European Union ($1^\text{st}$ January 2007). Currently, Romanian is the most numerous foreign nationality in 14 of the 20 Italian regions. Italy hosts the largest Romanian community outside Romania and almost half of the entire Romanian migrant stock. The choice of Italy as primary destination for Romanians can be explained by many factors including the presence of small Italian companies, the economic links with Romania and the accessibility of the Italian language for Romanians (Ban, 2009). 
-
-According to a descriptive analysis of ISTAT data, in 2008 the resident foreign population in Italy was made up of 53.6\% individuals from Europe, 22.4\% from Africa, 15.8\% from Asia, 8.1\% from America, and 0.1\% from Oceania.
-
 \section{Spatiotemporal modelling \label{METH}}
 
 \subsection{Model specification \label{MS}}
 
-The model we employ belongs to the class of generalized additive models (GAMs; Hastie and Tibshirani, 1990). Such models allow for complex relationships between covariates and the response, which can be crucial to uncover interesting features in the data. The IRF can only take positive continuous values. As explained in the introductory section, this is because the IRF used here is given as the ratio of the number of resident foreigners to the total resident population multiplied by 100. The proposed model is as follows
+As explained in the introductory section, the IRF is given as the ratio of the number of resident foreigners to the total resident population multiplied by 100 so, the IRF can only take positive continuous values. Letting $f$ be a smooth function, the proposed model is as follows
 \begin{equation}
 \log \left\{\mathbb{E}(\texttt{irf}_{it})\right\} = f(\texttt{year}_t,\texttt{n}_i,\texttt{e}_i), \ \texttt{irf}_{it} \sim \text{Tweedie}\left\{\mathbb{E}(\texttt{irf}_{it}),\phi \mathbb{E}(\texttt{irf}_{it})^{p}\right\},          
 \label{PropM}
 \end{equation}
-at municipality $i=1,\ldots,8094$ and year $t=2003,\ldots,2008$. $\phi$ is a dispersion parameter and the log link function ensures positive fitted values. $\texttt{irf}_{it}$, $\texttt{n}_i$, and $\texttt{e}_i$ represent the variables percentage IRF, Northing and Easting, respectively. Tweedie distributions are a special case of an exponential dispersion model and include, for example, the normal ($p=0$), Poisson ($p=1$) and gamma ($p=2$) distributions (J\o rgensen, 1987). For $1<p<2$ Tweedie distributions can be represented as Poisson mixtures of gamma distributions, with mass at zero but otherwise continuous on the positive reals. These are especially appealing for modelling continuous positive observations when exact zeros occur. Dunn and Smyth (2005) provides a survey of published applications stressing the utility and flexibility of this class of distributions. $f$ is a multidimensional smooth function of \texttt{year}, \texttt{n} and \texttt{e} which models the joint effect of these variables on \texttt{irf}. The use of a three-dimensional smoother for time and space is crucial in that the temporal trend of the IRF is expected to occur at different strengths and patterns depending on the spatial location because of differing site characteristics in the territory. Northing and Easting are simply offsets in kilometres from a set point (in our case, 11.5 longitude, 44 latitude), thus ensuring that the spatial part of the smoother is isotropic (as opposed to using latitude and longitude). We want both the spatial and temporal components to have an optimal degree of smoothness in terms of the bias-variance trade-off; the smoother must be invariant to the relative scaling of space (km) and time (years). In addition, the smoother has to allow for combinations of different basis functions most suitable for the spatial and temporal components. This can be achieved using a multidimensional tensor product smoother combining a cubic regression spline basis for \texttt{year} and a spline basis for the two spatial dimensions \texttt{n} and \texttt{e}. The smooth component in (\ref{PropM}) is subject to some identifiability constraint (see \cite{simonbook} for more details).
+at municipality $i=1,\ldots,8094$ and year $t=2003,\ldots,2008$. $\phi$ is a dispersion parameter and the log link function ensures positive fitted values. $\texttt{irf}_{it}$, $\texttt{n}_i$, and $\texttt{e}_i$ represent the variables: percentage IRF, Northing and Easting, respectively. Tweedie distributions are a special case of an exponential dispersion model and include, for example, the normal ($p=0$), Poisson ($p=1$) and gamma ($p=2$) distributions (J\o rgensen, 1987). For $1<p<2$ Tweedie distributions can be represented as Poisson mixtures of gamma distributions, with mass at zero but otherwise continuous on the positive reals. These are especially appealing for modelling continuous positive observations when exact zeros occur. \citeb{Dunn2005} provides a survey of published applications stressing the utility and flexibility of this class of distributions. $f$ is a multidimensional smooth function of \texttt{year}, \texttt{n} and \texttt{e} which models the joint effect of these variables on \texttt{irf}. The use of a three-dimensional smoother for time and space is crucial in that the temporal trend of the IRF is expected to occur at different strengths and patterns depending on the spatial location because of differing site characteristics in the territory. Northing and Easting are as described in \secref{intro-basic-setup} (in this case the offsets are, 11.5 longitude, 44 latitude), thus ensuring that the spatial part of the smoother is isotropic (as opposed to using latitude and longitude). The smoother must allow for combinations of different basis functions most suitable for the spatial and temporal components. In this case using a multidimensional tensor product smoother combining a cubic regression spline basis for \texttt{year} and a spline basis for the two spatial dimensions \texttt{n} and \texttt{e}. 
 
 \begin{figure}[tbp]
 	\centering
@@ -81,11 +57,11 @@ at municipality $i=1,\ldots,8094$ and year $t=2003,\ldots,2008$. $\phi$ is a dis
 
 Note that the data used here are collected per municipality but enter into the model as points which are located at the centroids of the municipalities (see Figure \ref{pointmap}). This change of support from areal to point data is not problematic and is desirable. In fact, our aim is to produce smoothed maps; using areal data would yield maps that are step functions for each municipality hence making it more difficult to see patterns in the data. Since we endeavour to make the maps as easily interpretable as possible, smoothing of points is a clear choice.
 
-The next two sections cover the technical details of the construction of the smoothers. We first show how in general a three-dimensional tensor product smoother can be constructed using a one-dimensional temporal smoother and a two-dimensional spatial smoother. We then go into the details of the construction of the two-dimensional smoother.
+The next two sections cover the technical details of the construction of the smoothers. First showing how a three-dimensional tensor product smoother can be constructed using a one-dimensional temporal smoother and a two-dimensional spatial smoother (in a similar way to that given in \secref{GAMtensor}). Then, second, the details of the construction of the two-dimensional smoother, using the soap film smoother.
 
 \subsection{A three-dimensional tensor product smoother for time and space \label{3D}}
 
-In order to create a a spatiotemporal smooth, tensor product smoother is used. This is a natural extension of the spatial tensor product given in \secref{GAMtensor}, however in this case the spatial smooth is isotropic (and treated effectively as one component) and the temporal component is  a marginal one-dimensional spline basis. This section gives the general construction of such a three-dimensional smoother.
+In order to create a a spatiotemporal smooth, tensor product smoother is used. This is very similar to the tensor products shown in \secref{GAMtensor}, however in this case one of the components is a two-dimensional, isotopic spatial smooth ($f_\text{year}$) and is treated effectively as one component. The other temporal component ($f_\text{space}$) is  a marginal one-dimensional spline basis. 
 
 Omitting the subscripts $i$ and $t$ for simplicity, let us assume that we have two low-rank regression spline bases of any type to represent the smooth functions $f_\text{year}$ and $f_\text{space}$. We can then write:
 \begin{equation*}
@@ -326,163 +302,3 @@ Data were provided by ISTAT, at province level (the highest resolution available
 Scatterplots of the composite indicator against its components (see Figure \ref{fig4}) can reveal relationships between the individual indicators and the composite index (OECD 2008, p. 35). In our case a value of the ISEA close to 100 corresponds to the highest levels of added value per capita and employment rate and to the lowest levels of unemployment rate. For low values of the indicator we observe the opposite. The proposed composite indicator ranks the Italian provinces from most to least attractive, year-by-year, from both an economic and labor market standpoint.
 
 We have also tested how the province's ranking changes if we construct the composite indicator excluding either unemployment rate or employment rate. The resulting indicators rank the Italian provinces in a fairly similar manner as the composite index presented above. Here we consider both the employment and unemployment rates to fully account for labor market characteristics at territorial level.
-
-
-%\begin{thebibliography}{99}
-%
-%\bibitem{} Algan, Y., Dustmann, C., Glitz, A. and Manning, A. (2010). The economic situation of first- and second-generation immigrants in France, Germany, and the UK. \textit{The Economic Journal}, 120, F4--F30.
-%
-%\bibitem{} Ban, C. (2009). Economic transnationalism and its ambiguities: the case of Romanian Migration to Italy. \textit{International Migration}, DOI: 10.1111/j.1468-2435.2009.00556.x.
-%
-%\bibitem{} Banerjee, S., Carlin, B. and Gelfand, A. (2004). Hierarchical Modeling and Analysis for Spatial Data. London: Chapman \& Hall.
-%
-%\bibitem{} Bijak, J., Kupiszewska, D., Kupiszewski, M., Saczuk, K. and Kicinger, A. (2007). Population and labour force projections for 27 European countries, 2002--2052: impact of international migration on population ageing. \textit{European Journal of Population}, 23, 1--31.
-%
-%\bibitem{} Borjas, J.G. (1989). Economic theory and international migration. \textit{International Migration Review}, 23, 457--85.
-%
-%\bibitem{} Borjas, J.G., Freeman, R.B. and Katz, L.F. (1996). Searching for the effect of immigration on the labor market. \textit{American Economic Review}, 86, 246--51.
-%
-%\bibitem{} Borjas, J.G. (2003). The labor demand curve IS downward sloping: reexamining the impact of immigration on the labor market. \textit{The Quaterly Journal of Economics}, 118, 1335--74.
-%
-%\bibitem{} Borjas, J.G. (2005). The labor market impact of high-skill immigration. \textit{American Economic Review}, 92, 56--60.
-%
-%\bibitem{} Breslow, N.E. and Clayton, D.G. (1993). Approximate inference in generalized linear mixed models. \textit{Journal of the American Statistical Association}, 88, 9--25.
-%
-%\bibitem{} Broeders, D. (2007). The new digital borders of Europe: EU database and the surveillance of irregular migrants. \textit{International Sociology}, 22, 71--92.
-%
-%\bibitem{} Brunello, G., Lupi, C. and Ordine, P. (2001). Widening differences in Italian regional unemployment. \textit{Labour Economics}, 8, 103--129.
-%
-%\bibitem{} Cangiano, A. (2008). Foreign migrants in Southern European countries: evaluation of recent data. In \textit{International Migration in Europe. Data, Models, and Estimates}, Editors: Raymer, J. and Willekens, F., 89--112, Wiley.
-%
-%\bibitem{} Casey, T. and Dustmann, C. (2010). Immigrants' identity, economic outcomes and the trasmission of identity across generations. \textit{The Economic Journal}, 120, F31--F51.
-%
-%\bibitem{} Card, D. (2005). Is the new immigration really so bad? \textit{The Economic Journal}, 115, 300--323.
-%
-%\bibitem{} Carter, T.J. (1999). Illegal immigration in a efficiency wage model. \textit{Journal of International Economics}, 49, 385--401.
-%
-%\bibitem{} Chandler, R.E. (2005). On the use of generalized linear models for interpreting climate variability. \textit{Environmetrics}, 16, 699--715.
-%
-%\bibitem{} Coleman, D. (2008). The demographic effects of international migration Europe. \textit{Oxford Review of Economic Policy}, 24, 452--76.
-%
-%\bibitem{} Contucci, P. and Ghirlanda, S. (2007). Modelling society with statistical mechanics: an application to cultural contact and immigration. \textit{Quality and Quantity}, 41, 569--78.
-%
-%\bibitem{} Cracolici M.F., Cuffaro M. and Nijkamp, P. (2009). A spatial analysis on Italian unemployment differences. \textit{Statistical Methods \& Applications}, 18, 275--291.
-%
-%\bibitem{} Craven, P. and Wahba, G. (1979). Smoothing noisy data with spline functions. \textit{Numerische Mathematik}, 31, 377--403.
-%
-%\bibitem{} De Graaff, T. and Nijkamp, P. (2010). Socio-economic impacts of migrant clustering on Dutch neighbourhoods: in search of optimal migrant diversity. \textit{Socio-Economic Planning Sciences}, 44, 231--239.
-%
-%\bibitem{} Dunn, P.K. and Smyth, G.K. (2005). Series evaluation of Tweedie exponential dispersion models densities. \textit{Statistics and Computing}, 15, 267--280.
-%
-%\bibitem{} Edin, Per-A., Fredriksson, P. and Aslund, O. (2003). Ethnic enclaves and the economic success of immigrants - evidence from a natural experiment. \textit{The Quarterly Journal of Economics}, 118, 329--57.
-%
-%\bibitem{} Fonseca, M.L. (2008). New waves of immigration to small towns and rural areas in Portugal. \textit{Population, Space and Place}, 14, 525--535.
-%
-%\bibitem{} Fullin, G. and Reyneri, E. (2011). Low unemployment and bad jobs for new immigrants in Italy. \textit{International Migration}, 49, 118--147.
-%
-%\bibitem{} Greenwood, M.J. and McDowell, M.J. (1991). Differential economic opportunity, transferability of skills, and immigration to the United States and Canada. \textit{The Review of Economics and Statistics}, 73, 612--623.
-%
-%\bibitem{} Gu, C. and Wahba, G. (1993). Smoothing Spline ANOVA with Component-Wise Bayesian Confidence Intervals. \textit{Journal of Computational and Graphical Statistics}, 2, 97--117.
-%
-%\bibitem{} Guisan, M.C. and Aguayo, E. (2002). Employment and regional development in Italy. \textit{Applied Econometrics and International Development}, 2, 41--72.
-%
-%\bibitem{} Hair, J.F., Black, W.C., Babin, B.J., Anderson, R.E. and Tatham, R.L. (2006). \textit{Multivariate data analysis}. Pearson Prentice Hall, Upper Saddle River, New York.
-%
-%\bibitem{} Hastie, T. and Tibshirani, R. (1990). \textit{Generalized Additive Models}. London: Chapman \& Hall.
-%
-%\bibitem{} Hillman, A.L. and Weiss, A. (1999). A theory of permissible illegal immigration. \textit{European Journal of Political Economy}, 15, 585--604.
-%
-%\bibitem{} Hooghe, M., Trappers, A., Meuleman, B. and Reeskens, T. (2008). Migration to European countries: a structural explanation of patterns 1980--2004. \textit{International Migration Review}, 42, 476--504.
-%
-%\bibitem{} J\o rgensen, B. (1987). Exponential dispersion models. \textit{Journal of the Royal Statistical Society Series B}, 49, 127--162.
-%
-%\bibitem{} Kamman, E.E. and Wand, M.P. (2003). Geoadditive Models. \textit{Journal of the Royal Statistical Society Series C}, 52, 1--18.
-%
-%\bibitem{} Kneib, T. and Fahrmeir, L. (2006). Structured Additive Regression for Categorical Space-Time Data: A Mixed Model Approach. \textit{Biometrics}, 62, 109--118.
-%
-%\bibitem{} Krivobokova, T. and Kauermann, G. (2007). A Note on Penalized Spline Smoothing With Correlated Errors. \textit{Journal of the American Statistical Association}, 480, 1328--1337.
-%
-%\bibitem{} Kuznet, S. (1934). National income, 1929--1932. Second session Senate document no. 124, 73rd US Congress.
-%
-%\bibitem{} Lazear, E.P. (1999). Culture and language. \textit{Journal of Political Economy}, 107, S95--S126.
-%
-%\bibitem{} Lin, X. and Zhang, D. (1999). Inference in Generalized Additive Mixed Models by Using Smoothing Splines. \textit{Journal of the Royal Statistical Society Series B}, 61, 381--400.
-%
-%\bibitem{} Longhi, S.,  Nijkamp, P. and Poot, J. (2010). Joint impacts of immigration on wages and employment: review and meta-analysis. \textit{Journal of Geographical Systems}, 12, 355--387.
-%
-%\bibitem{} Lowell, L.B. (2007). Trends in international migration flows and stocks, 1975-2005. OECD Social, Employment and Migration Working Paper 58, OECD, Paris.
-%
-%\bibitem{} Luciano, M. (2004). The macroeconomics of Italy: a regional perspective. \textit{Journal of Policy Modeling}, 26, 927--944.
-%
-%\bibitem{} Manning, A. (2010). Feature: the integration of immigrants and their children in Europe: introduction. \textit{The Economic Journal}, 120, F1--F3. 
-%
-%\bibitem{} Marra, G. and Radice, R. (2010). Penalised regression splines: theory and application to medical research. \textit{Statistical Methods in Medical Research}, 19, 107--125.
-%
-%\bibitem{} Marra, G. and Wood, S.N. (in press). Coverage Properties of Confidence Intervals for Generalized Additive Model Components. \textit{Scandinavian Journal of Statistics}, available at \texttt{www.ucl.ac.uk/statistics/research/reports}.
-%
-%\bibitem{} Massey, D.S., Arago, J., Hugo, G., Kouaouci, A., Pellegrino, A. and Taylor, J.E. (1993). Theory of international migration: a review and appraisal. \textit{Population and Development Review}, 19, 431--66.
-%
-%\bibitem{} McCullagh, P. and Nelder, J. A. (1989). \textit{Generalized Linear Models}. London: Chapman \& Hall.
-%
-%\bibitem{} McHugh, E.K. (1989), Hispanic migration and population redistribution in the United States. \textit{The Professional Geographer}, 41, 429--439.
-%
-%\bibitem{} Miguet, F. (2008). Voting about immigration policy: What does the Swiss experience tell us? \textit{European Journal of Political Economy}, 24, 628--41.
-%
-%\bibitem{} Nychka, D. (1988). Bayesian Confidence Intervals for Smoothing Splines. \textit{Journal of the American Statistical Association}, 83, 1134--1143.
-%
-%\bibitem{} OECD (2004). Trends in International Migration 2003. \textit{OECD Pubblishing}, Paris.
-%
-%\bibitem{} OECD (2008). Handbook on constructing composite indicators: methodology and user guide. OECD, Paris.
-%
-%\bibitem{} Osei, F.B., Duker, A.A. and Stein, A. (2011). Hierarchical Bayesian modeling of the space-time diffusion patterns of cholera epidemic in Kumasi, Ghana. \textit{Statistica Neerlandica}, 65, 84--100.
-%
-%\bibitem{} Petacchini, E. (2008). Local analysis of economic disparities in Italy: a spatial statistics approach. \textit{Statistical Methods \& Applications}, 17, 85--112.
-%
-%\bibitem{} Pinheiro, J., Bates, D., DebRoy, S., Sarkar, D. and the R Core Team (2009). \textit{nlme: Linear and Nonlinear Mixed Effects Models}. R package version 3.1--96.
-%
-%\bibitem{} Piore, M.J. (1979). \textit{Birds of Passage: Migrant Labor in Industrial Societies}. Cambridge: Cambridge University Press.
-%
-%\bibitem{} Ramsay, T. (2002). Spline smoothing over difficult regions. \textit{Journal of the Royal Statistical Society Series B}, 64, 307--19.
-%
-%\bibitem{} Raphael, S. and Smolensky, E. (2009). Immigration and poverty in the United States. \textit{American Economic Review}, 99, 41--4.
-%
-%\bibitem{} Reiss, P.T. and Ogden, R.T. (2009). Smoothing parameter selection for a class of semiparametric linear models. \textit{Journal of the Royal Statistical Society Series B}, 71, 505--524.
-%
-%\bibitem{} Ruppert, D., Wand, M.P. and Carroll, R.J. (2003). \textit{Semiparametric Regression}. London: Cambridge University Press.
-%
-%\bibitem{} Sahu, S., Gelfand, A. and Holland, D. (2007). High Resolution Space-Time Ozone Modeling for Assessing Trends. \textit{Journal of the American Statistical Association}, 102, 109--118.
-%
-%\bibitem{} Segre, E., Rondinella, T. and Mascherini, M. (2011). Well-being in Italian Regions. Measures, civil society consultation and evidence. \textit{Social Indicators Research}, 102, 47--69.
-%
-%\bibitem{} Silverman, B.W. (1985). Some Aspects of the Spline Smoothing Approach to Non-Parametric Regression Curve Fitting. \textit{Journal of the Royal Statistical Society Series B}, 47, 1--52.
-%
-%\bibitem{} Slack, T. and Jensen, L. (2007). Underemployment across immigrant generations. \textit{Social Science Research}, 36, 1415--30.
-%
-%\bibitem{} Stark, O. and Bloom, E.D. (1985). The new economics of labor migration. \textit{American Economic Review}, 75, 173--78.
-%
-%\bibitem{} Strozza, S. (2004). Estimates of the illegal foreigners in Italy: a review of the literature. \textit{International Migration Review}, 38, 309--331.
-%
-%\bibitem{} Wahba, G. (1983). Bayesian `Confidence Intervals' for the Cross-Validated Smoothing Spline. \textit{Journal of the Royal Statistical Society Series B}, 45, 133--150.
-%
-%\bibitem{} Wahba, G. (1985). A Comparison of GCV and GML for Choosing the Smoothing Parameter in the Generalized Spline Smoothing Problem. \textit{The Annals of Statistics}, 13, 1378--1402.
-%
-%\bibitem{} Wallerstein, I. (1974). \textit{The Modern World System, Capitalist Agricolture and the Origins of the European World Economy in the Sixteenth Century}. New York: Academic Press.
-%
-%\bibitem{} Ward, D. (1969), The internal spatial structure of immigrant residential districts in the late nineteenth century. \textit{Geographical Analysis}, 1, 337--353.
-%
-%\bibitem{} Wood, S.N. (2006). \textit{Generalized Additive Models: An Introduction with R}. London: Chapman \& Hall.
-%
-%\bibitem{} Wood, S.N. (2011). Fast stable restricted maximum likelihood and marginal likelihood estimation of semiparametric generalized linear models. \textit{Journal of the Royal Statistical Society Series B}, 73, 3--36.
-%
-%\bibitem{} Wood, S.N., Bravington, M.V. and Hedley, S.L. (2008). Soap film smoothing. \textit{Journal of the Royal Statistical Society Series B}, 70, 931--55.
-%
-%\bibitem{} Wooldridge, J.M. (2002). \textit{Econometric Analysis of Cross Section and Panel Data}. Cambridge: MIT Press.
-%
-%\bibitem{} Zanin, L. and Marra, G. (2011). Rolling regression versus time-varying coefficient modelling: an empirical investigation of the Okun's law in some Euro area countries. \textit{Bulletin of Economic Research}, DOI: 10.1111/j.1467-8586.2010.00376.x.
-%
-%\bibitem{} Zincone, G. (2006). The making of policies: immigration and immigrants in Italy. \textit{Journal of Ethnic and Migration Studies}, 32, 347--75.
-%
-%\end{thebibliography}
-
-
-
