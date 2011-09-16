@@ -89,9 +89,10 @@ $$
 \sum_{r=1}^R J_\text{year}\left\{  \varphi_r(\texttt{year}) \right\}.
 $$ 
 It follows that the roughness penalty of $f(\texttt{year},\texttt{n},\texttt{e})$ can be measured as 
-$$
+\begin{equation}
 \lambda_\text{space} \sum_{j=1}^J J_\text{space}\left\{  \xi_l(\texttt{n},\texttt{e}) \right\} + \lambda_\text{year} \sum_{r=1}^R J_\text{year}\left\{  \varphi_r(\texttt{year}) \right\},
-$$
+\label{it-fullpen}
+\end{equation}
 where as usual, $\lambda_\text{space}$ and $\lambda_\text{year}$ are the smoothing parameters for time and space respectively. Smoothness selection was performed using REML as detailed in \secref{intro-otherGAMfit} and \citeb{remlpaper}.
 
 The next sections show how $f_\text{year}$ and $J_\text{year}$ then $f_\text{space}$ and $J_\text{space}$ can be constructed.   
@@ -111,7 +112,6 @@ The associated penalty, $J_\text{year}$, is given by:
 \begin{equation*}
 J_\text{year}(f_\text{year})=\int\left( \frac{\partial^2 f_\text{year}}{\partial \texttt{year}^2} \right)^2 \text{d}\texttt{year}.
 \end{equation*}
-
 Further information may be found in \citeb[pp. 122-126]{simonbook}.
 
 \subsection{The soap film smoother \label{SF}}
@@ -135,9 +135,9 @@ except at one of the knots ($\texttt{n}^*_k,\texttt{e}^*_k$). Then, we solve Poi
 \frac{\partial^2 g_k}{\partial \texttt{n}^2} + \frac{\partial^2 g_k}{\partial \texttt{e}^2} = \rho_k(\texttt{n},\texttt{e}),
 \label{soap-poisson}
 \end{equation}
-for $k$ indexing the $K$ knots. When the boundary condition $\rho_k(\texttt{n},\texttt{e})=0$ is applied, the set of basis functions for the soap film smoother $g_k(\texttt{n},\texttt{e})$ are found.  The partial differential equations (PDEs) are solved numerically using successive over-relaxation (see the appendix of \cite{soap} for further details).
+for $k$ indexing the $K$ knots. When the boundary condition $\rho_k(\texttt{n},\texttt{e})=0$ is applied, the set of basis functions for the soap film smoother $g_k(\texttt{n},\texttt{e})$ are found.  The partial differential equations (PDEs) are solved numerically using successive over-relaxation (see the appendix of \cite{soap} for further technical details).
 
-To find the boundary basis we first take a ``boundary function'', $f_\text{bnd}(r)$, using cyclic splines. The function evaluates the height of the function at each point around the boundary. $f_\text{bnd}(r)$ will have the expansion
+To find the height of the function at each point around the boundary, $f_\text{bnd}(r)$ which is a cyclic spline is used. $f_\text{bnd}(r)$ will have the expansion
 \begin{equation}
 f_\text{bnd}(r)=\sum_{j=1}^J \alpha_j \delta_j(r),
 \label{soap-cyclic}
@@ -146,11 +146,11 @@ where $r$ is the distance along the boundary, the $\alpha_j$ are parameters and 
 
 The set of basis functions for the inside of the domain have been found, as well as the boundary-induced-smooth which acts as a base for the soap film smoother. Although this seems like a rather esoteric setup, all the procedure above is effectively doing is setting up a basis in order that we can use standard penalized regression techniques. Just as one might choose one spline basis over another for some property it possesses, the soap film basis has the property that it obeys the (estimated) boundary conditions of the region we are smoothing over.
 
-In \secref{3D} the spatial penalty term was simply referred to as a single quantity, however (as was the case with the basis) the penalty is split into two parts: one for the cyclic smoother around the boundary and the other for the internal smoother. The easiest way to think about this is to write:
+In \secref{3D} the spatial penalty term was simply referred to as a single quantity, however (as was the case with the basis) the penalty is split into two parts: one for the cyclic smoother around the boundary and the other for the internal smoother. The easiest way to think about this is to write the spatial part of the penalty given in (\ref{it-fullpen}) as:
 \begin{equation*}
-\lambda_\text{space} J_\text{space} = \lambda_\text{int} J_\text{int} + \lambda_\text{bnd} J_\text{bnd},
+\lambda_\text{space} \sum_{j=1}^J J_\text{space}\left\{  \xi_l(\texttt{n},\texttt{e}) \right\} = \lambda_\text{int} J_\text{int} + \lambda_\text{bnd} J_\text{bnd}.
 \end{equation*}
-so the smoothing parameter $\lambda_\text{space}$ is not really considered except as a way of making the tensor product explanation easier. The two interior and boundary penalties are now considered individually.
+The smoothing parameter $\lambda_\text{space}$ only exists as a way of making the tensor product explanation easier. The two interior and boundary penalties are now considered individually.
 
 %Writing $\bm\beta$ as the vector of all smooth coefficients for the soap film, $\bm\gamma$ for the boundary parameters and $\bm\alpha$ for the interior, we have
 %$$
@@ -183,18 +183,16 @@ To summarize, the basis functions $a_j(\texttt{n}_i,\texttt{e}_i)$ and $g_j(\tex
 
 Taking a Bayesian view it is possible to construct intervals using the posterior distribution of the model parameters (e.g. \cite{rwc}). The interesting feature of these intervals is that, since they include both a bias and a variance component, they have good observed \textit{frequentist} coverage probabilities across the function (\cite{Marra2011}). The posterior distribution is given as
 \begin{equation}
-\bm\theta|{\bf y} \dot{\backsim} \mathcal{N}( \hat{\bm\theta}, {\bf V}_{\bm\theta} ),
+\bm\beta|\texttt{irf} \dot{\backsim} N( \hat{\bm\beta}, {\bf V}_{\bm\beta} ),
 \label{Poster}
 \end{equation}
-where $\hat{\bm\theta}$ is the maximum penalized likelihood estimate of the smoother's parameters,$\bm\theta$, which is of the form $(\mathbf{X}^\text{T}{\bf W}\mathbf{X}+{\bf S}^*)^{-1}\mathbf{X}^\text{T}{\bf W}{\bf z}$, ${\bf V}_{\bm\theta} = (\mathbf{X}^\text{T}{\bf W}\mathbf{X}+{\bf S}^*)^{-1}\phi$, $\mathbf{X}$ contains the columns associated with the regression spline bases used to set up the model, and ${\bf W}$ and $\mathbf{z}$ are the diagonal weight matrix and the pseudodata vector at convergence of the algorithm used to fit the penalized model (see \secref{intro-extending-gams}). Given result (\ref{Poster}), it is easy to find confidence intervals for linear functions of the parameters such as smooth components. Intervals for non-linear functions of the model coefficients can be conveniently obtained by simulation from the posterior distribution of $\bm\theta$. Result (\ref{Poster}) can also be used to produce trend estimates as discussed next.
-
-To aid interpretation of the results, trend estimates for some given areas of interest can be produced using the predictive distribution of $\texttt{irf}_{it}$, using the method proposed in \cite{Augustin2009}. This approach can be implemented as follows:
+where $\hat{\bm\beta}$ is the maximum penalized likelihood estimate of (all of) the smoother's parameters, $\bm\beta$ and ${\bf V}_{\bm\beta}$ is of the form $(\mathbf{X}^\text{T}{\bf W}\mathbf{X}+{\bf S}^*)^{-1}\phi$, $\mathbf{X}$ contains the columns associated with the regression spline bases used to set up the model, ${\bf W}$ and $\mathbf{z}$ are the diagonal weight matrix and the pseudodata vector at convergence of the algorithm used to fit the penalized model and $\phi$ is a scale parameter (see \secref{intro-extending-gams}). Given result (\ref{Poster}), confidence intervals for linear functions of the parameters can be found easily. Intervals for non-linear functions of the model coefficients can be conveniently obtained by simulation from the posterior distribution of $\bm\beta$. To aid interpretation of the results, trend estimates for some given areas of interest can be produced using the predictive distribution of $\texttt{irf}_{it}$, using the method proposed in \citeb{Augustin2009}. This approach can be implemented as follows:
 
 \begin{enumerate}
 	\item Repeat the following steps for $b=1,\ldots,N_b$, where $N_b$ represents the number of random draws. 
 	   \begin{enumerate}
-	      \item Simulate a random $\mathcal{N}(\hat{\bm\theta}, \hat{{\bf V}}_{\bm\theta} )$ and call the resulting coefficient vector $\bm\theta_b$.
-	      \item Calculate $\widehat{\mathbb{E}(\texttt{irf}_{it})}=\widehat{\texttt{irf}}_{itb}=\exp(\mathbf{X}^*_{it}\bm\theta_b)$, where $\mathbf{X}^*_{it}$ is evaluated at the observed values. 
+	      \item Simulate a random $N(\hat{\bm\beta}, \hat{{\bf V}}_{\bm\beta} )$ and call the resulting coefficient vector $\bm\beta_b$.
+	      \item Calculate $\widehat{\mathbb{E}(\texttt{irf}_{it})}=\widehat{\texttt{irf}}_{itb}=\exp(\mathbf{X}^*_{it}\bm\beta_b)$, where $\mathbf{X}^*_{it}$ is evaluated at the observed values. 
 	      \item For a given area of interest $a$ and year $t$, calculate
 	      $$\widehat{\overline{\texttt{irf}}}_{tb}^a=\frac{1}{n_a}\sum_{i=1}^{n_a} \widehat{\texttt{irf}}_{itb},$$
 	      where $n_a$ represents the number of observations in area $a$.     
@@ -204,7 +202,7 @@ To aid interpretation of the results, trend estimates for some given areas of in
 Small values for $N_b$ are typically tolerable. In practice, $N_b$ can be set to $100$. Increasing this value does not change the results which are presented in the next section.
  
 
-\section{Estimation results \label{ER}}
+\section{Results \label{ER}}
 
 The model was implemented using the basis sizes (for the cubic and cyclic regression splines) and interior knots (for the soap film) given in Table \ref{soap-basis-table}. Note that separate models were used for each of main land, Sicily and Sardinia since the numerical routine used does not currently support tensor product smoothers with multiple penalties. 
 
@@ -236,84 +234,93 @@ As a check, proposed model was fitted again but replacing the response variable 
 	\label{Resid}
 \end{figure}
 
-Using the Schwarz's Bayesian Information Criterion (BIC), the proposed model was compared with one in which the spatial and temporal effects were simply additive; the latter yielded an increased BIC. Visually comparing the maps produced by these two models, the proposed model contained details that could not be seen in the model where the spatial and temporal effects were additive.
+Using the Schwarz's Bayesian Information Criterion (BIC, see e.g. \cite[p. 286]{burnhamanderson}), the proposed model was compared with one in which the spatial and temporal effects were simply additive; the latter yielded an increased BIC. Visually comparing the maps produced by these two models, the proposed model contained details that could not be seen in the model where the spatial and temporal effects were additive.
 
 Despite the lack of fit corresponding to those municipalities characterized by very high levels of the IRF, the analysis above suggests that the proposed model is able to capture the overall spatiotemporal structure present in the data. Should some relevant economic variables become available at a municipal level, the model specification and, as a consequence, its explanatory power could be considerably improved. 
 
 \subsection{Spatiotemporal maps \label{STT}}
 
-As mentioned in the introductory section, Italy's national IRF was 6.5\% in 2008. Obviously, this number says nothing about specific local areas with particularly high or low levels of resident foreigners. Moving to smaller aggregations (e.g. regional or provincial level) the same argument holds: some information is lost. This kind of low resolution statistic can mask smaller-scale heterogeneity in the population. Our aim here is to capture exactly this spatial heterogeneity.
+As mentioned in the introductory section, Italy's national IRF was 6.5\% in 2008. Obviously, this number says nothing about specific local areas with particularly high or low levels of resident foreigners. Moving to smaller aggregations (say, the regional or provincial level) the same argument holds: some information is lost. This kind of low resolution statistic can mask smaller-scale heterogeneity in the population. Our aim here is to capture exactly this spatial heterogeneity.
 
 At first glance, figure \ref{Rd} shows the stark contrast between north and south. The maps also highlight the inhomogeneous spatial and temporal distribution of the IRF. However, as pointed out above, smoothed maps can give a much better picture of the distribution of the IRF. Smoothing the maps allows for the separation of signal and noise in the data, giving a an idea of the overall structure of the phenomena, as well as providing a trend information via a temporal component of the model. Figure \ref{it-fig1} shows smoothed spatiotemporal maps of the IRF in Italy for the period 2003-2008, obtained using the approach described in the previous sections. We can see that in 2003 northern and central Italy have the highest levels IRF. Over the subsequent years (2004-2008), the incidence spreads, forming four main areas where resident foreigners tend to live. Focusing on 2008, the most popular areas are in north Italy, specifically the Emilia-Romagna and Lombardy regions. These, although popular in 2003, appear to have greatly expanded. The second most attractive area is made up of the central Italian regions of Tuscany, Umbria, Marche and Lazio. The final two areas are composed of Liguria and Piedmont, and Veneto, Friuli-Venezia Giulia and Trentino-Alto Adige. These are located in the northwest and northeast of the country, respectively. There is also an interesting growth in the incidence at the Swiss and Austrian borders (from about 2\% in 2003 to about 4-5\% in 2008). Resident foreigners seem less attracted by the regions and islands of southern Italy. Returning to the Po Valley, the maps in figure \ref{it-fig1} allow us to identify the presence of two large, well defined polarization patterns in the IRF, the first in the centre of the Po Valley and the second near Venice. The maps in figure \ref{Rd} do not reveal these patterns.
 
-\begin{figure}[tbp]
+\begin{figure}[t]
 	\centering
 		\includegraphics[width=\textwidth]{it/maps-Soap.pdf}
 	\caption{Spatiotemporal maps of the percentage incidence of resident foreigners in Italy over the years 2003-2008. These were obtained using model (\ref{PropM}) with a tensor product smoother based on a cubic regression spline basis for time and a soap film spline basis for space, and ISTAT data at a municipal level. Predictions were made over those points lying inside the study region from a 100 by 100 grid. The incidence is given as the ratio of the number of resident foreigners to the total resident population multiplied by 100. The colour scale ranges from an incidence of 0 (dark red) to an incidence of 12 (white). Blue lines indicate contours separated by a one unit change in incidence.}
 	\label{it-fig1}
 \end{figure}
 
-Figure \ref{trends} shows the estimated temporal trends for both the full Italian territory and broken down by area with 95\% confidence intervals. The trends for northern and central Italy are similar. However, those for southern Italy and the islands are much flatter. Northern and central Italy also show a faster growth in incidence. Such differences are supported by the confidence intervals. Overall, these trends reflect what we see in the maps in Figure \ref{it-fig1}, that there is a significant difference between northern/central Italy and the south of the country and its islands. Note that, since the approach outlined in Section \ref{VE} can not account for the presence of residual correlation structure, we expect the obtained confidence intervals not to be exactly representative than those that might be produced using some adjusted version of them. The most obvious approach would be to fit a GAMM with a carefully chosen correlation structure and use the resulting posterior covariance matrix in place of that reported in Section \ref{VE}. Unfortunately, as pointed out in the previous section, convergence problems prevented us from doing this. However, we doubt the conclusions would change.
+Figure \ref{trends} shows the estimated temporal trends for both the full Italian territory and broken down by area with 95\% confidence intervals. The trends for northern and central Italy are similar. However, those for southern Italy and the islands are much flatter. Northern and central Italy also show a faster growth in incidence. Such differences are supported by the confidence intervals. Overall, these trends reflect what we see in the maps in figure \ref{it-fig1}, that there is a significant difference between northern/central Italy and the south of the country and its islands. Note that, since the approach outlined in \secref{VE} can not account for the presence of residual correlation structure, we expect the obtained confidence intervals not to be exactly representative than those that might be produced using some adjusted version of them. The most obvious approach would be to fit a generalized additive mixed model (\cite[chapter 6]{simonbook}) with a carefully chosen correlation structure. Unfortunately convergence problems prevented such a model from being fit.
 
-\begin{figure}[tbp]
+\begin{figure}[t]
 	\centering
 		\includegraphics[width=\textwidth]{it/trends.pdf}
 	\caption{Temporal trends in incidence of resident foreigners over the study period for Italy (top left), followed by trend estimates for north, central and south and islands areas with 95\% confidence intervals. North was defined as those points in the prediction grid above -20 km north, central as between -20 km and -300, and south and islands (including Sardinia and Sicily) as below -300.}
 	\label{trends}
 \end{figure}
 
-The results presented in this section can be useful for policy-makers who may want to allocate economic resources as efficiently and effectively as possible, supporting, for instance, policies and services needed for the integration of resident foreigners. Such policies relate to a number of services such as: admission to education, access to the public health service, professional training, services supporting the match of labor supply and demand (e.g. Zincone, 2006). For sociologists and demographers these maps may represent a new way to model spatiotemporal demographic changes and display the results graphically. 
+The results presented in this section can be useful for policy-makers who may want to allocate economic resources as efficiently and effectively as possible, supporting, for instance, policies and services needed for the integration of resident foreigners. Such policies relate to a number of services such as: admission to education, access to the public health service, professional training, services supporting the match of labor supply and demand. For sociologists and demographers these maps may represent a new way to model spatiotemporal demographic changes and display the results graphically. 
 
-\subsection{Spatial economic attractiveness \label{diss}}
-
-The search for employment is well known to be among the main reasons that individuals move to another country (e.g. Fullin and Reyneri, 2011). In light of this, labor market and income indicators could help explain the spatial heterogeneity in the IRF observed in Figure \ref{it-fig1}. Unfortunately, the additional variables to be included into model (\ref{PropM}) are available at a different spatial resolution: such economic indicators (unemployment and employment rates as well as gross domestic product (GDP) per capita) are available at a provincial level (around 100 observations per year), while the IRF is available at a municipal level (approximately 8100 observations per year). 
-
-\begin{figure}[tbp]
-\centering
-	\includegraphics[width=\textwidth]{it/boxplot.pdf}
-\caption{Boxplots of the indicator of spatial economic attractiveness (ISEA) by macro-area. The ISEA was constructed using provincial data. The macro-areas are: North West (made up of the following regions: Piedmont, Valle d'Aosta, Lombardy, Liguria), North East (Trentino Alto-Adige, Veneto, Friuli-Venezia Giulia, Emilia-Romagna), Centre (Tuscany, Umbria, Marche, Lazio), South (Abruzzo, Molise, Campania, Puglia, Basilicata, Calabria), and Islands (Sicily and Sardinia).}
-	\label{fig3}
-\end{figure} 
-
-As a descriptive analysis, we constructed a simple indicator of spatial economic attractiveness (ISEA) based on the economic indicators above using provincial data. Further details are given in the Appendix. We then produced a boxplot of this indicator for each typical Italian macro-area (see Figure \ref{fig3}). We show only the boxplots for 2008 because there were not significant differences across the different years. Figure \ref{fig4}'s scatterplots, in the Appendix, support the reading of the boxplots in Figure \ref{fig3}. For example, values of the ISEA above 80 (primarily located in the north of the country) are associated to an added value per capita around 20-30000 euros, an employment rate higher than 60\% and an unemployment rate lower than 6-7\%. The opposite is found for values of the ISEA below 30 (primarily located in the south of the country and in the islands). Specifically, the employment rates of most Italian southern provinces registered levels below 50\%. These are quite far from the target of 70\% by 2010 as specified by the Lisbon Strategy in March 2000. In addition, despite a more flexible labor market in recent years (e.g. Zanin and Marra, 2011), which led to a reduction in the unemployment at a national level, the southern provinces continue to register the highest and most persistent levels of unemployment. This suggests that the southern regions have a greater difficulty in absorbing the labor supply. Other empirical studies on the dynamics of the added value (e.g. Luciano, 2004; Petacchini, 2008), employment (e.g. Guisan and Aguayo, 2002) and unemployment (e.g. Brunello, Lupi and Ordine, 2001; Cracolici, Cuffaro and Nijkamp, 2009) suggest that these gaps between north and south Italy have a structural nature. 
-
-In summary, the spatial differences highlighted by the boxplots of the ISEA are consistent with the spatial heterogeneity of the IRF in the country. This indicator can help understand some of the observed spatial patterns but it represents only one of many possible avenues to explore.
+%\subsection{Spatial economic attractiveness \label{diss}}
+%
+%The search for employment is well known to be among the main reasons that individuals move to another country (e.g. Fullin and Reyneri, 2011). In light of this, labor market and income indicators could help explain the spatial heterogeneity in the IRF observed in Figure \ref{it-fig1}. Unfortunately, the additional variables to be included into model (\ref{PropM}) are available at a different spatial resolution: such economic indicators (unemployment and employment rates as well as gross domestic product (GDP) per capita) are available at a provincial level (around 100 observations per year), while the IRF is available at a municipal level (approximately 8100 observations per year). 
+%
+%\begin{figure}[tbp]
+%\centering
+%	\includegraphics[width=\textwidth]{it/boxplot.pdf}
+%\caption{Boxplots of the indicator of spatial economic attractiveness (ISEA) by macro-area. The ISEA was constructed using provincial data. The macro-areas are: North West (made up of the following regions: Piedmont, Valle d'Aosta, Lombardy, Liguria), North East (Trentino Alto-Adige, Veneto, Friuli-Venezia Giulia, Emilia-Romagna), Centre (Tuscany, Umbria, Marche, Lazio), South (Abruzzo, Molise, Campania, Puglia, Basilicata, Calabria), and Islands (Sicily and Sardinia).}
+%	\label{fig3}
+%\end{figure} 
+%
+%As a descriptive analysis, we constructed a simple indicator of spatial economic attractiveness (ISEA) based on the economic indicators above using provincial data. Further details are given in the Appendix. We then produced a boxplot of this indicator for each typical Italian macro-area (see Figure \ref{fig3}). We show only the boxplots for 2008 because there were not significant differences across the different years. Figure \ref{fig4}'s scatterplots, in the Appendix, support the reading of the boxplots in Figure \ref{fig3}. For example, values of the ISEA above 80 (primarily located in the north of the country) are associated to an added value per capita around 20-30000 euros, an employment rate higher than 60\% and an unemployment rate lower than 6-7\%. The opposite is found for values of the ISEA below 30 (primarily located in the south of the country and in the islands). Specifically, the employment rates of most Italian southern provinces registered levels below 50\%. These are quite far from the target of 70\% by 2010 as specified by the Lisbon Strategy in March 2000. In addition, despite a more flexible labor market in recent years (e.g. Zanin and Marra, 2011), which led to a reduction in the unemployment at a national level, the southern provinces continue to register the highest and most persistent levels of unemployment. This suggests that the southern regions have a greater difficulty in absorbing the labor supply. Other empirical studies on the dynamics of the added value (e.g. Luciano, 2004; Petacchini, 2008), employment (e.g. Guisan and Aguayo, 2002) and unemployment (e.g. Brunello, Lupi and Ordine, 2001; Cracolici, Cuffaro and Nijkamp, 2009) suggest that these gaps between north and south Italy have a structural nature. 
+%
+%In summary, the spatial differences highlighted by the boxplots of the ISEA are consistent with the spatial heterogeneity of the IRF in the country. This indicator can help understand some of the observed spatial patterns but it represents only one of many possible avenues to explore.
 
 
 \section{Conclusions}
 
-Motivated by the analysis of the incidence of resident foreigners, we suggested a tool for practitioners to provide accurate spatiotemporal maps showing the distribution of the IRF in a territory over time and space, at a local level. In doing so, we proposed using a GAM incorporating a smooth term of the time and space dimensions. Specifically, we employed a tensor product smoother combining a cubic regression spline basis for time and a soap film spline basis for space. The use of a three-dimensional smooth function for time and space was crucial in that the temporal trend of the incidence was expected to occur at different strengths and patterns depending on the spatial location. Moreover, the smoother used for the spatial part of the model (i.e. soap film) was chosen so to take into account of the fact that the borders of Italy represent both physical and administrative boundaries. This was done to prevent possible leakage from occurring. In this case, a standard smoother would inappropriately link some parts of the domain, hence causing the fitted surface to be mis-estimated and ultimately leading to biased incidence estimates.
+This chapter has shown an application of the soap film smoother as part of a larger spatiotemporal model. The investigation here was based on annual Italian data at a municipal level provided by ISTAT, for the period 2003-2008. The application of the proposed approach revealed the presence of some very well defined polarization patterns in the IRF, and that the temporal trend of the incidence clearly occurs at different strengths depending on the spatial location. This confirmed that smoothed maps can give a much better picture of the distribution of the IRF as compared to empirical maps. This may be crucial for policy-makers who may want to allocate economic resources as efficiently and effectively as possible for supporting (for example) policies and services needed for the integration of resident foreigners.
 
-Our investigation was based on annual Italian data at a municipal level provided by ISTAT, for the period 2003-2008. The application of the proposed approach revealed the presence of some very well defined polarization patterns in the IRF, and that the temporal trend of the incidence clearly occurs at different strengths depending on the spatial location. This confirmed that smoothed maps can give a much better picture of the distribution of the IRF as compared to empirical maps. This may be crucial for policy-makers who may want to allocate economic resources as efficiently and effectively as possible for supporting, e.g., policies and services needed for the integration of resident foreigners.
+Should some relevant economic variables become available at a municipal level, logical extensions incorporating covariate effects could be considered. This might assist in determining what further factors effect the distribution of resident foreigners in Italy and further aid decision making.
 
-By means of descriptive analysis, we also discussed which economic factors might explain some of the observed spatial heterogeneity. To this end, using provincial data, we constructed an indicator of spatial economic attractiveness based on the unemployment and employment rates as well as real GDP per capita and then produced a boxplot of this indicator for each typical Italian macro-area. The spatial differences highlighted by the boxplots of the indicator were consistent with the spatial heterogeneity of the IRF in the country, hence qualitatively explaining some of the observed spatial patterns.
+Using a tensor product of the soap film with the cubic regression splines allowed for the full interaction between the spatial and temporal components of the model. This approach is relatively simple to implement thanks to the easy of developing such models using the \textsf{R} packages \texttt{mgcv} and \texttt{soap}, however there were some difficulties. Specifically, it was not possible to build a model for both the mainland and islands simultaneously, although this would not have had an impact on the spatial component \textit{per se} (since each region would be a separate soap film smooth), this surely would have influenced the temporal components. It is also unfortunate that it was not possible to fit a generalized additive mixed model to take into account the correlation in the data.
 
-Our results complement previous findings in the literature. Should some relevant economic variables become available at a municipal level, logical extensions incorporating covariate effects could be considered. It is notable that the modelling framework employed here did not allow us to consider a more complex model accounting for the presence of some moderate spatial structure in the residuals. This was due to convergence failures of the numerical routine used. Although our sensitivity analysis confirmed that this issue did not prevent us from obtaining reliable smoothed maps, it would be interesting to see whether an extension of the approach employed here incorporating spatial residual structure could be produced which would improve the results obtained in this article.
+This analysis has given some idea of the practical considerations from the point of view of an investigator when smoothing over regions with complex boundaries. In particular being able to write models in a familiar way makes the process of developing a model much easier (writing the model definition in \textsf{R} for the model used here is only slightly more complicated than that for a more standard GAM). Keeping within the GAM framework allows for the usual diagnostic procedures to be used, making model checking straightforward. It was also apparent that the amount of time that it takes to fit the model becomes a serious consideration during development (not only due to the author's relative lack of patience); waiting for models to fit or to fail to converge can cause frustration and only acts as a barrier to wide-adoption. The methods developed in the coming chapters should take this into account.
 
 
-\section*{Appendix \label{NEX}}
+%Motivated by the analysis of the incidence of resident foreigners, we suggested a tool for practitioners to provide accurate spatiotemporal maps showing the distribution of the IRF in a territory over time and space, at a local level. In doing so, we proposed using a GAM incorporating a smooth term of the time and space dimensions. Specifically, we employed a tensor product smoother combining a cubic regression spline basis for time and a soap film spline basis for space. The use of a three-dimensional smooth function for time and space was crucial in that the temporal trend of the incidence was expected to occur at different strengths and patterns depending on the spatial location. Moreover, the smoother used for the spatial part of the model (i.e. soap film) was chosen so to take into account of the fact that the borders of Italy represent both physical and administrative boundaries. This was done to prevent possible leakage from occurring. In this case, a standard smoother would inappropriately link some parts of the domain, hence causing the fitted surface to be mis-estimated and ultimately leading to biased incidence estimates.
+%
+%Our investigation was based on annual Italian data at a municipal level provided by ISTAT, for the period 2003-2008. The application of the proposed approach revealed the presence of some very well defined polarization patterns in the IRF, and that the temporal trend of the incidence clearly occurs at different strengths depending on the spatial location. This confirmed that smoothed maps can give a much better picture of the distribution of the IRF as compared to empirical maps. This may be crucial for policy-makers who may want to allocate economic resources as efficiently and effectively as possible for supporting, e.g., policies and services needed for the integration of resident foreigners.
+%
+%%By means of descriptive analysis, we also discussed which economic factors might explain some of the observed spatial heterogeneity. To this end, using provincial data, we constructed an indicator of spatial economic attractiveness based on the unemployment and employment rates as well as real GDP per capita and then produced a boxplot of this indicator for each typical Italian macro-area. The spatial differences highlighted by the boxplots of the indicator were consistent with the spatial heterogeneity of the IRF in the country, hence qualitatively explaining some of the observed spatial patterns.
+%
+%Our results complement previous findings in the literature. Should some relevant economic variables become available at a municipal level, logical extensions incorporating covariate effects could be considered. It is notable that the modelling framework employed here did not allow us to consider a more complex model accounting for the presence of some moderate spatial structure in the residuals. This was due to convergence failures of the numerical routine used. Although our sensitivity analysis confirmed that this issue did not prevent us from obtaining reliable smoothed maps, it would be interesting to see whether an extension of the approach employed here incorporating spatial residual structure could be produced which would improve the results obtained in this article.
 
-\subsection*{Construction of the indicator of spatial economic attractiveness (ISEA) \label{ISEA}}
 
-We constructed a simple composite indicator using three economic variables chosen for their relevance, accuracy, frequency of update and accessibility, as well as coherence with our overall purpose. These variables are:
-
-\begin{itemize}
-\item \textbf{Added value per capita at constant prices (base year 2000):} computed as the ratio of added value at constant prices and number of inhabitants. This variable is typically considered as a proxy measure of standard of living and welfare (e.g. Segre, Rondinella and Mascherini 2011), although Kuznets (1934) states that ``the welfare of a nation can scarcely be inferred from a measurement of national income''. 
-
-\item \textbf{Unemployment rate:} calculated as the ratio between unemployed workers and total labor force multiplied by 100. This measures the tension in the labor market due to an excess of labor supply (by workers) with respect to labor demand (by companies).
-
-\item \textbf{Employment rate:} computed as the percentage of individuals in the potential working population (aged between 15 and 64) who are currently employed.
-\end{itemize}
-
-Data were provided by ISTAT, at province level (the highest resolution available). As in OECD (2008), the composite indicator was constructed using principal component analysis (PCA) to define weights for the aggregation of indicators (Hair \textit{et al.} 2006). The high correlation between the economic variables listed above, further emphasizes the need for such an approach. Before performing PCA, outlier presence was checked. PCA was performed for each year in the period 2003-2008 using the \texttt{princomp()} function in \texttt{R}. In agreement with both our expectations and the economic theory, coefficients in the first principal component for the added value per capita and employment rate were positive and negative for unemployment rate. Sign and magnitude of the coefficients were stable for the years investigated. The eigenvalue of the first principal component was greater than unity and explains more than 90\% of the variance. We therefore conclude that the first component accurately represents the composite indicator of interest ISEA. Since there were no outliers in the standardised scores, they were normalised using a `min-max' procedure (OECD 2008, p. 85), ranking them between 0 to 100. To save space, further details on the results of PCA are available upon request.
-  
-\begin{figure}[tbp]
-\centering
-	\includegraphics[width=\textwidth]{it/ISEAsens.pdf}
-\caption{Scatter plots of the indicator of spatial economic attractiveness (ISEA) against each of its constituent economic variables. The years shown here are representative samples of all years 2003-2008. The plots show the stability of the relationships between the ISEA and its components.}
-	\label{fig4}
-\end{figure}   
-  
-Scatterplots of the composite indicator against its components (see Figure \ref{fig4}) can reveal relationships between the individual indicators and the composite index (OECD 2008, p. 35). In our case a value of the ISEA close to 100 corresponds to the highest levels of added value per capita and employment rate and to the lowest levels of unemployment rate. For low values of the indicator we observe the opposite. The proposed composite indicator ranks the Italian provinces from most to least attractive, year-by-year, from both an economic and labor market standpoint.
-
-We have also tested how the province's ranking changes if we construct the composite indicator excluding either unemployment rate or employment rate. The resulting indicators rank the Italian provinces in a fairly similar manner as the composite index presented above. Here we consider both the employment and unemployment rates to fully account for labor market characteristics at territorial level.
+%\section*{Appendix \label{NEX}}
+%
+%\subsection*{Construction of the indicator of spatial economic attractiveness (ISEA) \label{ISEA}}
+%
+%We constructed a simple composite indicator using three economic variables chosen for their relevance, accuracy, frequency of update and accessibility, as well as coherence with our overall purpose. These variables are:
+%
+%\begin{itemize}
+%\item \textbf{Added value per capita at constant prices (base year 2000):} computed as the ratio of added value at constant prices and number of inhabitants. This variable is typically considered as a proxy measure of standard of living and welfare (e.g. Segre, Rondinella and Mascherini 2011), although Kuznets (1934) states that ``the welfare of a nation can scarcely be inferred from a measurement of national income''. 
+%
+%\item \textbf{Unemployment rate:} calculated as the ratio between unemployed workers and total labor force multiplied by 100. This measures the tension in the labor market due to an excess of labor supply (by workers) with respect to labor demand (by companies).
+%
+%\item \textbf{Employment rate:} computed as the percentage of individuals in the potential working population (aged between 15 and 64) who are currently employed.
+%\end{itemize}
+%
+%Data were provided by ISTAT, at province level (the highest resolution available). As in OECD (2008), the composite indicator was constructed using principal component analysis (PCA) to define weights for the aggregation of indicators (Hair \textit{et al.} 2006). The high correlation between the economic variables listed above, further emphasizes the need for such an approach. Before performing PCA, outlier presence was checked. PCA was performed for each year in the period 2003-2008 using the \texttt{princomp()} function in \texttt{R}. In agreement with both our expectations and the economic theory, coefficients in the first principal component for the added value per capita and employment rate were positive and negative for unemployment rate. Sign and magnitude of the coefficients were stable for the years investigated. The eigenvalue of the first principal component was greater than unity and explains more than 90\% of the variance. We therefore conclude that the first component accurately represents the composite indicator of interest ISEA. Since there were no outliers in the standardised scores, they were normalised using a `min-max' procedure (OECD 2008, p. 85), ranking them between 0 to 100. To save space, further details on the results of PCA are available upon request.
+%  
+%\begin{figure}[tbp]
+%\centering
+%	\includegraphics[width=\textwidth]{it/ISEAsens.pdf}
+%\caption{Scatter plots of the indicator of spatial economic attractiveness (ISEA) against each of its constituent economic variables. The years shown here are representative samples of all years 2003-2008. The plots show the stability of the relationships between the ISEA and its components.}
+%	\label{fig4}
+%\end{figure}   
+%  
+%Scatterplots of the composite indicator against its components (see Figure \ref{fig4}) can reveal relationships between the individual indicators and the composite index (OECD 2008, p. 35). In our case a value of the ISEA close to 100 corresponds to the highest levels of added value per capita and employment rate and to the lowest levels of unemployment rate. For low values of the indicator we observe the opposite. The proposed composite indicator ranks the Italian provinces from most to least attractive, year-by-year, from both an economic and labor market standpoint.
+%
+%We have also tested how the province's ranking changes if we construct the composite indicator excluding either unemployment rate or employment rate. The resulting indicators rank the Italian provinces in a fairly similar manner as the composite index presented above. Here we consider both the employment and unemployment rates to fully account for labor market characteristics at territorial level.
