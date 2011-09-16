@@ -140,7 +140,7 @@ Extensive simulations were carried out to ensure that both parameters could be r
 
 \subsection{Rejection sampling scheme to simulate distances}
 
-Before going into the details of the simulation a method for generating distance data from mixture detection functions needed to be found. The cumulative distribution function of the mixture model cannot be inverted so the only option was to use rejection sampling (also known as the accept-reject algorithm, \cite[pp. 51-53]{montecarlostats}). This is rather wasteful computationally since the proposal distribution used here is only a uniform on $(0,w)$, a proposal closer to the target could be used to increase the speed (however, this is not a major concern here).The rejection sampling scheme for $n$ samples from a mixture model detection function is as follows. 
+Before going into the details of the simulation a method for generating distance data from mixture detection functions needed to be found. The cumulative distribution function of the mixture model cannot be inverted so rejection sampling (also known as the accept-reject algorithm, \cite[pp. 51-53]{montecarlostats}) was used. This is rather wasteful computationally since the proposal distribution used here is only a uniform on $(0,w)$, a proposal closer to the target could be used to increase the speed (however, this is not a major concern here). Note that direct simulation from half-normals is not possible since it is the detection functions which are mixtures rather than the PDFs. The rejection sampling scheme for $n$ samples from a mixture model detection function is as follows. 
 
 Until there are $n$ samples, perform the steps:
 \begin{enumerate}

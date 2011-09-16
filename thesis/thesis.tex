@@ -84,8 +84,11 @@
 
 \maketitle
 \begin{abstract} 
-Goes here!
-%This thesis is about statistical ecology, in particular it is about assessing the distribution of animals and plants in some fixed area. The methods presented here address problems that practitioners face in their work and will hopefully be found to be useful. Two topics will be addressed, the first concerns smoothing the spatial distribution of biological populations, in particular when the shape of the survey area is complicated. The second introduces a new set of functions to model the probability of detection in distance sampling to avoid unrealistic models.
+This thesis is (mainly) about statistical ecology, in particular it is about assessing the distribution of animals and plants in some fixed area. The methods presented here address problems that practitioners face in their work and will hopefully be found to be useful. 
+
+The first part of the thesis concerns smoothing the spatial distribution of biological populations, in particular when the shape of the survey area is complicated. Building models for smoothing geographical regions that take into account the shape of the domain are essential to avoid unrealistic results. As well as two methods for performing so called finite area smoothing (developed within the generalized additive model (GAM) framework), a novel application of an existing method (the soap film smoother) is also presented.
+
+The second part of the thesis concerns distance sampling, a widely used set of methods for estimating the abundance of biological populations. The work presented here introduces a new set of functions (based on mixtures models) to model the probability of detection in distance sampling to avoid unrealistic models. These new models are then applied to several existing, problematic data sets.
 
 \begin{center}
 \section*{Acknowledgements}
@@ -136,7 +139,7 @@ Goes here!
 
 \input{it/sp}
 
-\chapter{Smoothing in a transformed spatial domain using the \sch\ transform}
+\chapter{Using the \sch\ transform to morph domains for finite area smoothing}
 %\begin{quotation}
 %``Failure is \textit{always} an option.'' 
 %
@@ -184,10 +187,10 @@ Goes here!
 % start the appendices
 \appendix
 
-\chapter{Properties of the within-area distance algorithm}
-
-\input{app-WAD/app-WAD}
-
+%\chapter{Properties of the within-area distance algorithm}
+%
+%\input{app-WAD/app-WAD}
+%
 
 \chapter{Derivatives of the likelihood for mixture model detection functions}
 

@@ -249,7 +249,7 @@ For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the 
 
 Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean distance between the points can be used.
 
-Further theoretical properties of this algorithm can be found in \appref{app-WAD}.
+Although it was not possible to theoretically prove that the algorithm will always converge to the shortest path, it is clear at least the the algorithm will always converge (since this only requires that there be no change in the path for two consecutive iterations). Extensive simulations showed that the algorithm gave sensible results.
 
 \section{Simulation experiments}
 \label{mdssims}
@@ -503,9 +503,9 @@ Taking both the Lanczos procedure and the partial path calculation together, a s
 
 The differences between the first two columns are striking. The partial path calculation has dramatically reduced the computational time for the calculation of the entries of the distance matrix, making it faster than the soap film smoother for the model fitting, and reducing the prediction time to a third of its previous value. The \tprs\ times are shown to give a comparison for the time actually taken to fit the model, the remaining time for \mdsap\ is taken up by calculating the distances and performing the MDS.
 
-\begin{table}[ht]
+\begin{table}[t]
 \centering
-\begin{tabular}{c || c c c c c c}
+\begin{tabular}{c c c c c c c}
 %  no speedup           speedup
  & \mdsap & \mdsap (\textit{pp}) & Soap film & Thin plate\\ 
 \hline
