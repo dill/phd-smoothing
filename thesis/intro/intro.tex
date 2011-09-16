@@ -194,9 +194,10 @@ so then $f_{x_1,x_2}$ would is defined as:
 \begin{equation*}
 f_{x_1, x_2}(x_1) = \sum_{j=1}^J \sum_{j=1}^J \delta_j d_j(x_{2}) b_j(x_{1}).
 \end{equation*}
-Finally, there is now one penalty for each direction yielding:
+Finally, the penalty for such a smooth can be written:
 \begin{equation*}
-\lambda_{x_1} \int\int \left \{P_{x_1} f_{x_1, x_2}(x_1,x_2)\right \}^2 \text{d}x_1\text{d}x_1 + \lambda_{x_2} \int\int \left \{P_{x_2} f_{x_1, x_2}(x_1,x_2)\right \}^2 \text{d}x_1\text{d}x_1,
+%\lambda_{x_1} \int\int \left \{P_{x_1} f_{x_1, x_2}(x_1,x_2)\right \}^2 \text{d}x_1\text{d}x_1 + \lambda_{x_2} \int\int \left \{P_{x_2} f_{x_1, x_2}(x_1,x_2)\right \}^2 \text{d}x_1\text{d}x_1,
+\int\int \lambda_{x_1} \left \{P_{x_1} f_{x_1, x_2}(x_1,x_2)\right \}^2 + \lambda_{x_2} \left \{P_{x_2} f_{x_1, x_2}(x_1,x_2)\right \}^2 \text{d}x_1\text{d}x_2,
 \end{equation*}
 where $P_{x_1}$ and $P_{x_2}$ are derivative operators with respect to $x_1$ and $x_2$ respectively (or could be replaced by two P-spline penalties). 
 

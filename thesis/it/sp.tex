@@ -12,17 +12,16 @@ The incidence of resident foreigners calculated at a national level does not pro
 
 \subsection{Data}  
 
-The resident foreign population includes all people (born in Italy or abroad) who declare their citizenship not to be Italian. The change in resident foreign population at a municipal level, at the end of a year, is determined by
+The \textit{resident foreign population} includes all people (born in Italy or abroad) who declare their citizenship not to be Italian. The change in resident foreign population at a municipal level, at the end of a year, is determined by
 \begin{equation}
 RFP^{31^\text{st}} = RFP^{1^\text{st}} + (I_1 + I_2 + I_3+ I_4) - (D_1 + D_2 + D_3 + D_4 + AC),
 \label{it-rfp}
 \end{equation}
 where $RFP^{31^\text{st}}$ indicates the total number of resident foreigners at the end of December and $RFP^{1^\text{st}}$ the number of resident foreigners on the $1^\text{st}$ of January. $I_{1}$ denotes the number of people whose parents are foreigners (at least one of them being resident in the municipality), $I_{2}$ the number of foreign citizens who asked to transfer their residence from another Italian municipality to the current one, $I_{3}$ those who asked to transfer their residence from abroad, and $I_{4}$ refers to recording operations due to other reasons (e.g. foreigners mistakenly deleted from the registry of the municipality, because they were temporarily missing). $D_{1}$ represents the number of resident foreigners who died during the year, $D_{2}$ those who moved to a different municipality, $D_{3}$ those who moved abroad, $D_{4}$ refers to cancellations for other reasons (e.g. foreigners deleted from the registry of the municipality, because they were not present), and \textit{AC} denotes those resident foreigners who obtained Italian citizenship during the year. 
 
-Given a specific area such as municipality (although this could be calculated on provincial, regional or national level too), a measure of density of resident foreign population is the percentage incidence of resident foreigners (IRF), given as the ratio of the number of resident foreigners (the RFP) to the total resident population multiplied by 100 (e.g. \cite{Lowell2007}). This gives a simple, well-known, demographic indicator for comparing different areas of a country in terms of number of resident foreigners per 100 resident inhabitants. According to ISTAT, the IRF as calculated on a national level has grown substantially, from 2.7\% in 2002 to 6.5\% in 2008. 
+Given a specific area such as municipality (although this could be calculated on provincial, regional or national level too), a measure of density of resident foreign population is the percentage \textit{incidence of resident foreigners} (IRF), given as the ratio of the number of resident foreigners (the RFP) to the total resident population multiplied by 100 (e.g. \cite{Lowell2007}). This gives a simple, well-known, demographic indicator for comparing different areas of a country in terms of number of resident foreigners per 100 resident inhabitants. According to ISTAT (the Italian government's statistical office), the IRF as calculated on a national level has grown substantially, from 2.7\% in 2002 to 6.5\% in 2008. 
 
-Recently ISTAT has integrated the official statistics with a new public database (\url{http://demo.istat.it}), mainly based on administrative sources. The database gives the number of resident foreigners (calculated as above) in each of almost 8100 municipalities. So, this data (the highest resolution available at this time) will be used to create the maps below.
-
+Recently ISTAT has integrated the official statistics with a new public database (available via \url{http://demo.istat.it}), mainly based on administrative sources. The database gives the number of resident foreigners (calculated as above) in each of almost 8100 municipalities. So, this data (the highest resolution available at this time) looks like an excellent candidate to create high resolution maps.
 
 \begin{figure}[tbp]
 	\centering
@@ -68,22 +67,22 @@ Omitting the subscripts $i$ and $t$ for simplicity, the temporal smooth $f_\text
 %f_\text{year}(\texttt{year})=\sum_{l=1}^L \xi_l b_l(\texttt{year})=\textbf{X}_\text{year}\bm\xi \ \ \text{and} \ \ f_\text{space}(\texttt{n},\texttt{e})=\sum_{r=1}^R \varphi_r d_r(\texttt{n},\texttt{e})=\textbf{X}_\text{space}\bm\varphi,
 f_\text{year}(\texttt{year})=\sum_{j=1}^J \xi_j b_j(\texttt{year}) \ \ \text{and} \ \ f_\text{space}(\texttt{n},\texttt{e})=\sum_{r=1}^R \varphi_r d_r(\texttt{n},\texttt{e}),
 \end{equation*}
-where the $b_j(\texttt{year})$ and $d_r(\texttt{n},\texttt{e})$ are known cubic regression spline and soap film basis functions, with corresponding parameters $\xi_l$ and $\varphi_r$ and spline dimensions $J$ and $R$ (note that unlike in \secref{GAMtensor} they are different). 
+where the $b_j(\texttt{year})$ and $d_r(\texttt{n},\texttt{e})$ are known cubic regression spline and soap film basis functions, with corresponding parameters $\xi_j$ and $\varphi_r$ and spline dimensions $J$ and $R$ (note that unlike in \secref{GAMtensor} they are different). 
 
-In order to set up a three-dimensional tensor product smoother for time and space we need $f_\text{year}(\texttt{year})$ to vary smoothly with the spatial dimensions. This can be achieved by allowing the parameters $\xi_l$ to vary smoothly with \texttt{n} and \texttt{e}. Using the spline set-up for $f_\text{space}(\texttt{n},\texttt{e})$ we may write (analogously to \secref{GAMtensor}):
+In order to set up a three-dimensional tensor product smoother for time and space we need $f_\text{year}(\texttt{year})$ to vary smoothly with the spatial dimensions. This can be achieved by allowing the parameters $\xi_j$ to vary smoothly with \texttt{n} and \texttt{e}. Using the spline set-up for $f_\text{space}(\texttt{n},\texttt{e})$ we may write (analogously to \secref{GAMtensor}):
 $$
-\xi_l(\texttt{n},\texttt{e})=\sum_{r=1}^R \varphi_{lr} d_r(\texttt{n},\texttt{e}),
+\xi_j(\texttt{n},\texttt{e})=\sum_{r=1}^R \varphi_{jr} d_r(\texttt{n},\texttt{e}),
 $$    
 which results in:
 $$
-f(\texttt{year},\texttt{n},\texttt{e})=\sum_{l=1}^L \sum_{r=1}^R \varphi_{lr} d_r(\texttt{n},\texttt{e}) b_l(\texttt{year}). 
+f(\texttt{year},\texttt{n},\texttt{e})=\sum_{j=1}^J \sum_{r=1}^R \varphi_{jr} d_r(\texttt{n},\texttt{e}) b_j(\texttt{year}). 
 $$
 
 To calculate the penalty, first let $J_\text{year}$ and $J_\text{space}$ be measures of the wigglyness of the functions $f_\text{year}$ and $f_\text{space}$ respectively. For $f_\text{year}$, the second-order cubic spline penalty evaluates $J_\text{year}(f_\text{year})=\int\left( \partial^2 f_\text{year}/\partial \texttt{year}^2 \right)^2 \text{d}\texttt{year}$ (see the next section for more information on this basis). The penalty for the soap film smoother used for the spatial part of the tensor product is covered in the next section; for ease of explanation it is treated as a black box here.
 
 An overall penalty for the tensor product smoother can be obtained by applying the penalties of $f_\text{space}(\texttt{n},\texttt{e})$ to the varying coefficients of the marginal smooth $f_\text{year}(\texttt{year})$, $\xi_l(\texttt{n},\texttt{e})$,
 $$
-\sum_{l=1}^L J_\text{space}\left\{  \xi_l(\texttt{n},\texttt{e}) \right\},
+\sum_{j=1}^J J_\text{space}\left\{  \xi_l(\texttt{n},\texttt{e}) \right\},
 $$ 
 and the penalties of $f_\text{year}(\texttt{year})$ to the varying coefficients of the marginal smooth $f_\text{space}(\texttt{n},\texttt{e})$, $\varphi_r(\texttt{year})$,  
 $$
@@ -91,7 +90,7 @@ $$
 $$ 
 It follows that the roughness penalty of $f(\texttt{year},\texttt{n},\texttt{e})$ can be measured as 
 $$
-\lambda_\text{space} \sum_{l=1}^L J_\text{space}\left\{  \xi_l(\texttt{n},\texttt{e}) \right\} + \lambda_\text{year} \sum_{r=1}^R J_\text{year}\left\{  \varphi_r(\texttt{year}) \right\},
+\lambda_\text{space} \sum_{j=1}^J J_\text{space}\left\{  \xi_l(\texttt{n},\texttt{e}) \right\} + \lambda_\text{year} \sum_{r=1}^R J_\text{year}\left\{  \varphi_r(\texttt{year}) \right\},
 $$
 where as usual, $\lambda_\text{space}$ and $\lambda_\text{year}$ are the smoothing parameters for time and space respectively. Smoothness selection was performed using REML as detailed in \secref{intro-otherGAMfit} and \citeb{remlpaper}.
 
@@ -178,7 +177,6 @@ The solution of the PDEs above, yielding the basis and penalty, is the most comp
 
 The smooth function for $f_\texttt{space}$ obtained using the construction outlined above is rotationally invariant. Two smoothing parameters are estimated for the soap film (one for the interior and one for the boundary) but each controls the smoothness for both geographical directions at once (\cite{soap}). However, the tensor product smoother using the cubic regression spline basis for time and a soap film for space is not isotropic in space-time. This anisotropy is desirable since, as explained in Section \ref{MS}, the measurements of space and time are on different scales so it would not make sense to estimate one smoothing parameter for both the spatial and temporal components (e.g. \cite[p. 162]{simonbook}).
  
-
 To summarize, the basis functions $a_j(\texttt{n}_i,\texttt{e}_i)$ and $g_j(\texttt{n}_i,\texttt{e}_i)$, and the penalties $J_\text{bnd}$ and $J_\text{int}$ have been found. Soap basis functions and penalties can be obtained using the the \texttt{R} package \texttt{soap} which implements the ideas discussed in this section.
 
 \subsection{Variance and trend estimation \label{VE}}
@@ -188,9 +186,9 @@ Taking a Bayesian view it is possible to construct intervals using the posterior
 \bm\theta|{\bf y} \dot{\backsim} \mathcal{N}( \hat{\bm\theta}, {\bf V}_{\bm\theta} ),
 \label{Poster}
 \end{equation}
-where $\hat{\bm\theta}$ is the maximum penalized likelihood estimate of $\bm\theta$, which is of the form $(\mathbf{X}^\text{T}{\bf W}\mathbf{X}+{\bf S}^*)^{-1}\mathbf{X}^\text{T}{\bf W}{\bf z}$, ${\bf V}_{\bm\theta} = (\mathbf{X}^\text{T}{\bf W}\mathbf{X}+{\bf S}^*)^{-1}\phi$, $\mathbf{X}$ contains the columns associated with the regression spline bases used to set up the model, and ${\bf W}$ and $\mathbf{z}$ are the diagonal weight matrix and the pseudodata vector at convergence of the algorithm used to fit the penalized model (see \secref{intro-extending-gams}). Given result (\ref{Poster}), it is easy to find confidence intervals for linear functions of the parameters such as smooth components. Intervals for non-linear functions of the model coefficients can be conveniently obtained by simulation from the posterior distribution of $\bm\theta$. Result (\ref{Poster}) can also be used to produce trend estimates as discussed next.
+where $\hat{\bm\theta}$ is the maximum penalized likelihood estimate of the smoother's parameters,$\bm\theta$, which is of the form $(\mathbf{X}^\text{T}{\bf W}\mathbf{X}+{\bf S}^*)^{-1}\mathbf{X}^\text{T}{\bf W}{\bf z}$, ${\bf V}_{\bm\theta} = (\mathbf{X}^\text{T}{\bf W}\mathbf{X}+{\bf S}^*)^{-1}\phi$, $\mathbf{X}$ contains the columns associated with the regression spline bases used to set up the model, and ${\bf W}$ and $\mathbf{z}$ are the diagonal weight matrix and the pseudodata vector at convergence of the algorithm used to fit the penalized model (see \secref{intro-extending-gams}). Given result (\ref{Poster}), it is easy to find confidence intervals for linear functions of the parameters such as smooth components. Intervals for non-linear functions of the model coefficients can be conveniently obtained by simulation from the posterior distribution of $\bm\theta$. Result (\ref{Poster}) can also be used to produce trend estimates as discussed next.
 
-To aid interpretation of the results, trend estimates for some given areas of interest can be produced using the predictive distribution of $\texttt{irf}_{it}$, constructed employing the result of the previous paragraph. This approach can be implemented as follows:
+To aid interpretation of the results, trend estimates for some given areas of interest can be produced using the predictive distribution of $\texttt{irf}_{it}$, using the method proposed in \cite{Augustin2009}. This approach can be implemented as follows:
 
 \begin{enumerate}
 	\item Repeat the following steps for $b=1,\ldots,N_b$, where $N_b$ represents the number of random draws. 
