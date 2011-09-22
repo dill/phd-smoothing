@@ -122,23 +122,23 @@ For the rectangle case we must specify four vertices of $\Gamma$ that map to the
 
 The rectangle mapping is slightly different in its calculation to the two above mappings. We first map $\Gamma$ to the upper half-plane as detailed above. From there we can use the Jacobi elliptic function (\cite[p. 701]{handbuch}):
 \be
-F(\gamma,k)=\int_0^\gamma \frac{dt}{\sqrt{1-k^2\sin^2t}}
+J_e(\gamma,k)=\int_0^\gamma \frac{1}{\sqrt{1-k^2\sin^2t}} \text{d} t
 \ee
 to map a rectangle to the upper half-plane. The computation of this map is expensive due to the evaluation of the elliptic function (\cite[p. 49]{driscoll}) so a shortcut is used by mapping to the strip. We do not go into further about detail here (as the computational intricacies are covered in \cite{howell90}).
 
 \subsection{Computation of the \sch\ mapping}
 \label{sc-mapping-problem}
 
-To compute the map, the prevertices, $w^*_k$ must be found. Since the complex constants just control scaling, translation, and rotation, we can compute them after computing the $w^*_k$. We achieve this iteratively by approximating the $w^*_k$ then mapping those points back to the polygon to give an estimate to $\Gamma$, $\Gamma^\prime$. 
+To compute the map, the prevertices, $w^*_k$ must be found. Since the complex constants just control scaling, translation, and rotation, we can compute them after computing the $w^*_k$. We achieve this iteratively by approximating the $w^*_k$ then mapping those points back to the polygon to give an approximation to $\Gamma$, $\Gamma^\prime$. 
 
 To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ the following set of equations are used:
 \begin{equation}
 \label{optimizeme}
-\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} \qquad \text{for } k=3,\dots,K-1.
+F_k = \frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} \qquad \text{for } k=3,\dots,K-1.
 \end{equation}
 Here $\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert$ is the distance between the $k^{\text{th}}$ and $(k+1)^{\text{th}}$ vertex. This is found by integrating along the line between the points within $W$. See also \secref{algorithmsketch}.
 
-Intuitively, we are comparing the side lengths of the polygon in order to evaluate approximation of $\Gamma$ in each iteration (\cite[A-3]{snider}). Both of these measures are scaled by the distance between the first two vertices (in their respective domains).
+Intuitively, we are comparing the side lengths of the true polygon with its approximation in order to measure how well $\Gamma^\prime$ approximates $\Gamma$ at each iteration (\cite[A-3]{snider}). Both of these measures are scaled by the distance between the first two vertices (in their respective domains).
 
 Note that \eqn{optimizeme} does not include the vertex $w_K$. By theorem 3.1 of \cite[p. 24]{driscoll} a polygon is precisely defined by its angles and its vertices not including $w_K$ (since if the direction of the edges leaving $w_1$ and $w_{K-1}$ are known, the point where they meet may be found). It is for this reason, in the upper half-plane case, that $w_K$ can be mapped to $\infty$ without loss of generality.
 
@@ -166,9 +166,9 @@ $A$ is the image of the base point of the integration and is usually written as 
    \end{enumerate}
 \item Define the objective function, $F$, as:
  \begin{equation*}
-F=\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert}, \qquad \text{for } k=3,\dots,K-1,
+F_k=\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert}, \qquad \text{for } k=3,\dots,K-1,
  \end{equation*}
-\item Use steepest descent and then Newton's method to until $\vert F\vert < \epsilon \quad \forall k$. \item Calculate $C$ and $A$ as detailed above.
+\item Letting $\mathbf{F}$ be the vector of $F_k$s, use steepest descent and then Newton's method to minimize each of the $F_k$s until $\vert \mathbf{F}\vert < \epsilon \quad \forall k$. \item Calculate $C$ and $A$ as detailed above.
 \item Return values for $w^*_1,\dots,w^*_K$, $C$ and $A$.
 \end{enumerate}
 
@@ -463,7 +463,7 @@ The \sch\ transform's distortion of the domain causes increase performance of so
 \subsection{Two peninsula domain}
 \label{sc-penin}
 
-Looking at a more realistic domain highlights potential problems with a \sch\ transform approach. The domain in the top left corner of \fig{sc-wigglytop2-real} shows a domain which is supposed to replicate some of the features of such a domain.
+Looking at a more realistic domain highlights potential problems with a \sch\ transform approach. The domain in the top left corner of \fig{sc-wigglytop2-real} shows a domain which is supposed to replicate the features of a coastline.
 
 % realization
 \begin{figure}

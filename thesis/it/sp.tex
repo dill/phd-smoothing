@@ -1,6 +1,6 @@
 \label{chap-it}
 
-This chapter investigates an application of the soap film smoother described in chapter \ref{chap-intro}. In particular a spatiotemporal smooth is used to model the distribution of the incidence of the resident foreign population in Italy. The chapter is adapted from the article ``Modelling the spatiotemporal distribution of the incidence of resident foreign population in Italy'' by G. Marra (Statistical Science, University College London), D. L. Miller and L. Zanin (Prometia, Bolognia), accepted for publication in \textit{Statistica Neerlandica}. Each of the authors contributed equally to the article.
+\citeb{Augustin2009} demonstrated the utility of a tensor product of a spatial smoother and a smooth of time for spatiotemporal smoothing. Using the soap film smoother described in chapter \ref{chap-intro}, a spatiotemporal smooth is used to model the distribution of the incidence of the resident foreign population in Italy. This chapter presents the first application of this approach to spatiotemporal smoothing in a complicated geographic region. The chapter is adapted from the article ``Modelling the spatiotemporal distribution of the incidence of resident foreign population in Italy'' by G. Marra (Statistical Science, University College London), D. L. Miller and L. Zanin (Prometia, Bolognia), accepted for publication in \textit{Statistica Neerlandica}. Each of the authors contributed equally to the article.
 
 \section{Introduction \label{IN}}
 
@@ -98,15 +98,20 @@ The next sections show how $f_\text{year}$ and $J_\text{year}$ then $f_\text{spa
 
 \subsection{Cubic regression splines}
 
-The temporal part of the smooth is constructed using a cubic regression spline basis. This basis is relatively simple and is therefore quite useful for univariate problems. As with P-splines (see \secref{intro-psplines}) cubic regression splines require knots. First defining $q-2$ knots $\{\texttt{year}_j^* : j=1,\ldots,q-2\}$ and the basis functions $b_j$ are defined as:
-\begin{equation*}
-b_j(\texttt{year}) = R(\texttt{year},\texttt{year}_j^*)
-\end{equation*}
-where:
+The temporal part of the smooth is constructed using a cubic regression spline basis. This basis is relatively simple and is therefore quite useful for univariate problems. As with P-splines (see \secref{intro-psplines}) cubic regression splines require knots. First defining $q$ knots $\{\texttt{year}_j^* : j=1,\ldots,q\}$.
+
+The cubic spline basis parametrisation used here is the ``cardinal'' basis (see e.g. \cite[pp. 149--150]{simonbook}). Its definition may seem rather odd, however this setup does give it some useful properties TKTKTK. 
+
 \begin{align*}
-R(x,z) =& \left\{ \left ( z-1/2 \right )^2 -1/12 \right\} \left\{ \left (x-1/2 \right )^2 - 1/12 \right \}/4 \\
- & - \left\{ \left(\lvert x-z\rvert -1/2 \right)^4 -1/2\left(\lvert x-z \rvert -1/2 \right)^2 +7/240 \right\}/24.
+f(x) =& \frac{x_{j+1} - x}{x_{j+1} - x_j} f(x_j)\\
+& + \frac{x - x_j}{x_{j+1} - x_j} f(x_j)\\
+& + \left\{ \frac{x_{j+1} - x}{x_{j+1} - x_j} - (x_{j+1} - x_j)(x_{j+1} - x)\right \}/6 f^{\prime\prime}(x_j)\\
+& + \left\{ \frac{x - x_j}{x_{j+1} - x_j} - (x_{j+1} - x_j)(x - x_j)\right \}/6 f^{\prime\prime}(x_j) \qquad \text{if } x_j \leq x \leq x_{j+1},
 \end{align*}
+letting $f(x_j) = \beta_j$ and $f^{\prime\prime}(x_j) = \delta_j$ one can then setup a relation between the $\beta_j$s and the $\delta_j$s. Parameterising the spline in terms of its values at its knots
+
+TKTKTKTK
+
 The associated penalty, $J_\text{year}$, is given by:
 \begin{equation*}
 J_\text{year}(f_\text{year})=\int\left( \frac{\partial^2 f_\text{year}}{\partial \texttt{year}^2} \right)^2 \text{d}\texttt{year}.
@@ -117,7 +122,7 @@ Further details may be found in \citeb[pp. 122-126]{simonbook}.
 
 Since there is no particular reason to believe that the resident foreign population should be continuous across physical boundaries such as the Mediterranean Sea (at best there are merely potential resident foreigners in the sea), a smoother which takes into account of the fact that the borders of Italy represent both physical barriers should be used. Although there is no reason \textit{a priori} to believe that there will be particularly troublesome leakage (see \secref{intro-FAS}) here, mitigating against the issue by use of appropriate basis function choice from the outset is the most sensible course of action. 
 
-As mentioned in \secref{intro-leakageapproaches}, the soap film smoother (\cite{soap}) uses a rather simple physical model to prevent leakage from occurring. First, consider the domain boundary to be made of wire, then dip this wire into a bucket of soapy water; a soap film with the same shape as the boundary will have then formed. Now consider the wire to lie in the $\texttt{n}$-$\texttt{e}$ plane and the height of the soap film at a given point to be the functional value of the model. This film is then distorted smoothly by moving it vertically toward each datum locally, while minimizing the surface tension in the film as a whole. Mathematically, the domain ($\Gamma$) is bounded by some polygon ($B$) which, in this case, is the coastline.
+As mentioned in \secref{intro-leakageapproaches}, the soap film smoother (\cite{soap}) uses a rather simple physical model to prevent leakage from occurring. First, consider the domain boundary to be made of wire, then dip this wire into a bucket of soapy water; a soap film with the same shape as the boundary will have then formed. Now consider the wire to lie in the $\texttt{n}$-$\texttt{e}$ plane and the height of the soap film at a given point to be the functional value of the model. This film is then distorted smoothly by moving it vertically toward each datum locally, while minimizing the surface tension in the film as a whole. Mathematically, the domain ($\Gamma$) is bounded by some polygon ($B$) which, in this case, is the coastline and for the mainland, the border with France, Switzerland, Austria and Slovenia to the north.
 
 In order to perform soap film smoothing, we must first construct two sets of basis functions to form a smoother that conforms to the necessary boundary conditions. The first basis is used for the smoothing within the region of interest ($\Gamma$); the second is for finding the values on the boundary (i.e. smoothing on $B$ itself). These bases are then summed to form
 $$
@@ -143,7 +148,7 @@ f_\text{bnd}(r)=\sum_{j=1}^J \alpha_j \delta_j(r),
 \end{equation}
 where $r$ is the distance along the boundary, the $\alpha_j$ are parameters and $\delta_j(r)$ are cubic spline basis functions. To ensure that the spline is cyclic the usual constraint is enforced: the value of the function at the first knot is the same as that at the last knot up to their second derivatives. Note that  the values of the $\alpha_j$ are not of interest at this stage, only the basis expansion. The basis functions $a_j(\texttt{n},\texttt{e})$ themselves can be found by solving (\ref{soap-poisson}) for $\rho_k(\texttt{n},\texttt{e})= 0$ with the boundary condition resulting from setting $\alpha_j=1$ (and all other $\alpha_i$ to zero) in (\ref{soap-cyclic}), using the same methods as for the $g_k(\texttt{n},\texttt{e})$ above. The $a_j(\texttt{n},\texttt{e})$ can be thought of as the set of functions with a peak at each of the $J$ points around the boundary which in turn are smooth across the whole of $\Gamma$.
 
-The set of basis functions for the inside of the domain have been found, as well as the boundary-induced-smooth which acts as a base for the soap film smoother. Although this seems like a rather esoteric setup, all the procedure above is effectively doing is setting up a basis such that standard penalized regression techniques can be used. Just as one might choose one spline basis over another for some property it possesses, the soap film basis has the property that it obeys the (estimated) boundary conditions of the region that are to be smoothed over.
+The set of basis functions of $f_\text{int}$ have been found, as well as the boundary-induced-smooth which acts as a base for the soap film smoother. Although this seems like a rather esoteric setup, all the procedure above is effectively doing is setting up a basis such that standard penalized regression techniques can be used. Just as one might choose one spline basis over another for some property it possesses, the soap film basis has the property that it obeys the (estimated) boundary conditions of the region that are to be smoothed over.
 
 In \secref{3D} the spatial penalty term was simply referred to as a single quantity, however (as was the case with the basis) the penalty is split into two parts: one for the cyclic smoother around the boundary and the other for the internal smoother. The easiest way to think about this is to write the spatial part of the penalty given in (\ref{it-fullpen}) as:
 \begin{equation*}

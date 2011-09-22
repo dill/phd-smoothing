@@ -38,7 +38,7 @@ It can then be shown that the thin plate spline basis minimizes (\ref{tprs-pen})
 \begin{equation*}
 f(\mathbf{x}) = \sum_{i=1}^n \delta_i \eta_{md}(\mathbf{x}-\mathbf{x_i}) + \sum_{j=1}^M \alpha_j \phi_j(\mathbf{x}),
 \end{equation*}
-where the first summation is a set of radial basis functions ($i$ indexing the $n$ data) and the second summation are a set of (global) linearly independent polynomials of degree less than $m$. The terms in the second summation are unpenalised (since their derivatives are zero).  There are $M$ of these polynomials lying in the nullspace of the penalty, where $M$ is given by:
+where the first summation is a set of radial basis functions ($i$ indexing the $n$ data) and the second summation are a set of linearly independent polynomials of degree less than $m$. The terms in the second summation are unpenalised (since their $m^\text{th}$ derivatives are zero).  There are $M$ of these polynomials lying in the nullspace of the penalty, where $M$ is given by:
 \begin{equation}
 M=\begin{pmatrix} m+d-1 \\ d  \end{pmatrix}.
 \label{gds-bigm}
@@ -59,7 +59,7 @@ Starting from (\ref{tprs-pen}), the first step toward the more general Duchon pe
 \end{equation*}
 Here $\mathfrak{F}$ is an operator applied to $g$, so $\mathfrak{F}g$ may be considered as a function of $\boldsymbol{\tau}$ (a $d$-vector of continuous frequencies). More detail on Fourier transforms can be found in \citeb{bracewell}, \citeb{chu-ft} and \citeb{beerends}. 
 
-Taking the Fourier transform of the penalty allows us to think of how the penalty is calculated in a different way. Rather than thinking about measuring the wigglyness of each basis function, the penalty is calculated from measuring the intensity of the different frequencies of $f$ over the whole domain, weighted so that higher frequency components contribute more to the integral than the lower ones. Intuitively, the low frequency components of the derivatives of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more complicated parts of the function, likely to be the parts of $f$ that attempt to interpolate the data.
+Taking the Fourier transform of the derivatives in the penalty allows us to think of how the penalty is calculated in a different way. Rather than thinking about measuring the wigglyness of each basis function, the penalty is calculated from measuring the intensity of the different frequencies of $f$ over the whole domain, weighted so that higher frequency components contribute more to the integral than the lower ones. Intuitively, the low frequency components of the derivatives of $f$ are likely performing a similar task to those functions in the nullspace of the penalty, where as the more complicated, high frequency components are more complicated parts of the function, likely to be the parts of $f$ that attempt to interpolate the data.
 
 Taking the Fourier transform of the derivative terms in (\ref{tprs-pen}) yields the following penalty:
 \begin{equation}
