@@ -268,7 +268,7 @@ There are many other ways of fitting GAMs, such as backfitting (\cite{gammonogra
 
 \cite{ruppertreview} gives an overview of developments in the area of semiparametric regression in general during the 2003--2007 period.
 
-\section{Smoothing in practice}
+\section{Smoothing in practise}
 \label{intro-inpractice}
 
 This final section deals with two topics not covered above: assessing model performance and the practical implementation of the methods detailed above.
@@ -383,7 +383,7 @@ Here $I$ is the identity operator, the $(c_0,\dots, c_p)$ are constants and the 
 
 In order to find the minimiser of the objective function formed by using this penalty in place of the one in (\ref{intro-2d-objfcn}), Ramsay takes a finite element approach. First he triangulates the domain, then he constructs a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. By taking the FELSPLINE objective function and transforming it into a variational form (in the same way as a PDE is), the approximation to the minimiser of the objective function is found. 
 
-Since the triangulation and hence the penalty of the FELSPLINE is only calculated over the domain, and the continuity is specified over neighbouring cells, the method prevents leakage. However, although FELSPLINE does not exhibit leakage on the original horseshoe (as in \fig{orig-fs}), in practice the model makes unrealistic physical assumptions. The boundary conditions of FELSPLINE specify that the gradient is zero, along normals to the boundary. This is not always physically realistic. \citeb{soap} show that by modifying the test function on horseshoe domain (see \secref{sc-alt-horsehoe}), the FELSPLINE performance begins to falter.
+Since the triangulation and hence the penalty of the FELSPLINE is only calculated over the domain, and the continuity is specified over neighbouring cells, the method prevents leakage. However, although FELSPLINE does not exhibit leakage on the original horseshoe (as in \fig{orig-fs}), in practise the model makes unrealistic physical assumptions. The boundary conditions of FELSPLINE specify that the gradient is zero, along normals to the boundary. This is not always physically realistic. \citeb{soap} show that by modifying the test function on horseshoe domain (see \secref{sc-alt-horsehoe}), the FELSPLINE performance begins to falter.
 
 FELSPLINE does not offer a realistic physical model and is therefore not a viable solution to the finite area smoothing problem in general.
 
@@ -403,7 +403,7 @@ Soap film smoothers are available in the \textsf{R} package \texttt{soap}, which
 
 \item An alternative approach to treating the boundary as something special is to transform the space in which the points lie to instead lie in a different domain which is more suitable for smoothing. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe into a long strip and then smooth on that domain.
 
-Indeed, \citeb{eilerstalk} proposed using the \sch\ transform for this very purpose (the author independently came to the idea in 2008). Using the \sch\ transform for smoothing will be elaborated on in chapter \ref{chap-sc}, so only a brief summary is given here.
+Indeed, \citeb{eilerstalk} proposed using the \textit{\sch\ transform} for this very purpose (the author independently came to the idea in 2008). Using the \sch\ transform for smoothing will be elaborated on in chapter \ref{chap-sc}, so only a brief summary is given here.
 
 The basic idea is to find a function, $\varphi$ say, that takes points in the domain the data lie in ($W$, say) and maps them to a domain ($W^*$, say) in which smoothing is easier ($\varphi : W \mapsto W^*$, mathematically).
 
