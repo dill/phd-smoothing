@@ -2,37 +2,31 @@
 \label{chap-mds}
 \section{Introduction}
 
-Following the work of the previous chapter, the objective is now to find a mapping of the data into a new space which causes minimum local distortion to the points in that new space, while still moving the points apart enough to avoid leakage. At the same time the mapping must also effectively separate those parts of the original domain which are subject to leakage. This balance (between making sure the model overcomes leakage whilst at the same time does not cause artefacts in the smooth) is essential to the success of the approach. The \sch\ transform approach, of dictating the transformed domain from the outset is clearly not flexible enough for general use. A method that depends on the shape of original domain may have more promise.
+Following the work of the previous chapter, the objective is now to find a mapping of the data into a new space which causes minimum local distortion to the points in that new space, while still moving the points apart enough to avoid leakage. At the same time the mapping must also effectively separate those parts of the original domain which are subject to leakage. This balance (between making sure the model overcomes leakage whilst at the same time does not cause artefacts in the smooth) is essential to the success of any transformation-based approach. The \sch\ transform is clearly not flexible enough for general use since it dictates the transformed domain from the outset. A method that depends on the shape of original domain may have more promise.
 
 \subsection{Proposition}
 
-Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) (\cite{gower1966}) is a method commonly used in multivariate analysis. It is closely related to techniques such as PCA (\cite[p. 200]{chatfieldcollins}) and canonical correspondence analysis (\cite{terbraak}). The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225), or could instead be distances that occur in the data naturally through experimental setup,  for example comparative distances between stimuli response in a psychophysical experiment (\cite{torgerson}). The focus here is obviously on geographical distances.
+Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) (\cite{gower1966}) is a method commonly used in multivariate analysis. It is closely related to techniques such as principle components analysis (PCA, \cite[p. 200]{chatfieldcollins}) and canonical correspondence analysis (CCA, \cite{terbraak}). The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225), or could instead be distances that occur in the data naturally through experimental setup,  for example comparative distances between stimuli response in a psychophysical experiment (\cite{torgerson}). The focus here is obviously on geographical distances.
 
 MDS takes this matrix of distances and projects the data in such a way that Euclidean inter-point distances in the projection are approximately the same as the distances in the matrix (\cite[p. 187]{chatfieldcollins}). If the matrix of distances is of rank $n$ then the projection can be in $n-1$ or less dimensions; a projection into 2 dimensions is a typical choice, since it is easily visualised. For this reason one can also think of MDS as a dimension reduction technique, finding a projection of a data cloud into lower dimensional space, while still retaining information about the dissimilarities between the points.
 
 When MDS is performed on some categorised set of dissimilarities (as is often the case in social science and psychology) it is referred to as non-metric MDS, where as on a continuous scale it is known as metric MDS. Discussion here will focus on metric MDS.
 
-Multidimensional scaling provides a way to transform a domain in a similar way to \sch. Given the set of distances between points in a domain, we can project those points into a configuration such that the distances between those points are approximately preserved. Now, if the Euclidean metric were to be used to calculate the distances between the points then the result from the projection would be identical (up to rotation and translation) to the starting point configuration (provided that we projected back into the same number of dimensions). However, if it were possible to use a metric that took into account the distance within the boundary (a within-area distance) then the Euclidean distances between points in the resulting configuration would be (approximately) the same as the within-area distances. This would lead to distances used by the basis functions of the smoother to be approximately the within-area distances.
+Multidimensional scaling provides a way to transform a domain in a similar way to \sch. Given the set of distances between points in a domain, we can project those points into a configuration such that the distances between those points are approximately preserved. Now, if the Euclidean metric were to be used to calculate the distances between the points then the result from the projection would be identical (up to rotation and translation) to the starting point configuration (provided that the projection had the same number of dimensions as the original data). However, if it were possible to use a metric that took into account the distance within the boundary (a \textit{within-area distance}) then the Euclidean distances between points in the resulting configuration would be (approximately) the same as the within-area distances. This would lead to distances used by the basis functions of the smoother to be approximately the within-area distances.
 
-Justification for this approach is as follows. In many applications within-area distances is meaningful, given that there is some reasoning behind why certain parts of the domain should not affect one another. Biological populations respect the intrinsic structure of these domains and in general do not respect Euclidean geometry in their movement patterns (for example, they move around obstacles, avoid predators and track prey). When within-area distances are meaningful, it makes sense to use this information about the structure of the domain rather than somewhat arbitrarily choose Euclidean geometry and discard this extra informaton. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
+Justification for this approach is as follows. In many spatial applications within-area distances is meaningful, given that there is some reasoning behind why certain parts of the domain should not affect one another. Biological populations respect the intrinsic structure of these domains and in general do not respect Euclidean geometry in their movement patterns (for example, they move around obstacles, avoid predators and track prey). When within-area distances are meaningful, it makes sense to include the structure of the domain in the model, rather than somewhat arbitrarily choose Euclidean geometry and discard this extra information. However, as literature on smoothing is firmly based in a Euclidean context, it would be preferable to perform the smoothing in Euclidean space. In this case the approximation to Euclidean space afforded by an MDS projection of the within-area distances offers a bridge between these two requirements.
 
 \subsection{Proposed procedure}
 \label{mdsproc}
-First take the sample locations $\mathbf{x}_i = (x_{1i}, x_{2i})$ (as in \secref{intro-basic-setup}) (which for MDS could be $k$-vector, although here 2-vectors are assumed throughout this chapter) of the $i^\text{th}$ point with response $z_i$. Here, finding an MDS configuration of a set of points consists of: $i$) calculating the within-area distances between the points, $ii$) forming the distance matrix and, $iii$) actually performing the MDS projection.
 
-The whole proposed procedure is as follows:
-
+First take the sample locations $\mathbf{x}_i = (x_{1i}, x_{2i})$ (as in \secref{intro-basic-setup}) of the $i^\text{th}$ point with response $z_i$ (in general $\mathbf{x}_i$ could be $k$-vector, although 2-vectors of geographical coordinates are used throughout this chapter). The proposed procedure is as follows:
 \begin{enumerate}
 \item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to find the initial MDS configuration; they are discarded afterward. Representative points could be a sparse grid over the domain or a subset of $\{\mathbf{x}_i : i=1\dots n\}$. More detail and justification is provided in \secref{grids}, below.
-
 \item Using the MDS configuration obtained above along with Gower's interpolation (see \secref{gowers}) to obtain the location of the sample in the MDS configuration: $\{\mathbf{x}_i^*, z_i : i=1\dots n\}$.
-
 \item Smooth $\{\mathbf{x}_i^*, z_i : i=1\dots n\}$ using a penalised regression spline.
-
 \item To predict at a location $\mathbf{x_j}$ in the original domain, use Gower's interpolation to obtain the point's location in the MDS space: $\mathbf{x}_j^*$. Predict $\hat{f}(\mathbf{x}_j)$.
 \end{enumerate}
-
-This approach is referred to as \mdsap\ (MultiDimensional Scaling with Regression Splines) throughout the chapter.
+Here, finding an MDS configuration of a set of points consists of: $i$) calculating the within-area distances between the points, $ii$) forming the distance matrix and, $iii$) actually performing the MDS projection; the details of each step are covered in the following sections. This approach is referred to as \mdsap\ (MultiDimensional Scaling with Regression Splines) throughout the chapter.
 
 The rest of this chapter is structured as follows: in \secref{MDStechdet} a technical overview of MDS is given, along with technical details of how the MDS configuration is calculated; \secref{mdsdist} focuses on how the within-area distances are found; \secref{mdssims} shows some examples of this method on simulated data. Sections \ref{mds-faster} and \ref{mds-penadjust} show some improvements to the initial method and further simulations, \secref{mds-problems} details remaining problems. Finally, \secref{mds-conc} draws the chapter to a conclusion and lays out areas of further work for the next chapter.
 
@@ -46,23 +40,23 @@ The basic concept behind MDS as used here is to take the data, calculate their w
 
 First define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a symmetric $n \cross n$ matrix, $\mathbf{D}$, with \ijth element $d^2_{ij}$. For the moment let us assume that $\mathbf{D}$ is known and $d_{ij}$ is the Euclidean distance between points $i$ and $j$. 
 
-\citeb{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \cite{principlesofMA}, pp. 104-108 and \cite{chatfieldcollins}, pp. 189-200.
+\citeb{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \citeb{principlesofMA}, pp. 104-108 and \citeb{chatfieldcollins}, pp. 189-200.
 
 First, suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{\mathbf{X}}^*$. Now let $\mathbb{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbb{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbb{S}$ is:
 \begin{equation}
-\mathbb{S}_{ij} = \bm{x}_i\tr{\bm{x}_j},
+\mathbb{S}_{ij} = \mathbf{x}_i^* \left ( \mathbf{x}_j^* \right)^\text{T},
 \label{selem}
 \end{equation}
-$\mathbb{S}$ is an $(n\cross n)$ matrix. Note that we may only find $\tilde{\mathbf{X}}^*$ up to a translation and rotation, so it is assumed that the values in $\tilde{\mathbf{X}}^*$ have been centred about the origin.
+where $\mathbb{S}$ is an $(n\cross n)$ matrix and $\mathbf{x}_i^*$ is as above. Note that $\tilde{\mathbf{X}}^*$ may only be found up to a translation and rotation, so it is assumed that the values in $\tilde{\mathbf{X}}^*$ have been centred about the origin.
 
 We now wish to relate $\mathbf{D}$ to $\mathbb{S}$. First, note that that \ijth element of $\mathbf{D}$ is 
 \begin{equation}
-d_{ij}^2 = (\bm{x}_i-\bm{x}_j)\tr{(\bm{x}_i-\bm{x}_j)} = \bm{x}_i\tr{\bm{x}_i} + \bm{x}_j\tr{\bm{x}_j}  -2 \bm{x}_i\tr{\bm{x}_j}.
+d_{ij}^2 = (\mathbf{x}^*_i-\mathbf{x}^*_j)\tr{(\mathbf{x}^*_i-\mathbf{x}^*_j)} = \mathbf{x}^*_i \left(\mathbf{x}^*_i\right )^\text{T} + \mathbf{x}^*_j \left ( \mathbf{x}^*_j\right )^\text{T}  -2 \mathbf{x}^*_i \left (\mathbf{x}^*_j\right )^\text{T}.
 \label{dij}
 \end{equation}
-Using \eqn{selem}, we can re-write \eqn{dij} as
+Using (\ref{selem}),  (\ref{dij}) can be written as:
 \begin{equation}
-\mathbf{D}=\text{diag}\left(\mathbb{S}\right)\tr{\bm{1}} + \bm{1}\tr{\text{diag}\left(\mathbb{S}\right)} -2\mathbb{S}.
+\mathbf{D}=\text{diag}\left(\mathbb{S}\right)\tr{\bm{1}} + \bm{1}\tr{\text{diag}\left(\mathbb{S}\right)} -2\mathbb{S},
 \label{dijmat}
 \end{equation}
 where $\bm{1}$ is an $n \cross 1$ vector of 1s and $\text{diag}\left(\mathbb{S}\right)$ is the $n \cross 1$ vector of diagonal elements of $\mathbb{S}$.
@@ -71,7 +65,7 @@ Define:
 \begin{equation}
 \mathbf{H} = \mathbf{I}-\frac{1}{n}\bm{1}\tr{\bm{1}},
 \end{equation}
-where $\mathbf{I}$ is the identity matrix, as usual, and $\bm{1}\tr{\bm{1}}$ is an $n \cross n$ matrix of 1s.
+where $\mathbf{I}$ an $n \cross n$ identity matrix and $\bm{1}\tr{\bm{1}}$ is an $n \cross n$ matrix of 1s.
 
 By pre- and post-multiplying any matrix by $\mathbf{H}$ the matrix is double centred (such that row and column means are 0). Pre- and post-multiplying \eqn{dijmat} by $\mathbf{H}$ yields:
 \begin{equation}
@@ -82,22 +76,20 @@ The first two terms in on the right hand side of \eqn{dijmat} are zero since the
 \mathbb{S} = -\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.
 \end{equation}
 
-Now there is a relation between $\mathbf{D}$ and $\mathbb{S}$, we can concentrate on dealing with $\mathbb{S}$. In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbb{S}$. There are many options for matrix decomposition. One option for factoring $\mathbb{S}$ is to use the Cholesky decomposition, however, with MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $\mathbb{S}_{ij}$. For that reason we use the eigen-decomposition.
+Now there is a relation between $\mathbf{D}$ and $\mathbb{S}$, we can concentrate on dealing with $\mathbb{S}$. In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbb{S}$. There are many options for matrix decomposition, for example the Cholesky decomposition. However when performing MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $\mathbb{S}_{ij}$. For that reason, the eigen-decomposition is used.
 
-Finding the eigen-decomposition of $\mathbb{S}$, we obtain $\mathbb{S}=\mathbf{U}\mathbf{\Lambda}\tr{\mathbf{U}}$. Here $\mathbf{U}$ is the $n \cross n$ matrix orthogonal columns which are the eigenvectors of $\mathbb{S}$ and $\mathbf{\Lambda}$ is the $n \cross n$ diagonal matrix of eigenvalues of $\mathbb{S}$. Then an $\tilde{\mathbf{X}}^*$ satisfying \eqn{selem} may be computed as:
+Finding the eigen-decomposition of $\mathbb{S}$, we obtain $\mathbb{S}=\mathbf{U}\mathbf{\Lambda}\tr{\mathbf{U}}$. Here $\mathbf{U}$ is the $n \cross n$ matrix with orthogonal columns which are the eigenvectors of $\mathbb{S}$ and $\mathbf{\Lambda}$ is the $n \cross n$ diagonal matrix of eigenvalues of $\mathbb{S}$ (in descending absolute value). An $\tilde{\mathbf{X}}^*$ satisfying (\ref{selem}) may then be computed as:
 \begin{equation}
 \tilde{\mathbf{X}}^*=\mathbf{U}\mathbf{\Lambda}^{\frac{1}{2}}.
 \end{equation}
 
 Following these steps $\tilde{\mathbf{X}}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions, and in general multidimensional scaling is performed to reduce the dimensionality of the data, so we must now reduce the dimensionality of $\tilde{\mathbf{X}}^*$. To represent the space using two dimensions the directions with the two largest eigenvalues are chosen and the others discarded. These two largest eigenvalues and their associated eigenvectors constitute the two largest sources of variation in distance (since they are the two largest contributions to $\mathbb{S}$) this gives the two dimensional representation of the data. 
 
-Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix obtained from truncating the full new coordinate set to the first two columns in decreasing eigenvalue order, a 2-dimensional representation has been obtained. More generally, we can find the $k$-dimensional MDS representation of the space by just taking the first $k$ columns of $\tilde{\mathbf{X}}^*$.
+Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix truncating $\tilde{\mathbf{X}}^*$ to its first two columns, a 2-dimensional representation has been obtained. More generally, the $k$-dimensional MDS representation of the space can be found by taking the first $k$ columns of $\tilde{\mathbf{X}}^*$.
 
 In summary, to calculate the MDS configuration of a set of points (given their inter-point distances) we merely need to double centre the matrix of distances, perform an eigen-decomposition on the resulting matrix, and finally truncate the eigen-decomposition and find the new point set.
 
-For finite area smoothing, $d_{ij}$ should be the shortest distance between the points $i$ and $j$ such that the path remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. 
-
-One can think of the justification in the following way: given that the distances in $\mathbf{D}$ obey the triangle inequality, all of the points from such $\mathbf{D}$ is computed ($n$ of them if $\mathbf{D}$ is $n \cross n$) may be represented by MDS in $n$ dimensional Euclidean space (at worst). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in higher dimensions. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points in $\mathbf{D}$ as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
+For finite area smoothing, $d_{ij}$ should be the shortest distance between the points $i$ and $j$ such that the path remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. Given that the distances in $\mathbf{D}$ obey the triangle inequality, the $n$ points from which $\mathbf{D}$ is computed may be represented by MDS in $n$ dimensional Euclidean space (at worst). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in higher dimensions. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
 
 Note that an additive constant can be computed and added to the non-diagonal entries of $\mathbf{D}$ to ensure that the eigenvalues of $\mathbb{S}$ are non-negative. However, this does not occur in any of the examples shown here.
 
@@ -105,9 +97,9 @@ Note that an additive constant can be computed and added to the non-diagonal ent
 \label{gowers}
 Given the setup in \secref{mdsproc}, once the MDS configuration has been found further points will need to be inserted into our MDS representation. For example when further data is collected, or in order to predict over points not in the initial grid. In this case we would like to insert those new points into the configuration given by MDS. This can be performed by Gower's interpolation (\cite{gower1968}).
 
-Say we have some point, $x_{\text{new}}$ and we wish to find its location, $x^*_{\text{new}}$ in the MDS configuration. The position of $x^*_{\text{new}}$ is at a Euclidean distance from the points in $\mathbf{X}^*$ which is approximately the same as the within-area distance between $x_{\text{new}}$ and the points in the non-transformed space, $\mathbf{X}$. 
+Say we have some point, $x_{\text{new}}$ and we wish to find its location, $x^*_{\text{new}}$ in the current MDS configuration. The position of $x^*_{\text{new}}$ is at a Euclidean distance from the points in $\mathbf{X}^*$ which is approximately the same as the (within-area) distance between $x_{\text{new}}$ and the points in the non-transformed space, $\mathbf{X}$. 
 
-Note that here it is assumed that a 2 dimensional projection has been used in the initial MDS configuration, Gower's interpolation remains valid for the case in which the initial MDS projection is $k$-dimensional.
+Note that here it is assumed that a 2-dimensional projection has been used in the initial MDS configuration, Gower's interpolation remains valid for the case in which the initial MDS projection is $k$-dimensional.
 
 \subsubsection{Gower's interpolation formula}
 
@@ -119,11 +111,7 @@ x^*_{\text{new}} = \frac{1}{2} \mathbf{\Lambda}^{-1} \tr{(\mathbf{X}^*)} \mathbb
 Here $\mathbf{\Lambda}$ ($2 \cross 2$) and $\tr{(\mathbf{X}^*)}$ ($2 \cross n$) are as above, $\mathbb{D}$ ($n \cross 1$) is the vector of centred within-area distances from the points in the original configuration to $x_{\text{new}}$.
 
 % Thesis fact: this paragraph infact represents about 3 months of work :(
-In \citeb{gower1968} the $i^\text{th}$ element of $\mathbb{D}$ is defined as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\bm{d}$ as:
-\begin{equation}
-d_{i} = -(d^2_{i,n+1}-\text{diag}(\mathbb{S})_{ii}).
-\end{equation}
-Since $\mathbb{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
+In \citeb{gower1968} the $i^\text{th}$ element of $\mathbb{D}$ is defined as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,n+1}-\text{diag}(\mathbb{S})_{ii})$. Since $\mathbb{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
 
 Gower's interpolation extends simply to the case when $m$ new points are inserted by making $x^*_{\text{new}}$ as $2 \cross m$ matrix and $\mathbb{D}$ an $n \cross m$ matrix.
 
