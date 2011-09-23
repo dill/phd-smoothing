@@ -30,7 +30,7 @@ At each stage of the work presented in this thesis the models became more refine
 
 The previous chapters have taken a simple idea (using domain morphing to combat leakage) and moved forward, along the way finding a set of properties for transformation methods that are necessary  if they are to be useful for spatial smoothing. These properties are:
 \begin{enumerate}
-\item The mapping of points must be smooth, there should be no sudden jumps or gaps. Points that are near one-another in the original space must be near one-another in the transformed space. See \secref{mds-smoothness}.
+\item The mapping of points must be smooth, there should be no sudden jumps or gaps. Points that are near one-another in the original space must be near one-another in the transformed space. See \secref{sc-conclusions}.
 \item The transformation must not squash space too much. Squashing points so they are numerically indistinguishable (crowding) must be absolutely avoided, but less severe compressions of space can also cause problems. See \secref{sch-crowding} and \secref{mds-penadjust}.
 \item Ordering of points must be maintained. If the response values are mis-ordered then the recovering of the truth becomes impossible (\secref{pensuck}).
 \end{enumerate}

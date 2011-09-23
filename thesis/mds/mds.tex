@@ -89,7 +89,7 @@ Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix truncating $\t
 
 In summary, to calculate the MDS configuration of a set of points (given their inter-point distances) we merely need to double centre the matrix of distances, perform an eigen-decomposition on the resulting matrix, and finally truncate the eigen-decomposition and find the new point set.
 
-For finite area smoothing, $d_{ij}$ should be the shortest distance between the points $i$ and $j$ such that the path remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. Given that the distances in $\mathbf{D}$ obey the triangle inequality, the $n$ points from which $\mathbf{D}$ is computed may be represented by MDS in $n$ dimensional Euclidean space (at worst). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in higher dimensions. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
+For finite area smoothing, $d_{ij}$ should be the shortest distance between the points $i$ and $j$ such that the path remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. Given that the distances in $\mathbf{D}$ obey the triangle inequality, the $n$ points from which $\mathbf{D}$ is computed may be represented by MDS in $n-1$-dimensional Euclidean space (at worst, see \cite{gower1968}). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in higher dimensions. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
 
 Note that an additive constant can be computed and added to the non-diagonal entries of $\mathbf{D}$ to ensure that the eigenvalues of $\mathbb{S}$ are non-negative. However, this does not occur in any of the examples shown here.
 
@@ -116,32 +116,31 @@ In \citeb{gower1968} the $i^\text{th}$ element of $\mathbb{D}$ is defined as $-(
 Gower's interpolation extends simply to the case when $m$ new points are inserted by making $x^*_{\text{new}}$ as $2 \cross m$ matrix and $\mathbb{D}$ an $n \cross m$ matrix.
 
 
-\subsection{Practical considerations}
+%\subsection{Practical considerations}
+\subsection{Using grids to compute the initial MDS configuration}
 
-Gower's paper shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points, when the Euclidean metric is used to calculate the distances between the points. 
+\citeb{gower1968} shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. However in the within-area distance case there can the potential problems if the reduced set of points does not encapsulate enough information about the domain. The first section here addresses this problem. The second section investigates the new configuration of points in a similar to check for the problematic squashing of space seen when the \sch\ transform was used in the previous chapter.
 
-Before performing any analysis we must test that the method will be reliable and that the mapping that MDS produces  is smooth (in terms of the spatial coordinates that it produces). First, the need for using a grid as a start point for the MDS configuration is shown, and then that the mapping produces smooth lines when within-area distances are used.
-
-\subsubsection{Using grids to compute the initial MDS configuration}
+%\subsubsection{Using grids to compute the initial MDS configuration}
 \label{grids}
 
-To perform MDS, we must first find $\mathbf{D}$. In a spatial setting one can imagine the case in which samples were not taken from one part of the domain of interest (for example, there may be no observations in a particular peninsulae) and in that case the resulting MDS configuration would differ from when there were observations in that area. The only way that the boundary will influence the model is via the MDS configuraton and in turn, the MDS configuration's only influence from the boundary is via the distances in $\mathbf{D}$. Ensuring that different analyses on the same domain of interest yield consistent results is extremely important. 
+The only place that the boundary enters the model is through the MDS configuration and in turn, the MDS configuration's only influence from the boundary is via the distances in $\mathbf{D}$. In a spatial setting one can imagine the case in which samples were not taken from one part of the domain of interest (for example, there may be no observations in a particular peninsulae) and in that case the resulting MDS configuration would differ from a configuration when data from the whole domain was used. Ensuring that different analyses on the same domain of interest yield consistent results is extremely important.
 
-When Euclidean distances are used to calculate $\mathbf{D}$, the critera needed so that the resulting space is the same (in the sense that the eigenvalues of $\mathbf{D}$ are the same) is that there is one more point used to create the MDS configuration than there are dimensions in the space in which they reside (provided that the points are not collinear) (\cite{landmark}). However, it is not clear what a similar criteria would be for the shortest paths used here. 
+When Euclidean distances are used to calculate $\mathbf{D}$, the criterion needed so that the resulting space is the same (in the sense given above, that insertion into a reduced point set is the same as mapping the complete point set) is that there is one more point used to create the MDS configuration than there are dimensions in the space in which they reside (provided the points are not collinear) (\cite{landmark}). There is no similar criteria for within-area distances and it is unclear what form such a criterion would take.
 
-A simple example of this problem is show in \fig{tshape}. Here, a regular grid has been generated inside a T-shape (top left panel). The point configuration found by using the full set of points and within-area distances is given in the top right panel. In the pathological case when either only the ``head'' or ``tail'' of the T are sampled and used to generate the MDS and the other half inserted (bottom left for head (red) inserted from tail (black), bottom right of tail (red) inserted from head (black)), one can see that those points inserted into the configuration become warped. 
+A simple example of this problem is show in \fig{tshape}. Here, a regular grid has been generated inside a T-shape (top left panel). The point configuration found by using the full set of points and within-area distances is given in the top right panel. Sampling only the ``head'' or ``tail'' of the T and using those points to generate the MDS  configuration, then inserting the other points leads to the plots in the bottom left for head and bottom right respectively (red points are inserted into the black configuration). One can see that the configuration of the inserted points looks warped compared to the configuration in the top right. 
 
 % showing the the grid is necessary using the T shape
 \begin{figure}
 \centering
 % trim order l b r t
 \includegraphics[width=6in]{mds/figs/tshape.pdf} \\
-\caption{Data generated inside a T-shape (top left) is fed into MDS at once (top right). When either the head or tail of the T is used for the original MDS configuration and the other points inserted, the shape produced is distorted.}
+\caption{Data generated inside a T-shape (top left) is fed into MDS at once (top right). When either the head or tail of the T is used for the original MDS configuration and the other points inserted, the shape produced is distorted (bottom row). In the bottom row the black points give the initial configuration and the red points are those inserted later.}
 \label{tshape}
 % generated using figs/gridtest.R
 \end{figure}
 
-Although the cases shown in \fig{tshape} are somewhat pathological, looking at more reasonable situations still leads to wildly different results. In \fig{tshaperand} the black and green points make up the original MDS configuration; the five green points are chosen at random. The red points are then inserted. As can be seen in these four typical realisations, the shape of the MDS space is dependent on those points used to create the initial MDS configuration.
+Although the cases shown in \fig{tshape} are somewhat pathological, looking at more reasonable situations still shows that the results can vary a considerable amount. In \fig{tshaperand} the black and green points make up the original MDS configuration; the five green points are chosen at random. The red points are then inserted. As can be seen in these four typical realisations, the shape of the MDS space is dependent on those points used to create the initial MDS configuration.
 
 % showing the the grid is necessary using the T shape (random samples
 \begin{figure}
@@ -153,67 +152,66 @@ Although the cases shown in \fig{tshape} are somewhat pathological, looking at m
 % generated using figs/gridtest.R
 \end{figure}
 
-Hence, although there are the usual problems with predicting outside of the data, the added problem of the instability of MDS insertion can only confound results further (\cite{gower1968}).
+This problem can be rectified by using an appropriately spaced grid over the domain to calculate the eigen-decomposition, thus ensuring that the whole domain is covered. Provided that the grid is fine enough to catch all of the important features in the boundary of the domain, the problems above should not arise.
 
-This problem can be rectified by using an appropriately spaced grid over the domain to calculate the eigen-decomposition, thus ensuring that the whole domain is covered. The base MDS configuration is then stable, provided that the grid is fine enough to catch all of the important features in the boundary of the domain.
-
-\subsubsection{Smoothness of mapping}
-\label{mds-smoothness}
-
-Following from this, it is important to make sure that the MDS space is smooth in the sense that a grid of smooth lines over the domain are mapped to a series of smooth lines without discontinuities or sudden changes in direction. Taking the evenly spaced 50 by 50 point grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using the method of Gower. The grid produced under the insertion can be seen in \fig{wt2-grid-full}. Taking a sample of 250 points from the 1253, an MDS configuration was also found and the same grid inserted (see \fig{wt2-grid-samp}). From this it is clear that those points mapped into the domain are smooth but in the sample case the features in the far right of the shape (the less pronounced peninsulae) are slightly squashed.
-
-% grid to map
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=4in]{mds/figs/wt2-grid-orig.pdf} \\
-\caption{The grid to be inserted into the MDS configuration over the peninsula domain to test the smoothness of the mapping.}
-\label{wt2-grid-orig}
-% generated using wt2-grid.R
-\end{figure}
-
-% mapped grid (full)
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=5in]{mds/figs/wt2-grid-full.pdf} \\
-\caption{Inserted grid when 1253 points are used to create the initial MDS configuration. The right panel shows a zoom of the far right part of the configuration.}
-\label{wt2-grid-full}
-% generated using wt2-grid.R
-\end{figure}
-
-% mapped grid (samp)
-\begin{figure}
-\centering
-% trim order l b r t
-\includegraphics[width=5in]{mds/figs/wt2-grid-samp.pdf} \\
-\caption{Inserted grid when 250 randomly chosen points are used to create the initial MDS configuration. The right panel shows a zoom of the far right part of the configuration. Comparing this to that of \fig{wt2-grid-full}, one can see that the features on the right have been slightly squashed together.}
-\label{wt2-grid-samp}
-% generated using wt2-grid.R
-\end{figure}
-
-In conclusion, the mapping can be both reliable and also produces a smooth configuration of points provided that the initial MDS configuration covers the space in sufficient detail.
+%\subsubsection{Point density and distribution in MDS space}
+%\label{mds-smoothness}
+%
+%Given that the \sch\ transform presented issues with regard to the squashing of the points, before starting to perform smoothing it is useful to look at what configurations of points produced by using MDS with within-area distances look like.
+%
+%Taking the evenly spaced 50 by 50 point grid in \fig{wt2-grid-orig}, first MDS is performed on a dense point set of size 1253, and then a less dense grid is inserted using Gower's interpolation. The grid produced under the insertion can be seen in \fig{wt2-grid-full}. Taking a sample of 250 points from the 1253, an MDS configuration was also found and the same grid inserted (see \fig{wt2-grid-samp}). From this it is clear that those points mapped into the domain are smooth but in the sample case the features in the far right of the shape (the less pronounced peninsulae) are slightly squashed.
+%
+%% grid to map
+%\begin{figure}
+%\centering
+%% trim order l b r t
+%\includegraphics[width=4in]{mds/figs/wt2-grid-orig.pdf} \\
+%\caption{The grid to be inserted into the MDS configuration over the peninsula domain to test the smoothness of the mapping.}
+%\label{wt2-grid-orig}
+%% generated using wt2-grid.R
+%\end{figure}
+%
+%% mapped grid (full)
+%\begin{figure}
+%\centering
+%% trim order l b r t
+%\includegraphics[width=5in]{mds/figs/wt2-grid-full.pdf} \\
+%\caption{Inserted grid when 1253 points are used to create the initial MDS configuration. The right panel shows a zoom of the far right part of the configuration.}
+%\label{wt2-grid-full}
+%% generated using wt2-grid.R
+%\end{figure}
+%
+%% mapped grid (samp)
+%\begin{figure}
+%\centering
+%% trim order l b r t
+%\includegraphics[width=5in]{mds/figs/wt2-grid-samp.pdf} \\
+%\caption{Inserted grid when 250 randomly chosen points are used to create the initial MDS configuration. The right panel shows a zoom of the far right part of the configuration. Comparing this to that of \fig{wt2-grid-full}, one can see that the features on the right have been slightly squashed together.}
+%\label{wt2-grid-samp}
+%% generated using wt2-grid.R
+%\end{figure}
+%
+%In conclusion, the mapping can be both reliable and also produces a smooth configuration of points provided that the initial MDS configuration covers the space in sufficient detail.
 
 
 \section{Finding the within-area distances}
 \label{mdsdist}
 
-So far we have assumed that the matrix of distances $D$ is known, this section describes (what the author believes to be) novel algorithm to find the within-area distances.
+So far it has been assumed that the matrix of distances $D$ is known. Using Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled between points residing in the domain of interest. This section describes (what the author believes to be) novel algorithm to find shortest paths within a given domain.
 
-In order to perform MDS, the matrix of distances must be found. Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled between points residing in the domain of interest.
+Note that paths between point pairs in \textit{simple} polygons (i.e. those polygons without holes) are considered. Although this limits the types of domains that can be addressed, it does make the shortest path algorithm simpler, since the shortest path is unique.
 
-Note that paths between point pairs in simple polygons (i,e. those polygons without holes) are considered. Although this limits the types of domains that can be addressed, it does make the shortest path algorithm simpler, since the shortest path is unique (see appendix \ref{app-unique-sp}).
+There are several methods available to calculate within-area distances, however given that the domain of interest is any arbitrary simple polygon this limits the number that are applicable. The two most promising possibilities are the geodesic methods used by \citeb{wangranalli} (see also \secref{intro-leakageapproaches}) and the $\text{A}^*$ algorithm (\cite{astarpaper}) which can be thought of as a generalisation of Dijkstra's algorithm (\cite{dijkstra}). However, both of these algorithms rely on the discretization of the domain of interest. As stated in \secref{intro-leakageapproaches}, this discretization of the domain is undesirable since the results then become dependent on the resolution of the discretization of the domain, even if a high enough resolution can be used the computational cost becomes prohibitively expensive for such methods. It would be preferable to have an elementary algorithm (i.e. one not relying on complex data structures or extensive theory) for finding the shortest path within the polygon.
 
-There are several methods available to calculate within-area distances, however given that the domain of interest is any arbitrary simple polygon this limits the number that are applicable. The two most promising possibilities are the geodesic methods used by \cite{wangranalli} (see also \secref{intro-leakageapproaches}) and the $\text{A}^*$ algorithm (\cite{astarpaper}) which is a generalisation of Dijkstra's algorithm (\cite{dijkstra}). However, both of these algorithms rely on the discretization of the domain of interest. As stated in \secref{intro-leakageapproaches}, this discretization of the domain is undesirable since the results then become dependent on the resolution of the discretization of the domain, even if a high enough resolution can be used the computational cost becomes prohibitively expensive for such methods. It would be preferable to have an elementary (ie. not relying on complex data structures or theory) algorithm for finding the shortest path within the polygon.
+The algorithm is defined as follows, it may be helpful to look at the example in \fig{wdia} while reading.
 
-Let the domain boundary be some polygon, $\Gamma$. Given that there is no direct path within the domain between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path (ie. an ordered set of edges and vertices), $\mathcal{P}$:
-
+Let the domain boundary be some polygon, $\Gamma$. Given that there is no direct path within the domain between two points ($p_1$ and $p_2$, say), the algorithm proceeds as follows to create a path, $\mathcal{P}$, which is an ordered set of vertices:
 \begin{enumerate}
 \item (INIT) Start by drawing a line between $p_1$ and $p_2$ (\fig{wdia}, ($i$)). Start the path as the lines from $p_1$, $p_2$ to their nearest intersection with the boundary of $\Gamma$ ($p_1^1$, $p_2^1$, say). Then form two paths. The first path from $p_1^1$ to $p_2^1$ ($\mathcal{P}_1$) contains the vertices of $\Gamma$ found moving along the boundary from $p_1^1$ to $p_2^1$. The second ($\mathcal{P}_2$), is found by taking the path from $p_1^1$ to $p_2^1$ in the other direction around the boundary, ie. the vertices of $\Gamma$ not in the first path. It is easy to see that $\{\mathcal{P}_1 \cup \mathcal{P}_2\} \setminus \{p_1^1, p_2^1\} = \Gamma$. The DELETE step (below) is then performed on $\mathcal{P}_1$ and $\mathcal{P}_2$, removing any superfluous vertices. Finding the length of $\mathcal{P}_1$ and $\mathcal{P}_2$ and choosing the shorter ($\mathcal{P^*}$), the initial path is formed as $\mathcal{P}=(p_1,p_1^1,\mathcal{P}^*,p_2^1,p_2)$. 
 
 In \fig{wdia}, ($iii$), $\mathcal{P}_1$ is marked in green and is chosen to form the initial path, $\mathcal{P}=(p_1,p_1^1,\mathcal{P}_1,p_2^1,p_2)$, as $\mathcal{P}_1$ is shorter than $\mathcal{P}_2$, in red.
 
-\item (DELETE) Given a triple of vertices, $(v_i, v_{i+1}, v_{i+2}) \in \mathcal{P}$ , if the line between $v_i$ and $v_{i+2}$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ and the line between $v_i$ and $v_{i+2}$ lies inside $\Gamma$ then delete $v_{i+1}$ (\fig{wdia}, ($iv$) and ($vi$)). The entire path is iterated over deleting all superfluous vertices until there are no changes in successive runs. 
+\item (DELETE) Given a triple of vertices, $(v_i, v_{i+1}, v_{i+2}) \in \mathcal{P}$ , if the line between $v_i$ and $v_{i+2}$ is shorter than the path $(v_i, v_{i+1}, v_{i+2})$ and the line between $v_i$ and $v_{i+2}$ lies inside $\Gamma$ then delete $v_{i+1}$ (\fig{wdia}, ($iv$) and ($vi$)). The entire path is iterated over ($i=1,\ldots,N-2$, if there are $N$ vertices in $\mathcal{P}$)  deleting all superfluous vertices until there are no changes in successive runs. 
 
 For example in \fig{wdia} ($iii$), $v_2$ is deleted from $\mathcal{P}$ because the path straight between $v_1$ and $v_3$ is shorter, and within $\Gamma$.
 
@@ -221,7 +219,7 @@ For example in \fig{wdia} ($iii$), $v_2$ is deleted from $\mathcal{P}$ because t
 
 For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the path $\mathcal{P}_{ID}=(v_1, v^1_2, v_3)$ (green dashed line in ($iv$)) so the former is replaced with the latter in $\mathcal{P}$. The path created by INIT is marked as $\mathcal{P}_{I}$ in  ($iv$) in red.
 
-\item (ITER) We then iterate further DELETE and ALTER steps (in pairs) until there has been no change in $\mathcal{P}$ from one run to the next (ie. convergence) (\fig{wdia}, ($vi$)).
+\item (ITER) Iterate further DELETE and ALTER steps (in pairs) until there has been no change in $\mathcal{P}$ from one run to the next (i.e. convergence) (\fig{wdia}, ($vi$)).
 \end{enumerate}
 
 % diagram for finding the shortest path in W
@@ -235,7 +233,7 @@ For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the 
 % generate /phd-smoothing/mds-writeup/figs/distanceexplanation.R
 \end{sidewaysfigure}
 
-Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean distance between the points can be used.
+Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean distance between the points can be used and the above algorithm is not run.
 
 Although it was not possible to theoretically prove that the algorithm will always converge to the shortest path, it is clear at least the the algorithm will always converge (since this only requires that there be no change in the path for two consecutive iterations). Extensive simulations showed that the algorithm gave sensible results.
 
@@ -244,7 +242,7 @@ Although it was not possible to theoretically prove that the algorithm will alwa
 
 In order to investigate the efficacy of \mdsap, a series of simulation experiments were performed. In all cases the results for \mdsap\ were compared to those of the current best method (the soap film smoother) and the standard approach that does not account for leakage (\tprs).
 
-The \textsf{R} packages \texttt{mgcv} and \texttt{soap} with additional bespoke software for finding the within-area distances were used. In all cases smoothing parameter estimation was performed using GCV (see \secref{GAMfitting}).
+The \textsf{R} packages \texttt{mgcv} and \texttt{soap} with additional bespoke software for finding the within-area distances were used (see \secref{gds-software}). In all cases smoothing parameter estimation was performed using GCV (see \secref{GAMfitting}).
 
 \subsection{The Ramsay horseshoe}
 
@@ -257,14 +255,14 @@ For the horseshoe, samples of 250 points with normal errors (at 3 levels: 0.1, 1
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate \tprs\  with basis size 100.
 \item \emph{Soap film smoother}: 32 knots evenly spread over a grid over the domain, cyclic spline on the boundary was of basis size 39.
-\item \emph{\mdsap}: Used a thin plate spline of basis dimension 100. The initial MDS grid was 20 points wide by 10 points tall.
+\item \emph{\mdsap}: Used a thin plate spline of basis dimension 100. The initial MDS grid was made of points from $10\cross 20$ grid that lay inside the horseshoe.
 \end{enumerate} 
 
-Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex. This should not cause a major difference in results even if the soap film used the full boundary and \mdsap\ used only the reduced set of edges, since objective is to allow the smoother to get a broad idea of the topology of the domain, rather than the minutiae of the boundary features. In the simulations presented here, the soap film smoother and \mdsap\ used the same boundary.
+Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex. This should not cause a major difference in results even if the soap film used the full boundary and \mdsap\ used only the reduced set of edges, since objective is to allow the smoother to get a broad idea of the topology of the domain, rather than the minutiae of the boundary features. This is especially true given that the large number of boundary vertices are due to the attempt to approximate the curved parts of the shape, rather than other features such as peninsulae. In the simulations presented here, the soap film smoother and \mdsap\ used the same boundary.
 
 \subsubsection{Results}
 
-Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, where the noise level was 1 with a sample size of 250. Both the soap film smoother and \mdsap\ are able to reproduce the main features of the true horseshoe function due to their ability to respect the boundary (in the case of the soap film) or the geometry of the domain (in the case of \mdsap). The \tprs\ shows leakage as expected. When the noise level is high the \mdsap\ outperforms the soap film smoother in MSE terms (and is less variable).
+Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, where the noise level was 1 with a sample size of 250. Both the soap film smoother and \mdsap\ are able to reproduce the main features of the true horseshoe function due to their ability to respect either the boundary (in the case of the soap film) or the geometry of the domain (in the case of \mdsap). The \tprs\ shows leakage as expected. When the noise level is high the \mdsap\ outperforms the soap film smoother in MSE terms (and is less variable).
 
 %\begin{table}[t]
 %\centering
