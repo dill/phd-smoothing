@@ -372,17 +372,17 @@ As mentioned above, when the smoothing problem is specified in terms of Euclidea
 The cause of leakage can be characterised in two ways: either the smooth does not respect the boundary of the domain, or the smooth does not take into account the geometry of the domain (in particular with regard to the distance between points within the domain). Previous work in this area has been to combat leakage along these two lines. Work of \citeb{ramsay} and \citeb{soap} both use a partial differential equation (PDE) boundary condition approach to try to prevent leakage, where as \citeb{wangranalli} and \citeb{eilerstalk} modify the way that inter-point distances are measured in order to avoid smoothing across boundaries. These four main works may be summarised as follows:
 
 \begin{enumerate}
-\item \citeb{ramsay} proposes finite element $L$-splines (FELSPLINEs). The $L$-spline replaces the usual penalty term (see \secref{GAMpenalties}) with:
+\item \citeb{ramsay} proposes finite element $L$-splines (FELSPLINEs). The $L$-spline penalty is similar to the one in (\ref{intro-2d-objfcn}):
 \be
-\int \int_\Gamma (L_p f)^2 \text{d}x_1\text{d}x_2,
+\int \int_\Gamma (L_p f)^2 \text{d}x_1\text{d}x_2.
 \ee
-where $\Gamma$ is the domain in question and $L_p$ is a roughness operator defined as:
+Integration is performed over $\Gamma$ (the domain over which the smoothing is to take place) and $L_p$ is a roughness operator defined as:
 \be
 L_p=\Delta^p+c_{p-1}\Delta^{p-1}+\dots+c_1\Delta+c_0I.
 \ee
-Here $I$ is the identity operator, the $(c_0,\dots, c_p)$ are constants and the $\Delta$ is the Laplacian (sum of second derivatives with respect to $x_1$ and $x_2$). Although any differential operator could be used for $L_p$, the Laplacian gives rise to a set of polynomials which are isotropic.
+Here $I$ is the identity operator, the $(c_0,\dots, c_p)$ are constants and $\Delta$ is the Laplacian (sum of second derivatives with respect to $x_1$ and $x_2$). Although any differential operator could be used for $L_p$, the Laplacian gives rise to a set of polynomials which are isotropic.
 
-In order to find the minimiser of the objective function formed by using this penalty in place of the one in (\ref{intro-2d-objfcn}), Ramsay takes a finite element approach. First he triangulates the domain, then he constructs a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. By taking the FELSPLINE objective function and transforming it into a variational form (in the same way as a PDE is), the approximation to the minimiser of the objective function is found. 
+In order to find the minimiser of the objective function formed by using this penalty in place of the one in (\ref{intro-2d-objfcn}), Ramsay takes a finite element approach. First triangulating the domain, then constructing a set of bivariate quadratic polynomial basis functions over each triangle, specifying that there be continuity over the edges of the triangles. By taking the FELSPLINE objective function and transforming it into a variational form (as one would for a PDE), the approximation to the minimiser of the objective function is found (see 
 
 Since the triangulation and hence the penalty of the FELSPLINE is only calculated over the domain, and the continuity is specified over neighbouring cells, the method prevents leakage. However, although FELSPLINE does not exhibit leakage on the original horseshoe (as in \fig{orig-fs}), in practise the model makes unrealistic physical assumptions. The boundary conditions of FELSPLINE specify that the gradient is zero, along normals to the boundary. This is not always physically realistic. \citeb{soap} show that by modifying the test function on horseshoe domain (see \secref{sc-alt-horsehoe}), the FELSPLINE performance begins to falter.
 
