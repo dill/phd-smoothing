@@ -2,23 +2,8 @@
 library(ggplot2)
 library(mgcv)
 
-
 # plotting options
 theme_set(theme_bw())
-#plot.rows<-3
-#plot.cols<-1
-#Layout <- grid.layout(nrow = plot.rows, ncol = plot.cols,
-#                      widths = unit(rep(3,plot.rows*plot.cols),"null"),
-#                      heights = unit(rep(3,plot.rows*plot.cols), "null"))
-#
-#subplot <- function(x, y) viewport(layout.pos.row = x,layout.pos.col = y)
-#vplayout <- function(...) {
-#     grid.newpage()
-#     pushViewport(viewport(layout = Layout))
-#}
-#grid.newpage()
-#pushViewport(viewport(layout = Layout))
-
 
 bigdat<-c()
 big.mins<-c()
@@ -51,6 +36,15 @@ for(samp.size in c(200,300,400,500)){
 
 names(bigdat)<-c("dim","score","method","samp.size","sim")
 names(big.mins)<-c("dim","score","sim","samp.size","method")
+
+bigdat$method <-as.character(bigdat$method)
+big.mins$method<-as.character(big.mins$method)
+
+bigdat$method[bigdat$method=="GCV.Cp"]<-"GCV"
+big.mins$method[big.mins$method=="GCV.Cp"]<-"GCV"
+
+bigdat$method <-as.factor(bigdat$method)
+big.mins$method<-as.factor(big.mins$method)
 
 p<-ggplot(bigdat)
 p<-p+geom_line(aes(x=dim,y=score,group=sim),alpha=0.3)

@@ -88,7 +88,7 @@ So in this case the penalty matrix $\mathbf{S}$ only needs to be computed once. 
 
 \subsection{Spline bases}
 
-So far all that has been said about the form of $f$ is that it can be decomposed into a series of basis functions. Two bases are discussed here: \textit{thin plate regression splines} and \textit{P-splines}, which will be used in this thesis.
+So far all that has been said about the form of $f$ is that it can be decomposed into a series of basis functions. Three bases are discussed here: \textit{thin plate regression splines}, \textit{P-splines} and \textit{cubic splines}, which will be used in this thesis.
 
 \subsubsection{Thin plate regression splines}
 \label{GAMtprs}
@@ -457,4 +457,4 @@ Creating some kind of mapping between the space in which the data lies and the s
 \end{enumerate}
 
 
-Chapters \ref{chap-sc}, \ref{chap-mds} and \ref{chap-gds} investigate the combination a transformation of space and conventional smoothers to solve the problem of leakage in finite area smoothing. The next chapter attempts to solidify the concepts presented so far (smoothing, penalties, leakage, tensor products) to develop a spatiotemporal model of legal immigrants in Italy using the soap film smoother.
+Chapters \ref{chap-sc}, \ref{chap-mds} and \ref{chap-gds} investigate the combination a transformation of space and conventional smoothers to solve the problem of leakage in finite area smoothing. The next chapter attempts to solidify the concepts presented so far (smoothing, penalties, leakage, tensor products) as well as highlight some of the potential pitfalls when modelling complex data. The chapter develops a spatiotemporal model of legal immigrants in Italy using a tensor product of a soap film smoother basis (for space) and a cubic spline basis (for time).
