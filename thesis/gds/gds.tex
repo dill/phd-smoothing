@@ -104,6 +104,7 @@ The red line in figure \ref{nullspace-dim} gives the number of functions that li
 With the addition of Duchon splines to the \mdsap\ we are now in a position to project data into higher dimensions and smooth over the response without having to worry about the the size and complexity of the nullspace causing problems. The use of Duchon splines along with \mdsap\ and the projection dimension selection techniques below will be known as \mdsds\ (MultiDimensional Scaling with Duchon Splines) from here on.
 
 \subsection{Choosing MDS projection dimension}
+\label{gds-dimselect}
 
 With Duchon's basis, it is now possible to smooth over any number of dimensions whilst using second order derivatives in the penalty, simply by picking $s$ according to (\ref{duchon-s-eqn}). This seems reasonable since, for the within-area distance cases considered here, the resulting MDS configurations look like 2-dimensional manifolds. Given some point, $\mathbf{x}$ say, points nearby $\mathbf{x}$ in the MDS projection will have had distances to $\mathbf{x}$ calculated using the Euclidean metric rather than the within-area distance algorithm. This locally Euclidean property is what defines a manifold (\cite[p. 225]{topology}).
 
