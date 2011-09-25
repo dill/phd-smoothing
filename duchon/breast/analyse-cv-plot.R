@@ -40,10 +40,10 @@ wilcox.res<-c(wilcox.test(lasso.mse.cv,dsgcv.mse.cv1[1:45], ,paired=T)$p.value,
 ##### NOT SIGNIFICANTLY DIFFERENT!!!
 
 
-mod.names<-c(rep("msg\n (GCV, normal)",45),
-             rep("msg\n (ML, normal)",45),
-             rep("msg\n (GCV, quasi)",45),
-             rep("msg\n (ML, quasi)",45),
+mod.names<-c(rep("MDS+DS\n (GCV, normal)",45),
+             rep("MDS+DS\n (ML, normal)",45),
+             rep("MDS+DS\n (GCV, quasi)",45),
+             rep("MDS+DS\n (ML, quasi)",45),
              rep("lasso",45))
 method.names<-c(rep("normal",90),
                 rep("quasi",90),

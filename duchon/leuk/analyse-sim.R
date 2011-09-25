@@ -19,11 +19,11 @@ for(ltype in c("ALL","TEL")){
    res<-rbind(res,cbind(dsml.mse.cv,
                         rep("MSE",length(dsml.mse.cv)),
                         rep(ltype,length(dsml.mse.cv)),
-                        rep("msg\n (ML)",length(dsml.mse.cv))))
+                        rep("MDS+DS\n (ML)",length(dsml.mse.cv))))
    res<-rbind(res,cbind(dsgcv.mse.cv,
                         rep("MSE",length(dsgcv.mse.cv)),
                         rep(ltype,length(dsgcv.mse.cv)),
-                        rep("msg\n (GCV)",length(dsgcv.mse.cv))))
+                        rep("MDS+DS\n (GCV)",length(dsgcv.mse.cv))))
    res<-rbind(res,cbind(lasso.mse.cv,
                         rep("MSE",length(lasso.mse.cv)),
                         rep(ltype,length(lasso.mse.cv)),
@@ -33,11 +33,11 @@ for(ltype in c("ALL","TEL")){
    res<-rbind(res,cbind(dsml.brier.cv,
                         rep("Brier",length(dsml.brier.cv)),
                         rep(ltype,length(dsml.brier.cv)),
-                        rep("msg\n (ML)",length(dsml.brier.cv))))
+                        rep("MDS+DS\n (ML)",length(dsml.brier.cv))))
    res<-rbind(res,cbind(dsgcv.brier.cv,
                         rep("Brier",length(dsgcv.brier.cv)),
                         rep(ltype,length(dsgcv.brier.cv)),
-                        rep("msg\n (GCV)",length(dsgcv.brier.cv))))
+                        rep("MDS+DS\n (GCV)",length(dsgcv.brier.cv))))
    res<-rbind(res,cbind(lasso.brier.cv,
                         rep("Brier",length(lasso.brier.cv)),
                         rep(ltype,length(lasso.brier.cv)),
@@ -80,5 +80,5 @@ p<-p+opts(panel.grid.major=theme_blank(),
           panel.background=theme_rect())
 print(p)
 
-#ggsave("sim-msebrier.pdf",height=7,width=7)
+ggsave("sim-msebrier.pdf",height=7,width=7)
 

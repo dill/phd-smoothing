@@ -73,6 +73,14 @@ grid.newpage()
 pushViewport(viewport(layout = Layout))
 #### end of viewport sillyness
 
+
+mds.score.dim$method<-as.character(mds.score.dim$method)
+mds.score.dim$method[mds.score.dim$method=="GCV.Cp"]<-"GCV"
+mds.score.dim$method<-as.factor(mds.score.dim$method)
+mds.score.min$method<-as.character(mds.score.min$method)
+mds.score.min$method[mds.score.min$method=="GCV.Cp"]<-"GCV"
+mds.score.min$method<-as.factor(mds.score.min$method)
+
 gaussian.dim<-mds.score.dim[1:(nrow(mds.score.dim)/2),]
 gaussian.min<-mds.score.min[1:(nrow(mds.score.min)/2),]
 
