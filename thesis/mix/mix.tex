@@ -3,11 +3,11 @@
 \section{Introduction}
 \label{s:intro}
 
-Distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating the size and/or density of biological populations. The most common approach, referred to as conventional distance sampling (CDS), is based on methods developed by \citeb{buckland92}. A commonly used extension to this methodology allows for the probability of detection to vary with covariates as well as just distance from the observer (multiple covariate distance sampling, MCDS, \cite[chapter 3]{ADS}). 
+ As was shown in chapter \ref{intro-DS}, distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating the size and/or density of biological populations. The most common approach, referred to as conventional distance sampling (CDS), is based on methods developed by \citeb{buckland92}. A commonly used extension to this methodology allows for the probability of detection to vary with covariates as well as just distance from the observer (multiple covariate distance sampling, MCDS, \cite[chapter 3]{ADS}).
 
-As was shown in chapter \ref{intro-DS}, estimating the detection function is key to distance sampling. Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fit to data, in particular non-monotone detection functions (as seen in \secref{intro-ds-mono}), in particular in figure \ref{fig1}.
+Estimating the detection function is key to distance sampling. Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fit to data, in particular non-monotone detection functions (as seen in \secref{intro-ds-mono}), in particular in figure \ref{fig1}.
 
-In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section the models are described and following from that \secref{s:optimization} gives details of the optimization procedure and tricks used. Sections \ref{mmds-sims} and \ref{s:data} show the results of a simulation study and then analysis of real data, respectively. The final section gives some concluding remarks.
+In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section the models are described and following from that \secref{s:optimization} gives details of the optimization procedure and parametrization. Sections \ref{mmds-sims} and \ref{s:data} show the results of a simulation study and then analysis of real data, respectively. The final section gives some concluding remarks.
 
 \section{Finite mixture model detection functions}
 
@@ -21,9 +21,9 @@ Denoting the detection function $g$, as before, consider a sum of $J$ mixture (d
 g(x,\mathbf{Z}; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j g_j(x,\mathbf{z}_i; \bm{\theta}_j),
 \label{mix-detfct}
 \end{equation}
-where $\sum_{j=1}^J \phi_j = 1$, $\bm{\phi}$ is a vector of all of the $\phi_j$s. As in chapter \ref{intro-DS}, the distance is denoted $x$, the $\bm{\theta}_j$s are vectors of parameters for function $g_j$, $\bm{\theta}$ is a vector of all of the $\bm{\theta}_j$s and $\mathbf{Z}$ is an $n\times K$ matrix of covariates with rows $\mathbf{z}_i$.
+where $\sum_{j=1}^J \phi_j = 1$, $\bm{\phi}$ is a $J$-vector of the $\phi_j$s. As in chapter \ref{intro-DS}, the distance is denoted $x$, the $\bm{\theta}_j$s are vectors of parameters for function $g_j$, $\bm{\theta}$ is a vector of all of the $\bm{\theta}_j$s and $\mathbf{Z}$ is an $n\times K$ matrix of covariates with rows $\mathbf{z}_i$.
 
-Here all of the $g_j$s are chosen to be half-normal functions, although other monotonic functions such as hazard-rate could be chosen (and the $g_j$s need not all have the same form). A non-covariate $J$-point mixture model would then be written as:
+Here all of the $g_j$s are chosen to be half-normal functions, although other monotonic functions such as hazard-rate could be chosen (and the $g_j$s need not all have the same form). A non-covariate, $J$-point, half-normal mixture model would then be written as:
 \begin{equation*}
 g(x; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j \exp \Big( - \frac{x^2}{2\sigma_j^2} \Big).
 \end{equation*}
@@ -31,17 +31,17 @@ So here $\bm{\theta} = (\sigma_1, \ldots, \sigma_J)$ and there are no covariates
 
 \subsubsection{Covariates}
 
-Covariates can be included in a similar way to MCDS (\secref{intro-ds-covar}, \cite[Chapter 3]{ADS}), where the covariates effect the scale parameter ($\sigma$). Here it is assumed that each mixture component has a different scale but that the covariates affect the scale parameters in the same way, in particular this means that the ``intercept'' term in the covariate model is different for each mixture component but the other covariates are estimated jointly for all components. Other more complex models with different covariates in each mixture component may be possible, but only the simplest model is considered here.
+Covariates can be included in a similar way to MCDS (\secref{intro-ds-covar}, \cite[Chapter 3]{ADS}). Here it is assumed that each mixture component has a different scale parameter, but that the covariates affect those scale parameters in the same way. This means that the ``intercept'' term in the covariate model is different for each mixture component but the other covariates are estimated jointly for all components. Other more complex models with different covariates in each mixture component may be possible, but only the simplest model is considered here.
 
 Analogously to \secref{intro-ds-covar}, using $i$ to subscript each observation, the formulation for the scale parameter $\sigma_{ij}$, is therefore:
 \begin{equation*}
 \sigma_{ij} = \exp( \beta_{0j} + \sum_{k=1}^K \beta_k z_{ik}),
 \end{equation*}
-where $z_{ik}$ is the $k^\text{th}$ covariate for the $i^\text{th}$ observation. As an example, for a 2-point mixture with 1 covariate, the scale parameters take the form
+where $z_{ik}$ is the $k^\text{th}$ covariate for the $i^\text{th}$ observation. As an example, for a 2-point mixture with 1 covariate, the scale parameters then have the form:
 \begin{equation*}
-\sigma_{ij} = \exp( \beta_{0j} + \beta_1 z_{i1}),
+\sigma_{i1} = \exp( \beta_{01} + \beta_1 z_{i1}) \quad \text{and} \quad \sigma_{i2} = \exp( \beta_{02} + \beta_1 z_{i1}) \text{ for } i=1,\ldots,n,
 \end{equation*}
-and then $\bm{\theta}_j = (\beta_{0j}, \beta_1)$. If the model was a 2-point mixture, $\bm{\theta} = (\beta_{01}, \beta_{02}, \beta_1)$. Note the similarity to (\ref{intro-ds-covar-model}).
+and then $\bm{\theta}_j = (\beta_{0j}, \beta_1)$ and $\bm{\theta} = (\beta_{01}, \beta_{02}, \beta_1)$. Note the similarity to (\ref{intro-ds-covar-model}).
 
 \subsection{Likelihood}
 
@@ -101,8 +101,9 @@ As noted in the literature (for example, \cite[463-480]{BDA}, \cite{robert}), mi
 First, simulated annealing (\cite[pp. 549-554]{numrec}) was used to explore the parameter space (for 500 iterations) then after that a quasi-Newton method (BFGS, \cite{bfgs}) was used to find the maxima (the implementations in the \textsf{R} function \texttt{optim()} were used). These two steps were run 5 times and the model with the lowest AIC was selected as the final model. This two step approach appears to be satisfactory in most cases. To aid the optimization, analytic derivatives were also found; these can be found in appendix \ref{app-mixderivs}.
 
 \subsection{Parametrization of the mixture proportions}
+\label{ds-mixpar}
 
-When using 2-point mixtures, the constraint that the mixture proportions must sum to unity is enforced by definition (since $\phi_2=1-\phi_1$). However, in $J$-point mixtures when $J>2$ ensuring that the proportions sum to 1 is not guaranteed. The obvious way to get around this would be to add a penalty to the likelihood, should the optimization procedure propose values for the $\phi_j$s that are not in accordance with this condition. This approach is not appealing since the point of using mixtures here is to avoid penalizing or constraining the likelihood if possible. Given the problems inherent in optimizing mixture likelihoods in general, adding penalization only further complicates matters. Instead, a parametrization (due to David Borchers) is used for the mixture proportions which yields $\phi_j$s that comply.
+When using 2-point mixtures, the constraint that the mixture proportions must sum to unity is enforced by definition (since $\phi_2=1-\phi_1$). However, in $J$-point mixtures when $J>2$ ensuring that the proportions sum to 1 is not guaranteed. The obvious way to get around this would be to add a penalty to the likelihood, should the optimization procedure propose values for the $\phi_j$s that are not in accordance with this condition. This approach is not appealing since the point of using mixtures here is to avoid penalizing or constraining the likelihood if possible. Given the problems inherent in optimizing mixture likelihoods in general, adding penalization only further complicates matters. Instead, a parametrization is used for the mixture proportions which yields $\phi_j$s that comply.
 
 Rather than estimating the $\phi_j$s, estimate $\alpha_p$s, where the relationship between the two is:
 \begin{equation*}
