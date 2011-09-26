@@ -76,7 +76,7 @@ The first two terms in on the right hand side of \eqn{dijmat} are zero since the
 \mathbb{S} = -\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.
 \end{equation}
 
-Now there is a relation between $\mathbf{D}$ and $\mathbb{S}$, we can concentrate on dealing with $\mathbb{S}$. In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbb{S}$. There are many options for matrix decomposition, for example the Cholesky decomposition. However when performing MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $\mathbb{S}_{ij}$. For that reason, the eigen-decomposition is used.
+Now there is a relation between $\mathbf{D}$ and $\mathbb{S}$, we can concentrate on dealing with $\mathbb{S}$. In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbb{S}$. There are many options for matrix decomposition, for example the Choleski decomposition (e.g. \cite[pp. 334-335]{simonbook}). However when performing MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $\mathbb{S}_{ij}$. For that reason, the eigen-decomposition is used.
 
 Finding the eigen-decomposition of $\mathbb{S}$, we obtain $\mathbb{S}=\mathbf{U}\mathbf{\Lambda}\tr{\mathbf{U}}$. Here $\mathbf{U}$ is the $n \cross n$ matrix with orthogonal columns which are the eigenvectors of $\mathbb{S}$ and $\mathbf{\Lambda}$ is the $n \cross n$ diagonal matrix of eigenvalues of $\mathbb{S}$ (in descending absolute value). An $\tilde{\mathbf{X}}^*$ satisfying (\ref{selem}) may then be computed as:
 \begin{equation}

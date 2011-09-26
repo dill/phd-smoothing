@@ -2,15 +2,11 @@
 
 \label{intro-DS}
 
-%Humans rely on the natural world in order to survive. As the human population expands, strain is being exerted on the plant and animal populations of Earth. Accordingly, wide and large-scale monitoring of the biological populations of the planet have been set up to ensure that continued growth does not irreparably damage populations and habitats essential to survival.
-%
-%The general problem being that one wishes to know the abundance of some biological population in a finite area. Census-type methods are extremely expensive and inefficient, so some kind of sampling must be used. 
-
-Distance sampling (\cite{IDS}, \cite{ADS}) is one of the most popular methods of abundance estimation for biological populations. It has been used by researchers across the globe to assess the abundance of everything from birds nests to marine mammals. Surveys are cheap to run since they do not require many observers (unlike a census) or multiple site visits (unlike mark-recapture). Distance sampling is also rather different from methods like mark-recapture (\cite{ruthbook}) as it does not explicitly include the abundance in the likelihood, as shall be seen below. The popularity of distance sampling is in part due to the software Distance (\cite{distance-software}) which makes it easy to record and analyse distance sampling data. 
+Distance sampling (\cite{IDS}, \cite{ADS}) is a popular method for estimating the abundance of biological populations. It has been used by researchers across the globe to assess the abundance of everything from birds nests to marine mammals. Surveys are cheap to run since they do not require many observers (unlike a census) or multiple site visits (unlike mark-recapture). Distance sampling is also rather different from methods like mark-recapture (\cite{ruthbook}) as it does not explicitly include the abundance in the likelihood, as shall be seen below. The popularity of distance sampling is in part due to the software Distance (\cite{distance-software}) which makes it easy to record and analyse distance sampling data. 
 
 \section{From quadrat sampling to distance sampling}
 
-One can think of distance sampling as the logical extension of quadrat and then strip transect sampling. In quadrat sampling a series of squares (quadrats) are laid out at random over the area in question and the number of objects of interest within each is counted. It is assumed that within each quadrat a census is performed. From the per-quadrat abundance the overall density can be calculated and multiplied-up to find the total abundance. For the sampling to be efficient the quadrats need to be large and hence it is almost impossible to ensure that all objects in the quadrat are seen, this can be further hindered by animals moving between the quadrats during the survey (\cite[p. 2]{IDS}).
+One can think of distance sampling as the logical extension of quadrat and strip transect sampling. In quadrat sampling a series of squares (quadrats) are laid out at random over the sample area and the number of objects of interest within each is counted. It is assumed that within each quadrat a census is performed. From the per-quadrat abundance the density is estimated and multiplied-up to find the total abundance. For quadrat sampling to be efficient the quadrats need to be large and hence it is almost impossible to ensure that all objects in the quadrat are seen, this can be further hindered by animals moving between the quadrats during the survey (\cite[p. 2]{IDS}).
 
 % evolution to DS from quadrat and strip
 \begin{figure}
@@ -21,17 +17,17 @@ One can think of distance sampling as the logical extension of quadrat and then 
 \label{quad-to-ds}
 \end{figure}
 
-To make the task of counting the objects within the quadrat easier, one could modify the square design to be a long strip, so that the observer could walk down the centreline of the strip, observing those objects within the strip. Mathematically, if we let the each strip be of width $2w$ ($w$ either side of the line) and the total length of all strips be $L$, and $n$ objects are observed we have a simple estimator of the density, $D$:
+To make the task of counting the objects within the quadrat easier, one could modify the square design to be a long strip, so that the observer could walk down the centreline of the strip, observing those objects within the strip. Mathematically, if we let the each strip be of width $2w$ ($w$ either side of the line the observer walks down) and the sum of all strip lengths be $L$, if $n$ objects are observed we have a simple estimator of the density, $D$:
 \begin{equation}
 \hat{D}=\frac{n}{2wL}.
 \label{ds-simpleD}
 \end{equation}
 
-The problem with both quadrat and strip sampling is that there may well be many objects just outside of the covered area. Clearly this is a waste of survey effort, since observers must ignore objects that they have seen but that are not within the quadrat. It would be preferable to include as many observations as possible and leverage the maximum amount of data that can be collected to assess the abundance of the population.
+The problem with both quadrat and strip sampling is that there may well be many objects just outside of the covered area. Clearly this is a waste of survey effort, since observers must ignore objects that they have seen but that are not within the strip. It would be preferable to include as many observations as possible and leverage the maximum amount of data that can be collected to assess the abundance of the population.
 
-Distance sampling is based on this principle; if the objects of interest are seen, then their presence should be recorded. Instead of using fixed-area sampling units, distance sampling requires that only centrelines are specified. The observers should walk (or swim, ride, drive, sail, etc) down these \textit{transects} observing objects and recording the distances ($x_i$) to these objects as they go. Once the survey is complete, the distances are used to estimated the effective area that was sampled. Figure \ref{quad-to-ds} shows the evolution from quadrat to strip to distance sampling.
+Distance sampling is based on this principle; if the objects of interest are seen, then their presence should be recorded. Instead of using fixed-area sampling units, distance sampling requires that only centrelines are specified. The observers should walk (or swim, ride, drive, sail, etc) down the centrelines recording the distances ($x_i$) to the observed objects as they go. Once the survey is complete, the distances are used to estimated the effective area that was sampled. Figure \ref{quad-to-ds} shows the evolution from quadrat to strip to distance sampling.
 
-In equation (\ref{ds-simpleD}) one can think of replacing $w$ with an estimate of $\mu$, the \textit{effective strip (half-)width}. This is the distance at which as many animals were detected beyond as there were missed inside. Further explanation of $\mu$ is given in section \ref{gtoD}, but it serves for now to say that by replacing $w$ with $\mu$, an estimate of the area that was effectively surveyed can be found. (\ref{ds-simpleD}) can then be modified to:
+In equation (\ref{ds-simpleD}) one can think of replacing $w$ with an estimate of $\mu$, the \textit{effective strip (half-)width}. This is the distance at which as many animals were detected beyond as there were missed inside. Further explanation of $\mu$ is given in \secref{gtoD}, but it serves for now to say that by replacing $w$ with $\mu$, an estimate of the area that was effectively surveyed can be found. (\ref{ds-simpleD}) can then be modified to:
 \begin{equation}
 \hat{D}=\frac{n}{2\hat{\mu}L}.
 \label{ds-D}
@@ -57,9 +53,9 @@ Line transects are not the only way of collecting data for a distance sampling a
 \begin{equation*}
 \hat{D}=\frac{n}{m \pi \hat{\rho}^2}=\frac{n}{m\pi w^2\hat{p}}.
 \end{equation*}
-again, the relation between these quantities will be explained below.
+The relation between these quantities will be explained below in \secref{gtoD}.
 
-An example of point transect data is given in figure \ref{ds-pt-example}. In contrast to the line transect case, there are very few observations near 0, they increase to a point and then fall off beyond that. Note that as the distance, $r$, from the point increases the area surveyed increases as $r^2$. Rescaling this histogram by the distance to the midpoints of each bin will give a histogram that has a similar shape to that of figure \ref{ds-lt-example} (i.e. the rescaling accounts for the increasing area available to the observer as the distance from the point increases).
+An example of point transect data is given in figure \ref{ds-pt-example}. In contrast to the line transect case, there are very few observations near 0, they increase to a point and then fall off beyond that. Note that as the distance, $r$, from the observation point increases the area surveyed increases as $r^2$. Rescaling this histogram by the distance to the midpoints of each bin will give a histogram that has a similar shape to that of figure \ref{ds-lt-example} (i.e. the rescaling accounts for the increasing area available to the observer as the distance from the point increases).
 
 % example of point transect data
 \begin{figure}
@@ -78,37 +74,37 @@ In order to ensure that estimation is unbiased several assumptions are made. The
 	\item Lines and points are randomly placed (with respect to the population) and a sample of $n$ objects are detected, measured and recorded. This could be via a grid with a baseline randomly placed with respect to the survey area.
 	\item Objects on the line (or point) are detected with probability 1.
 	\item Objects are observed in their initial location, not after movement in response to the observer.
-	\item Distances are accurate.
+	\item The recorded distances are accurate.
 	\item Objects are correctly identified.
 \end{itemize}
 
 \section{The detection function}
 \label{intro-ds-detefct}
 
-One would expect that the probability of observing an animal would decrease as the distance of them from the observer increased (as in figures \ref{ds-lt-example}). This is the relationship captured by the detection function ($g(x)$) which is defined as (\cite[p. 10]{IDS}):
+One would expect that the probability of observing an animal would decrease as the distance from the observer increased (as in figures \ref{ds-lt-example}). This is the relationship captured by the detection function ($g(x)$) which is defined as (\cite[p. 10]{IDS}):
 \begin{equation*}
 g(x)=\mathbb{P} (\text{object detected} | \text{object was at distance } x).
 \end{equation*}
-The assumption being that objects' detectability is a function of their distance from the observer. Before talking about models for $g(x)$, we look at the desirable properties.
+The goal in distance sampling is to accurately model the detection function. Before talking about models for $g(x)$, we look at the desirable properties.
 
-First, as stated in the assumptions above, objects on the line are detected with certainty, so $g(0)=1$. Second, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a \textit{shoulder}. This is physically realistic since the observer should see most things close to him/her (not just those directly under/in front of him/her). Third, it is also desirable that the model for the detection function is robust, in the sense that it is a general, flexible model that can take many plausible shapes (see \cite[p. 41]{IDS}. Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
+First, as stated in the assumptions above, objects on the line (or point) are detected with certainty, so $g(0)=1$. Second, it is preferable to have a model where detection is almost certain near zero distance, i.e. that the function has a \textit{shoulder}. This is physically realistic since the observer should see most things close to him/her (not just those directly under/in front of him/her). Third, it is also desirable that the model for the detection function is robust, in the sense that it is a general, flexible model that can take many plausible shapes (see \cite[p. 41]{IDS}). Finally, it is desirable to have a model that is efficient, in the sense that estimates have a relatively small variance, however this is only of use when the other criteria are met.
 
-We now must specify the functional form for $g$. \citeb{buckland92} gives a ``key function plus adjustment terms'' formulation for the detection function. The idea is that the key function is used as a starting point for the basic shape of the detection function. The adjustment terms consist of a series expansion that improve the fit of the model. The adjustment terms may not be necessary, in which case they may be left out of the model. The key function is usually selected as one of a uniform, half-Normal or hazard-rate (\cite{buckland85}) function. The adjustment terms are typically either even simple polynomials, Hermite polynomials or cosine functions. Further information can be found in \citeb[p. 47]{IDS}. Figure \ref{ds-detfct-examples} shows some possible detection functions.
+\citeb{buckland92} gives a ``key function plus adjustment terms'' formulation for the detection function. In this formulation the key function is used as a starting point for the basic shape of the detection function (it has certain detection at zero distance and has a shoulder). The adjustment terms consist of a series expansion that improve the fit of the model. The adjustment terms may not always be necessary, in which case they may be omitted from the model. The key function is usually selected as one of a uniform, half-normal or hazard-rate (\cite{buckland85}) function. The adjustment terms are typically either even simple polynomials, Hermite polynomials or cosine functions. Further information can be found in \citeb[p. 47]{IDS}. Figure \ref{ds-detfct-examples} shows some possible detection functions.
 
 % Possible detection functions
 \begin{figure}
 \centering
 \includegraphics{intro/figs/detfct-examples.pdf}\\
-\caption{Three possible detection functions. The first is a half-Normal distribution, the second a hazard-rate function and the third the same half-Normal as the first but with a cosine adjustment term. The hazard-rate function has a controllable ``shoulder''.}
+\caption{Three possible detection functions. The first is a half-normal distribution, the second a hazard-rate function and the third the same half-normal as the first but with a cosine adjustment term. The hazard-rate function has a controllable ``shoulder''.}
 \label{ds-detfct-examples}
 \end{figure}
 
-This formulation leads to a class of highly flexible models and usually analysis consists of running models made up of various combinations of key functions and adjustment terms. Model parameters are found using maximum likelihood. Model selection is via minimum AIC (\cite[p. 69]{IDS}), that is:
+This formulation leads to a class of highly flexible models. Data analysis usually consists of running models made up of various combinations of key functions and adjustment terms. Model parameters are found using maximum likelihood (see \secref{gtoD}). Model selection is performed via AIC (\cite[p. 69]{IDS}), that is:
 \begin{equation}
-\text{AIC} = -2 l + 2p,
+\text{AIC} = -2 l + 2P,
 \label{DEFN-AIC}
 \end{equation}
-where $l$ is the value of the likelihood at the MLE and $p$ is the number of parameters in the model. Models with many parameters are penalized more heavily than those that are more parsimonious.
+where $l$ is the value of the log-likelihood at the MLE and $P$ is the number of parameters in the model. Models with many parameters are penalized more heavily than those which are more parsimonious.
 
 \section{From $g(x)$ to $D$}
 \label{gtoD}
@@ -148,7 +144,7 @@ f(x;\bm{\theta}) = \frac{g(x;\bm{\theta})}{\int_0^w g(x;\bm{\theta}) \text{d}x} 
 %\end{equation}
 Now we have obtained an expression for the pdf, we can form a likelihood:
 \begin{align}
-\mathcal{L}(\bm{\theta}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\theta}),\\
+\mathcal{L}(\bm{\theta}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\theta}),\notag \\
 &= \prod_{i=1}^n \frac{g(x;\bm{\theta})}{\mu}.
 \label{ds-lt-likelihood}
 \end{align}
