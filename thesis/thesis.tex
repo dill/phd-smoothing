@@ -84,25 +84,31 @@
 
 \maketitle
 
-\begin{abstract} 
-Spatial smoothing is a common technique used to both create maps of a phenomenon of interest and to control for spatial autocorrelation as part of a larger model. Most smoothers use the Euclidean metric to measure the distance between data. This approach is flawed: natural phenomena do not conform to Euclidean geometry in their spatial distribution. Natural and man-made barriers partition space and models should take this into account. The first part of this thesis develops a method for smoothing in finite areas when the shape of the area is complex. This method is based on preserving within-area distances using multidimensional scaling and then smoothing in high dimensional projections of the data.
+%\begin{quotation}
+%``The major justification for the existence of any form of advanced voluntary organised education should be that it enables users to distort time and location in the learning process.'' 
+%
+%-- Cedric Price
+%\end{quotation}
 
-The second part of the thesis concerns distance sampling, a widely used set of methods for estimating the abundance of biological populations. The work presented here introduces mixture model formulation for the estimation of the probability of detection in distance sampling. Such models avoid unrealistic shapes for the detection funcion. These new models are then applied to several existing, problematic data sets.
+
+
+\begin{abstract} 
+Spline smoothing is a popular technique for creating maps of a spatial phenomenon. Most smoothers use the Euclidean metric to measure the distance between data. This approach is flawed: phenomena do not conform to Euclidean geometry in their spatial distribution. Both natural and man-made barriers partition space and models should take this into account. The first part of this thesis develops a method for smoothing in finite areas when the shape of the area is complex. This method is based on preserving within-area distances using multidimensional scaling and then smoothing in high dimensional projections of the data.
+
+The second part of the thesis concerns distance sampling, a widely used set of methods for estimating the abundance of biological populations. The work presented here introduces mixture formulation for the detection function used to model the probability of detection. Such models avoid unrealistic shapes for the detection function. These new models are then applied to several existing, problematic data sets.
+
+\newpage
 
 \begin{center}
 \section*{Acknowledgements}
 \end{center}
+I would first like to thank my supervisor Simon Wood for three years of guidance and assistance in both technical and presentational matters. At many points my own pessimism would have lead to me abandoning an approach; the work presented here is testament to his continued input.  My thanks also go to Simon Shaw who helped improve the work greatly via careful readings and comments.
 
-I would first like to thank my supervisor Simon Wood for three years of guidance as well as assistance in both technical and [[WRITTEN]] matters. [[MORE]] My internal examiner Simon Shaw also helped improve my (rather lax) notation greatly.
+Without the work of my collaborators Len Thomas, Giampiero Marra and Luca Zanin a large portion of the thesis would not exist. In particular, I am indebted to my former officemate Giampiero Marra for a great many useful discussions over the past three years. In addition, Mark Taylor provided extremely useful comments on a first draft of the work in chapter \ref{chap-it}.
 
-Without the work of my collaborators Len Thomas, Giampiero Marra and Luca Zanin a large portion of the thesis would not exist. In particular I am indebted to my former officemate Giampiero Marra for many useful discussions over the past three years, as well as his encyclopaedic knowledge of the statistical literature. Mark Taylor provided extremely useful comments on a first draft of the work in chapter \ref{chap-it}.
+Going further back in time to before the work in this thesis had begun, I must thank the Centre for Research into Environmental and Ecological Modelling (CREEM) at the University of St Andrews (and Steve Buckland specifically) for employing me in summer placements for the four years that I was an undergraduate. Without the encouragement and inspiration of those working at CREEM, I am certain that I would not have embarked on a PhD.
 
-Going further back in time to before the work in this thesis had begun, I must thank the Centre for Research into Environmental and Ecological Modelling (CREEM) at the University of St Andrews for employing me in summer placements for the four years that I was an undergraduate. Without the encouragement and inspiration of those working at CREEM, I am certain that I would not have embarked on a PhD.
-
-Elle Dodd's for her continued moral support, encouragement and tolerance through the highs and lows of the past three years. Finally I would like to thank my parents, without whom this would have been (quite literally) impossible.
-
-%Both authors would like to thank David Borchers, who suggested the parametrisation for the mixture proportions as well as\ldots
-%Rob Williams, Dan Pike , the amakihi people and the ant people for the data. [[\textbf{LEN}: can you put in the right people to thank here?]]
+On a personal note, Elle Dodd's continued moral support and encouragement (as well as patience and tolerance!) through the highs and lows of the past three years have been essential for both of our sanities. Finally I would like to thank my parents, without whom this would have been (quite literally) impossible.
 \end{abstract}
 
 
@@ -116,11 +122,6 @@ Elle Dodd's for her continued moral support, encouragement and tolerance through
 \part{Finite area smoothing}
 
 \chapter{Introduction to finite area smoothing}
-%\begin{quotation}
-%``The major justification for the existence of any form of advanced voluntary organised education should be that it enables users to distort time and location in the learning process.'' 
-%
-%-- Cedric Price
-%\end{quotation}
 
 \input{intro/intro}
 
