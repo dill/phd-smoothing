@@ -2,6 +2,8 @@
 # minus Euclidean distance in MDS space
 
 library(ggplot2)
+library(plyr)
+library(reshape)
 
 # data!
 
@@ -12,7 +14,7 @@ comb<-c(3610.210,1280.189,459.946,457.16,456.07,452.436,
 
 pen<-c(109.134,54.603,22.068,12.166,10.237,9.958,9.873,9.853,9.79,9.747)
 
-dat<-cbind(dim=1:length(aral),aral,comb,pen)
+dat<-cbind(dim=2:(length(aral)+1),aral,comb,pen)
 
 dat<-melt(as.data.frame(dat),id.vars=c("dim"))
 

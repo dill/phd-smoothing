@@ -6,7 +6,7 @@ Following the work of the previous chapter, the objective is now to find a mappi
 
 \subsection{Proposition}
 
-Multidimensional scaling (MDS) or, as it is often referred to, principle coordinates (PCO) (\cite{gower1966}) is a method commonly used in multivariate analysis. It is closely related to techniques such as principle components analysis (PCA, \cite[p. 200]{chatfieldcollins}) and canonical correspondence analysis (CCA, \cite{terbraak}). The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225), or could instead be distances that occur in the data naturally through experimental setup,  for example comparative distances between stimuli response in a psychophysical experiment (\cite{torgerson}). The focus here is obviously on geographical distances.
+Multidimensional scaling (MDS) or, as it is often referred to, principal coordinates (PCO) (\cite{gower1966}) is a method commonly used in multivariate analysis. It is closely related to techniques such as principal components analysis (PCA, \cite[p. 200]{chatfieldcollins}) and canonical correspondence analysis (CCA, \cite{terbraak}). The starting point for MDS is a matrix of distances, representing some kind of dissimilarity between observations. This distance could be calculated from the data, for example ideological distance between politicians measured using NOMINATE scores (\cite{quantss}, p. 225), or could instead be distances that occur in the data naturally through experimental setup,  for example comparative distances between stimuli response in a psychophysical experiment (\cite{torgerson}). The focus here is obviously on geographical distances.
 
 MDS takes this matrix of distances and projects the data in such a way that Euclidean inter-point distances in the projection are approximately the same as the distances in the matrix (\cite[p. 187]{chatfieldcollins}). If the matrix of distances is of rank $n$ then the projection can be in $n-1$ or less dimensions; a projection into 2 dimensions is a typical choice, since it is easily visualised. For this reason one can also think of MDS as a dimension reduction technique, finding a projection of a data cloud into lower dimensional space, while still retaining information about the dissimilarities between the points.
 
@@ -42,7 +42,7 @@ First define $d_{ij}$ as the distance between the points $i$ and $j$. These are 
 
 \citeb{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \citeb{principlesofMA}, pp. 104-108 and \citeb{chatfieldcollins}, pp. 189-200.
 
-First, suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{\mathbf{X}}^*$. Now let $\mathbb{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbb{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbb{S}$ is:
+First, suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{\mathbf{X}}^*$ (that is, that these new locations reside in $n$-dimensional space, which we can find lower dimensional projections of; see below). Now let $\mathbb{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbb{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbb{S}$ is:
 \begin{equation}
 \mathbb{S}_{ij} = \mathbf{x}_i^* \left ( \mathbf{x}_j^* \right)^\text{T},
 \label{selem}
@@ -71,7 +71,7 @@ By pre- and post-multiplying any matrix by $\mathbf{H}$ the matrix is double cen
 \begin{equation}
 \mathbf{H}\mathbf{D}\mathbf{H} = -2\mathbf{H}\mathbb{S}\mathbf{H}.
 \end{equation}
-The first two terms in on the right hand side of \eqn{dijmat} are zero since the rows of $\text{diag}\left(\mathbb{S}\right)\tr{\bm{1}}$ and the columns of  $\bm{1}\tr{\text{diag}\left(\mathbb{S}\right)}$ are constant. Since $\mathbb{S}$ is already centred so $\mathbf{H}\mathbb{S}\mathbf{H}=\mathbb{S}$. Rearranging, the following relation between $\mathbb{S}$ and $\mathbf{D}$ holds:
+The contributions from the first two terms on the right hand side of \eqn{dijmat} are zero since the rows of $\text{diag}\left(\mathbb{S}\right)\tr{\bm{1}}$ and the columns of  $\bm{1}\tr{\text{diag}\left(\mathbb{S}\right)}$ are constant. Since $\mathbb{S}$ is already centred so $\mathbf{H}\mathbb{S}\mathbf{H}=\mathbb{S}$. Rearranging, the following relation between $\mathbb{S}$ and $\mathbf{D}$ holds:
 \begin{equation}
 \mathbb{S} = -\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.
 \end{equation}
@@ -89,9 +89,9 @@ Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix truncating $\t
 
 In summary, to calculate the MDS configuration of a set of points (given their inter-point distances) we merely need to double centre the matrix of distances, perform an eigen-decomposition on the resulting matrix, and finally truncate the eigen-decomposition and find the new point set.
 
-For finite area smoothing, $d_{ij}$ should be the shortest distance between the points $i$ and $j$ such that the path remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. Given that the distances in $\mathbf{D}$ obey the triangle inequality, the $n$ points from which $\mathbf{D}$ is computed may be represented by MDS in $n-1$-dimensional Euclidean space (at worst, see \cite{gower1968}). Hence, in the case where the $d_{ij}$ are Euclidean distances in 2 dimensions, the smallest dimensional space in which they can be represented is 2, but they may still reside in higher dimensions. So, in the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
+For finite area smoothing, $d_{ij}$ should be the shortest distance between the points $i$ and $j$ such that the path remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. Given that the distances in $\mathbf{D}$ obey the triangle inequality, the $n$ points from which $\mathbf{D}$ is computed may be represented by MDS in $n-1$-dimensional Euclidean space (at worst, see \cite{gower1968}). In the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
 
-Note that an additive constant can be computed and added to the non-diagonal entries of $\mathbf{D}$ to ensure that the eigenvalues of $\mathbb{S}$ are non-negative. However, this does not occur in any of the examples shown here.
+%Note that an additive constant can be computed and added to the non-diagonal entries of $\mathbf{D}$ to ensure that the eigenvalues of $\mathbb{S}$ are non-negative. However, this does not occur in any of the examples shown here.
 
 \subsection{Gower's interpolation} 
 \label{gowers}
@@ -111,7 +111,7 @@ x^*_{\text{new}} = \frac{1}{2} \mathbf{\Lambda}^{-1} \tr{(\mathbf{X}^*)} \mathbb
 Here $\mathbf{\Lambda}$ ($2 \cross 2$) and $\tr{(\mathbf{X}^*)}$ ($2 \cross n$) are as above, $\mathbb{D}$ ($n \cross 1$) is the vector of centred within-area distances from the points in the original configuration to $x_{\text{new}}$.
 
 % Thesis fact: this paragraph infact represents about 3 months of work :(
-In \citeb{gower1968} the $i^\text{th}$ element of $\mathbb{D}$ is defined as $-(d^2_{i,\text{new}}-\text{diag}(\tilde{X}^* \tilde{X}^{*\text{T}})_{ii})$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,n+1}-\text{diag}(\mathbb{S})_{ii})$. Since $\mathbb{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
+In \citeb{gower1968} the $i^\text{th}$ element of $\mathbb{D}$ is defined as $-(d^2_{i,\text{new}}-\text{diag}(\mathbf{\tilde{X}}^* \mathbf{\tilde{X}}^{*\text{T}})_i)$, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,n+1}-\text{diag}(\mathbb{S})_i)$. Since $\mathbb{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
 
 Gower's interpolation extends simply to the case when $m$ new points are inserted by making $x^*_{\text{new}}$ as $2 \cross m$ matrix and $\mathbb{D}$ an $n \cross m$ matrix.
 
@@ -119,7 +119,7 @@ Gower's interpolation extends simply to the case when $m$ new points are inserte
 %\subsection{Practical considerations}
 \subsection{Using grids to compute the initial MDS configuration}
 
-\citeb{gower1968} shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. However in the within-area distance case there can the potential problems if the reduced set of points does not encapsulate enough information about the domain. The first section here addresses this problem. The second section investigates the new configuration of points in a similar to check for the problematic squashing of space seen when the \sch\ transform was used in the previous chapter.
+\citeb{gower1968} shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. However in the within-area distance case there can the potential problems if the reduced set of points does not encapsulate enough information about the domain. The first section here addresses this problem. The second section investigates the new configuration of points in a similar way to check for the problematic squashing of space seen when the \sch\ transform was used in the previous chapter.
 
 %\subsubsection{Using grids to compute the initial MDS configuration}
 \label{grids}
@@ -128,7 +128,7 @@ The only place that the boundary enters the model is through the MDS configurati
 
 When Euclidean distances are used to calculate $\mathbf{D}$, the criterion needed so that the resulting space is the same (in the sense given above, that insertion into a reduced point set is the same as mapping the complete point set) is that there is one more point used to create the MDS configuration than there are dimensions in the space in which they reside (provided the points are not collinear) (\cite{landmark}). There is no similar criteria for within-area distances and it is unclear what form such a criterion would take.
 
-A simple example of this problem is show in \fig{tshape}. Here, a regular grid has been generated inside a T-shape (top left panel). The point configuration found by using the full set of points and within-area distances is given in the top right panel. Sampling only the ``head'' or ``tail'' of the T and using those points to generate the MDS  configuration, then inserting the other points leads to the plots in the bottom left for head and bottom right respectively (red points are inserted into the black configuration). One can see that the configuration of the inserted points looks warped compared to the configuration in the top right. 
+A simple example of this problem is shown in \fig{tshape}. Here, a regular grid has been generated inside a T-shape (top left panel). The point configuration found by using the full set of points and within-area distances is given in the top right panel. Sampling only the ``head'' or ``tail'' of the T and using those points to generate the MDS  configuration, then inserting the other points leads to the plots in the bottom left for head and bottom right respectively (red points are inserted into the black configuration). One can see that the configuration of the inserted points looks warped compared to the configuration in the top right. 
 
 % showing the the grid is necessary using the T shape
 \begin{figure}
@@ -197,7 +197,7 @@ This problem can be rectified by using an appropriately spaced grid over the dom
 \section{Finding the within-area distances}
 \label{mdsdist}
 
-So far it has been assumed that the matrix of distances $D$ is known. Using Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled between points residing in the domain of interest. This section describes (what the author believes to be) novel algorithm to find shortest paths within a given domain.
+So far it has been assumed that the matrix of distances $D$ is known. Using Euclidean distances would lead to the original configuration of points being recovered (up to translation and rotation) provided the projection dimension was the same as that of the original set of points. As was pointed out in \secref{intro-FAS}, Euclidean distances are the cause of leakage in the first place, since they do not reflect the distances that must be travelled between points residing in the domain of interest. This section describes (what the author believes to be) a novel algorithm to find shortest paths within a given domain.
 
 Note that paths between point pairs in \textit{simple} polygons (i.e. those polygons without holes) are considered. Although this limits the types of domains that can be addressed, it does make the shortest path algorithm simpler, since the shortest path is unique.
 
@@ -234,7 +234,7 @@ For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the 
 
 Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean distance between the points can be used and the above algorithm is not run.
 
-Although it was not possible to theoretically prove that the algorithm will always converge to the shortest path, it is clear at least the the algorithm will always converge (since this only requires that there be no change in the path for two consecutive iterations). Extensive simulations showed that the algorithm gave sensible results.
+Although it was not possible to theoretically prove that the algorithm will always converge to the shortest path, it is clear at least the algorithm will always converge (since this only requires that there be no change in the path for two consecutive iterations). Extensive simulations showed that the algorithm gave sensible results.
 
 \section{Simulation experiments}
 \label{mdssims}
@@ -249,7 +249,7 @@ If a general method is to be useful it must first perform well on even a simple 
 
 \subsubsection{Setup}
 
-For the horseshoe, samples of 250 points with normal errors (at 3 levels: 0.1, 1 and 10) were taken. (These are the settings used in \cite{soap}.) Using these samples, three models were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the EDF and MSE recorded for each replicate. The three models fitted were as follows:
+For the horseshoe, samples of 250 points were taken and normal added (for 3 different standard deviations: 0.1, 1 and 10). (These are the settings used in \cite{soap}.) Using these samples, three methods were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the effective degrees of freedom (EDF) and MSE recorded for each replicate. The three methods used were as follows:
 
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate \tprs\  with basis size 100.
@@ -257,7 +257,7 @@ For the horseshoe, samples of 250 points with normal errors (at 3 levels: 0.1, 1
 \item \emph{\mdsap}: Used a thin plate spline of basis dimension 100. The initial MDS grid was made of points from $10\cross 20$ grid that lay inside the horseshoe.
 \end{enumerate} 
 
-Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex. This should not cause a major difference in results even if the soap film used the full boundary and \mdsap\ used only the reduced set of edges, since objective is to allow the smoother to get a broad idea of the topology of the domain, rather than the minutiae of the boundary features. This is especially true given that the large number of boundary vertices are due to the attempt to approximate the curved parts of the shape, rather than other features such as peninsulae. In the simulations presented here, the soap film smoother and \mdsap\ used the same boundary.
+Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex. This should not cause a major difference in results even if the soap film used the full boundary and \mdsap\ used only the reduced set of edges, since the objective is to allow the smoother to get a broad idea of the topology of the domain, rather than the minutiae of the boundary features. This is especially true given that the large number of boundary vertices are due to the attempt to approximate the curved parts of the shape, rather than other features such as peninsulae. In the simulations presented here, the soap film smoother and \mdsap\ used the same boundary.
 
 \subsubsection{Results}
 
@@ -287,13 +287,13 @@ Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, 
 
 The EDFs in figure \ref{edf-mds-ramsay-boxplot} show that \mdsap\ fits a less complex model than the thin plate spline on average, and for the two higher error situations, has a lower EDF than the soap film. Given that this is coupled with a lower MSE, it appears that \mdsap\ simultaneously yields both a more accurate and less complex model than the soap film for the horseshoe when there is a high level of noise. When noise is lower, the soap film and \mdsap\ MSEs are still roughly of the same order. \Fig{mds-ramsay-boxplot} shows the logarithm of the per-realisation average MSE for each of the models at each error level.
 
-% boxplot for Ramsay
+% Ramsay fit with error=1 
 \begin{figure}
 \centering
-\includegraphics[width=6in]{mds/figs/mds-ramsay-boxplot.pdf} \\
-\caption{Boxplots of the logarithm of the MSE per realisation of the Ramsay horseshoe for \mdsap\ (``mds''), the soap film smoother (``soap'') and \tprs\ (``tprs'') for noise levels 0.1, 1 and 10 (left to right). As previously a paired Wilcoxon signed rank test showed that MSEs for \mdsap\ and \tprs\ were significantly different from the soap film smoother (at the 0.01 level) where the colours above indicate whether the MSE was better (green) or worse (red).}
-\label{mds-ramsay-boxplot}
-% generated using phd-smoothing/mds/sim/boxplot-ramsay.R
+\includegraphics[width=6in]{mds/figs/ramsay-fit-1.pdf} \\
+\caption{From top left clockwise: truth for the (modified) Ramsay horseshoe (``truth''), \mdsap\ (``MDS''), the soap film smoother (``soap'') and thin plate splines (``tprs'') when 250 points sampled with noise level set to 1.}
+\label{mds-ramsay-fit-1}
+% generated (roughly) using ramsay-smooth-test.R
 \end{figure}
 
 \begin{figure}
@@ -304,14 +304,13 @@ The EDFs in figure \ref{edf-mds-ramsay-boxplot} show that \mdsap\ fits a less co
 % generated using phd-smoothing/mds/sim/boxplot-ramsay-edf.R
 \end{figure}
 
-
-% Ramsay fit with error=1 
+% boxplot for Ramsay
 \begin{figure}
 \centering
-\includegraphics[width=6in]{mds/figs/ramsay-fit-1.pdf} \\
-\caption{From top left clockwise: truth for the (modified) Ramsay horseshoe (``truth''), \mdsap\ (``MDS''), the soap film smoother (``soap'') and thin plate splines (``tprs'') when 250 points sampled with noise level set to 1.}
-\label{mds-ramsay-fit-1}
-% generated (roughly) using ramsay-smooth-test.R
+\includegraphics[width=6in]{mds/figs/mds-ramsay-boxplot.pdf} \\
+\caption{Boxplots of the logarithm of the MSE per realisation of the Ramsay horseshoe for \mdsap\ (``mds''), the soap film smoother (``soap'') and \tprs\ (``tprs'') for noise levels 0.1, 1 and 10 (left to right). As previously a paired Wilcoxon signed rank test showed that MSEs for \mdsap\ and \tprs\ were significantly different from the soap film smoother (at the 0.01 level) where the colours above indicate whether the MSE was better (green) or worse (red).}
+\label{mds-ramsay-boxplot}
+% generated using phd-smoothing/mds/sim/boxplot-ramsay.R
 \end{figure}
 
 Just as when the \sch\ transform was used to morph the domain, it is interesting to see what has happened to the distribution of points in space. \Fig{mdsrampoints} shows the effect of the transform on a regular grid of points (left) when they are projected into MDS space (right). The projection has also succeeded in parting the two arms of the horseshoe, reducing leakage (as can be seen in the realisations in \fig{mds-ramsay-fit-1}).
@@ -328,7 +327,7 @@ Just as when the \sch\ transform was used to morph the domain, it is interesting
 \subsection{Peninsula domain}
 \label{mds-wt2-sim}
 
-The Ramsay horseshoe is an easy domain to smooth over since it is clear that a transformation should be parting the two arms of the domain. In practise however, which parts of the domain should be separated the most may not be so clear cut. For this reason a more realistic, complex domain would provide a better insight into the efficacy of the method. The domain shown in \fig{wt2-truth} is a modification of the peninsula domain seen in \secref{sc-penin} with the three high density areas in the far left peninsula replaced with a single continuous gradient, making it a slightly easier domain.
+The Ramsay horseshoe is an easy domain to smooth over since it is clear that a transformation should be parting the two arms of the domain. In practice however, which parts of the domain should be separated the most may not be so clear cut. For this reason a more realistic, complex domain would provide a better insight into the efficacy of the method. The domain shown in \fig{wt2-truth} is a modification of the peninsula domain seen in \secref{sc-penin} with the three high density areas in the far left peninsula replaced with a single continuous gradient, making it a slightly easier domain. The domain was modified because it was found in the simulations in \secref{} that it was difficult to verify visually that the smoother estimating the peaks in the peninsula correctly; a single gradient is easier to check by eye.
 
 \subsubsection{Setup}
 
@@ -354,14 +353,14 @@ The simulations consisted of 200 realisations of 250 samples from the surface in
 \begin{figure}
 \centering
 \includegraphics[width=6in]{mds/figs/wt2-comp-09.pdf} \\
-\caption{A typical realisation of fits from the multiple peninsulae domain when the noise level was set to 0.9 (SNR = 0.75) and sample size was 250. Prediction grid was of size 1253. Clockwise from top left: the true function, prediction from: MDS projection smoothed with \tprs, the soap film smoother and \tprs.}
+\caption{A typical realisation of fits from the multiple peninsulae domain when the noise level was set to 0.9 (SNR = 0.75) and the sample size was 250. The prediction grid was of size 1253. Clockwise from top left: the true function, prediction from: MDS projection smoothed with \tprs, the soap film smoother and \tprs.}
 \label{wt2-comp-0.9}
 % generated (roughly) using wt2-smooth-test.R
 \end{figure}
 
 Looking at a typical realisation in \fig{wt2-comp-0.9} (noise level = 0.9, SNR = 0.75, sample size 250), the \tprs\ shows signs of leakage across the two large peninsulae, whereas \mdsap\ and the soap film do not. The thin plate regression spline does, however, reproduce the peak in the lower right much more faithfully, the other two smoothing over it. In this realisation, \mdsap\ deals with the values inside the peninsula a little better than the soap film smoother (the contour lines are more similar to those in the true function). On the other hand, the soap film captures the shape of the lower right peak slightly more accurately.
 
-Figures \ref{mds-wt2-boxplot} and \ref{mds-wt2-boxplot-edf} show boxplots of the MSE and EDF for the models above. There is not a massive difference between the results in MSE terms, the soap film smoother consistently has a statistically significantly lower MSE (at the 0.01 level). The soap film also tends to fit simpler models than the other two approaches except at the highest noise level.
+Figures \ref{mds-wt2-boxplot} and \ref{mds-wt2-boxplot-edf} show boxplots of the MSE and EDF for the models above. The soap film smoother consistently has a statistically significantly lower MSE (at the 0.01 level). The soap film also tends to fit simpler models than the other two approaches except at the highest noise level.
 
 % boxplot for wt2
 \begin{figure}
@@ -383,7 +382,7 @@ Figures \ref{mds-wt2-boxplot} and \ref{mds-wt2-boxplot-edf} show boxplots of the
 
 As with the Ramsay horseshoe, it is interesting to see what the projection into MDS space has done to the distribution of the points in the domain. \Fig{wt2-2d-proj} shows points in the domain in Euclidean space and MDS space. There appears to be some high concentrations of points in the far left peninsula and in the right side in the MDS space. This is due to the projection of the points into 2-dimensional space, which can be easily seen in \fig{wt2-3d-proj} where the points have been projected into 3-dimensional space. The 3-dimensional projection also shows that there is separation between the smaller peninsulae in higher dimensions that cannot be seen in the 2-dimensional projection.
 
-This high point density in the right side of the MDS space could be the reason for the poor reproduction of the function in that region seen in \fig{wt2-comp-0.9}. There appears to have been a sever breakdown in isotropy in this part of the domain (and in the left peninsula), which the \tprs\ does not handle well. This must be accounted for in the smooth if accurate models are to be built.
+This high point density in the right side of the MDS space could be the reason for the poor reproduction of the function in that region seen in \fig{wt2-comp-0.9}. There appears to have been a severe breakdown in isotropy in this part of the domain (and in the left peninsula), which the \tprs\ does not handle well. This must be accounted for in the smooth if accurate models are to be built.
 
 % how the points are projected for wt2
 \begin{figure}
@@ -412,14 +411,14 @@ From this set of simulations areas for improvement to \mdsap\ can be seen. First
  & \mdsap & Soap film & Thin plate spline\\ 
 \hline
 Fit & 84.852 & 24.678 & 0.402\\ 
-Prediction &  53.511 & 29.395 & 0.125\\
+Prediction &  155.400 & 29.395 & 0.125\\
 \end{tabular}
 \caption{Average time (in seconds) to fit and predict on a realisation of the peninsula domain for the three models considered above. Times are averaged over 100 realisations. For each realisation a sample of size 250 was taken, then a 1253 values were predicted.}
 \label{wt2time}
 \end{centering}
 \end{table}
 
-In order to make \mdsap\ worthwhile for a practitioner, the method must not only to have a sensible physical model, but also outperform the soap film smoother in either (or both) of accuracy and speed. The next two sections address these issues.
+\mdsap\ must not only to have a sensible physical model to be useful to practitioners, it must also outperform the soap film smoother in terms of accuracy (and, preferably, be at least as quick at model fitting). The next two sections address these issues.
 
 \section{Making \mdsap\ faster}
 \label{mds-faster}
@@ -553,6 +552,7 @@ for $x_k$ as above. Then $\mathbf{S}$ may be calculated as:
 \begin{equation*}
 \mathbf{S}=\frac{b-a}{K}\tr{\mathbf{D}}\mathbf{D}.
 \end{equation*}
+Note that the penalty was computed analytically, rather than numerically in previous chapters.
 
 In this example $\mathcal{L}^*(x)$ was simply calculated using the inverse of the cube of the factor by which the relevant part of the domain (given above) was squashed. 
 
@@ -595,24 +595,24 @@ So $\mathbf{S}$ may then be written as:
 \begin{equation*}
 \mathbf{S}=\tr{\mathbf{D}_{x_1}}\mathbf{D}_{x_1} + \tr{\mathbf{D}_{x_1 x_2}}\mathbf{D}_{x_1 x_2} + \tr{\mathbf{D}_{x_2}}\mathbf{D}_{x_2}.
 \end{equation*}
-Where the partial derivative evaluation points ($x_{1k}$ and $x_{2k}$) now form a grid for the integration to be calculated. First defining $x^\dagger_{1k}$ and $x^\dagger_{2k}$ analogously to (\ref{midpointS}):
+Where the partial derivative evaluation points ($x_{1k}$ and $x_{2k}$) now form a grid for the integration to be calculated. First defining $x_{1k}$ and $x_{2k}$ analogously to (\ref{midpointS}):
 \begin{equation*}
-x^\dagger_{1k}=a_{x_1}+\frac{(k-0.5)(b_{x_1}-a_{x_1})}{K},\quad
-x^\dagger_{2k}=a_{x_2}+\frac{(k-0.5)(b_{x_2}-a_{x_2})}{K},
+x_{1k}=a_{x_1}+\frac{(k-0.5)(b_{x_1}-a_{x_1})}{K},\quad
+x_{2k}=a_{x_2}+\frac{(k-0.5)(b_{x_2}-a_{x_2})}{K},
 \end{equation*}
 for $k=1,\dots,K$. The integration grid may then be constructed as points in the $x_1$ direction:
 \begin{equation*}
-\left \{x^\dagger_{11},x^\dagger_{11},x^\dagger_{11},\dots, x^\dagger_{12}, x^\dagger_{12}, x^\dagger_{12},\dots, x^\dagger_{1K}, x^\dagger_{1K}, x^\dagger_{1K}\right \},
+\left \{x_{11},x_{11},x_{11},\dots, x_{12}, x_{12}, x_{12},\dots, x_{1K}, x_{1K}, x_{1K}\right \},
 \end{equation*}
 and $x_2$ direction:
 \begin{equation*}
-\left \{x^\dagger_{21},x^\dagger_{22}, x^\dagger_{23},\dots, x^\dagger_{2K},x^\dagger_{21},x^\dagger_{22}, x^\dagger_{23},\dots, x^\dagger_{2K},\dots\right \}.
+\left \{x_{21},x_{22}, x_{23},\dots, x_{2K},x_{21},x_{22}, x_{23},\dots, x_{2K},\dots\right \}.
 \end{equation*}
 Finally, those $(x_{1k},x_{2k})$ that do not lie inside the boundary in MDS space are removed leaving only those points that lie inside (so that the integration is performed over $\Gamma^\prime$).
 
 \subsubsection{Finding $\mathcal{L}^*$}
 
-Calculating $\mathcal{L}^*(x_1,x_2)$ in two dimensions is more tricky than in the one dimensional case. Since the two-dimensional case is to be used in practise, the method for finding $\mathcal{L}^*(x_1,x_2)$ must depend on the MDS configuration, as the stretch factors will not be known \emph{a priori} (as was the case in the previous example).
+Calculating $\mathcal{L}^*(x_1,x_2)$ in two dimensions is more tricky than in the one dimensional case. Since the two-dimensional case is to be used in practice, the method for finding $\mathcal{L}^*(x_1,x_2)$ must depend on the MDS configuration, as the stretch factors will not be known \emph{a priori} (as was the case in the previous example).
 
 The general idea is to make $\mathcal{L}^*(x_1,x_2)$ a function of the change in density of points caused by projecting the original space into MDS space. Assuming that the density in the untransformed space is $1$ everywhere, it is only necessary to calculate the density in MDS space. Having calculated the point density in MDS space, $\mathcal{L}^*(x_1,x_2)$ is just some function of this density.
 
@@ -622,9 +622,9 @@ In order to find calculate the point density in MDS space, the following steps a
 \item The interpolated points were then used to estimate the overall point density in MDS space by simply counting the number of points there were in each of a set of squares made from the integration grid. The count per cell is a function of location and is denoted $\mathcal{L}(x_1,x_2)$. An example is shown in the bottom right plot of figure \ref{densgrid} for the double peninsulae domain. 
 \item Then define $\mathcal{L}^*(x,y)$ as the function
 \begin{equation*}
-\mathcal{L}^*(x_1,x_2)=\frac{1}{ \left \{ 1+\mathcal{L}(x_1,x_2) \right \}^{3/2}}.
+\mathcal{L}^*(x_1,x_2)=\frac{1}{ \left \{\mathcal{L}(x_1,x_2) +1 \right \}^{3/2}}.
 \end{equation*}
-The $+1$ in the denominator avoids division by zero when evaluating $\mathcal{L}^*(x_1,x_2)$. The fact that $\mathcal{L}^*(x_1,x_2)$ is a piecewise function should not be too worrying since the aim here is to address the broader problems with the change in spatial density, not the fine-gained details.
+Adding one to the denominator avoids division by zero when evaluating $\mathcal{L}^*(x_1,x_2)$. The fact that $\mathcal{L}^*(x_1,x_2)$ is a piecewise function should not be too worrying since the aim here is to address the broader problems with the change in spatial density, not the fine-gained details.
 \end{enumerate}
 
 Note that the power is now $\frac{3}{2}$. This is since the contraction/expansion in each direction individually is not known, but rather the overall change. As such $\frac{3}{2}$ is used rather than the cubic on $x$ and $y$ and unitary on the cross term. Several other options were also tested (including changing the power and removing $+1$ in the denominator) however it was found that the above formulation provided the best results and so only those results are shown here.
@@ -643,7 +643,7 @@ In order to make sure that the adjustment works in both the known and unknown co
 
 The samples were then used to fit a standard \tprs\ model, \tprs\ with adjusted penalty with known stretch factors and a \tprs\ with $\mathcal{L}^*(x_1,x_2)$ estimated from the data. The mean squared error between the truth and prediction over a dense (50 by 50) grid was then calculated.
 
-The simulation results show that there is a decrease in MSE when the expansion/contraction of the space is taken into account (MSEs were: $2.355, 2.300 \text{ and } 2.305$ for thin plate regression splines, known stretch and estimated stretch, respectively). Unfortunately this didn't offer the same visual improvement as the 1-dimensional case.
+The simulation results show that there is a decrease in MSE when the expansion/contraction of the space is taken into account (MSEs were: 2.355, 2.30 and 2.305 for thin plate regression splines, known stretch and estimated stretch, respectively). Unfortunately this didn't offer the same visual improvement as the 1-dimensional case.
 
 The next section puts the adjusted penalty approach to the test on the peninsulae domain seen previously and the Aral sea data set discussed in \secref{intro-GAM}.
 
@@ -673,7 +673,7 @@ As would be expected, the method using the adjusted penalty had a lower EDF than
 
 It seems that the penalty adjustments have not been useful for this domain. It is especially interesting to see that the addition of one dimension provides much better models than a penalty-based approach.
 
-Finally, note that there were three realisations omitted (for all models) in figures \ref{big-wt2-mses} and \ref{big-wt2-edfs}. In these realisations the soap film smoother failed to fit the model due to knot placement. These can be safely removed as, in practise, the computer would inform the user that the knot placement was not appropriate and the knot layout could be altered.
+Finally, note that there were three realisations omitted (for all models) in figures \ref{big-wt2-mses} and \ref{big-wt2-edfs}. In these realisations the soap film smoother failed to fit the model due to knot placement. These can be safely removed as, in practice, the computer would inform the user that the knot placement was not appropriate and the knot layout could be altered.
 
 % big wt2 sim MSEs
 \begin{figure}
@@ -696,7 +696,7 @@ Finally, note that there were three realisations omitted (for all models) in fig
 \subsubsection{Aral sea}
 \label{aral-sec}
 
-The Aral sea is located between Kazakhstan and Uzbekistan. It has been steadily shrinking since the Soviet government diverted the sea's two tributaries in order to irrigate the surrounding desert during the 1960s. The NASA SeaWifs satellite collected data on chlorophyll levels in the Aral sea (\cite{soap}) over a series of 8 day observation periods from 1998 to 2002. The 496 data are averages of the $38^\text{th}$ observation period. Smooths were fitted to the spatial coordinates (Northings and Eastings) with the logarithm of chlorophyll concentration (with Gamma errors) as the response.
+The Aral sea is located between Kazakhstan and Uzbekistan. It has been steadily shrinking since the Soviet government diverted the sea's two tributaries in order to irrigate the surrounding desert during the 1960s. The NASA SeaWifs satellite collected data on chlorophyll levels in the Aral sea (see also \secref{intro-GAM} and \cite{soap}) over a series of 8 day observation periods from 1998 to 2002. The 496 data are averages of the $38^\text{th}$ observation period. Smooths were fitted to the spatial coordinates (Northings and Eastings) with the logarithm of chlorophyll concentration as the response (and assuming that the response was Gamma distributed as in \cite{soap}).
 
 A \tprs, \mdsap\ and soap film were all fitted to the data. In summary the setup for each model was:
 \begin{enumerate}
@@ -778,7 +778,7 @@ In the MDS projection we can see this happening for the peninsulae domain in fig
 
 In the two cases above, moving into three dimensions allowed \mdsap\ to more accurately reproduce the true function. The extra dimension allows for more information to be included in the projection giving ``width'' to parts of the domain that appear extremely thin in the 2-D projection.
 
-It seems then that there is some milage in taking a 3-dimensional projection to solve this problem without the need for penalty adjustments. However, unfortunately, this is not the case in general. \Fig{mds-comb} shows a long domain with three peninsulae at each end. The MDS projection of the domain in two dimensions gives the points in \fig{mds-comb-2d}. There are only four peninsulae in this figure, not the six which were in the original. Using the colours in \fig{mds-comb} and \fig{mds-comb-2d}, one can see the separation of the larger peninsulae and that the smaller peninsulae have been positioned end-to-end. Given that there could be interesting features in the response in these smaller peninsulae and that therefore leakage would be undesirable. This behaviour may well be worse than simply incurring leakage by using a standard smoother.
+It seems then that there is some milage in taking a 3-dimensional projection to solve this problem without the need for penalty adjustments. However, unfortunately, this is not the case in general. \Fig{mds-comb} shows a long domain with three peninsulae at each end. The MDS projection of the domain in two dimensions gives the points in \fig{mds-comb-2d}. There are only four peninsulae in this figure, not the six which were in the original. Using the colours in \fig{mds-comb} and \fig{mds-comb-2d}, one can see the separation of the larger peninsulae and that the smaller peninsulae have been positioned end-to-end. There could be interesting features in the response in these smaller peninsulae and thus leakage would be undesirable. This behaviour may well be worse than simply incurring leakage by using a standard smoother.
 
 \begin{figure}
 \centering
@@ -819,7 +819,7 @@ Although these plots are illustrative, a quantitative measure of how well the wi
 % Results here are in mds/counter/run-DRcomp.R
 Looking at this measure for the domain considered in this section (the ``comb''), peninsulae domain (from \secref{mds-wt2-sim}) and the Aral sea as dimension of projection is increased yields some interesting results. These are summarized in figure \ref{increasek}. The plot indicates that there is some optimum number of dimensions to project into, such that adding a further dimension gives only a negligible decrease in the spectral norm. 
 
-The ``optimal'' projection dimension (in a spectral norm sense) is not common to all of the domains. For the peninsulae domain there is a large decrease (roughly halving each time) up to four dimensions, but the Aral sea appears to settle down after three. However, it's clear that the spectral norm is not the best guide for this given that for the ``comb'' domain, four dimensions appears to be optimal but \fig{mds-comb-3d} shows that this doesn't offer much separation in the peninsulae. The spectral norm doesn't offer a direct solution to the issue of dimension selection but it does at least offer the insight that there is some dimensional beyond which an increase in dimension only offers marginal returns, even if the best separation is after this point. Considering dimension selection separately from smoothing is sure to cause difficulties, since a point set that approximates the distances in $\mathbf{D}$ well does not give an guarantees about the quality of the resulting smooth. It seems that a dimensional selection method that also takes into account the response will be useful in this case.
+The ``optimal'' projection dimension (in a spectral norm sense) is not common to all of the domains. For the peninsulae domain there is a large decrease (roughly halving each time) up to four dimensions, but the Aral sea appears to settle down after three. However, it's clear that the spectral norm is not the best guide for this given that for the ``comb'' domain, four dimensions appears to be optimal but \fig{mds-comb-3d} shows that this doesn't offer much separation in the peninsulae. The spectral norm doesn't offer a direct solution to the issue of dimension selection but it does at least offer the insight that there is some dimensional beyond which an increase in dimension only offers marginal returns, even if the best separation is after this point. Considering dimension selection separately from smoothing is sure to cause difficulties, since a point set that approximates the distances in $\mathbf{D}$ well does not give an guarantees about the quality of the resulting smooth. These dimension selection techniques only take into account variation in space, completely ignoring the effect that this has on the response. A method which takes into account how the projection affects the response will surely perform better than one which does not.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{mds/figs/eigenplot.pdf} \\
@@ -839,8 +839,8 @@ The model certainly seems less complex. Provided that one knows about spline smo
 
 In comparison to using the \sch\ transform, \mdsap\ has the disadvantage of not being a functional mapping. Having a fixed functional form makes the \sch\ transform extremely fast since only a single function evaluation is needed to map a single point. In comparison, having to find the within-area distances is rather taxing computationally. However, the speed-ups presented in \secref{mds-faster} greatly enhance the utility of the method from a practical viewpoint. \mdsap\ and soap film smoothing differ in how their computational time is divided. The main computational burden of the soap film smoother is in solving the PDEs needed to form the basis and from that calculating the penalty matrix (see table \ref{wt2itimetable} and \secref{SF}), prediction is merely a case of evaluation. \mdsap\ on the other hand, spends the bulk of its computational time on finding the within-area distances for both fitting and prediction (comparing the ``thin plate'' and ``MDS+RS(\textit{pp})'' columns of table \ref{wt2itimetable}). The advantage of this is that since the distance calculation is effectively a black box from the perspective of the smoothing, if a faster routine for distance calculation were to be used there would be no difference in the results (provided that the routine calculated the distances exactly) but the computational time to calculate the final smooth would be significantly reduced. This approach also opens up the possibility of other distance metrics being used to form the distance matrix (as will be seen in \secref{gds-gds-examples}).
 
-Figures \ref{wt2-3d-proj} and \ref{aral-pp} show that MDS does achieve the kind of domain morphing that was sought in section \ref{sc-conclusions}. Unlike the \sch\ transform, the projection does not force the points to move into a fixed transformation domain an as such avoids some of the issues with point density. 
+Figures \ref{wt2-3d-proj} and \ref{aral-pp} show that MDS does achieve the kind of domain morphing that was sought in section \ref{sc-conclusions}. Unlike the \sch\ transform, the projection does not force the points to move into a fixed transformation domain and as such avoids some of the issues with point density. 
 
 Using MDS to re-arrange the points does not entirely alleviate the problem of squashing. Although there is no numerical crowding (see \secref{sch-crowding}), points may still have an uneven spatial distribution, which causes problems for isotropic smoothers like the thin plate spline. \Secref{mds-penadjust} sought to avoid the problems that occur when the space in which smoothing is to be performed by adjusting the penalty based on the density of the points. This did not work because of the confounding issue of point ordering (as discussed in \secref{pensuck}). The varying point density and ordering problems were due entirely to using a low-dimensional MDS projection. Ensuring that point ordering is maintained and that the point density remains roughly even can be controlled by the projection dimension. Higher dimensional projections will be investigated further in the next chapter.
 
-As we have seen over the last two chapters, although domain transformation methods are appealing from a mathematical and physical point of view, in practise they are tricky to apply and can produce artefacts in the resulting smooths. These artefacts can be avoided by projecting into higher dimensions where the ordering of the points is not disrupted. The potential problem of using higher dimensional projections is that model parsimony is jeopardized by an increasingly complex nullspace. In the next chapter the use of high dimensional MDS projections will be investigated when an appropriate spline basis can be used to perform smoothing. If reliable high dimensional smoothing can be performed, then the only remaining issue is to resolve the issue of projection dimension selection, the next chapter will deal with this too.
+As we have seen over the last two chapters, although domain transformation methods are appealing from a mathematical and physical point of view, in practice they are tricky to apply and can produce artefacts in the resulting smooths. These artefacts can be avoided by projecting into higher dimensions where the ordering of the points is not disrupted. The potential problem of using higher dimensional projections is that model parsimony is jeopardized by an increasingly complex nullspace. In the next chapter the use of high dimensional MDS projections will be investigated when an appropriate spline basis can be used to perform smoothing. If reliable high dimensional smoothing can be performed, then the only remaining issue is to resolve the issue of projection dimension selection, the next chapter will deal with this too.

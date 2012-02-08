@@ -16,7 +16,7 @@ Given some region that it is difficult to smooth over, one approach is to transf
 \label{simpledia}
 \end{figure}
 
-The \sch\ mapping takes an arbitrary polygon and maps it to a specified shape. The most common domains to transform to are: (i) the upper half-plane, (ii) a rectangle and (iii) the unit disk. This is achieved in the upper half-plane case by taking the vertices of the polygon and mapping them to points on the real line (see \fig{reallinedia}). This can be thought of as ``unwrapping'' the polygon onto the real line. For the unit disk case, points on the circle bounding the unit disk map to vertices on the polygon (see \fig{unitdiskdia}). The rectangular case is somewhat similar to the unit disk in that extra points are added to the boundary. One the mapping has been performed, those points lying inside the polygon are also moved around, creating a new (non-uniform) distribution of space. These three domains are discussed in more detail in \secref{schparprob}.
+The \sch\ mapping takes a specified shape and maps it to an arbitrary polygon. The most common domains to transform to are: (i) the upper half-plane, (ii) a rectangle and (iii) the unit disk. This is achieved in the upper half-plane case by taking the vertices of the polygon and mapping them to points on the real line (see \fig{reallinedia}). This can be thought of as ``unwrapping'' the polygon onto the real line. For the unit disk case, points on the circle bounding the unit disk map to vertices on the polygon (see \fig{unitdiskdia}). The rectangular case is somewhat similar to the unit disk in that extra points are added to the boundary. One the mapping has been performed, those points lying inside the polygon are also moved around, creating a new (non-uniform) distribution of space. These three domains are discussed in more detail in \secref{schparprob}.
 
 % Diagram showing upper half plane to polygon
 \begin{figure} [t]
@@ -87,7 +87,7 @@ The function $\varphi$ is a mapping from the transformed domain to the polygon (
 
 \subsection{\sch\ Mapping}
 \label{schparprob}
-This section looks at the mathematical formulation for the upper half-plane, unit disk and rectangle. There are many possible domains that can be mapped to (see \cite[section 4]{driscoll} for may examples), however the three discussed here are either canonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two).
+This section looks at the mathematical formulation for the upper half-plane, unit disk and rectangle. There are many possible domains that can be mapped to (see \cite[section 4]{driscoll} for many examples), however the three discussed here are either canonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two).
 
 For the purposes of smoothing we are interested in the function $\varphi^{-1}$ (i.e. the function that goes from the domain in which the data were collected to the transformed one), $\varphi$ must be calculated before its inverse can be found. In the literature $\varphi$ is referred to as the \emph{forwards map} and $\varphi^{-1}$ as the \emph{backwards map}.
 
@@ -121,12 +121,12 @@ The rectangle mapping is slightly different in its calculation to the two above 
 \begin{equation*}
 J_e(w^*,\gamma)=\int_0^{w^*} \frac{1}{\sqrt{1-\gamma\sin^2t}} \text{d} t,
 \end{equation*}
-where $w^*$ is some point in the rectangle and $\gamma$ specifies where the corners of the rectangle map to on the upper half plane (the points are $-\gamma^{-1/2}, -1, 1, \gamma^{1/2}$). The computation of this map is expensive due to the evaluation of the elliptic function (\cite[p. 49]{driscoll}), so in practise a shortcut is used by mapping to the strip. Further detail on exactly how this is done can be found in \citeb{howell90}.
+where $w^*$ is some point in the rectangle and $\gamma$ specifies where the corners of the rectangle map to on the upper half plane (the points are $-\gamma^{-1/2}, -1, 1, \gamma^{1/2}$). The computation of this map is expensive due to the evaluation of the elliptic function (\cite[p. 49]{driscoll}), so in practice a shortcut is used by mapping to the strip. Further detail on exactly how this is done can be found in \citeb{howell90}.
 
 \subsection{Computation of the \sch\ mapping}
 \label{sc-mapping-problem}
 
-To compute the map, the prevertices, $w^*_k$ must be found. The complex constants $A$ and $C$ control scaling, translation, and rotation and can computed once the prevertices are found. The $w^*_k$ are found by iteratively by mapping those points back to the polygon to give an approximation to $\Gamma$, $\Gamma^\prime$. To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ the following set of equations are used:
+To compute the map, the prevertices, $w^*_k$ must be found. The complex constants $A$ and $C$ control scaling, translation, and rotation and can be computed once the prevertices are found. The $w^*_k$ are found by iteratively by mapping those points back to the polygon to give an approximation to $\Gamma$, $\Gamma^\prime$. To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ the following set of equations are used:
 \begin{equation}
 \label{optimizeme}
 F_k = \frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} \qquad \text{for } k=3,\dots,K-1.
@@ -139,13 +139,13 @@ Note that \eqn{optimizeme} does not include the vertex $w_K$. By theorem 3.1 of 
 
 Also note that \eqn{optimizeme} does not include $w_1$ or $w_2$ in the numerator on the right hand side. This is due to all vertices (and hence $w_1$ and $w_2$) being rescaled, rotated, and translated by the complex constants, $A$ and $C$, in the \sch\ formula.
 
-In practise the values of $w^*_K, w^*_{K-1}$ and $w^*_{K-2}$ are fixed as $w^*_K=1$, $w^*_{K-1}=-i$ and $w^*_{K-2}=-1$ in the unit disk case (\cite[p. 24]{driscoll}). For the rectangle case, the vertices of $\Gamma$ which will map to which vertices of the rectangle must be specified.
+In practice the values of $w^*_K, w^*_{K-1}$ and $w^*_{K-2}$ are fixed as $w^*_K=1$, $w^*_{K-1}=-i$ and $w^*_{K-2}=-1$ in the unit disk case (\cite[p. 24]{driscoll}). For the rectangle case, the vertices of $\Gamma$ which will map to which vertices of the rectangle must be specified.
 
 The scaling factor, $C$, (from \eqn{unitscmap}) may be calculated using:
 \begin{equation}
 C=\frac{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert}{\vert w_2 - w_1\vert}.
 \end{equation}
-If $C$ is not calculated then it is know that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense) and so the mapping is correct up to scaling and rotation. 
+If $C$ is not calculated then it is known that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense) and so the mapping is correct up to scaling and rotation. 
 
 $A$ is the image of the base point of the integration and is usually written as $w_0$. For computational reasons this is usually the prevertex nearest to the point $w^*$ which is to be mapped in \eqn{unitscmap}  (\cite[p. 27]{driscoll}).
 
@@ -182,7 +182,7 @@ To calculate the backwards mapping, there are two possible approaches: (i) using
 \label{scivp}
 \frac{dw^*}{dw}=\frac{1}{\varphi^{-1}(w^*)} \quad \text{and} \quad \varphiinv(w_0)=w^*_0.
 \end{equation}
-In practise a combination of these methods are used. Solving \eqn{scivp} approximately gives the starting values for the Newton iterations which are significantly faster (since $\varphi^{-1}$ is cheaper than $\varphi$ to compute) (\cite[p. 29]{driscoll}).
+In practice a combination of these methods are used. Solving \eqn{scivp} approximately gives the starting values for the Newton iterations which are significantly faster (since $\varphi^{-1}$ is cheaper than $\varphi$ to compute) (\cite[p. 29]{driscoll}).
 
 The only problem with this is that the path from $w_0$ to the point to map, $w$, must lie entirely inside the polygon. Whether this is true is not known, since after the mapping has been computed the only known points are the vertices (at which the IVP is singular). So, to combat this, all points on the path are checked sequentially. This computation, although inelegant, is fast compared to the IVP/Newton iterations.
 
@@ -407,7 +407,7 @@ Using the \sch\ transform before smoothing gives an increase in performance for 
 \subsection{Peninsula domain}
 \label{sc-penin}
 
-Looking at a more realistic domain highlights potential problems with using the \sch\ transform in practise. The domain in the top left corner of \fig{sc-wigglytop2-real} shows a domain which replicates some of the features of a coastline.
+Looking at a more realistic domain highlights potential problems with using the \sch\ transform in practice. The domain in the top left corner of \fig{sc-wigglytop2-real} shows a domain which replicates some of the features of a coastline.
 
 % realization
 \begin{figure}[t]

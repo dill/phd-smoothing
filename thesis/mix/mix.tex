@@ -75,7 +75,7 @@ where the effective area of detection for an observation with covariate vector $
 & = 2\pi \sum_{j=1}^J \phi_j \int_0^w  r g_j(r,\bm{z}_i; \bm{\theta}_j) \text{d}r.
 \end{align*}
 
-Parameters are estimated using maximum likelihood. In practise maximization is performed on the $\log$-likelihood (see \secref{s:optimization}) with analytic gradients (given in appendix \ref{app-mixderivs}).
+Parameters are estimated using maximum likelihood. In practice maximization is performed on the $\log$-likelihood (see \secref{s:optimization}) with analytic gradients (given in appendix \ref{app-mixderivs}).
 
 
 
@@ -113,7 +113,7 @@ and
 \begin{equation*}
 \phi_J = 1-\sum_{j=1}^{J-1} \phi_j
 \end{equation*}
-where $F$ is any continuous CDF on $(0,\infty]$. Exponentiation ensures that $e^{\alpha_p}\geq0$, so $\alpha_p$ may lie anywhere on the real line, allowing unconstrained optimisation. Summing these orders the $\phi_j$s, since only offsets are estimated. Finally, using the cumulative density function ensures that the $\phi_j$s sum to $1$. In practise the $\text{Gamma}(3,2)$ CDF is (somewhat arbitrarily) used. Figure \ref{mmds-phifig} illustrates the relationship.
+where $F$ is any continuous CDF on $(0,\infty]$. Exponentiation ensures that $e^{\alpha_p}\geq0$, so $\alpha_p$ may lie anywhere on the real line, allowing unconstrained optimisation. Summing these orders the $\phi_j$s, since only offsets are estimated. Finally, using the cumulative density function ensures that the $\phi_j$s sum to $1$. In practice the $\text{Gamma}(3,2)$ CDF is (somewhat arbitrarily) used. Figure \ref{mmds-phifig} illustrates the relationship.
 
 \begin{figure}
 \centering
@@ -319,7 +319,7 @@ All the models discussed in this article are available as an \textsf{R} package,
 
 This chapter has investigated and demonstrated the utility of detection functions constructed from mixtures of half-normal functions for both line and point transect distance sampling. The method was also extended to include covariates. The formulation presented here for mixture detection functions can be simply ``dropped in'' to the existing theory and make a handy additional approach when there are issues with non-monotonicity.
 
-It has been shown that the method performs well on both simulated and real data. In many cases the proposed model outperforms the existing CDS and MCDS models, which is surprising given that the mixture models in question often had more parameters than the CDS/MCDS models. It should be noted however, that models do not tend fit data particularly well at small sample sizes (as was found via simulation). This problem can be avoided in practise by using AIC forward selection for the number of mixtures, ensuring the simplest model is found.
+It has been shown that the method performs well on both simulated and real data. In many cases the proposed model outperforms the existing CDS and MCDS models, which is surprising given that the mixture models in question often had more parameters than the CDS/MCDS models. It should be noted however, that models do not tend fit data particularly well at small sample sizes (as was found via simulation). This problem can be avoided in practice by using AIC forward selection for the number of mixtures, ensuring the simplest model is found.
 
 In simulation 3-point mixtures did not appear to be good surrogates for missing covariate structure in the model. In general 2-point mixtures were chosen by AIC as good models. In the examples in \secref{s:data}, 2-point mixtures consistently provided the best fit, even in the case of the amakihi (which was a very large data set). Only examination of further data will show whether 3-point and higher mixtures can be supported in real data, however in CDS analyses when the key function with adjustment series formulation is used, detection functions with 5 or more parameters are rarely selected by AIC and a 3-point mixture with no covariates requires 5 parameters.
 
