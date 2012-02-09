@@ -40,7 +40,7 @@ pdf("wt2-3d-proj.pdf",width=6,height=2)
 ## plot it
 par(mfrow=c(1,3),las=1,mar=c(2.5,2.8,1.8,1.5),mgp=c(1.5,0.75,0))#,cex.axis=0.3)
 plot(mds3$points[,1],mds3$points[,2],asp=1,pch=".",xlab=expression(x[1]^"*"),ylab=expression(x[2]^"*"),cex=0.7)
-plot(mds3$points[,2],mds3$points[,3],asp=1,pch=".",xlab=expression(x[1]^"*"),ylab=expression(x[2]^"*"),cex=0.7)
-plot(mds3$points[,1],mds3$points[,3],asp=1,pch=".",xlab=expression(x[1]^"*"),ylab=expression(x[2]^"*"),cex=0.7)
+plot(mds3$points[,2],mds3$points[,3],asp=1,pch=".",xlab=expression(x[2]^"*"),ylab=expression(x[3]^"*"),cex=0.7)
+plot(mds3$points[,1],mds3$points[,3],asp=1,pch=".",xlab=expression(x[1]^"*"),ylab=expression(x[3]^"*"),cex=0.7)
 dev.off()
 

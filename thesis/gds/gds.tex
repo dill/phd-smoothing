@@ -7,14 +7,14 @@ In the previous chapter multidimensional scaling was used to project the points 
 
 High dimensional smoothing has been approached in several different ways in the literature to date, some of these are detailed below.
 \begin{enumerate}
-   \item Without straying too far from thin plate splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of P-splines or cubic splines could be combined using a tensor product to create a multidimensional smooth in the requisite number of dimensions. In practice several problems arise with this approach. First is the problem of knot placement, which in high dimensions can become massive computational burden, requiring some kind of knot selection. Second is that tensor product smooths are anisotropic so one smoothing parameter is used per dimension, aside from the additional computational burden, the point of the high dimensional projections used is in part to combat anisotropy. Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to be rather complex (\secref{3D}).
+   \item Without straying too far from thin plate regression splines, one could consider using tensor products of splines of any basis (\secref{GAMtensor}). For example, marginal smooths of P-splines or cubic splines could be combined using a tensor product to create a multidimensional smooth in the requisite number of dimensions. In practice several problems arise with this approach. First is the problem of knot placement, which in high dimensions can become a massive computational burden, requiring some kind of knot selection. Second is that tensor product smooths are anisotropic so one smoothing parameter is used per dimension, aside from the additional computational burden, the point of the high dimensional projections used is in part to combat anisotropy. Finally, although the marginal functions in a tensor product smooth can be simple, the combination of the functions can turn out to be rather complex (\secref{3D}).
    \item Rather than using a basis function decomposition of the smoother, local regression could be used. Two popular local regression techniques are LOESS which smooths the data using a low-degree local polynomial  (\cite{loess1}, \cite{loess2}) or kernel smoothing by taking weighted averages of the response with weightings based on distance (e.g. \cite[pp. 194-200]{elements}). Local methods are, of course, local and as such rely on the data being relatively dense, which cannot be guaranteed, especially in high dimensions (\cite[p. 200]{elements}). 
 
 Integrating these methods into a GAM (which is desirable so models such as the one for the Italian data described in chapter \ref{chap-it} can be specified) requires backfitting be used for the fitting prodecure. Backfitting consists of smoothing the residuals with respect to that component's covariate. However, backfitting is quite computationally expensive since smoothing parameters must be selected at every stage (i.e. each time a set of residuals is smoothed).
    \item Kriging could be used to smooth in high dimensions, however there are technical limitations on the number of dimensions that are possible. Ensuring that the semivariogram remains positive definite can be problematic (\cite{boisvert}). Although there has been work using MDS to obtain isotropic distances for semivariogram estimation, there has not been work on how to deal with the mean field when it is non-constant, incorporating a trend into the mean field when it has been projected into high dimensions will lead to similar difficulties as in the spline smoothing case. Comparisons between kriging and the approaches proposed here are covered in more detail in \secref{gds-krig}.
 \end{enumerate}
 
-All of the methods listed above have problems that thin plate splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions (see figure \ref{nullspace-dim}). Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalized functions in the resulting smooths. 
+All of the methods listed above have problems that thin plate regression splines do not suffer from. Thin plate splines do have the problem that the number of functions in nullspace of the penalty becomes far too large when smoothing is performed in high dimensions (see figure \ref{nullspace-dim}). Limiting the number of functions in the nullspace of the penalty would avoid the side effects of having complicated, unpenalized functions in the resulting smooths. 
 
 When originally proposing thin plate splines in his seminal 1977 paper, Duchon actually describes a much more general set of interpolation methods; thin plate splines are just a particular example of these. This chapter illustrates how a more general version of the thin plate spline (henceforth referred to as \textit{Duchon splines}) can be used for high dimensional smoothing whilst avoiding a large and complex penalty nullspace. 
 
@@ -74,14 +74,14 @@ Since taking the Fourier transform of the derivatives has allowed us to think of
 \int \ldots \int_{\mathbb{R}^d} w(\boldsymbol{\tau}) \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!} \left ( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \left (\boldsymbol{\tau} \right ) \right )^2 \text{d} \boldsymbol{\tau},
 \label{duchon-penalty-general}
 \end{equation}
-the function $w$ can then be used to pick out particularly high frequencies and penalize those more than the lower frequency ones. Setting $w(\boldsymbol{\tau})=1, \forall \boldsymbol{\tau}$ recovers the usual thin plate penalty in (\ref{tprs-pen}).
+the function $w$ can then be used to pick out particularly high frequencies and penalize those more than the lower frequency ones. Setting $w(\boldsymbol{\tau})=1, \forall \boldsymbol{\tau}$ recovers the usual thin plate spline penalty in (\ref{tprs-pen}).
 
 Duchon suggests the use of $w(\boldsymbol{\tau})= \lvert \boldsymbol{\tau} \rvert^{2s}$. This will still give a minimizer of broadly the same form as the thin plate spline functions in (\ref{tprs-basis}) but $M$ will change. First writing down this penalty:
 \begin{equation}
 \breve{J}_{m,d} = \int \ldots \int_{\mathbb{R}^d} \lvert \boldsymbol{\tau} \rvert^{2s} \sum_{\nu_1 + \dots + \nu_d=m} \frac{m!}{\nu_1! \dots \nu_d!}\left ( \mathfrak{F} \frac{\partial^m f}{\partial x_1^{\nu_1} \ldots  \partial x_d^{\nu_d}} \left (\boldsymbol{\tau} \right ) \right )^2 \text{d} \boldsymbol{\tau}.
 \label{duchon-penalty}
 \end{equation}
-The less complex (more smooth) frequency components of the basis functions are penalized less. This allows some of the fequencies of  the radial basis functions to do the job of the $M$ linearly independent polynomials which were not included due to reduced nullspace size. The penalty allows the use of a reduced nullspace (in both size and complexity terms) while not sacrificing the continuity of $f$. 
+The less complex (more smooth) frequency components of the basis functions are penalized less. This allows some of the frequencies of  the radial basis functions to do the job of the $M$ linearly independent polynomials which were not included due to reduced nullspace size. The penalty allows the use of a reduced nullspace (in both size and complexity terms) while not sacrificing the continuity of $f$. 
 
 Again, (\ref{tprs-pen}) can be recovered from this penalty (by setting $s=0$). When $s>0$ higher frequencies are penalized more than lower ones. In order to obtain smooth functions it is required that $m+s>d/2$ (this replaces the condition $2m>d$). Using a value of $s>0$ allows for high dimensional smoothing while still using lower-order penalties without yielding discontinuous functions. One can therefore think of $s$ as a kind of ``fudge factor'' that allows the conditions on $m$ and $d$ to be relaxed. Given some fixed combination of $m$ and $d$, an $s$ can be found by simply calculating:
 \begin{equation}
@@ -96,7 +96,7 @@ s=d/2-1.
 
 The red line in figure \ref{nullspace-dim} gives the number of functions that lie in the nullspace of penalty (\ref{duchon-penalty}), i.e. the result of using (\ref{duchon-s-eqn2}) with (\ref{gds-bigm}). For plotting $m=2$ so the derivative order is constant as the dimensionality increases, leading to a linear increase in nullspace size with the smoothing dimension.
 
-Note that the eigen-decomposition technique for thin plate splines shown in \secref{GAMtprs} can also be used for Duchon splines. This low-rank approximation is used throughout the rest of the chapter.
+Note that the eigen-decomposition technique for thin plate regression splines shown in \secref{GAMtprs} can also be used for Duchon splines. This low-rank approximation is used throughout the rest of the chapter.
 
 %[[\textbf{SIMON} : If I can construct some kind of proof that the MDS projection of within-area distances always leads to a manifold then I'll say something here about how that leads to the following \ldots In any small region a 2-dimensional manifold will look like $\mathbb{R}^2$, in the same small region the smoother's behaviour will closely approximate a regular thin plate regression spline with $m=2$ on the tangent space of the manifold (as the smoothing parameter tends to zero, at least).]]
 
@@ -155,14 +155,14 @@ There is, of course, no guarantee that there will always be a clear minimum to f
 \label{gds-wad-examples}
 \subsection{Simulations}
 
-To test the utility of \mdsds, the simulation study on the peninsulae domain in section \ref{wt2bigsim} was re-run including \mdsds\ as a possible method. MDS projection dimension selection based on both GCV and $\text{ML}_P$ scores was used and the maximum spline basis dimension was set at 100. The results are shown for the original simulations (for thin plate splines and the soap film smoother) along side those for the new method in figure \ref{wt2-boxplot-duchon}. \mdsds\ with GCV dimension selection obtained a lower MSE than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels. Using $\text{ML}_P$ generally had poorer performance but this only became significant at the highest noise level.
+To test the utility of \mdsds, the simulation study on the peninsulae domain in section \ref{wt2bigsim} was re-run including \mdsds\ as a possible method. MDS projection dimension selection based on both GCV and $\text{ML}_P$ scores was used and the maximum spline basis dimension was set at 100. The results are shown for the original simulations (for thin plate regression splines and the soap film smoother) along side those for the new method in figure \ref{wt2-boxplot-duchon}. \mdsds\ with GCV dimension selection obtained a lower MSE than the soap film smoother when the noise is low and was indistinguishable (via a paired Wilcoxon signed rank test) from the soap film smoother at higher noise levels. Using $\text{ML}_P$ generally had poorer performance but this only became significant at the highest noise level.
 
 Using GCV does give a lower MSE than using the soap film smoother (although perhaps not statistically significantly at higher noise levels). This is a good indication that using GCV to control the MDS projection dimension is working well. Visual inspection of the smooths produced also show that the GCV score works well as a method for selecting the projection dimension.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{mds/figs/wt2-boxplot-duchon.pdf} \\
-\caption{Boxplots of logarithm of per realisation average mean squared error from simulations on the peninsula domain. The boxplots are in groups of four for each error level (0.35, 0.9, 1.55). Colours indicate the result of a Wilcoxon paired signed rank test of whether the MSE was significantly ($p<10^{-2}$) different from the soap film smoother. Red indicates different and worse, green different and better.}
+\caption{Boxplots of logarithm of per realisation average mean squared error from simulations on the peninsula domain. The boxplots are in groups of five for each error level (0.35, 0.9, 1.55). Colours indicate the result of a Wilcoxon paired signed rank test of whether the MSE was significantly ($p<10^{-2}$) different from the soap film smoother. Red indicates different and worse, green different and better.}
 \label{wt2-boxplot-duchon}
 % generated by mds/duchon/bigsim/boxplot-wt2.R
 \end{figure}
@@ -222,7 +222,7 @@ Data where distances between observations are meaningful can come from many diff
 
 \subsubsection{Predicting party allegiance using free votes}
 
-The website Public Whip (\url{http://www.publicwhip.org.uk/}) provides data from the Hansard on the votes of the both UK houses of parliament. Here the divisions of taken in the House of Commons of the 676 MPs in the 1997--2001 parliament are considered. During this time the House took 1273 divisions. Each vote is coded according to table \ref{voting-code}. Also available from Public Whip are the party allegiances of each MP. 
+The website Public Whip (\url{http://www.publicwhip.org.uk/}) provides data from the Hansard on the votes of the both UK houses of parliament. Divisions of the 676 MPs in the 1997--2001 parliament are considered here. During this time the House took 1273 divisions. Each vote is coded according to table \ref{voting-code}. Also available from Public Whip are the party allegiances of each MP. 
 
 \begin{table}  
 \begin{centering}

@@ -51,7 +51,7 @@ The next few sections present a brief introduction to how spatial smoothing usin
 \subsection{Smoothing with penalties}
 \label{GAMpenalties}
 
-If $f$ is very flexible it is possible that in estimating the $\beta_j$s an $f$ which interpolates the data can be found. Interpolating the data is not useful since an $f$ that simply jumps from datum to datum does not say any more about the spatial distribution than merely looking at the data. To obtain an $f$ that interpolates the data, we can simply minimize the ordinary least squares (OLS) objective function. That is estimate the vector of coefficients, $\hat{\bm{\beta}}$, that minimizes:
+If $f$ is very flexible it is possible that in estimating the $\beta_j$s an $f$ which tends toward interpolation of the data can be found. Interpolating the data is not useful since an $f$ that simply jumps from datum to datum does not say any more about the spatial distribution than merely looking at the data. To obtain an $f$ that interpolates the data, we can simply minimize the ordinary least squares (OLS) objective function. That is estimate the vector of coefficients, $\hat{\bm{\beta}}$, that minimizes:
 \begin{equation}
 \sum_{i=1}^n \left \{ z_i - f(\mathbf{x}_i) \right \}^2,
 \label{intro-OLS}
@@ -71,7 +71,7 @@ Depending on the situation, the penalty should have a different amount of influe
 \begin{figure}[tb]
 \centering
 \includegraphics[width=6in]{intro/figs/lambda-ex.pdf}\\
-\caption{An example of how different values of $\lambda$ affect the fitted smooth function of one variable. In the left panel, $\lambda$ is chosen optimally by GCV (see section \ref{GAMfitting}), in the middle panel the $\lambda=0$ giving an interpolating fit and in the right panel $\lambda=\infty$ leading to a straight line. In each panel the blue curve is the true function and the points are the data sampled from it with error.}
+\caption{An example of how different values of $\lambda$ affect the fitted smooth function of one variable. In the left panel, $\lambda$ is chosen optimally by GCV (see section \ref{GAMfitting}), in the middle panel $\lambda=0$, tending towards an interpolating fit. In the right panel $\lambda=\infty$ leading to a straight line. In each panel the blue curve is the true function and the points are the data sampled from it with error.}
 \label{lambda-ex}
 \end{figure}
 
@@ -139,13 +139,13 @@ The nullspace of the penalty consists of three functions: $\phi_1(\mathbf{x})=1,
 \label{tprs-basis-fig}
 \end{figure}
 
-The computational cost of fitting the model is cubed in the number of parameters, so fitting a model with one radial basis function per datum may prove impractical in some cases. To avoid this problem, one could either ($i$) select (perhaps randomly) some of the data and use only those points to create the basis and then use the full data to fit the model (i.e. changing the index of the summation in the first term of (\ref{tprs-basis})) or ($ii$) select a (relatively small) representative set of points within the space covered by the data (though not necessarily data locations) which would be evenly spread out enough to create the basis (changing the $\mathbf{x}_i$s in the first summation in (\ref{tprs-basis}) -- these points are known as \textit{knots}). Both approaches have potential problems, namely: how many points should be chosen and where they should best be located?
+The computational cost of fitting the model is cubed in the number of parameters, so fitting a model with one radial basis function per datum may prove impractical in some cases. To avoid this problem, one could either ($i$) select (perhaps randomly) some of the data and use only those points to create the basis and then use the full data to fit the model (i.e. changing the index of the summation in the first term of (\ref{tprs-basis})) or ($ii$) select a (relatively small) representative set of points within the space covered by the data (though not necessarily data locations) which would be evenly spread out enough to create the basis (changing the $\mathbf{x}_i$s in the first summation in (\ref{tprs-basis}) -- these points are known as \textit{knots}). Both approaches have potential problems, namely: how many points should be chosen and where they should best be located? Both of theses approaches effectively reduce the size of the basis (changing the limit on the first summation in (\ref{tprs-basis})), however both methods do this in a fairly arbitrary way. There is no objective measure of whether the points selected are ``good''. 
 
-Both of the above approaches effectively reduce the size of the basis (changing the limit on the first summation in (\ref{tprs-basis})), however both methods do this in a fairly arbitrary way. There is no objective measure of whether the points selected are ``good''. Let the $ij^\text{th}$ element of the ($n \times n$) matrix $\mathbf{E}$ be the $j^\text{th}$ radial basis function evaluated at the $i^\text{th}$ datum (i.e. $\mathbf{E} = \eta_{m,d}\left (\vert\vert\mathbf{x}_i - \mathbf{x}_j \vert\vert \right )$), reducing the computations required to fit the model can be achieved by reducing the rank of $\mathbf{E}$. In the previous two approaches the rank reduction was performed by removing columns from $\mathbf{E}$ (randomly sampling the data) or changing the number of columns by changing the location of the evaluations (using knots). 
+\citeb{wood2003} proposes a low-rank approximation to thin plate splines, referred to in this thesis as \textit{thin plate regression splines}. Let the $ij^\text{th}$ element of the ($n \times n$) matrix $\mathbf{E}$ be the $j^\text{th}$ radial basis function evaluated at the $i^\text{th}$ datum (i.e. $\mathbf{E} = \eta_{m,d}\left (\vert\vert\mathbf{x}_i - \mathbf{x}_j \vert\vert \right )$), reducing the computations required to fit the model can be achieved by reducing the rank of $\mathbf{E}$. In the previous two approaches the rank reduction was performed by removing columns from $\mathbf{E}$ (randomly sampling the data) or changing the number of columns by changing the location of the evaluations (using knots). 
 
 One way of reducing the size of $\mathbf{E}$ is by performing an eigen-decomposition (so $\mathbf{E}=\mathbf{U}\mathbf{\Lambda}\mathbf{U}^\text{T}$, where the columns of $\mathbf{U}$ are orthogonal eigenvectors and $\mathbf{\Lambda}$ is a diagonal matrix of eigenvalues decreasing in absolute value down the diagonal). Picking the $k$ largest eigenvalues and truncating at that point (taking the first $k$ columns of $\mathbf{U}$ and the top right $k\times k$ submatrix of $\mathbf{\Lambda}$) gives $\mathbf{E}_k(=\mathbf{U}_k\mathbf{\Lambda}_k\mathbf{U}_k^\text{T})$. It can be shown that the reduced rank matrix $\mathbf{E}_k$ gives the best approximation to $\mathbf{E}$ (see \cite{wood2003} for details). In practice, $k$ is set to be ``large enough'' and further reduction in basis complexity is performed by penalization (see \secref{GAMEDF}). In the simulations and analyses in the following chapters $k$ will be referred to as the ``maximum basis size'' to avoid confusion.
 
-Throughout the thesis, ``thin plate splines'', ``thin plate regression splines'' and ``thin plate'' will be used to refer to the implementation of \citeb{wood2003}, given above.
+This low-rank approximation is the default implementation when using the ``\texttt{tp}'' basis in the \textsf{R} package \texttt{mgcv}. This package was used throughout the thesis.
 
 \subsubsection{P-splines}
 \label{intro-psplines}
@@ -262,7 +262,7 @@ Although in the above, the focus has been on including on geographical coordinat
 
 \subsection{Higher dimensional smooths}
 
-As well as including covariates as additive components, they can also be included as extra dimensions via tensor products (or directly into the basis in the thin plate case). When using thin plate splines, the order of the derivatives in the penalty ($m$) can be changed. Indeed, it is required that the derivative order changes according to the number of dimensions that smoothing takes place in ($2m>d$). Using a derivative order that is too low can lead to a non-smooth $f$, which is clearly undesirable. Smoothing in high dimensions can be unreliable and numerically tricky but not impossible (as will be seen later in chapter \ref{chap-gds}).
+As well as including covariates as additive components, they can also be included as extra dimensions via tensor products (or directly into the basis in the \tprs\ case). When using thin plate splines, the order of the derivatives in the penalty ($m$) can be changed. Indeed, it is required that the derivative order changes according to the number of dimensions that smoothing takes place in ($2m>d$). Using a derivative order that is too low can lead to a non-smooth $f$, which is clearly undesirable. Smoothing in high dimensions can be unreliable and numerically tricky but not impossible (as will be seen later in chapter \ref{chap-gds}).
 
 \subsection{Generalized additive models}
 \label{intro-extending-gams}
@@ -307,7 +307,7 @@ It has been observed (\cite{reissogden}) that the GCV score can sometimes have p
 
 %However, it is important to note that this is a manifestation of the variance--bias trade-off. GCV will lead to less biased but more variable fits whereas likelihood based methods will be less variable but more biased. 
 
-There are many other ways of fitting GAMs, such as backfitting (\cite{gammonograph}, see also \secref{gds-intro}), Markov chain Monte Carlo (MCMC, e.g. \cite{fahrmeir2004}) or integrated nested Laplace approximations (INLA, \cite{inla}). The hierarchical procedure of \citeb{remlpaper} (using either GCV or REML/ML) was chosen over these other methods for several reasons. Backfitting and MCMC are quite computationally expensive, especially when larger models are used (see \cite{simonbook}, pp. 213-215 for why this is the case for backfitting). MCMC-type approaches can be improved by exploiting sparse bases (like P-splines) however, thin plate splines (and their nice properties like isotropy) cannot be used. INLA can be very fast, however when many terms are included it becomes computationally expensive (\cite{inla} suggest more than 10 become problematic).
+There are many other ways of fitting GAMs, such as backfitting (\cite{gammonograph}, see also \secref{gds-intro}), Markov chain Monte Carlo (MCMC, e.g. \cite{fahrmeir2004}) or integrated nested Laplace approximations (INLA, \cite{inla}). The hierarchical procedure of \citeb{remlpaper} (using either GCV or REML/ML) was chosen over these other methods for several reasons. Backfitting and MCMC are quite computationally expensive, especially when larger models are used (see \cite{simonbook}, pp. 213-215 for why this is the case for backfitting). MCMC-type approaches can be improved by exploiting sparse bases (like P-splines) however, thin plate regression splines (and their nice properties like isotropy) cannot be used. INLA can be very fast, however when many terms are included it becomes computationally expensive (\cite{inla} suggest more than 10 become problematic).
 
 \cite{ruppertreview} gives an overview of developments in the area of semiparametric regression in general during the 2003--2007 period.
 
@@ -335,11 +335,11 @@ To test to see if two models' MSEs are significantly different, a paired Wilcoxo
 \subsection{The Brier score}
 \label{DEFN-brier}
 
-The Brier score (\cite{brier50}) is useful when the response variable is binary (a more general version of the score for $n$-ary variables can also be used). In this case the probability of observations belonging to a particular class (0 or 1 in the binary case) is measured, so it makes sense to assess the model performance using the probabilities rather than just the classifications. The score is similar in form to the MSE:
+The Brier score (\cite{brier50}) is useful when the response variable is binary (a more general version of the score for $m$-ary variables can also be used). In this case the probability of observations belonging to a particular class (0 or 1 in the binary case) is measured, so it makes sense to assess the model performance using the probabilities rather than just the classifications. The score is similar in form to the MSE:
 \begin{equation}
-\text{BS} = \frac{1}{n_p} \sum_{i=1}^{n_p} \left \{\hat{f}_p(\mathbf{x}_i)-f_p(\mathbf{x}_i) \right \}^2
+\text{BS} = \frac{1}{n} \sum_{i=1}^{n} \left \{\hat{f}_p(\mathbf{x}_i)-z_i \right \}^2
 \end{equation}
-where subscript $f_p$ indicates that the functions return values on the probability scale, rather than on the  scale of the linear predictor. The Brier score has the advantage of offering a more granular measure of the model errors, since probabilities will be continuous on $(0,1)$ rather than dichotomous (or $n$-chotomous) class predictions.
+where subscript $f_p$ indicates that the functions return values on the probability scale, rather than on the  scale of the linear predictor. The $z_i$s are the $n$, $m$-chotomous data. The Brier score has the advantage of offering a more granular measure of the model errors, since probabilities will be continuous on $(0,1)$ rather than dichotomous (or $m$-chotomous) class predictions.
 
 \subsection{Leave-one-out cross validation}
 \label{DEFN-LOOCV}

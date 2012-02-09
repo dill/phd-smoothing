@@ -254,7 +254,7 @@ For the horseshoe, samples of 250 points were taken and normal added (for 3 diff
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate \tprs\  with basis size 100.
 \item \emph{Soap film smoother}: 32 knots evenly spread over a grid over the domain, cyclic spline on the boundary was of basis size 39.
-\item \emph{\mdsap}: Used a thin plate spline of basis dimension 100. The initial MDS grid was made of points from $10\cross 20$ grid that lay inside the horseshoe.
+\item \emph{\mdsap}: Used a \tprss\ of basis dimension 100. The initial MDS grid was made of points from $10\cross 20$ grid that lay inside the horseshoe.
 \end{enumerate} 
 
 Note that due to time and computational restrictions, the boundary was reduced from the 160 vertex polygon in the \texttt{fs.boundary()} function in \texttt{soap} to a 21 vertex polygon by only using every 8$^\text{th}$ vertex. This should not cause a major difference in results even if the soap film used the full boundary and \mdsap\ used only the reduced set of edges, since the objective is to allow the smoother to get a broad idea of the topology of the domain, rather than the minutiae of the boundary features. This is especially true given that the large number of boundary vertices are due to the attempt to approximate the curved parts of the shape, rather than other features such as peninsulae. In the simulations presented here, the soap film smoother and \mdsap\ used the same boundary.
@@ -285,13 +285,13 @@ Predictions from a typical realisation can be seen from \fig{mds-ramsay-fit-1}, 
 %\label{ramsayresultstable}
 %\end{table}
 
-The EDFs in figure \ref{edf-mds-ramsay-boxplot} show that \mdsap\ fits a less complex model than the thin plate spline on average, and for the two higher error situations, has a lower EDF than the soap film. Given that this is coupled with a lower MSE, it appears that \mdsap\ simultaneously yields both a more accurate and less complex model than the soap film for the horseshoe when there is a high level of noise. When noise is lower, the soap film and \mdsap\ MSEs are still roughly of the same order. \Fig{mds-ramsay-boxplot} shows the logarithm of the per-realisation average MSE for each of the models at each error level.
+The EDFs in figure \ref{edf-mds-ramsay-boxplot} show that \mdsap\ fits a less complex model than the \tprs\ on average, and for the two higher error situations, has a lower EDF than the soap film. Given that this is coupled with a lower MSE, it appears that \mdsap\ simultaneously yields both a more accurate and less complex model than the soap film for the horseshoe when there is a high level of noise. When noise is lower, the soap film and \mdsap\ MSEs are still roughly of the same order. \Fig{mds-ramsay-boxplot} shows the logarithm of the per-realisation average MSE for each of the models at each error level.
 
 % Ramsay fit with error=1 
 \begin{figure}
 \centering
 \includegraphics[width=6in]{mds/figs/ramsay-fit-1.pdf} \\
-\caption{From top left clockwise: truth for the (modified) Ramsay horseshoe (``truth''), \mdsap\ (``MDS''), the soap film smoother (``soap'') and thin plate splines (``tprs'') when 250 points sampled with noise level set to 1.}
+\caption{From top left clockwise: truth for the (modified) Ramsay horseshoe (``truth''), \mdsap\ (``MDS''), the soap film smoother (``soap'') and thin plate regression splines (``tprs'') when 250 points sampled with noise level set to 1.}
 \label{mds-ramsay-fit-1}
 % generated (roughly) using ramsay-smooth-test.R
 \end{figure}
@@ -333,9 +333,9 @@ The Ramsay horseshoe is an easy domain to smooth over since it is clear that a t
 
 The simulations consisted of 200 realisations of 250 samples from the surface in \fig{wt2-truth}. Normal noise was added at three levels  0.35, 0.9, and 1.55 (corresponding to signal-to-noise ratios (SNRs) of 0.95, 0.75 and 0.5, respectively. SNRs were calculated as the mean squared correlation between true function value and the truth with error added). Mean squared error over 1253 prediction points (which included the sample points) was calculated and recorded, along with EDF for each model. The models fitted were:
 \begin{enumerate}
-\item \emph{Thin plate spline}: bivariate thin plate spline with maximum basis size 100. 
+\item \emph{Thin plate regression spline}: bivariate \tprs\ with maximum basis size 100. 
 \item \emph{Soap film smoother}: cyclic spline on boundary of basis size 60, 109 internal knots evenly spaced on a grid over the domain.
-\item \emph{\mdsap}: after transform a bivariate thin plate spline with maximum basis size 100. The initial MDS grid was $10 \cross 10$ (48 points were inside the domain).
+\item \emph{\mdsap}: after transform a bivariate \tprs\ with maximum basis size 100. The initial MDS grid was $10 \cross 10$ (48 points were inside the domain).
 \end{enumerate} 
 
 % wt2 truth 
@@ -485,7 +485,7 @@ Uneven point density can cause problems for the smoother since the measure of sm
 
 The higher MSEs shown in figure \ref{mds-wt2-boxplot} might be explained by the change in density of points in the domain after it has been transformed into MDS space. In this case adjusting the thin plate spline penalty in order to take into account the change in point density in MDS space might improve performance.
 
-An alternative approach would be to use a tensor product basis (of, for example, P-splines as was used in \secref{sc-sims}) where there is a separate smoothing parameter for each dimension. However, thin plate splines have other appealing properties (in particular the eigen-based approach avoids knot placement issues, see \secref{GAMtprs}). A tensor product smooth may also still run into problems in each dimension with regard to the squashing of space. For these reasons, this section explores the utility of penalty adjustments based on point density for thin plate splines.
+An alternative approach would be to use a tensor product basis (of, for example, P-splines as was used in \secref{sc-sims}) where there is a separate smoothing parameter for each dimension. However, thin plate regression splines have other appealing properties (in particular the low-rank approximation avoids knot placement issues, see \secref{GAMtprs}). A tensor product smooth may also still run into problems in each dimension with regard to the squashing of space. For these reasons, this section explores the utility of penalty adjustments based on point density for thin plate regression splines.
 
 \subsection{Overview}
 
@@ -511,12 +511,12 @@ Before moving straight to the 2-dimensional case, the method was tested in one d
 
 \subsection{Penalty adjustments in one dimension}
 
-Before implementing this approach in full 1-dimensional test was run. The function:
+Before implementing this approach in full, a 1-dimensional test was run. The function:
 \begin{equation}
 g(x)=0.2x^{11}\left \{ 10(1-x) \right \}^6+10(10x)^3(1-x)^{10},
 \label{hardfcn}
 \end{equation}
-was used and contracted by factors of $20,1,0.05,1$ over the regions $[0,0.4]$, $(0.4,0.6]$, $(0.6,0.8]$ and $(0.8,1]$, respectively. The function and its squashed form are shown in the top left and right panels (respectively) of \fig{1dadjust}. The function was evaluated at 100, equally spaced, points over the interval $[0,1]$. These points were then used as the sample (with no noise added), a \tprs\ was fitted, and predictions made at same points yielding the blue lines in the lower two plots. The left plot shows the predictions in the transformed space and the right in the original space. The green line was produced using the same procedure but with a \tprs\ with the adjusted penalty. As can be seen from the plot, the fit has been improved greatly, but how is the adjustment calculated?
+over the range [0,1] was used. The function was then split into four sections ($[0,0.4]$, $(0.4,0.6]$, $(0.6,0.8]$ and $(0.8,1]$) and in each of these sections $x$ values were multiplied by 20,1,0.05 and 1, respectively (effectively contracting or expanding space). The function and its squashed form are shown in the top left and right panels (respectively) of \fig{1dadjust}. The function was evaluated at 100, equally spaced, points over the interval $[0,1]$. These points were then used as the sample (with no noise added), a \tprs\ was fitted, and predictions made at same points yielding the blue lines in the lower two plots. The left plot shows the predictions in the transformed space and the right in the original space. The green line was produced using the same procedure but with a \tprs\ with the adjusted penalty. As can be seen from the plot, the fit has been improved greatly, but how is the adjustment calculated?
 
 % 1d adjustment 2x2 diagram
 \begin{figure}
@@ -669,7 +669,7 @@ A Wilcoxon signed rank test, matching pairs between realisations showed that the
 
 Adding just one more dimension improves the MSE more than using the complicated adjustment terms described above. Perhaps such an approach deserves further attention. The plots in \fig{wt2-3d-proj} show that projecting into an additional dimension allows for further separation of both a large and small peninsulae, which should avoid leakage as well as perhaps help with the anisotropy (since in the extra dimension the far left peninsula has a greater width). 
 
-As would be expected, the method using the adjusted penalty had a lower EDF than the other methods aside from the vanilla thin plate splines (see figure \ref{big-wt2-edfs}), since it is penalizing more heavily. Interestingly the model using the 3-dimensional projection also has a low EDF, showing that there may be some utility in using such a method especially considering its relatively low MSE.
+As would be expected, the method using the adjusted penalty had a lower EDF than the other methods aside from the vanilla \tprss\ (see figure \ref{big-wt2-edfs}), since it is penalizing more heavily. Interestingly the model using the 3-dimensional projection also has a low EDF, showing that there may be some utility in using such a method especially considering its relatively low MSE.
 
 It seems that the penalty adjustments have not been useful for this domain. It is especially interesting to see that the addition of one dimension provides much better models than a penalty-based approach.
 
@@ -700,7 +700,7 @@ The Aral sea is located between Kazakhstan and Uzbekistan. It has been steadily 
 
 A \tprs, \mdsap\ and soap film were all fitted to the data. In summary the setup for each model was:
 \begin{enumerate}
-\item \emph{tprs}: thin plate spline with basis size 70.
+\item \emph{tprs}: \tprss with basis size 70.
 \item \emph{soap}: the soap film smoother using a 12 by 12 grid of knots (74 were inside) and a boundary smooth with basis size 49.
 \item \emph{mds}: \mdsap\ using thin plate regression splines with basis size 70.
 \end{enumerate}
