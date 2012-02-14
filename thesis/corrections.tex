@@ -1,0 +1,138 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath, amssymb, amsfonts, url, natbib, bm, rotating, multirow, graphicx, psfrag, appendix}
+\title{On smooth models for complex domains and distances: corrections}
+\author{David Lawrence Miller}
+
+
+
+\begin{document}
+
+\maketitle
+
+[[THERE ARE TKTKTKs to look at at the end!!!]]
+
+\textbf{Bold} indicates a query.
+
+Page numbers are updated ones.
+
+
+\section{From e-mail 30$^\text{th}$ January 2012.}
+
+The points raised in the e-mail have been addressed as follows:
+\begin{itemize}
+\item Corrections to ``minor mathematical and grammatical errors throughout the thesis'' according to the two lists sent are itemized in sections \ref{richard} and \ref{shaw}, below.
+\item Restructured thin plate and cubic spline explanation, section 1.1.3, pp. 30--36.
+\item Elaboration on soap film and added stronger links to chapter 2.
+\textit{Chapter 1 in general needs to be fleshed out, so as better to set the stage for the remainder of the thesis. For example, the soap film smoother is mentioned almost parenthetically at present, whereas it is adopted as a benchmark for the remainder of Part 1 of the thesis. We do not necessarily ask that all of the details are moved from Chapter 2 (where they appear at present) to Chapter 1: however, some intuition needs to be given, and the key role of this technique needs to be made clear. This would also provide the opportunity to motivate the inclusion of Chapter 2 much more convincingly: the chapter can be presented as a detailed introduction to, and illustration of, the use of the soap film smoother which then sets the stage for the subsequent development.}
+\item \textit{Throughout the thesis, we would like you to be clear about what software is being used: at present, it is not always clear whether you are picking up and running with “off-the shelf” software (which turned out to be the case for the Schwarz-Christoffel transform) or whether you had to write new code yourself. The work of others should always be duly acknowledged; and you shouldn?t be shy about advertising your own contributions! }
+\item \textit{In Chapter 4, the discussion of the “adjustment” {\cal L} needs to be clarified to make clear that it is heuristic: at present, it is presented as somehow deeper than this. As discussed during the oral examination, one possibility would be to start by considering the idea of using the Jacobian of the transformation, explaining why (as indicated by the candidate during the oral) this didn?t work, and then moving on to the “engineering” solution.}
+\item \textit{Chapter 7 needs to be restructured: at present the summary appears in Section 7.8, and is followed by two additional sections!}
+\end{itemize}
+
+
+\section{Minor corrections from Richard Chandler}
+\label{richard}
+
+\begin{enumerate}
+\item p. 26 Changed ``this data'' to ``these data''
+\item p. 26 Changed to talk about trend surface, rather than process.
+\item p. 28 ``Complementary''
+\item p. 29, 30, [[TKTKTK p66:13, p227:6 find at end!]] ``effect'' $\rightarrow$ ``affect''.
+\item p. 30, changed caption to say that the function begins to interpolate the data.
+\item p. 30, difference between thin plate splines and thin plate regression splines given from the outset.
+\item p. 38 ``datum'' $\rightarrow$ ``data''
+\item p. 40. now reads as requested.
+\item p. 41 ``PIRLS'' $\rightarrow$ ``IRLS'', included definition of $\mathcal{V}_g$ in the GAM case.
+\item Section 1.3 title ``practice'' $\rightarrow$ ``practise'', same p. 183
+\item p. 42 corrected two typos
+\item (1.10) corrected Brier definition to have the data in.
+\item p. 44 explained EDF--complexity link better.
+\item p. 45 corrected two typos. \textbf{qualification for the ``flawed'' nature of existing models is in the following text both in section 1.4.1 and the abstract}
+\item p. 49 corrected typo
+\item p. 50 unsure what I meant by ``leakage as a breakdown of stationarity'', I've elaborated further on how these methods work as an introduction to the MDS stuff that comes later on.
+\item p. 50 corrected typo
+\item \textit{Chapter 2}
+\end{enumerate}
+
+\section{Minor corrections from Simon Shaw}
+\label{shaw}
+
+\subsection{Chapter 1}
+\begin{itemize}
+\item p. 29 Added $\dots$ (twice).
+\item p. 29 Reference corrected.
+\item p. 30 Added $\dots$, removed emboldening.
+\item p. 32 Changed ``Say we put'' to jump straight into talking about the matrix.
+\item p. 34 ``practise'' $\rightarrow$``practice'', throughout.
+\item p. 34,35 B-spline definition now uses $x$ throughout. Summation corrected and $i$ terms removed.
+\item p. 35 Objective function corrected.
+\item p. 36 Removed self-reference.
+\item p. 36 Corrected definition of cubic splines.
+\item \textbf{p. 36 ``p36 $\beta_j$ and $\delta_j$ should be defined in relation to the form of $f(x)$''. Can you elaborate on what this means?}
+\item p. 36 [[TKTKTK 37?]]  Short discussion of cyclic splines added.
+\item p. 36 Changed definition to $\delta_j = \frac{\partial^2 f(x)}{\partial x^2}\vert_{x=x_j^*}$
+\item p. 37 Tensor product definition now has two different size bases.
+\item p. 38,39 defined $\mathbf{\hat{f}}$.
+\item p. 39 ``leasst'' $\rightarrow$ ``least''.
+\item p. 40 $\bm{\beta}^{[k]} \rightarrow \bm{\hat{\beta}}^{[k]}$
+\item p. 40 added $\dots$
+\item p. 41 smoothing parameter does need to be a vector, changed later references
+\item p. 41 corrected reference
+\item p. 42 added brackets to references
+\item p. 45 cleared up explanation of a complex boundary with an example
+\item p. 45 fixed typo
+\item p. 47 fixed typo
+\item p. 48 removed
+\item p. 49 fixed typo
+\end{itemize}
+
+\subsection{Chapter 2}
+\begin{itemize}
+\item 
+\item p. 49-50 Removed references to $\varphi$ at this point.
+\item 
+\item 
+\end{itemize}
+
+\subsection{Chapter 3}
+\begin{itemize}
+\item 
+\end{itemize}
+
+\subsection{Chapter 4}
+\begin{itemize}
+\item 
+\end{itemize}
+
+\subsection{Chapter 5}
+\begin{itemize}
+\item 
+\end{itemize}
+
+\subsection{Chapter 6}
+\begin{itemize}
+\item 
+\end{itemize}
+
+\subsection{Chapter 7}
+\begin{itemize}
+\item 
+\end{itemize}
+
+\subsection{Chapter 8}
+\begin{itemize}
+\item 
+\end{itemize}
+
+\section{Extras}
+
+\begin{itemize}
+\item p. 36, added limits to the penalty for cubic splines.
+\item p. 26 " (in the sense that they take the value one at one knots and zero at all others)" $\rightarrow$  (in the sense that they take the value one at one knot and zero at all others)
+\item p. 36 Noted that the $b_j$s that result are implicit.
+\item 
+\end{itemize}
+
+
+\end{document}

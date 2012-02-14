@@ -81,7 +81,7 @@ In order to ensure that estimation is unbiased several assumptions are made. The
 \section{The detection function}
 \label{intro-ds-detefct}
 
-One would expect that the probability of observing an animal would decrease as the distance from the observer increased (as in figures \ref{ds-lt-example}). This is the relationship captured by the detection function ($g(x)$) which is defined as (\cite[p. 10]{IDS}):
+One would expect that the probability of observing an object would decrease as the distance from the observer increased (as in figure \ref{ds-lt-example}). This is the relationship captured by the detection function ($g(x)$) which is defined as (\cite[p. 10]{IDS}):
 \begin{equation*}
 g(x)=\mathbb{P} (\text{object detected} | \text{object was at distance } x).
 \end{equation*}
@@ -101,10 +101,10 @@ First, as stated in the assumptions above, objects on the line (or point) are de
 
 This formulation leads to a class of highly flexible models. Data analysis usually consists of running models made up of various combinations of key functions and adjustment terms. Model parameters are found using maximum likelihood (see \secref{gtoD}). Model selection is performed via AIC (\cite[p. 69]{IDS}), that is:
 \begin{equation}
-\text{AIC} = -2 l + 2P,
+\text{AIC} = -2 \hat{l} + 2P,
 \label{DEFN-AIC}
 \end{equation}
-where $l$ is the value of the log-likelihood at the MLE and $P$ is the number of parameters in the model. Models with many parameters are penalized more heavily than those which are more parsimonious.
+where $\hat{l}$ is the value of the log-likelihood at the MLE and $P$ is the number of parameters in the model. Models with many parameters are penalized more heavily than those which are more parsimonious.
 
 \section{From $g(x)$ to $D$}
 \label{gtoD}
@@ -117,7 +117,7 @@ As mentioned above, $\mu$ is defined to be the distance from the lines for which
 \begin{figure}
 \centering
 \includegraphics{intro/figs/muexplanation.pdf}\\
-\caption{A detection function ($g(x)$) with the effective strip width ($\mu$) marked as well as the truncation distance ($w$). The shaded regions have equal area, this means that the area under the curve has the same size as the rectangle with base length $\mu$. Figure taken from \cite{IDS}.}
+\caption{A detection function $g(x)$ with the effective strip width $\mu$ marked as well as the truncation distance $w$. The shaded regions have equal area, this means that the area under the curve has the same size as the rectangle with base length $\mu$. Figure taken from \citeb{IDS}.}
 \label{ds-mu-explanation}
 \end{figure}
 
@@ -143,7 +143,7 @@ where $\bm{\theta}$ is a vector of all of the parameters of $g$.
 Now we have obtained an expression for the PDF, we can form a likelihood:
 \begin{align}
 \mathcal{L}(\bm{\theta}; \bm{x}) &= \prod_{i=1}^n f(x_i;\bm{\theta}),\notag \\
-&= \prod_{i=1}^n \frac{g(x;\bm{\theta})}{\mu},
+&= \prod_{i=1}^n \frac{g(x_i;\bm{\theta})}{\mu},
 \label{ds-lt-likelihood}
 \end{align}
 where $\bm{x}$ is an $n$-vector of the observed distances.
@@ -152,7 +152,7 @@ The log-likelihood can then be used as an objective function in an optimization 
 
 \subsection{Point transects} 
 
-For point transects, Instead of effective strip width, we look at effective radius. This effective radius, $\rho$ is defined in the same way as $\mu$: that there are as many objects missed up to $\rho$ as observed beyond. Related to the effective radius is the \textit{effective area of detection}, $\nu=\pi \rho^2$.
+For point transects, instead of effective strip width, we look at effective radius. This effective radius, $\rho$ is defined in the same way as $\mu$: that there are as many objects missed up to $\rho$ as observed beyond. Related to the effective radius is the \textit{effective area of detection}, $\nu=\pi \rho^2$.
 
 For line transects, an infinitesimal strip has area $l\text{d}x$ (the length of the line multiplied by an infinitesimal distance perpendicular to the line) and this value is independent of $x$. However, in the point transect case an incremental annulus depends on $r$ (the distance from the point), such an annulus has area $2\pi r \text{d}r$. So, the effective area of detection is therefore defined as:
 \begin{equation*}
@@ -190,6 +190,8 @@ As above, the log of this expression can then be used in an optimization procedu
 
 One can very easily think of the case in which one or more factors (as well as distance) affect the detectability of objects in the survey. A typical example might be the sex or size of the object or weather conditions at the time of observation. When available this information can be very useful in handling heterogeneity in the detectability (\cite[p. 88]{IDS}). Covariates are included in detection function models by using a link function. Figure \ref{ds-covarex} shows the effect of both continuous and factor covariates on a hazard-rate detection function.
 
+Non-covariate distance sampling, as in the previous section, is commonly referred to as CDS (conventional distance sampling) and covariate distance sampling as MCDS (multiple covariate distance sampling).
+
 % example covariates and how they effect the detection function
 \begin{figure}
 \centering
@@ -210,7 +212,7 @@ where $\sigma$ is referred to as the \textit{scale parameter}. Now, say that two
 \end{equation}
 The objective is now the estimation of $(\beta_0, \beta_1, \beta_2)$ (again, by maximum likelihood).
 
-More generally one can of the covariates $\mathbf{z}$ (a $K$-vector of $z_1, \dots, z_K$) related to the observation $x$. The for each observation, $i$, the corresponding covariates, $\mathbf{z}_i$, are stored as rows of the $n \cross K$ matrix $\mathbf{Z}$. The scale function is indexed by $i$ when covariates are used, so the more general form of (\ref{intro-ds-beaufort-covar-model}) is:
+More generally one can think of covariates $\mathbf{z}$ (a $K$-vector of $z_1, \dots, z_K$) related to the observation $x$. The for each observation, $i$, the corresponding covariates, $\mathbf{z}_i$, are stored as rows of the $n \cross K$ matrix $\mathbf{Z}$. The scale function is indexed by $i$ when covariates are used, so the more general form of (\ref{intro-ds-beaufort-covar-model}) is:
 \begin{equation}
 \sigma_{i} = \exp( \beta_{0} + \sum_{k=1}^K \beta_k z_{ik}).
 \label{intro-ds-covar-model}
@@ -231,7 +233,7 @@ p_i = \frac{\int_0^w g(x ; \sigma_{i}) \text{d}x}{w}.
 \end{equation*}
 For point transects, the probability of detection and effective area are given as:
 \begin{equation*}
-p_i =\frac{2}{w^2}\int_0^w r g(r; \sigma_i) \text{d}r, \qquad \nu_i = \int_0^w r g(r; \sigma_i) \text{d}r.
+p_i =\frac{2}{w^2}\int_0^w r g(r; \sigma_i) \text{d}r, \qquad \nu_i = 2\pi \int_0^w r g(r; \sigma_i) \text{d}r.
 \end{equation*}
 
 \subsection{Estimating population size}
@@ -244,7 +246,7 @@ For the covariate models this is:
 N = \sum_{i=1}^n \frac{1}{c_i p_i},
 \label{HT-ds-est}
 \end{equation}
-where $c_i$ is probability of the $i^\text{th}$ observation being within the sampled area, and $p_i$ is the probability of the $i\text{th}$ observation being detected given it is within the sampled area (\cite[p. 38]{ADS}). For the analyses presented here it is assumed that the probability of being in the sampled area is constant across the observations ($c_i=c$) and that:
+where $c_i$ is the \textit{coverage probability} (the probability of an individual lying within the surveyed area), and $p_i$ is the probability of the $i\text{th}$ observation being detected given it is within the sampled area (\cite[p. 7 and 38]{ADS}). For the analyses presented here it is assumed that the probability of being in the sampled area is constant across the observations ($c_i=c$) and that:
 \begin{equation*}
 c=\frac{2wL}{A},
 \end{equation*}
@@ -279,7 +281,7 @@ Distance sampling is unlike many statistical methods, in that the quantity which
 
 Distance sampling benefits from a relatively simple field procedure, a wealth of literature and easy to use software for analysis. Distance sampling has also been adapted for many different scenarios, including analysing data which was not initially part of a survey (incidental data).
 
-Non-covariate distance sampling, as described above, is commonly referred to as CDS (conventional distance sampling) and covariate distance sampling as MCDS (multiple covariate distance sampling. Other variants exist, for example mark-recapture distance sampling (MRDS, \cite{mrdspaper}) and spatial distance sampling models (\cite[chapter 4]{ADS}), although these are not addressed here.
+Other variants of distance sampling exist, for example mark-recapture distance sampling (MRDS, \cite{mrdspaper}) and spatial distance sampling models (\cite[chapter 4]{ADS}), although these are not addressed here.
 
 \section{Monotonicity}
 \label{intro-ds-mono}
@@ -292,7 +294,7 @@ Although constrained optimization is appealing, it is obviously always preferabl
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{mix/figs/figure1.pdf}
-\caption{Two examples of detection functions which are not monotone. The first first panel is data from humpback whale (reproduced from data in \citeb{williams}), a half-normal detection function with cosine adjustments provided the best fit to the data, even with constraints in place, the detection function is non-monotonic. The second and third panels are plots for the long-finned pilot whale data taken from \cite{pike}. In the second panel the detection function is averaged over the covariate values and the third shows marginal detection function for quantiles of the Beaufort sea sate covariate (the model was a half-normal detection function), showing that the non-monotonicity gets worse at higher levels of the covariate.}
+\caption{Two examples of detection functions which are not monotone. The first panel is data from humpback whale (reproduced from data in \citeb{williams}), a half-normal detection function with cosine adjustments provided the best fit to the data, even with constraints in place, the detection function is non-monotonic. The second and third panels are plots for the long-finned pilot whale data taken from \cite{pike}. In the second panel the detection function is averaged over the covariate values and the third shows marginal detection function for quantiles of the Beaufort sea sate covariate (the model was a half-normal detection function), showing that the non-monotonicity gets worse at higher levels of the covariate.}
 \label{fig1}
 \end{figure}
 
@@ -309,10 +311,4 @@ Mixture models offer the potential for flexible modelling of the detection funct
 Finally, the approach is also interesting for its own sake. There is no current literature on the use of mixture models as detection functions for distance sampling. Many detection function forms have been proposed (\cite{buckland92} and  \cite{gammadetfct}), each having their own merits and pitfalls. Therefore, there may be useful and unexplored properties of using a mixture model for the detection function that have not been previously considered.
 
 A mixture model approach to distance sampling detection functions is developed further in the next chapter.
-
-\section{Acknowledgement}
-
-This part of the thesis is based on the paper ``Mixture models for distance sampling detection functions'' by the author and Len Thomas of the Centre for Ecological and Environmental Modelling at the University of St Andrews and is in preparation to submit to \textit{Biometrics}. A mixture model approach to line transect detection functions without covariates was developed as part of the author's MMath thesis at the University of St Andrews under the supervision of Len Thomas. The material detailed here is a significant development from the methods developed in that thesis. 
-
-The author would like to thank David Borchers in particular for the suggestion of the parametrization in \secref{ds-mixpar}.
 

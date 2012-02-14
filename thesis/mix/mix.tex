@@ -5,7 +5,7 @@
 
  As was shown in chapter \ref{intro-DS}, distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating the size and/or density of biological populations. The most common approach, referred to as conventional distance sampling (CDS), is based on methods developed by \citeb{buckland92}. A commonly used extension to this methodology allows for the probability of detection to vary with covariates as well as just distance from the observer (multiple covariate distance sampling, MCDS, \cite[chapter 3]{ADS}).
 
-Estimating the detection function is key to distance sampling. Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fit to data, in particular non-monotone detection functions (as seen in \secref{intro-ds-mono}), in particular in figure \ref{fig1}.
+Estimating the detection function is key to distance sampling. Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fitted to the data, in particular non-monotone detection functions (as seen in \secref{intro-ds-mono}), in particular in figure \ref{fig1}.
 
 In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section the models are described and following from that \secref{s:optimization} gives details of the optimization procedure and parametrization. Sections \ref{mmds-sims} and \ref{s:data} show the results of a simulation study and then analysis of real data, respectively. The final section gives some concluding remarks.
 
@@ -55,7 +55,7 @@ For line transects, given an $n$-vector of perpendicular distances $\mathbf{x}=\
 \end{align}
 where $\mu_i$, the effective strip width for an observation with the same covariates as observation $i$, is given by substituting (\ref{mix-detfct}) into (\ref{intro-ds-mu-covar}):
 \begin{align*}
-\mu_{i} &= \int_0^w  g(x,\bm{Z}; \bm{\theta}) \text{d}x,\\
+\mu_{i} &= \int_0^w  g(x,\bm{z}_i; \bm{\theta}) \text{d}x,\\
 & =  \int_0^w  \sum_{j=1}^J \phi_j g_j(x,\bm{z}_i; \bm{\theta}_j) \text{d}x,\\
 & = \sum_{j=1}^J \phi_j \int_0^w  g_j(x,\bm{z}_i; \bm{\theta}_j) \text{d}x.
 \end{align*}
@@ -70,7 +70,7 @@ For point transects, with radial distances $\mathbf{r}=\left (r_1,\ldots,r_n \ri
 \end{align}
 where the effective area of detection for an observation with covariate vector $\mathbf{z}_i$, $\nu_i$ is defined as:
 \begin{align*}
-\nu_i &= 2\pi \int_0^w  r g(r,\bm{Z}; \bm{\theta}) \text{d}r,\\
+\nu_i &= 2\pi \int_0^w  r g(r,\bm{z}_i; \bm{\theta}) \text{d}r,\\
 & = 2\pi  \int_0^w  \sum_{j=1}^J \phi_j r g_j(r,\bm{z}_i; \bm{\theta}_j) \text{d}r,\\
 & = 2\pi \sum_{j=1}^J \phi_j \int_0^w  r g_j(r,\bm{z}_i; \bm{\theta}_j) \text{d}r.
 \end{align*}
@@ -83,11 +83,11 @@ Parameters are estimated using maximum likelihood. In practice maximization is p
 
 As in \secref{intro-ds-pop-size}, estimates of population size can be found from a Horvitz-Thompson-like estimator, all that is needed is the $p_i$s, then (\ref{HT-ds-est}) can be used. For line transects the $p_i$s are given by:
 \begin{equation*}
-p_i = \frac{1}{w} \sum_{j=1}^J \phi_j \int_0^w  g_j(x,\mathbf{Z}; \bm{\theta}_j) \text{d}x,
+p_i = \frac{1}{w} \sum_{j=1}^J \phi_j \int_0^w  g_j(x,\mathbf{z}_i; \bm{\theta}_j) \text{d}x,
 \end{equation*}
 and for point transects:
 \begin{equation*}
-p_i = \frac{2\pi}{w^2} \sum_{j=1}^J \phi_j \int_0^w  r g_j(r,\mathbf{Z}; \bm{\theta}_j) \text{d}r.
+p_i = \frac{2\pi}{w^2} \sum_{j=1}^J \phi_j \int_0^w  r g_j(r,\mathbf{z}_i; \bm{\theta}_j) \text{d}r.
 \end{equation*}
 Again, average detection probability for an animal within the covered region, $P_a=n/N$ can be used as a summary statistic.
 
@@ -124,7 +124,7 @@ where $F$ is any continuous CDF on $(0,\infty]$. Exponentiation ensures that $e^
 
 To transform from the $\phi_j$s back to the $\alpha_p$s by simply re-arranging the above expression.
 \begin{equation*}
-\alpha_p = \log_e \Big(F^{-1}\Big(\phi_j + F(\sum_{p=1}^{j-1} e^{\alpha_p})\Big) - \sum_{p=1}^{j-1} e^{\alpha_p}\Big).
+\phi_j = \log_e \Big(F^{-1}\Big(\phi_j + F(\sum_{p=1}^{j-1} e^{\alpha_p})\Big) - \sum_{p=1}^{j-1} e^{\alpha_p}\Big).
 \end{equation*}
 Note that only as many $\alpha_p$s are needed as $\phi_j$s, so no additional parameters are required.
 
@@ -332,5 +332,12 @@ where $\varphi(\kappa)$ is some function which controls the mixing of $g_\kappa$
 Mixture model detection functions present an appealing alternative to the adjustment term approach of \citeb{buckland92} that are currently popular in the distance sampling literature. The nested nature of the models is much more elegant than adjustment terms, and using only half-normal functions as the components of the mixtures makes model choice an easier process for the investigator. As has been seen in the analysis of the long-finned pilot whales in figure \ref{fig1}, combining covariates and adjustment terms in the current MCDS formulation does not yield monotonic detection functions in the current setup. Mixture model detection functions present a way of having both flexible functional forms and including parametric effects without these problems.
 
 In all, the methodology set out here presents a useful addition to the family of possible functions that can be used for distance sampling detection functions. The fact that the method includes the standard 1-point half-normal model as a sub-case only makes it more appealing to practitioners. Additionally, its seamless integration into the current framework (allowing goodness of fit and other statistics to be calculated relatively easily) makes it easy to include it in analyses. Hopefully, because of these factors, mixture model detection functions will be seen as one of the standard tools for those analysing distance sampling data.
+
+\section{Acknowledgement}
+
+This chapter of the thesis is based on the paper ``Mixture models for distance sampling detection functions'' by the author and Len Thomas of the Centre for Ecological and Environmental Modelling at the University of St Andrews and is in preparation to submit to \textit{Biometrics}. A mixture model approach to line transect detection functions without covariates was developed as part of the author's MMath thesis at the University of St Andrews under the supervision of Len Thomas. The material detailed here is a significant development from the methods developed in that thesis. 
+
+The author would like to thank David Borchers in particular for the suggestion of the parametrization in \secref{ds-mixpar}.
+
 
 
