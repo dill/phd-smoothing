@@ -93,6 +93,7 @@ So far all that has been said about the form of $f$ is that it can be decomposed
 \subsubsection{Thin plate regression splines}
 \label{GAMtprs}
 \label{GAMtprspenalty}
+\label{cor-tprs}
 
 This section begins by discussing \textit{thin plate splines} before going on to describe a computationally efficient version of the basis (\textit{thin plate regression splines}) which will be used throughout the thesis. Thin plate splines are particularly useful in a spatial setting because they have a property known as \textit{isotropy}: all directions have a common smoothing parameter so wigglyness in the $x_1$ direction has the same weight in the penalty as in the $x_2$ direction (and so on through higher dimensions). This property is usually appropriate in a spatial setting, since there is nothing special about one geographical coordinate over another when it comes to the smoothness of the function to be fitted.
 
@@ -192,6 +193,7 @@ if squared second differences are used (this could be a higher order difference,
 
 \subsubsection{Cubic splines}
 \label{intro-cubic}
+\label{cor-cubic}
 
 \textit{Cubic splines} are another a univariate basis and, like P-splines they require the specification of knots. Cubic splines are made up of sections of cubic polynomials which are continuous (up to second derivatives) at the joins. The objective function for a cubic spline is:
 \begin{equation*}
@@ -461,6 +463,7 @@ Chapter \ref{chap-it} gives the technical details relating to the construction o
 
 \item An alternative approach to treating the boundary as something special is to transform the space in which the points lie to a different domain which is more suitable for smoothing. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe into a long strip and then smooth on that domain.
 
+\label{cor-2s2}
 Indeed, \citeb{eilerstalk} proposed using the \textit{\sch\ transform} for this very purpose (the author independently came to the idea in 2008). The basic idea is to find a function that takes points in the domain the data lie in and maps them to another domain in which smoothing is easier. Using the \sch\ transform for smoothing will be investigated in chapter \ref{chap-sc}.
 
 Outside of the smoothing spline and GAM literature, transformation-based methods have also been suggested, in particular, when using a kriging approach (see \citeb[pp. 425-430]{MASS} for a concise introduction, \citeb{schabenberger} or \citeb{diggle} for a thorough treatment). Kriging consists of modelling the spatial correlation between points via the \textit{semivariogram} and a spatial trend via a mean function (similar to the linear predictor in the smoothing case, although there are flavours of kriging where the mean is considered constant and/or known). Semivariogram models assume that the correlation between points is related to the distance between the points but not their position (this is known as \textit{stationarity}, and comes in varying degrees, \citeb[pp. 42-44]{schabenberger}). When the boundary of the domain has a complex shape, the correlation between points is likely to vary with distance within the domain rather than the Euclidean distance between points. Simply substituting within-area distances into the semivariogram will lead to an invalid semivariogram (\secref{gds-krig}; \cite{curriero})

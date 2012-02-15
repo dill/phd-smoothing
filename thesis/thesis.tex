@@ -29,6 +29,9 @@
 \newcommand{\citeb}{\citet}
 \renewcommand{\cite}{\citealp}
 
+% for corrections, get it to put p. infront
+\newcommand{\pref}{p. \pageref}
+
 % references
 % figure reference command
 \newcommand{\fig}[1]{figure \ref{#1}}
@@ -190,5 +193,8 @@ On a personal note, Elle Dodd's continued moral support and encouragement (as we
 
 \bibliographystyle{chicago}
 \bibliography{bib-hell}
+
+\chapter*{Corrections}
+\input{corrections.tex}
 
 \end{document}
