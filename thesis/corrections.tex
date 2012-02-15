@@ -4,7 +4,7 @@
 
 Page numbers are updated ones.
 
-Where multiple pages have been changed, the first is referenced below.
+Where multiple contiguous pages have been changed, only the first is referenced below.
 
 
 \section{From e-mail 30$^\text{th}$ January 2012.}
@@ -15,7 +15,12 @@ The points raised in the e-mail have been addressed as follows:
 \item Restructured thin plate (\pref{cor-tprs}) and cubic spline (\pref{cor-cubic}) explanation.
 \item Elaboration on soap film and added stronger links to chapter 2.
 \textit{Chapter 1 in general needs to be fleshed out, so as better to set the stage for the remainder of the thesis. For example, the soap film smoother is mentioned almost parenthetically at present, whereas it is adopted as a benchmark for the remainder of Part 1 of the thesis. We do not necessarily ask that all of the details are moved from Chapter 2 (where they appear at present) to Chapter 1: however, some intuition needs to be given, and the key role of this technique needs to be made clear. This would also provide the opportunity to motivate the inclusion of Chapter 2 much more convincingly: the chapter can be presented as a detailed introduction to, and illustration of, the use of the soap film smoother which then sets the stage for the subsequent development.}
-\item \textit{Throughout the thesis, we would like you to be clear about what software is being used: at present, it is not always clear whether you are picking up and running with “off-the shelf” software (which turned out to be the case for the Schwarz-Christoffel transform) or whether you had to write new code yourself. The work of others should always be duly acknowledged; and you shouldn?t be shy about advertising your own contributions! }
+\item 
+\begin{itemize}
+	\item \pref{cor-r22} explained that \texttt{soap} and \texttt{mgcv} were used.
+	\item \pref{cor-soft1} clarified that all the models were fitted using existing libraries.
+\end{itemize}
+\textit{Throughout the thesis, we would like you to be clear about what software is being used: at present, it is not always clear whether you are picking up and running with “off-the shelf” software (which turned out to be the case for the Schwarz-Christoffel transform) or whether you had to write new code yourself. The work of others should always be duly acknowledged; and you shouldn?t be shy about advertising your own contributions! }
 \item \textit{In Chapter 4, the discussion of the “adjustment” {\cal L} needs to be clarified to make clear that it is heuristic: at present, it is presented as somehow deeper than this. As discussed during the oral examination, one possibility would be to start by considering the idea of using the Jacobian of the transformation, explaining why (as indicated by the candidate during the oral) this didn?t work, and then moving on to the “engineering” solution.}
 \item \textit{Chapter 7 needs to be restructured: at present the summary appears in Section 7.8, and is followed by two additional sections!}
 \end{itemize}
@@ -42,7 +47,27 @@ The points raised in the e-mail have been addressed as follows:
 \item p. 49 corrected typo
 \item p. 50 unsure what I meant by ``leakage as a breakdown of stationarity'', I've elaborated further on how these methods work as an introduction to the MDS stuff that comes later on.
 \item p. 50 corrected typo
-\item \textit{Chapter 2}
+\item \textit{Chapter 2} \pref{cor-r18} corrected typo.
+\item \pref{cor-r19} Added comment about missing data, changed plot to highlight those cells with no data to be blue.
+\item \pref{cor-r20} Expanded section on Tweedie distribution.
+\item \pref{cor-r21} Explained why lat/long lead to anisotropy.
+\item \pref{cor-r22} Said that \texttt{soap} and \texttt{mgcv} were used to construct the model.
+\item \pref{cor-r23} Added an extra line explaining that $\lambda_\text{int}$ and $\lambda_\text{bnd}$ are actually estimated rather than $\lambda_\text{space}$. I'm inclined to leave (2.3) as having only $\lambda_\text{space}$ in as it's true in general for tensor products and it makes the explanation of the tensor product simpler. What do you think?
+\item \pref{cor-r24} Added assumptions for posterior.
+\item \pref{cor-r25} Added Richard's paper to the bibliography.
+\item \pref{cor-r26} Added figure showing spatial groups and changed caption accordingly. Caption also claimed that the grid was 10x10, it was 5x5. Added comment on the line in the scale-location plot, which does indeed correspond to zeros in the data, coloured these data grey.
+\item \pref{cor-r27} Added comment about how tight the intervals in figure 2-5 are.
+\item \pref{cor-r28}
+\item \textit{Chapter 3} \pref{cor-r29}
+\begin{itemize}
+	\item \pref{cor-r29-1} Tidied up and reordered these paragraphs so that we know we're talking about complex numbers before we start.
+	\item \pref{cor-r29-2}
+	\item \pref{cor-r29-3} ``can be computed''
+	\item \pref{cor-r29-4}
+	\item \pref{cor-r29-5}
+	\item \pref{cor-r29-6} corrected to ``known''.
+\end{itemize}
+\item \textit{Chapter 4} \pref{cor-r30}
 \end{enumerate}
 
 \section{Minor corrections from Simon Shaw}
@@ -79,15 +104,26 @@ The points raised in the e-mail have been addressed as follows:
 
 \subsection{Chapter 2}
 \begin{itemize}
-\item 
-\item \pref{cor-2s2} Removed references to $\varphi$ at this point.
-\item 
-\item 
+\item \pref{cor-2s1} Corrected.
+\item \pref{cor-2s2} Removed.
+\item \pref{cor-2s3} \Secref{mds-faster} deals with ensuring that the model we're using is fast enough not to cause frustration to users. Should I reference this here?
 \end{itemize}
 
 \subsection{Chapter 3}
 \begin{itemize}
-\item 
+\item \pref{cor-3s1}
+\item \pref{cor-3s2} Removed references to $\varphi$ at this point.
+\item \pref{cor-3s3}
+\item \pref{cor-3s4}
+\item \pref{cor-3s5} Cleared up caption and figure. Corrected (and added) line label. Caption: $w_6^* \rightarrow w_6$. 
+\item \pref{cor-3s6} Corrected.
+\item \pref{cor-3s7} Cleared up caption and figure. Changed line label. ``upper half-plane'' $\rightarrow$ ``unit disc''
+\item \pref{cor-3s8}
+\item \pref{cor-3s9} Corrected angles in diagram. Increased shading.
+\item \pref{cor-3s10}
+\item \pref{cor-3s11} Final $\varphi$ should be $\varphi^{-1}$.
+\item \pref{cor-3s12} Corrected ``may'' $\rightarrow $ ``many''.
+
 \end{itemize}
 
 \subsection{Chapter 4}
@@ -121,6 +157,6 @@ The points raised in the e-mail have been addressed as follows:
 \item p. 36, added limits to the penalty for cubic splines.
 \item p. 26 " (in the sense that they take the value one at one knots and zero at all others)" $\rightarrow$  (in the sense that they take the value one at one knot and zero at all others)
 \item p. 36 Noted that the $b_j$s that result are implicit.
-\item 
+\item Chapter 3 ``disk'' $\rightarrow$ ``disc''.
 \end{itemize}
 

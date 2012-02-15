@@ -16,21 +16,21 @@ Given some region that it is difficult to smooth over, one approach is to transf
 \label{simpledia}
 \end{figure}
 
-The \sch\ mapping takes a specified shape and maps it to an arbitrary polygon. The most common domains to transform to are: (i) the upper half-plane, (ii) a rectangle and (iii) the unit disk. This is achieved in the upper half-plane case by taking the vertices of the polygon and mapping them to points on the real line (see \fig{reallinedia}). This can be thought of as ``unwrapping'' the polygon onto the real line. For the unit disk case, points on the circle bounding the unit disk map to vertices on the polygon (see \fig{unitdiskdia}). The rectangular case is somewhat similar to the unit disk in that extra points are added to the boundary. One the mapping has been performed, those points lying inside the polygon are also moved around, creating a new (non-uniform) distribution of space. These three domains are discussed in more detail in \secref{schparprob}.
+The \sch\ mapping takes a specified shape and maps it to an arbitrary polygon\label{cor-3s6}. The most common domains to transform to are: (i) the upper half-plane, (ii) a rectangle and (iii) the unit disc. This is achieved in the upper half-plane case by taking the vertices of the polygon and mapping them to points on the real line (see \fig{reallinedia}). This can be thought of as ``unwrapping'' the polygon onto the real line. For the unit disc case, points on the circle bounding the unit disc map to vertices on the polygon (see \fig{unitdiskdia}). The rectangular case is somewhat similar to the unit disc in that extra points are added to the boundary. One the mapping has been performed, those points lying inside the polygon are also moved around, creating a new (non-uniform) distribution of space. These three domains are discussed in more detail in \secref{schparprob}.
 
 % Diagram showing upper half plane to polygon
 \begin{figure} [t]
 \centering
 \includegraphics[scale=0.6]{sc/figs/reallinedia.pdf}
-\caption{A mapping of the upper half-plane to the polygon. The vertices ($w_k$) are the result of applying $\varphi$ to the points on the real line ($w^*_k$). The boundary of the polygon is mapped to the real line. Note that the final vertex, $w^*_6$ is mapped to the point $\infty$ on the real line.}
+\caption{\label{cor-3s5}An example of mapping and arbitrary point from the upper half-plane to a point on a polygon (solid line). Dashed lines show the inverse map of the vertices of the polygon ($w_k$) to the prevertices ($w^*_k$) via $\varphi^{-1}$ for $k=1$ and $k=6$. Note that $w_6$ is mapped to $\infty$ on the real line.}
 \label{reallinedia}
 \end{figure}
 
-% Diagram showing unit disk to polygon
+% Diagram showing unit disc to polygon
 \begin{figure} [t]
 \centering
 \includegraphics[scale=0.6]{sc/figs/unitdiskdia.pdf}
-\caption{A mapping of the upper half-plane to the polygon. The vertices ($w_k$) are the result of applying $\varphi$ to the points on the real line ($w^*_k$). The boundary of the polygon is mapped to the boundary of the unit disk.}
+\caption{\label{cor-3s7}An example of mapping an arbitrary point on the unit disc to a point on a polygon (solid line). The dashed line shows the inverse map of one of the vertices of the polygon ($w_6$) to its corresponding prevertex ($w^*_6$) via $\varphi^{-1}$.}
 \label{unitdiskdia}
 \end{figure}
 
@@ -67,15 +67,14 @@ The external angle, $\theta_k\pi$, is given by $(1-\alpha_k)\pi$ (see \fig{angle
 \begin{figure} [t]
 \centering
 \includegraphics[scale=0.6]{sc/figs/anglediagram.pdf}
-\caption{The internal angle $\alpha_k$ is associated with the vertex $w_k$. The external angle is $\theta_k$. Shading indicates the inside of the polygon.}
+\caption{\label{cor-3s9}The internal angle $\pi\alpha_k$ is associated with the vertex $w_k$. The external angle is $\pi\theta_k$. Shading indicates the inside of the polygon.}
 \label{anglediagram}
 \end{figure}
 
-The boundary of the polygon is denoted by $\Gamma$. Two (complex) domains have already been mentioned: $W$ and $W^*$, denoting the original domain (inside $\Gamma$) and the transformed domain (of the plane, unit disk or rectangle), respectively. 
+\label{cor-r29-1}
+Both points in the domain and the vertices of the polygon are represented as complex numbers (e.g. for some point $w$,  $w=x_1+ix_2$).The boundary of the polygon is denoted by $\Gamma$. Two domains have already been mentioned: $W$ and $W^*$, denoting the original domain (inside $\Gamma$) and the transformed domain (for example, the plane, unit disc or rectangle), respectively. The vertices of $\Gamma$ are denoted as $w_k$ and the vertices of the transformed boundary are denoted as $w^*_k$ (the \emph{prevertices}). In general, a point in the polygon's original domain will be denoted as $w$ and in the transformed domain as $w^*$. 
 
-Vertices on the polygon are denoted as $w_k$ and those on the transformed boundary are denoted as $w^*_k$ (the \emph{prevertices}). In general, a point in the polygon's original domain is denoted as $w$ and in the transformed domain as $w^*$. Both points in the domain and the vertices of the polygon are represented as complex numbers (e.g. for a point $w=x_1+ix_2$).
-
-The function $\varphi$ is a mapping from the transformed domain to the polygon (i.e. $\varphi:W^* \mapsto W$). The inverse mapping function, $\varphi^{-1}$, is used to take points from the polygon to one of: the unit disk, rectangle or half-plane ($\varphi:W \mapsto W^*$).  See \fig{mappingdia}.
+The function $\varphi$ is a mapping from the transformed domain to the polygon (i.e. $\varphi:W^* \mapsto W$). The inverse mapping function, $\varphi^{-1}$, is used to take points from the polygon to one of: the unit disc, rectangle or half-plane (\label{cor-3s11}$\varphi^{-1}:W \mapsto W^*$).  See \fig{mappingdia}.
 
 % Mapping diagram from my whiteboard
 \begin{figure} [t]
@@ -87,7 +86,7 @@ The function $\varphi$ is a mapping from the transformed domain to the polygon (
 
 \subsection{\sch\ Mapping}
 \label{schparprob}
-This section looks at the mathematical formulation for the upper half-plane, unit disk and rectangle. There are many possible domains that can be mapped to (see \cite[section 4]{driscoll} for many examples), however the three discussed here are either canonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two).
+This section looks at the mathematical formulation for the upper half-plane, unit disc and rectangle. There are many possible domains that can be mapped to (see \cite[section 4]{driscoll} for \label{cor-3s12}many examples), however the three discussed here are either canonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two).
 
 For the purposes of smoothing we are interested in the function $\varphi^{-1}$ (i.e. the function that goes from the domain in which the data were collected to the transformed one), $\varphi$ must be calculated before its inverse can be found. In the literature $\varphi$ is referred to as the \emph{forwards map} and $\varphi^{-1}$ as the \emph{backwards map}.
 
@@ -104,9 +103,9 @@ Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been cal
 
 Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into the upper half-plane is rather odd from a smoothing perspective. Given two adjacent points near $w_K$, their spacing on the upper half-plane is huge (since $w_K$ is mapped to $\infty$) in comparison to two adjacent points near the other vertices. For this reason mapping to the upper half-plane is not pursued further here.
 
-\subsubsection{Unit disk}
+\subsubsection{Unit disc}
 
-The formula for the unit disk looks very similar to that for the upper half-plane but the product now runs over all $K$ prevertices. The integrand is simply a constant multiple of the upper half-plane case (see also \cite[p. 12]{driscoll}).
+The formula for the unit disc looks very similar to that for the upper half-plane but the product now runs over all $K$ prevertices. The integrand is simply a constant multiple of the upper half-plane case (see also \cite[p. 12]{driscoll}).
 \begin{equation}
 \label{unitscmap}
 \varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K} \left (1 - \frac{\zeta}{w^*_k} \right )^{\alpha_k-1} d\zeta.
@@ -126,7 +125,7 @@ where $w^*$ is some point in the rectangle and $\gamma$ specifies where the corn
 \subsection{Computation of the \sch\ mapping}
 \label{sc-mapping-problem}
 
-To compute the map, the prevertices, $w^*_k$ must be found. The complex constants $A$ and $C$ control scaling, translation, and rotation and can be computed once the prevertices are found. The $w^*_k$ are found by iteratively by mapping those points back to the polygon to give an approximation to $\Gamma$, $\Gamma^\prime$. To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ the following set of equations are used:
+To compute the map, the prevertices, $w^*_k$ must be found. The complex constants $A$ and $C$ control scaling, translation, and rotation and can \label{cor-r29-3}be computed once the prevertices are found. The $w^*_k$ are found by iteratively by mapping those points back to the polygon to give an approximation to $\Gamma$, $\Gamma^\prime$. To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ the following set of equations are used:
 \begin{equation}
 \label{optimizeme}
 F_k = \frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} \qquad \text{for } k=3,\dots,K-1.
@@ -139,13 +138,13 @@ Note that \eqn{optimizeme} does not include the vertex $w_K$. By theorem 3.1 of 
 
 Also note that \eqn{optimizeme} does not include $w_1$ or $w_2$ in the numerator on the right hand side. This is due to all vertices (and hence $w_1$ and $w_2$) being rescaled, rotated, and translated by the complex constants, $A$ and $C$, in the \sch\ formula.
 
-In practice the values of $w^*_K, w^*_{K-1}$ and $w^*_{K-2}$ are fixed as $w^*_K=1$, $w^*_{K-1}=-i$ and $w^*_{K-2}=-1$ in the unit disk case (\cite[p. 24]{driscoll}). For the rectangle case, the vertices of $\Gamma$ which will map to which vertices of the rectangle must be specified.
+In practice the values of $w^*_K, w^*_{K-1}$ and $w^*_{K-2}$ are fixed as $w^*_K=1$, $w^*_{K-1}=-i$ and $w^*_{K-2}=-1$ in the unit disc case (\cite[p. 24]{driscoll}). For the rectangle case, the vertices of $\Gamma$ which will map to which vertices of the rectangle must be specified.
 
 The scaling factor, $C$, (from \eqn{unitscmap}) may be calculated using:
 \begin{equation}
 C=\frac{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert}{\vert w_2 - w_1\vert}.
 \end{equation}
-If $C$ is not calculated then it is known that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense) and so the mapping is correct up to scaling and rotation. 
+If $C$ is not calculated then it is known\label{cor-r29-6} that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense) and so the mapping is correct up to scaling and rotation. 
 
 $A$ is the image of the base point of the integration and is usually written as $w_0$. For computational reasons this is usually the prevertex nearest to the point $w^*$ which is to be mapped in \eqn{unitscmap}  (\cite[p. 27]{driscoll}).
 
@@ -167,7 +166,7 @@ F_k=\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w
 \item Return values for $w^*_1,\dots,w^*_K$, $C$ and $A$.
 \end{enumerate}
 
-Starting values for the algorithm are evenly spaced vertices around the edge of the disk/rectangle or, in the case of the plane, along the real line. Not including those vertices specified as being fixed, above.
+Starting values for the algorithm are evenly spaced vertices around the edge of the disc/rectangle or, in the case of the plane, along the real line. Not including those vertices specified as being fixed, above.
 
 \subsection{Moving between $W$ and $W^*$}
 
@@ -186,14 +185,14 @@ In practice a combination of these methods are used. Solving \eqn{scivp} approxi
 
 The only problem with this is that the path from $w_0$ to the point to map, $w$, must lie entirely inside the polygon. Whether this is true is not known, since after the mapping has been computed the only known points are the vertices (at which the IVP is singular). So, to combat this, all points on the path are checked sequentially. This computation, although inelegant, is fast compared to the IVP/Newton iterations.
 
-An example of using the backwards map to find the transformed co-ordinates from a square to the unit disk is given in \fig{squaredomain}. An irregular nonagon is given in \fig{irregdomain}. Note that in these two diagrams the CRDT method described in \secref{sc-crdt} was used rather than the method given in \secref{sc-mapping-problem} where the three vertices are fixed on the circle.
+An example of using the backwards map to find the transformed co-ordinates from a square to the unit disc is given in \fig{squaredomain}. An irregular nonagon is given in \fig{irregdomain}. Note that in these two diagrams the CRDT method described in \secref{sc-crdt} was used rather than the method given in \secref{sc-mapping-problem} where the three vertices are fixed on the circle.
 
 
 % Square domain mapping diagram
 \begin{figure}[t]
 \centering
 \includegraphics[scale=0.5]{sc/figs/squaredomain.pdf}
-\caption{A regular grid of points over the square region (left). The right panel shows the mapping of these points under the \sch\ transformation to the unit disk using the CRDT method described in \secref{sc-crdt}.}
+\caption{A regular grid of points over the square region (left). The right panel shows the mapping of these points under the \sch\ transformation to the unit disc using the CRDT method described in \secref{sc-crdt}.}
 \label{squaredomain}
 \end{figure}
 
@@ -201,7 +200,7 @@ An example of using the backwards map to find the transformed co-ordinates from 
 \begin{figure}[t]
 \centering
 \includegraphics[scale=0.5]{sc/figs/irregulardomain.pdf}
-\caption{A regular grid of points over region bound by a irregular nonagon (left). The right panel shows the mapping of these points under the \sch\ tranformation to the unit disk using the CRDT method described in \secref{sc-crdt}}
+\caption{A regular grid of points over region bound by a irregular nonagon (left). The right panel shows the mapping of these points under the \sch\ tranformation to the unit disc using the CRDT method described in \secref{sc-crdt}}
 \label{irregdomain}
 \end{figure}
 
@@ -490,11 +489,11 @@ In the horseshoe simulations the shape of the domain was simplified by using a b
 \section{Conclusions}
 \label{sc-conclusions}
 
-Domain morphing-type techniques undeniably show some promise when it comes to the problem of smoothing over complex regions. Yet the \sch\ mapping is not the correct transformation to use for  all domains. What has been seen here is that the mapping is too prescriptive in its morphing of the domain. There is no reason to think that a particular domain should always be transformed to, it should just be a convenient shape to smooth over. The restriction to only use the unit disk, rectangle, etc. constrains the technique, causing phenomena which are as bad (if not worse) than the leakage we initially sought to avoid.
+Domain morphing-type techniques undeniably show some promise when it comes to the problem of smoothing over complex regions. Yet the \sch\ mapping is not the correct transformation to use for  all domains. What has been seen here is that the mapping is too prescriptive in its morphing of the domain. There is no reason to think that a particular domain should always be transformed to, it should just be a convenient shape to smooth over. The restriction to only use the unit disc, rectangle, etc. constrains the technique, causing phenomena which are as bad (if not worse) than the leakage we initially sought to avoid.
 
 Crowding (in a technical sense) can be avoided by using the CRDT algorithm, but the squashing together of the points caused by using the \sch\ transform causes huge problems when smoothing. This fundamental problem of mapping between domains is exacerbated by using a restricted set of shapes to map into. It would be preferable to minimize the distortion to the distribution of points in space and using a less regular domain for $W^*$, rather than having a pre-specified domain, which causes the distribution o of the points to become concentrated at a few points.
 
-The point map in figure \ref{wt2-points} shows that the \sch\ transform can clearly separate parts of the domain, drawing apart those areas of the domain which were causing the leakage previously. In the case of the Ramsay horseshoe, the transformation that is needed is obvious; problems occur when the transformation is not obvious. With the peninsula domain, it is not clear what an appropriate domain to map into would look like even if the \sch\ transform could map to an arbitrary shape. Certainly, the rectangle or unit disk are not the shapes which immediately come to mind.
+The point map in figure \ref{wt2-points} shows that the \sch\ transform can clearly separate parts of the domain, drawing apart those areas of the domain which were causing the leakage previously. In the case of the Ramsay horseshoe, the transformation that is needed is obvious; problems occur when the transformation is not obvious. With the peninsula domain, it is not clear what an appropriate domain to map into would look like even if the \sch\ transform could map to an arbitrary shape. Certainly, the rectangle or unit disc are not the shapes which immediately come to mind.
 
 Fortunately, all is not lost. This brief foray into conformal mapping has provided plenty of insights into how smoothers will act under mapping schemes. It has also given an appreciation of the criteria which dictate the utility of a transformation-based method, especially with regard to how smoothing behaves when space is distorted.
 
