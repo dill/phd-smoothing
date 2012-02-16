@@ -6,7 +6,7 @@ The example of the Ramsay horseshoe in \secref{intro-FAS} shows that leakage can
 
 Leakage is caused by the smooth not respecting the boundary of the domain of interest, so transforming the domain in such a way that the smoother does not need to respect the boundary should reduce leakage. In the case of the Ramsay horseshoe it seems rather obvious what we would like to do: straightening the domain out to be a rectangle seems like the most logical course of action. Objects within the horseshoe surely experience the domain in this way (i.e. their coordinate system is based on the major and minor axes of the shape, rather than Cartesian coordinates) and within-domain distances are well approximated by a rectangle with length equal to the major axis length of the horseshoe and width the same as the horseshoe. As we shall see through the rest of the chapter, the \sch\ transform allows for exactly such a morphing of the domain.
 
-This chapter investigates the efficacy of using a conformal mapping to transform the domain in which we wish to perform smoothing. The mapping takes points in the domain of the data ($W$) to a domain on which it is easier to smooth ($W^*$). In particular the utility of the \sch\ transform is examined (elaborating on \cite{eilerstalk}).
+This chapter investigates the efficacy of using a conformal mapping to transform the domain in which we wish to perform smoothing. The mapping takes points in the domain of the data ($W$, which is the interior of $\Gamma$\label{cor-3s1-3}) to a domain on which it is easier to smooth ($W^*$). In particular the utility of the \sch\ transform is examined (elaborating on \cite{eilerstalk}).
 
 Given some region that it is difficult to smooth over, one approach is to transform the domain in which the problem resides to some known shape. So, for example, one could transform a region into a rectangle, circle or other familiar shape to avoid leakage via a mapping. Figure \ref{mappingdia} shows $\varphi$ mapping from the rectangle to an arbitrary shape and $\varphi^{-1}$ mapping in the other direction\label{cor-3s4-2}. It seems natural to treat the domain as if it were made of silly putty and simply squash the region into the shape required to perform analysis, especially in the case of the Ramsay horseshoe. A transformation-based approach is appealing since it allows the use of existing techniques in the transformed domain; once it's a familiar shape, the domain can be smoothed using a splines just as one would when the domain does not have a complicated boundary.
 
@@ -51,9 +51,9 @@ The \sch\ mapping takes a specified shape and maps it to an arbitrary polygon\la
 The central idea here is to transform the domain with the complicated boundary to one that is less complicated, then smooth in this transformed domain. The procedure is as follows:
 
 \begin{enumerate}
-\item Determine the domain over which we would like to smooth, $W$. This could be the region or a (simpler) bounding polygon around it.
-\item Compute the \sch\ transform of $W$ (the domain with the complicated boundary) to get $W^*$ (the nicely shaped domain, in which we want to smooth), obtaining the function $\varphi$, which maps between the two.
-\item Map the co-ordinates of the data in $W$ to $W^*$, via $\varphi$.
+\item Determine the domain over which we would like to smooth, $W$. This could be the polygon which bounds the region or a simplified version of it\label{cor-3s8-1}.
+\item Compute the \sch\ transform of $W$ (the domain with the complicated boundary) to get $W^*$ (the nicely shaped domain, in which we want to smooth). We then obtain the functions $\varphi$ and $\varphi^{-1}$, which map between the two domains\label{cor-3s8-2}.
+\item Map the co-ordinates of the data in $W$ to $W^*$, via $\varphi^{-1}$\label{cor-3s8-3}.
 \item Smooth the data in $W^*$ using the methods in chapter \ref{chap-intro}.
 \item Perform any further inference (if necessary).
 \end{enumerate}
@@ -84,7 +84,7 @@ The external angle, $\theta_k\pi$, is given by $(1-\alpha_k)\pi$ (see \fig{angle
 \end{figure}
 
 \label{cor-r29-1}
-Both points in the domain and the vertices of the polygon are represented as complex numbers (e.g. for some point $w$,  $w=x_1+ix_2$).The boundary of the polygon is denoted by $\Gamma$. Two domains have already been mentioned: $W$ and $W^*$, denoting the original domain (inside $\Gamma$) and the transformed domain (for example, the plane, unit disc or rectangle), respectively. The vertices of $\Gamma$ are denoted as $w_k$ and the vertices of the transformed boundary are denoted as $w^*_k$ (the \emph{prevertices}). In general, a point in the polygon's original domain will be denoted as $w$ and in the transformed domain as $w^*$. 
+Both points in the domain and the vertices of the polygon are represented as complex numbers (e.g. for some point $w$,  $w=x_1+ix_2$).The boundary of the polygon is denoted by $\Gamma$. Two domains have already been mentioned: $W$ and $W^*$, denoting the original domain (inside $\Gamma$) and the transformed domain (for example, the plane, unit disc or rectangle\label{cor-3s10}), respectively. The vertices of $\Gamma$ are denoted as $w_k$ and the vertices of the transformed boundary are denoted as $w^*_k$ (the \emph{prevertices}). In general, a point in the polygon's original domain will be denoted as $w$ and in the transformed domain as $w^*$. 
 
 The function $\varphi$ is a mapping from the transformed domain to the polygon (i.e. $\varphi:W^* \mapsto W$). The inverse mapping function, $\varphi^{-1}$, is used to take points from the polygon to one of: the unit disc, rectangle or half-plane (\label{cor-3s11}$\varphi^{-1}:W \mapsto W^*$).  See \fig{mappingdia}.
 
@@ -101,11 +101,13 @@ The forwards map, $\varphi$, is determined up to translation, scaling, and rotat
 \subsubsection{The upper half-plane}
 \label{sc-parprob}
 
-When mapping $W$\label{cor-3s1-1} to the upper half-plane first set $\varphi(\infty) = w_K$ without any loss of generality. \citeb[p. 10]{driscoll} then give the following formula:
+When mapping from the upper half-plane\label{cor-3s14-1} to $W$\label{cor-3s1-1}, first set $\varphi(\infty) = w_K$ without any loss of generality. \citeb[p. 10]{driscoll} then give the following formula:
 \begin{equation}
 \varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K-1} \left (\zeta-w^*_k \right )^{\alpha_k-1} d\zeta.
 \end{equation}
-Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been calculated. These control the scaling, translation, and rotation of the transform. The base point of the integration, $w_0$, is usually chosen to be the prevertex nearest to the point $w^*$ (this is primarily to avoid numerical problems but choosing a point nearby also makes the computation faster).
+Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been calculated. These control the scaling, translation, and rotation of the transform. 
+
+When calculating $\varphi(w^*)$ numerically, $w^*_0$\label{cor-3s14-2} (the base point of the integration)\label{cor-3s14-3} is usually chosen to be the prevertex nearest to the point $w^*$ (this is primarily to avoid numerical problems but choosing a point nearby also makes the computation faster).
 
 Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into the upper half-plane is rather odd from a smoothing perspective. Given two adjacent points near $w_K$, their spacing on the upper half-plane is huge (since $w_K$ is mapped to $\infty$) in comparison to two adjacent points near the other vertices. For this reason mapping to the upper half-plane is not pursued further here.
 
@@ -122,11 +124,13 @@ As above, $A$ and $C$ are complex constants responsible for scaling, translation
 
 For the rectangle case, four vertices of $\Gamma$ that map to the four corners of the rectangle must be specified. This uniquely specifies the aspect ratio of the rectangle (\cite[p. 48]{driscoll}).
 
-The rectangle mapping is slightly different in its calculation to the two above mappings. First, $W$\label{cor-3s1-2} is mapped to the upper half-plane as detailed above. From there the Jacobi elliptic function (\cite[p. 701]{handbuch}) is used to map a rectangle to the upper half-plane:
+The rectangle mapping is slightly different in its calculation to the two above mappings. First, $W$\label{cor-3s15} is mapped to the upper half-plane as detailed above. From there the Jacobi elliptic function (\cite[p. 701]{handbuch}) is used to map a rectangle to the upper half-plane:
 \begin{equation*}
 J_e(w^*,\gamma)=\int_0^{w^*} \frac{1}{\sqrt{1-\gamma\sin^2t}} \text{d} t,
 \end{equation*}
-where $w^*$ is some point in the rectangle and $\gamma$ specifies where the corners of the rectangle map to on the upper half plane (the points are $-\gamma^{-1/2}, -1, 1, \gamma^{1/2}$). The computation of this map is expensive due to the evaluation of the elliptic function (\cite[p. 49]{driscoll}), so in practice a shortcut is used by mapping to the strip. Further detail on exactly how this is done can be found in \citeb{howell90}.
+where $w^*$ is some point in the rectangle and $\gamma$ specifies where the corners of the rectangle map to on the upper half plane (the points are $-\gamma^{-1/2}, -1, 1, \gamma^{1/2}$). 
+
+\label{cor-3s16}The computation of this map is expensive due to the evaluation of the elliptic function (\cite[p. 49]{driscoll}), \citeb{howell90} propose a shortcut by mapping to the strip (which is used in the MATLAB package \textit{SC Toolbox}, used below).
 
 \subsection{Computation of the \sch\ mapping}
 \label{sc-mapping-problem}
@@ -144,15 +148,15 @@ Note that \eqn{optimizeme} does not include the vertex $w_K$. By theorem 3.1 of 
 
 Also note that \eqn{optimizeme} does not include $w_1$ or $w_2$ in the numerator on the right hand side. This is due to all vertices (and hence $w_1$ and $w_2$) being rescaled, rotated, and translated by the complex constants, $A$ and $C$, in the \sch\ formula.
 
-In practice the values of $w^*_K, w^*_{K-1}$ and $w^*_{K-2}$ are fixed as $w^*_K=1$, $w^*_{K-1}=-i$ and $w^*_{K-2}=-1$ in the unit disc case (\cite[p. 24]{driscoll}). For the rectangle case, the vertices of $\Gamma$ which will map to which vertices of the rectangle must be specified.
+\label{cor-3s18-2}In practice some of the prevertices are fixed. For the rectangle case, the vertices of $\Gamma$ which will map to which vertices of the rectangle must be specified (\cite[p. 48]{driscoll}). In the unit disc case $w^*_K, w^*_{K-1}$ and $w^*_{K-2}$ are fixed as $w^*_K=1$, $w^*_{K-1}=-i$ and $w^*_{K-2}=-1$ (\cite[p. 24]{driscoll}). 
 
-The scaling factor, $C$, (from \eqn{unitscmap}) may be calculated using:
+The scaling factor, $C$, may be calculated using:
 \begin{equation}
 C=\frac{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert}{\vert w_2 - w_1\vert}.
 \end{equation}
-If $C$ is not calculated then it is known\label{cor-r29-6} that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense) and so the mapping is correct up to scaling and rotation. 
+\label{cor-r29-6}\label{cor-3s19}%If $C$ is not calculated then it is known that $\Gamma$ and $\Gamma^\prime$ are similar (in the geometric sense) and so the mapping is correct up to scaling and rotation. 
 
-$A$ is the image of the base point of the integration and is usually written as $w_0$. For computational reasons this is usually the prevertex nearest to the point $w^*$ which is to be mapped in \eqn{unitscmap}  (\cite[p. 27]{driscoll}).
+$A$ is the image of the base point of the integration and is usually written as $w_0$. For computational reasons this is usually the prevertex nearest to the point which is to be mapped\label{cor-3s18-1}, $w^*$ (\cite[p. 27]{driscoll}).
 
 
 \subsubsection{Sketch of an algorithm to calculate the \sch\ mapping}

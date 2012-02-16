@@ -19,6 +19,7 @@ The points raised in the e-mail have been addressed as follows:
 \begin{itemize}
 	\item \pref{cor-r22} explained that \texttt{soap} and \texttt{mgcv} were used.
 	\item \pref{cor-soft1} clarified that all the models were fitted using existing libraries.
+	\item \pref{sc-sims} explains that the MATLAB package \textit{SC Toolbox} is used for the \sch\ mapping and \texttt{mgcv} and \texttt{soap} are used for smoothing.
 \end{itemize}
 \textit{Throughout the thesis, we would like you to be clear about what software is being used: at present, it is not always clear whether you are picking up and running with “off-the shelf” software (which turned out to be the case for the Schwarz-Christoffel transform) or whether you had to write new code yourself. The work of others should always be duly acknowledged; and you shouldn?t be shy about advertising your own contributions! }
 \item \textit{In Chapter 4, the discussion of the “adjustment” {\cal L} needs to be clarified to make clear that it is heuristic: at present, it is presented as somehow deeper than this. As discussed during the oral examination, one possibility would be to start by considering the idea of using the Jacobian of the transformation, explaining why (as indicated by the candidate during the oral) this didn?t work, and then moving on to the “engineering” solution.}
@@ -65,7 +66,7 @@ The points raised in the e-mail have been addressed as follows:
 	\item \pref{cor-r29-3} ``can be computed''.
 	\item \pref{cor-r29-4}
 	\item \pref{cor-r29-5}
-	\item \pref{cor-r29-6} corrected to ``known''.
+	\item \pref{cor-r29-6} Removed sentence, as advised by SS, below.%corrected to ``known''.
 \end{itemize}
 \item \textit{Chapter 4} \pref{cor-r30}, \pref{cor-r30-1} ``principle'' $\rightarrow$ ``principal''.
 \item \pref{cor-r31}
@@ -148,19 +149,26 @@ The points raised in the e-mail have been addressed as follows:
 
 \subsection{Chapter 3}
 \begin{itemize}
-\item \pref{cor-3s1-1}, \pref{cor-3s1-2} Changed $\Gamma$ to $W$.
+\item \pref{cor-3s1-1} Changed $\Gamma$ to $W$. \pref{cor-3s1-3} stated that $W$ is the inside of $\Gamma$.
 \item \pref{cor-3s2} Removed references to $\varphi$ at this point.
 \item \pref{cor-3s3} Expanded opening paragraph(s) to discuss the Ramsay horseshoe in a bit more depth.
 \item \pref{cor-3s4} Replaced figure 3-1 with 3-5; corrected $x$ to $w$ and $w^*$ in caption; reversed diagram to be same ordering as others, later. \label{cor-3s4} Added some elaboration here.
 \item \pref{cor-3s5} Cleared up caption and figure. Corrected (and added) line label. Caption: $w_6^* \rightarrow w_6$. 
 \item \pref{cor-3s6} Corrected.
 \item \pref{cor-3s7} Cleared up caption and figure. Changed line label. ``upper half-plane'' $\rightarrow$ ``unit disc''
-\item \pref{cor-3s8}
+\item \pref{cor-3s8-1} It should be a polygon, that shouldn't have implied that wasn't the case -- corrected. \pref{cor-3s8-2} Clarified $\varphi$ and $\varphi^{-1}$ are found. \pref{cor-3s8-3} $\varphi \rightarrow \varphi^{-1}$.
 \item \pref{cor-3s9} Corrected angles in diagram. Increased shading.
-\item \pref{cor-3s10}
+\item \pref{cor-3s10} Corrected as suggested.
 \item \pref{cor-3s11} Final $\varphi$ should be $\varphi^{-1}$.
 \item \pref{cor-3s12} Corrected ``may'' $\rightarrow $ ``many''.
-
+\item \pref{cor-3s13} 
+\item \pref{cor-3s1-1} Changed $\Gamma$ to $W$. \pref{cor-3s14-1} First sentence the right way around. \pref{cor-3s14-2} $w_0 \rightarrow w^*_0$.  \pref{cor-3s14-3} Talking about calculation numerically, put into separate paragraph.
+\item \pref{cor-3s15} Changed $\Gamma$ to $W$.
+\item \pref{cor-3s16} Put this computational bit in a separate paragraph, cleared up who solved the numerical issue.
+\item \pref{cor-3s17} 
+\item \pref{cor-3s18-1} Removed ref to (3.3), twice. \pref{cor-3s18-2} I've reordered this paragraph, putting the rectangle first and referencing where that comes from. I've left the unit disc but in since I do show examples of the unit disc later. 
+\item \pref{cor-3s19} Removed sentence, don't really need to know this.
+\item \pref{cor-3s20} 
 \end{itemize}
 
 \subsection{Chapter 4}
