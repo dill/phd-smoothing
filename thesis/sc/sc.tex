@@ -107,7 +107,7 @@ When mapping from the upper half-plane\label{cor-3s14-1} to $W$\label{cor-3s1-1}
 \end{equation}
 Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been calculated. These control the scaling, translation, and rotation of the transform. 
 
-When calculating $\varphi(w^*)$ numerically, $w^*_0$\label{cor-3s14-2} (the base point of the integration)\label{cor-3s14-3} is usually chosen to be the prevertex nearest to the point $w^*$ (this is primarily to avoid numerical problems but choosing a point nearby also makes the computation faster).
+Mathematically, the base point of the integration does not matter, as it only affects the value of $A$ (\cite[p. 3]{driscoll}).\label{cor-3s14-3} However, when calculating $\varphi(w^*)$ numerically, $w^*_0$\label{cor-3s14-2} is usually chosen to be the prevertex nearest to the point $w^*$. This is primarily to avoid numerical problems (such as avoiding singularities, see \citeb[p. 27-29]{driscoll}) but choosing a $w^*_0$ near to $w^*$ also makes the computation faster.
 
 Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into the upper half-plane is rather odd from a smoothing perspective. Given two adjacent points near $w_K$, their spacing on the upper half-plane is huge (since $w_K$ is mapped to $\infty$) in comparison to two adjacent points near the other vertices. For this reason mapping to the upper half-plane is not pursued further here.
 
