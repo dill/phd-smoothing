@@ -2,19 +2,31 @@
 \label{chap-sc}
 \section{Introduction}
 
-The example of the Ramsay horseshoe in \secref{intro-FAS} shows that leakage can be problematic for spatial smoothing. Leakage is caused by the smooth not respecting the boundary of the domain of interest, so transforming the domain in such a way that the smoother does not need to respect the boundary (for example by reducing the number and/or severity of peninsulae) should reduce leakage.
+The example of the Ramsay horseshoe in \secref{intro-FAS} shows that leakage can be problematic for spatial smoothing. \label{cor-3s3}The horseshoe is a rather simple example for leakage, however it does encapsulate the most important feature of leakage: a gap with differing response on each side. It is not so simple to be unrealistic however: comparing the horseshoe to the Aral sea example seen in \secref{intro-GAM}, there are many similarities. Starting with a simple example such as the horseshoe should reveal more fundamental problems without getting bogged-down in issues relating the the overall complexity of the domain. 
+
+Leakage is caused by the smooth not respecting the boundary of the domain of interest, so transforming the domain in such a way that the smoother does not need to respect the boundary should reduce leakage. In the case of the Ramsay horseshoe it seems rather obvious what we would like to do: straightening the domain out to be a rectangle seems like the most logical course of action. Objects within the horseshoe surely experience the domain in this way (i.e. their coordinate system is based on the major and minor axes of the shape, rather than Cartesian coordinates) and within-domain distances are well approximated by a rectangle with length equal to the major axis length of the horseshoe and width the same as the horseshoe. As we shall see through the rest of the chapter, the \sch\ transform allows for exactly such a morphing of the domain.
 
 This chapter investigates the efficacy of using a conformal mapping to transform the domain in which we wish to perform smoothing. The mapping takes points in the domain of the data ($W$) to a domain on which it is easier to smooth ($W^*$). In particular the utility of the \sch\ transform is examined (elaborating on \cite{eilerstalk}).
 
-Given some region that it is difficult to smooth over, one approach is to transform the domain in which the problem resides to some known shape. So, for example, one could transform a region into a rectangle, circle or other familiar shape to avoid leakage via a mapping such as $\varphi$ in \fig{simpledia}. This approach is appealing since it allows the use of existing techniques in the transformed domain. It also seems natural to treat the domain as if it were made of silly putty and simply squash the region into the shape required to perform analysis, especially in the case of the Ramsay horseshoe.
+Given some region that it is difficult to smooth over, one approach is to transform the domain in which the problem resides to some known shape. So, for example, one could transform a region into a rectangle, circle or other familiar shape to avoid leakage via a mapping. Figure \ref{mappingdia} shows $\varphi$ mapping from the rectangle to an arbitrary shape and $\varphi^{-1}$ mapping in the other direction\label{cor-3s4-2}. It seems natural to treat the domain as if it were made of silly putty and simply squash the region into the shape required to perform analysis, especially in the case of the Ramsay horseshoe. A transformation-based approach is appealing since it allows the use of existing techniques in the transformed domain; once it's a familiar shape, the domain can be smoothed using a splines just as one would when the domain does not have a complicated boundary.
 
-% Simple diagram showing the mapping
+%% Simple diagram showing the mapping
+%\begin{figure} [t]
+%\centering
+%\includegraphics[scale=0.3]{sc/figs/simpledia.pdf}
+%\caption{An example of a transformation; the function $\varphi$ takes the points in the rectangle and maps them to the region on the left.}
+%\label{simpledia}
+%\end{figure}
+
+% Mapping diagram from my whiteboard
 \begin{figure} [t]
 \centering
-\includegraphics[scale=0.3]{sc/figs/simpledia.pdf}
-\caption{An example of a transformation; the function $\varphi$ takes the points in the rectangle and maps them to the region on the left.}
-\label{simpledia}
+\includegraphics[scale=0.5]{sc/figs/mappingdia.pdf}
+\caption{Diagram showing the $\varphi^{-1}$ mapping from an arbitrary shape ($W$; where the data were collected) to the rectangle ($W^*$; where smoothing can be performed reliably). $\varphi$ maps from the rectangle to the arbitrary shape. $\varphi$ and $\varphi^{-1}$  will be referred to as the forwards and backwards mappings respectively (c.f. \secref{schparprob}).\label{cor-3s4}}
+\label{mappingdia}
 \end{figure}
+
+
 
 The \sch\ mapping takes a specified shape and maps it to an arbitrary polygon\label{cor-3s6}. The most common domains to transform to are: (i) the upper half-plane, (ii) a rectangle and (iii) the unit disc. This is achieved in the upper half-plane case by taking the vertices of the polygon and mapping them to points on the real line (see \fig{reallinedia}). This can be thought of as ``unwrapping'' the polygon onto the real line. For the unit disc case, points on the circle bounding the unit disc map to vertices on the polygon (see \fig{unitdiskdia}). The rectangular case is somewhat similar to the unit disc in that extra points are added to the boundary. One the mapping has been performed, those points lying inside the polygon are also moved around, creating a new (non-uniform) distribution of space. These three domains are discussed in more detail in \secref{schparprob}.
 
@@ -76,13 +88,7 @@ Both points in the domain and the vertices of the polygon are represented as com
 
 The function $\varphi$ is a mapping from the transformed domain to the polygon (i.e. $\varphi:W^* \mapsto W$). The inverse mapping function, $\varphi^{-1}$, is used to take points from the polygon to one of: the unit disc, rectangle or half-plane (\label{cor-3s11}$\varphi^{-1}:W \mapsto W^*$).  See \fig{mappingdia}.
 
-% Mapping diagram from my whiteboard
-\begin{figure} [t]
-\centering
-\includegraphics[scale=0.5]{sc/figs/mappingdia.pdf}
-\caption{Diagram showing the forwards and backwards mappings with their relations to the mapped and unmapped spaces in the rectangular case.}
-\label{mappingdia}
-\end{figure}
+% mappingdia was here!
 
 \subsection{\sch\ Mapping}
 \label{schparprob}
@@ -95,7 +101,7 @@ The forwards map, $\varphi$, is determined up to translation, scaling, and rotat
 \subsubsection{The upper half-plane}
 \label{sc-parprob}
 
-When mapping $\Gamma$ to the upper half-plane first set $\varphi(\infty) = w_K$ without any loss of generality. \citeb[p. 10]{driscoll} then give the following formula:
+When mapping $W$\label{cor-3s1-1} to the upper half-plane first set $\varphi(\infty) = w_K$ without any loss of generality. \citeb[p. 10]{driscoll} then give the following formula:
 \begin{equation}
 \varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K-1} \left (\zeta-w^*_k \right )^{\alpha_k-1} d\zeta.
 \end{equation}
@@ -116,7 +122,7 @@ As above, $A$ and $C$ are complex constants responsible for scaling, translation
 
 For the rectangle case, four vertices of $\Gamma$ that map to the four corners of the rectangle must be specified. This uniquely specifies the aspect ratio of the rectangle (\cite[p. 48]{driscoll}).
 
-The rectangle mapping is slightly different in its calculation to the two above mappings. First, $\Gamma$ is mapped to the upper half-plane as detailed above. From there the Jacobi elliptic function (\cite[p. 701]{handbuch}) is used to map a rectangle to the upper half-plane:
+The rectangle mapping is slightly different in its calculation to the two above mappings. First, $W$\label{cor-3s1-2} is mapped to the upper half-plane as detailed above. From there the Jacobi elliptic function (\cite[p. 701]{handbuch}) is used to map a rectangle to the upper half-plane:
 \begin{equation*}
 J_e(w^*,\gamma)=\int_0^{w^*} \frac{1}{\sqrt{1-\gamma\sin^2t}} \text{d} t,
 \end{equation*}
