@@ -96,7 +96,9 @@ This section looks at the mathematical formulation for the upper half-plane, uni
 
 For the purposes of smoothing we are interested in the function $\varphi^{-1}$ (i.e. the function that goes from the domain in which the data were collected to the transformed one), $\varphi$ must be calculated before its inverse can be found. In the literature $\varphi$ is referred to as the \emph{forwards map} and $\varphi^{-1}$ as the \emph{backwards map}.
 
-The forwards map, $\varphi$, is determined up to translation, scaling, and rotation by the prevertices (see below). So, the task is to efficiently find the prevertices and hence find the mapping $\varphi$, known as the \emph{\sch\ parameter problem} and is discussed in \secref{sc-mapping-problem}. The rest of this section discusses the mappings, with the prevertices assumed to be known.
+The forwards map, $\varphi$, is determined up to translation, scaling, and rotation by the prevertices (see below). \label{cor-3s13-1}The \emph{\sch\ parameter problem} is the task of efficiently finding the prevertices (hence $\varphi$). This is a complex problem since the prevertices are solutions to non-linear equations. The \sch\ parameter problem is discussed in \secref{sc-mapping-problem}. For the rest of this section the prevertices are assumed to be known. 
+
+The rest of the section discusses the mappings for the upper half-plane, unit disc and rectangle. In each case the mapping takes the form of an integral which does not have a closed form, so it is important that the integrals can be computed quickly and accurately using quadrature. Accurate and fast computation of these integrals is covered in \citeb[pp. 27--29]{driscoll} and implemented in the \textit{SC Toolbox} package for MATLAB.
 
 \subsubsection{The upper half-plane}
 \label{sc-parprob}
@@ -105,15 +107,15 @@ When mapping from the upper half-plane\label{cor-3s14-1} to $W$\label{cor-3s1-1}
 \begin{equation}
 \varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K-1} \left (\zeta-w^*_k \right )^{\alpha_k-1} d\zeta.
 \end{equation}
-Here $A$ and $C$ are complex constants determined once the $w^*_k$ have been calculated. These control the scaling, translation, and rotation of the transform. 
+Here $A$ and $C$ are complex constants determined once the $w^*_k$ (which all lie on the real line\label{cor-3s13-2}) have been calculated. These control the scaling, translation, and rotation of the transform. 
 
 Mathematically, the base point of the integration does not matter, as it only affects the value of $A$ (\cite[p. 3]{driscoll}).\label{cor-3s14-3} However, when calculating $\varphi(w^*)$ numerically, $w^*_0$\label{cor-3s14-2} is usually chosen to be the prevertex nearest to the point $w^*$. This is primarily to avoid numerical problems (such as avoiding singularities, see \citeb[p. 27-29]{driscoll}) but choosing a $w^*_0$ near to $w^*$ also makes the computation faster.
 
-Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into the upper half-plane is rather odd from a smoothing perspective. Given two adjacent points near $w_K$, their spacing on the upper half-plane is huge (since $w_K$ is mapped to $\infty$) in comparison to two adjacent points near the other vertices. For this reason mapping to the upper half-plane is not pursued further here.
+Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into the upper half-plane is rather odd from a smoothing perspective. Given two adjacent points near $w_K$, their spacing on the upper half-plane is huge (since $w_K$ is mapped to $\infty$) in comparison to two adjacent points \label{cor-e6}near any other vertex. For this reason mapping to the upper half-plane is not pursued further here.
 
 \subsubsection{Unit disc}
 
-The formula for the unit disc looks very similar to that for the upper half-plane but the product now runs over all $K$ prevertices. The integrand is simply a constant multiple of the upper half-plane case (see also \cite[p. 12]{driscoll}).
+The formula for the unit disc looks very similar to that for the upper half-plane but the product now runs over all $K$ prevertices (which are complex numbers, \citeb{driscoll96})\label{cor-3s13-3}. The integrand is simply a constant multiple of the upper half-plane case (see also \cite[p. 12]{driscoll}):\label{cor-e5}
 \begin{equation}
 \label{unitscmap}
 \varphi(w^*) = A + C \int^{w^*}_{w^*_0} \prod_{k=1}^{K} \left (1 - \frac{\zeta}{w^*_k} \right )^{\alpha_k-1} d\zeta.
@@ -122,7 +124,7 @@ As above, $A$ and $C$ are complex constants responsible for scaling, translation
 
 \subsubsection{Rectangle}
 
-For the rectangle case, four vertices of $\Gamma$ that map to the four corners of the rectangle must be specified. This uniquely specifies the aspect ratio of the rectangle (\cite[p. 48]{driscoll}).
+For the rectangle case, four vertices of $\Gamma$ which will correspond to the four corners of the rectangle must be specified. This uniquely specifies the aspect ratio of the rectangle (\cite[p. 48]{driscoll}).
 
 The rectangle mapping is slightly different in its calculation to the two above mappings. First, $W$\label{cor-3s15} is mapped to the upper half-plane as detailed above. From there the Jacobi elliptic function (\cite[p. 701]{handbuch}) is used to map a rectangle to the upper half-plane:
 \begin{equation*}
