@@ -55,7 +55,7 @@ The central idea here is to transform the domain with the complicated boundary t
 \item Compute the \sch\ transform of $W$ (the domain with the complicated boundary) to get $W^*$ (the nicely shaped domain, in which we want to smooth). We then obtain the functions $\varphi$ and $\varphi^{-1}$, which map between the two domains\label{cor-3s8-2}.
 \item Map the co-ordinates of the data in $W$ to $W^*$, via $\varphi^{-1}$\label{cor-3s8-3}.
 \item Smooth the data in $W^*$ using the methods in chapter \ref{chap-intro}.
-\item Perform any further inference (if necessary).
+\item Transform back to $W$; perform any further inference, create heatmaps, etc\label{cor-3s8-4}.
 \end{enumerate}
 
 The second section of this chapter explains the technical details of the mapping. The third section gives results of some simulations and the final section summarizes the results of these simulations and draws conclusions about the utility of the method.
@@ -92,13 +92,13 @@ The function $\varphi$ is a mapping from the transformed domain to the polygon (
 
 \subsection{\sch\ Mapping}
 \label{schparprob}
-This section looks at the mathematical formulation for the upper half-plane, unit disc and rectangle. There are many possible domains that can be mapped to (see \cite[section 4]{driscoll} for \label{cor-3s12}many examples), however the three discussed here are either canonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two).
+There are many possible domains that can be mapped from (see \cite[section 4]{driscoll} for \label{cor-3s12}many examples). This section looks at the mathematical formulation for the upper half-plane, unit disc and rectangle. The three mappings discussed here are either canonical (in the case of the half-plane) or considered to be useful in a smoothing context (the other two).
 
-For the purposes of smoothing we are interested in the function $\varphi^{-1}$ (i.e. the function that goes from the domain in which the data were collected to the transformed one), $\varphi$ must be calculated before its inverse can be found. In the literature $\varphi$ is referred to as the \emph{forwards map} and $\varphi^{-1}$ as the \emph{backwards map}.
+For the purposes of smoothing we are interested in the function $\varphi^{-1}$ (i.e. the function that goes from the domain in which the data were collected to the transformed one), $\varphi$ must be found before calculations can be made with its inverse (see \secref{sc-backwardsmap}). In the literature $\varphi$ is referred to as the \emph{forwards map} and $\varphi^{-1}$ as the \emph{backwards map}.
 
-The forwards map, $\varphi$, is determined up to translation, scaling, and rotation by the prevertices (see below). \label{cor-3s13-1}The \emph{\sch\ parameter problem} is the task of efficiently finding the prevertices (hence $\varphi$). This is a complex problem since the prevertices are solutions to non-linear equations. The \sch\ parameter problem is discussed in \secref{sc-mapping-problem}. For the rest of this section the prevertices are assumed to be known. 
+The forwards map, $\varphi$, is determined up to translation, scaling, and rotation by the prevertices (see below). \label{cor-3s13-1}The \emph{\sch\ parameter problem} is the task of efficiently finding the prevertices (hence $\varphi$). This is a complex problem since the prevertices are solutions to non-linear equations. The \sch\ parameter problem is discussed in \secref{sc-mapping-problem}. For the rest of this section the prevertices (the $w^*_k$s) are assumed to be known. 
 
-The rest of the section discusses the mappings for the upper half-plane, unit disc and rectangle. In each case the mapping takes the form of an integral which does not have a closed form, so it is important that the integrals can be computed quickly and accurately using quadrature. Accurate and fast computation of these integrals is covered in \citeb[pp. 27--29]{driscoll} and implemented in the \textit{SC Toolbox} package for MATLAB.
+The rest of the section discusses the mathematical form of the mappings for the upper half-plane, unit disc and rectangle. In each case the mapping takes the form of an integral which does not have a closed form, so it is important that the integrals can be computed quickly and accurately using quadrature. Accurate and fast computation of these integrals is covered in \citeb[pp. 27--29]{driscoll} and implemented in the \textit{SC Toolbox} package for MATLAB written by Tobin A. Driscoll.
 
 \subsubsection{The upper half-plane}
 \label{sc-parprob}
@@ -163,18 +163,26 @@ $A$ is the image of the base point of the integration and is usually written as 
 
 \subsubsection{Sketch of an algorithm to calculate the \sch\ mapping}
 \label{algorithmsketch}
+\label{cor-e7}
 \begin{enumerate}
 \item Accept inputs:
-   \begin{enumerate} 
+   \begin{itemize} 
       \item $w_1,\dots,w_K$ (the vertices of $\Gamma$),
       \item $K$ (the number of vertices),
-      \item $\alpha_1,\dots,\alpha_K$ (the internal angles at each vertex, divided by $\pi$).
-   \end{enumerate}
+      \item $\alpha_1,\dots,\alpha_K$ (the internal angles at each vertex, divided by $\pi$),
+      \item \label{cor-3s20}$w^*_1,\dots,w^*_K$ (initial values for the prevertices),
+      \item $\epsilon$ (tolerance for convergence).
+   \end{itemize}
 \item Define the objective function, $F$, as:
  \begin{equation*}
 F_k=\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert}, \qquad \text{for } k=3,\dots,K-1,
  \end{equation*}
-\item Use steepest descent and then Newton's method to minimize each of the $F_k$s until $\vert F_k \vert < \epsilon \quad \forall k$. \item Calculate $C$ and $A$ as detailed above.
+\begin{enumerate}
+\item Use steepest descent and then Newton's method to minimize each of the $F_k$s with respect to $w^*_k$ for each $k$.
+\item Update $w^*_1,\dots,w^*_K$.
+\item Go back to (a) unless $\vert F_k \vert < \epsilon \quad \forall k$. 
+\end{enumerate}
+\item Calculate $C$ and $A$ as detailed above.
 \item Return values for $w^*_1,\dots,w^*_K$, $C$ and $A$.
 \end{enumerate}
 
@@ -187,6 +195,7 @@ Starting values for the algorithm are evenly spaced vertices around the edge of 
 Calculating the forwards map is simply a case of evaluating $\varphi$ at the necessary points. Definitions of the forwards mappings are given in \secref{schparprob}.
 
 \subsubsection{Backwards map}
+\label{sc-backwardsmap}
 
 To calculate the backwards mapping, there are two possible approaches: (i) using Newton's method to solve the equation $\varphi(w^*)-w=0$ and (ii) solving the initial value problem (IVP):
 \begin{equation}

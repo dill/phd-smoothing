@@ -17,9 +17,11 @@ The points raised in the e-mail have been addressed as follows:
 \textit{Chapter 1 in general needs to be fleshed out, so as better to set the stage for the remainder of the thesis. For example, the soap film smoother is mentioned almost parenthetically at present, whereas it is adopted as a benchmark for the remainder of Part 1 of the thesis. We do not necessarily ask that all of the details are moved from Chapter 2 (where they appear at present) to Chapter 1: however, some intuition needs to be given, and the key role of this technique needs to be made clear. This would also provide the opportunity to motivate the inclusion of Chapter 2 much more convincingly: the chapter can be presented as a detailed introduction to, and illustration of, the use of the soap film smoother which then sets the stage for the subsequent development.}
 \item 
 \begin{itemize}
-	\item \pref{cor-r22} explained that \texttt{soap} and \texttt{mgcv} were used.
-	\item \pref{cor-soft1} clarified that all the models were fitted using existing libraries.
-	\item \pref{sc-sims} explains that the MATLAB package \textit{SC Toolbox} is used for the \sch\ mapping and \texttt{mgcv} and \texttt{soap} are used for smoothing.
+	\item \pref{cor-r22} Explained that \texttt{soap} and \texttt{mgcv} were used.
+	\item \pref{cor-soft1} Clarified that all the models were fitted using existing libraries.
+	\item \pref{cor-soft2} Added mention of the \textit{SC Toolbox} and it's author.
+	\item \pref{cor-soft3} Clarified that I wrote the code for finding the distances and performing Gower's interpolation. \texttt{soap} and \texttt{mgcv} were used for smoothing. \textsf{R}'s built-in MDS routine was used.
+	\item \pref{sc-sims} Explains that the MATLAB package \textit{SC Toolbox} is used for the \sch\ mapping and \texttt{mgcv} and \texttt{soap} are used for smoothing.
 \end{itemize}
 \textit{Throughout the thesis, we would like you to be clear about what software is being used: at present, it is not always clear whether you are picking up and running with “off-the shelf” software (which turned out to be the case for the Schwarz-Christoffel transform) or whether you had to write new code yourself. The work of others should always be duly acknowledged; and you shouldn?t be shy about advertising your own contributions! }
 \item \textit{In Chapter 4, the discussion of the “adjustment” {\cal L} needs to be clarified to make clear that it is heuristic: at present, it is presented as somehow deeper than this. As discussed during the oral examination, one possibility would be to start by considering the idea of using the Jacobian of the transformation, explaining why (as indicated by the candidate during the oral) this didn?t work, and then moving on to the “engineering” solution.}
@@ -69,25 +71,25 @@ The points raised in the e-mail have been addressed as follows:
 	\item \pref{cor-r29-6} Removed sentence, as advised by SS, below.%corrected to ``known''.
 \end{itemize}
 \item \textit{Chapter 4} \pref{cor-r30}, \pref{cor-r30-1} ``principle'' $\rightarrow$ ``principal''.
-\item \pref{cor-r31}
+\item \pref{cor-r31} Clarified that we're pretending that we don't know the $x_i$s.
 \begin{itemize}
-	\item \pref{cor-r31-1}
+	\item \pref{cor-r31-1}``The first two terms in on'' $\rightarrow$ ``The contributions from the first two terms''
 	\item \pref{cor-r31-2}
-	\item \pref{cor-r31-3}
-	\item \pref{cor-r31-4}
-	\item \pref{cor-r31-5}
-	\item \pref{cor-r31-6}
-	\item \pref{cor-r31-7}
+	\item \pref{cor-r31-3} Removed sentence as suggested.
+	\item \pref{cor-r31-4} Removed paragraph as suggested.
+	\item \pref{cor-r31-5-2} Corrected matrix dimensions, $\tr{(\mathbf{X}^*)} \rightarrow \tr{(\tilde{\mathbf{X}}^*)}$. \pref{cor-r31-5} $\text{diag}(\mathbb{S})_{ii} \rightarrow \text{diag}(\mathbb{S})_i$. Further clarification.
+	\item \pref{cor-r31-6} Unless I'm getting the wrong end of the stick here, I think Richard's statement is incorrect. The fact that you can perform MDS on a reduced set of points, insert the other points and end up with the same configuration as if you'd done the lot from the start means that it is \textit{not} sensitive to starting values. I've clarified that this is only in the Euclidean case (according to Gower's paper anyway).
+	\item \pref{cor-r31-7} ``in a similar to check'' $\rightarrow$ ``in a similar way to check''.
 \end{itemize}
 \item \pref{cor-r32} ``is show'' $\rightarrow$ ``is shown''.
 \item \pref{cor-r33} ``novel'' $\rightarrow$ ``a novel''.
 \item \pref{cor-r34}  ``the'' $\rightarrow$ ``that''.
-\item \pref{cor-r35} 
+\item \pref{cor-r35-1} Spelled out EDF, clarified the noise levels, changed ``models'' to ``fitting methods'' (also on \pref{cor-r35-2}).
 \item \pref{cor-r36} Added explanation of the change in surface from the earlier peninsula domain.
 \item \pref{cor-r37} ``sever'' $\rightarrow$ ``severe''
 \item \pref{cor-r38} Changed axis labels to be correct.
 \item \pref{cor-r39}
-\item \pref{cor-r40}
+\item \pref{cor-r40} Noted that numerical calculation of the penalty wasn't necessary before.
 \item \pref{cor-r41} Removed $\dagger$, relic of previous document.
 \item \pref{cor-r42} 
 \item \pref{cor-r43} Referenced back to section 1.1.
@@ -155,11 +157,11 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-3s1-1} Changed $\Gamma$ to $W$. \pref{cor-3s1-3} stated that $W$ is the inside of $\Gamma$.
 \item \pref{cor-3s2} Removed references to $\varphi$ at this point.
 \item \pref{cor-3s3} Expanded opening paragraph(s) to discuss the Ramsay horseshoe in a bit more depth.
-\item \pref{cor-3s4} Replaced figure 3-1 with 3-5; corrected $x$ to $w$ and $w^*$ in caption; reversed diagram to be same ordering as others, later. \label{cor-3s4} Added some elaboration here.
+\item \pref{cor-3s4} Replaced figure 3-1 with 3-5; corrected $x$ to $w$ and $w^*$ in caption; reversed diagram to be same ordering as others, later. \pref{cor-3s4-2} Added some elaboration here.
 \item \pref{cor-3s5} Cleared up caption and figure. Corrected (and added) line label. Caption: $w_6^* \rightarrow w_6$. 
 \item \pref{cor-3s6} Corrected.
 \item \pref{cor-3s7} Cleared up caption and figure. Changed line label. ``upper half-plane'' $\rightarrow$ ``unit disc''
-\item \pref{cor-3s8-1} It should be a polygon, that shouldn't have implied that wasn't the case -- corrected. \pref{cor-3s8-2} Clarified $\varphi$ and $\varphi^{-1}$ are found. \pref{cor-3s8-3} $\varphi \rightarrow \varphi^{-1}$.
+\item \pref{cor-3s8-1} It should be a polygon, that shouldn't have implied that wasn't the case -- corrected. \pref{cor-3s8-2} Clarified $\varphi$ and $\varphi^{-1}$ are found. \pref{cor-3s8-3} $\varphi \rightarrow \varphi^{-1}$. \pref{cor-3s8-4} Cleared up transforming back to the data domain.
 \item \pref{cor-3s9} Corrected angles in diagram. Increased shading.
 \item \pref{cor-3s10} Corrected as suggested.
 \item \pref{cor-3s11} Final $\varphi$ should be $\varphi^{-1}$.
@@ -171,7 +173,7 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-3s17} 
 \item \pref{cor-3s18-1} Removed ref to (3.3), twice. \pref{cor-3s18-2} I've reordered this paragraph, putting the rectangle first and referencing where that comes from. I've left the unit disc but in since I do show examples of the unit disc later. 
 \item \pref{cor-3s19} Removed sentence, don't really need to know this.
-\item \pref{cor-3s20} 
+\item \pref{cor-3s20} Added initial values in step 1 of algorithm.
 \end{itemize}
 
 \subsection{Chapter 4}
@@ -235,5 +237,8 @@ The points raised in the e-mail have been addressed as follows:
 \item Chapter 3 ``disk'' $\rightarrow$ ``disc''.
 \item \pref{cor-e5} Full stop should have been a colon.
 \item \pref{cor-e6} ``near the other vertices'' $\rightarrow$ ``near any other vertex''.
+\item \pref{cor-e7} Clarified the \sch\ algorithm.
+\item \pref{cor-e8} Added some brackets to ``$n-1$-dimensional'' for clarity.
+\item \pref{cor-e9} Corrected bracketing for Gower reference.
 \end{itemize}
 

@@ -42,7 +42,7 @@ First define $d_{ij}$ as the distance between the points $i$ and $j$. These are 
 
 \citeb{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \citeb{principlesofMA}, pp. 104-108 and \citeb{chatfieldcollins}, pp. 189-200.
 
-First, suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{\mathbf{X}}^*$ (that is, that these new locations reside in $n$-dimensional space, which we can find lower dimensional projections of; see below). Now let $\mathbb{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbb{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbb{S}$ is:
+\label{cor-r31}First pretending that we do not have the original locations (the $x_i$s), we suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{\mathbf{X}}^*$ (that is, that these new locations reside in $n$-dimensional space, which we can find lower dimensional projections of; see below). Now let $\mathbb{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbb{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbb{S}$ is:
 \begin{equation}
 \mathbb{S}_{ij} = \mathbf{x}_i^* \left ( \mathbf{x}_j^* \right)^\text{T},
 \label{selem}
@@ -71,7 +71,7 @@ By pre- and post-multiplying any matrix by $\mathbf{H}$ the matrix is double cen
 \begin{equation}
 \mathbf{H}\mathbf{D}\mathbf{H} = -2\mathbf{H}\mathbb{S}\mathbf{H}.
 \end{equation}
-The contributions from the first two terms on the right hand side of \eqn{dijmat} are zero since the rows of $\text{diag}\left(\mathbb{S}\right)\tr{\bm{1}}$ and the columns of  $\bm{1}\tr{\text{diag}\left(\mathbb{S}\right)}$ are constant. Since $\mathbb{S}$ is already centred so $\mathbf{H}\mathbb{S}\mathbf{H}=\mathbb{S}$. Rearranging, the following relation between $\mathbb{S}$ and $\mathbf{D}$ holds:
+\label{cor-r31-1}The contributions from the first two terms on the right hand side of \eqn{dijmat} are zero since the rows of $\text{diag}\left(\mathbb{S}\right)\tr{\bm{1}}$ and the columns of  $\bm{1}\tr{\text{diag}\left(\mathbb{S}\right)}$ are constant. Since $\mathbb{S}$ is already centred so $\mathbf{H}\mathbb{S}\mathbf{H}=\mathbb{S}$. Rearranging, the following relation between $\mathbb{S}$ and $\mathbf{D}$ holds:
 \begin{equation}
 \mathbb{S} = -\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.
 \end{equation}
@@ -85,12 +85,13 @@ Finding the eigen-decomposition of $\mathbb{S}$, we obtain $\mathbb{S}=\mathbf{U
 
 Following these steps $\tilde{\mathbf{X}}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions, and in general multidimensional scaling is performed to reduce the dimensionality of the data, so we must now reduce the dimensionality of $\tilde{\mathbf{X}}^*$. To represent the space using two dimensions the directions with the two largest eigenvalues are chosen and the others discarded. These two largest eigenvalues and their associated eigenvectors constitute the two largest sources of variation in distance (since they are the two largest contributions to $\mathbb{S}$) this gives the two dimensional representation of the data. 
 
-Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix truncating $\tilde{\mathbf{X}}^*$ to its first two columns, a 2-dimensional representation has been obtained. More generally, the $k$-dimensional MDS representation of the space can be found by taking the first $k$ columns of $\tilde{\mathbf{X}}^*$.
+Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix found by truncating $\tilde{\mathbf{X}}^*$ to its first two columns, a 2-dimensional representation has been obtained. More generally, the $k$-dimensional MDS representation of the space can be found by taking the first $k$ columns of $\tilde{\mathbf{X}}^*$.
 
 In summary, to calculate the MDS configuration of a set of points (given their inter-point distances) we merely need to double centre the matrix of distances, perform an eigen-decomposition on the resulting matrix, and finally truncate the eigen-decomposition and find the new point set.
 
-For finite area smoothing, $d_{ij}$ should be the shortest distance between the points $i$ and $j$ such that the path remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. Given that the distances in $\mathbf{D}$ obey the triangle inequality, the $n$ points from which $\mathbf{D}$ is computed may be represented by MDS in $n-1$-dimensional Euclidean space (at worst, see \cite{gower1968}). In the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
+For finite area smoothing, $d_{ij}$ should be the shortest distance between the points $i$ and $j$ such that the path remains within the domain. Calculation of the inter-point distances is covered in \secref{mdsdist}, however it is important to first justify the use of these steps when non-Euclidean distances are used. Given that the distances in $\mathbf{D}$ obey the triangle inequality, the $n$ points from which $\mathbf{D}$ is computed may be represented by MDS in \label{cor-e8}$(n-1)$-dimensional Euclidean space (at worst, see \citeb{gower1968}\label{cor-e9}). \label{cor-r31-3}In the case when the distances in $\mathbf{D}$ are shortest within-area distances, one can think of the points as residing in a higher number of dimensions in such a way that the distances between them are Euclidean.
 
+\label{cor-r31-4}
 %Note that an additive constant can be computed and added to the non-diagonal entries of $\mathbf{D}$ to ensure that the eigenvalues of $\mathbb{S}$ are non-negative. However, this does not occur in any of the examples shown here.
 
 \subsection{Gower's interpolation} 
@@ -105,21 +106,21 @@ Note that here it is assumed that a 2-dimensional projection has been used in th
 
 We may find the position in the transformed space, $x^*_{\text{new}}$ , of some new datum $x_{\text{new}}$ in the original space using:
 \begin{equation}
-x^*_{\text{new}} = \frac{1}{2} \mathbf{\Lambda}^{-1} \tr{(\mathbf{X}^*)} \mathbb{D}.
+\tilde{x}^*_{\text{new}} = \frac{1}{2} \mathbf{\Lambda}^{-1} \tr{(\tilde{\mathbf{X}}^*)} \mathbb{D}.
 \label{gower}
 \end{equation}
-Here $\mathbf{\Lambda}$ ($2 \cross 2$) and $\tr{(\mathbf{X}^*)}$ ($2 \cross n$) are as above, $\mathbb{D}$ ($n \cross 1$) is the vector of centred within-area distances from the points in the original configuration to $x_{\text{new}}$.
+Here $\mathbf{\Lambda}$ ($n \cross n$) and $\tr{(\tilde{\mathbf{X}}^*)}$ ($n \cross n$)\label{cor-r31-5} are as above, $\mathbb{D}$ ($n \cross 1$) is the vector of centred within-area distances from the points in the original configuration to $x_{\text{new}}$. The resulting vector, $\tilde{x}^*_{\text{new}}$, is an $n$-vector, so again we can truncate to a $k$-vector in a similar way to above (taking the first two entries gives the 2-dimensional projection).
 
 % Thesis fact: this paragraph infact represents about 3 months of work :(
-In \citeb{gower1968} the $i^\text{th}$ element of $\mathbb{D}$ is defined as $-(d^2_{i,\text{new}}-\text{diag}(\mathbf{\tilde{X}}^* \mathbf{\tilde{X}}^{*\text{T}})_i)$\label{cor-4s2}, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,n+1}-\text{diag}(\mathbb{S})_i)$. Since $\mathbb{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
+In \citeb{gower1968} the $i^\text{th}$ element of $\mathbb{D}$ is defined as $-(d^2_{i,\text{new}}-\text{diag}(\mathbf{\tilde{X}}^* \mathbf{\tilde{X}}^{*\text{T}})_i)$\label{cor-4s2}, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,n+1}-\text{diag}(\mathbb{S})_i)$\label{cor-r31-5-2}. Since $\mathbb{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
 
-Gower's interpolation extends simply to the case when $m$ new points are inserted by making $x^*_{\text{new}}$ as $2 \cross m$ matrix and $\mathbb{D}$ an $n \cross m$ matrix.
+Gower's interpolation extends simply to the case when $m$ new points are inserted by having $\mathbb{D}$ as an $n \cross m$ matrix (so that the resulting $\tilde{x}^*_{\text{new}}$ is an $n\cross m$ matrix that can be truncated to the first $k$ columns, as above).
 
 
 %\subsection{Practical considerations}
 \subsection{Using grids to compute the initial MDS configuration}
 
-\citeb{gower1968} shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points. However in the within-area distance case there can the potential problems if the reduced set of points does not encapsulate enough information about the domain. The first section here addresses this problem. The second section investigates the new configuration of points in a similar way to check for the problematic squashing of space seen when the \sch\ transform was used in the previous chapter.
+\citeb{gower1968} shows that performing MDS on a dataset is equivalent to performing MDS on a reduced set of points and then inserting the remaining points when the Euclidean metric is used to calculate the distances\label{cor-r31-6}. However in the within-area distance case there can the potential problems if the reduced set of points does not encapsulate enough information about the domain. The first section here addresses this problem. The second section investigates the new configuration of points \label{cor-r31-7}in a similar way to check for the problematic squashing of space seen when the \sch\ transform was used in the previous chapter.
 
 %\subsubsection{Using grids to compute the initial MDS configuration}
 \label{grids}
@@ -234,14 +235,14 @@ For example in \fig{wdia} ($iv$), the path $(v_1, v_2, v_3)$ is longer than the 
 
 Of course, if there is a direct path between $p_1$ and $p_2$ then the Euclidean distance between the points can be used and the above algorithm is not run.
 
-Although it was not possible to theoretically prove that the algorithm will always converge to the shortest path, it is clear at least that the\label{cor-r32} algorithm will always converge (since this only requires that there be no change in the path for two consecutive iterations). Extensive simulations showed that the algorithm gave sensible results.
+Although it was not possible to theoretically prove that the algorithm will always converge to the shortest path, it is clear at least that the\label{cor-r34} algorithm will always converge (since this only requires that there be no change in the path for two consecutive iterations). Extensive simulations showed that the algorithm gave sensible results.
 
 \section{Simulation experiments}
 \label{mdssims}
 
 In order to investigate the efficacy of \mdsap, a series of simulation experiments were performed. In all cases the results for \mdsap\ were compared to those of the current best method (the soap film smoother) and the standard approach that does not account for leakage (\tprs).
 
-The \textsf{R} packages \texttt{mgcv} and \texttt{soap} with additional bespoke software for finding the within-area distances were used (see \secref{gds-software}). In all cases smoothing parameter estimation was performed using GCV (see \secref{GAMfitting}).
+The \textsf{R} packages \texttt{mgcv} and \texttt{soap} were used for smoothing. Bespoke software was used to find the within-area distances and to perform Gower's interpolation (written by the author, see \secref{gds-software}). MDS projections were performed using the \texttt{cmdscale()} function in \textsf{R}. In all cases smoothing parameter estimation was performed using GCV (see \secref{GAMfitting})\label{cor-soft3}.
 
 \subsection{The Ramsay horseshoe}
 
@@ -249,7 +250,7 @@ If a general method is to be useful it must first perform well on even a simple 
 
 \subsubsection{Setup}
 
-For the horseshoe, samples of 250 points were taken and normal added (for 3 different standard deviations: 0.1, 1 and 10). (These are the settings used in \cite{soap}.) Using these samples, three methods were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the effective degrees of freedom (EDF) and MSE recorded for each replicate. The three methods used were as follows:
+For the horseshoe, samples of 250 points were taken and normal noise added (for 3 different standard deviations: 0.1, 1 and 10). (These are the settings used in \cite{soap}.) Using these samples, three methods were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the effective degrees of freedom\label{cor-r35-1} (EDF) and MSE recorded for each replicate. The three methods used were as follows:
 
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate \tprs\  with basis size 100.
@@ -552,7 +553,7 @@ for $x_k$ as above. Then $\mathbf{S}$ may be calculated as:
 \begin{equation*}
 \mathbf{S}=\frac{b-a}{K}\tr{\mathbf{D}}\mathbf{D}.
 \end{equation*}
-Note that the penalty was computed analytically, rather than numerically in previous chapters.
+Note that in previous chapters, the penalty was computed analytically, rather than numerically  in \texttt{mgcv} so these calculations were unnecessary. However, since a different penalty is evaluated here, it must be calculated numerically.\label{cor-r40}
 
 In this example $\mathcal{L}^*(x)$ was simply calculated using the inverse of the cube of the factor by which the relevant part of the domain (given above) was squashed. 
 
