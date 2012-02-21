@@ -98,7 +98,7 @@ For the purposes of smoothing we are interested in the function $\varphi^{-1}$ (
 
 The forwards map, $\varphi$, is determined up to translation, scaling, and rotation by the prevertices (see below). \label{cor-3s13-1}The \emph{\sch\ parameter problem} is the task of efficiently finding the prevertices (hence $\varphi$). This is a complex problem since the prevertices are solutions to non-linear equations. The \sch\ parameter problem is discussed in \secref{sc-mapping-problem}. For the rest of this section the prevertices (the $w^*_k$s) are assumed to be known. 
 
-The rest of the section discusses the mathematical form of the mappings for the upper half-plane, unit disc and rectangle. In each case the mapping takes the form of an integral which does not have a closed form, so it is important that the integrals can be computed quickly and accurately using quadrature. Accurate and fast computation of these integrals is covered in \citeb[pp. 27--29]{driscoll} and implemented in the \textit{SC Toolbox} package for MATLAB written by Tobin A. Driscoll.
+The rest of the section discusses the mathematical form of the mappings for the upper half-plane, unit disc and rectangle. In each case the mapping takes the form of an integral which must be evaluated numerically (since there are not closed-form solutions). Accurate and fast (since often many evaluations are needed) computation of these integrals is covered in \citeb[pp. 27--29]{driscoll} and \citeb{howell90}. Methods for finding and computing \sch\ transformations are implemented in the \textit{SC Toolbox} package for MATLAB written by Tobin A. Driscoll.
 
 \subsubsection{The upper half-plane}
 \label{sc-parprob}
@@ -123,21 +123,34 @@ The formula for the unit disc looks very similar to that for the upper half-plan
 As above, $A$ and $C$ are complex constants responsible for scaling, translation, and rotation, and $w^*_0$ is the base point of the integration.
 
 \subsubsection{Rectangle}
+\label{cor-3s13-4}\label{cor-3s15-2}\label{cor-r29}\label{cor-r29-4}\label{cor-r29-5}
 
-For the rectangle case, four vertices of $\Gamma$ which will correspond to the four corners of the rectangle must be specified. This uniquely specifies the aspect ratio of the rectangle (\cite[p. 48]{driscoll}).
+The rectangle mapping is slightly different in its calculation to the two above mappings. The mapping proceeds in two stages: first mapping from the rectangle to the upper half-plane and then mapping from upper half-plane to $W$ can be calculated (prevertices lie on the real line, as described for the upper half-plane case). 
 
-The rectangle mapping is slightly different in its calculation to the two above mappings. First, $W$\label{cor-3s15} is mapped to the upper half-plane as detailed above. From there the Jacobi elliptic function (\cite[p. 701]{handbuch}) is used to map a rectangle to the upper half-plane:
+For the rectangle case, the four vertices of $\Gamma$ which will correspond to the four corners of the rectangle must be specified. The mapping from the rectangle to the upper half-plane is exactly defined by the Jacobi elliptic sine function, $\text{sn}$ (further information may be found in \citeb[p. 701]{handbuch}, \citeb[p. 567--586]{aands} and the appendix of \citeb{howell90}). The Jacobi elliptic sine function maps the corners of the rectangle to the points $-\gamma^{-1/2}$, $-1$, $1$ and $\gamma^{1/2}$ on the real line (these are marked in order as $A$, $B$, $C$ and $D$ in figure \ref{rectangledia}). $\gamma$ is defined by the aspect ratio of the rectangle and hence which corners of the rectangle map to which vertices of $\Gamma$ (the computation is covered in depth in the appendix of \citeb{howell90} and \citeb[p. 50]{driscoll}). We now have $\text{sn}$ which maps from the rectangle to the upper half-plane, so all that is required is to fine the \sch\ mapping from the upper half-plane to the polygon, $W$. This is performed exactly as described above.
+
+\label{cor-3s16}The computation of this map is expensive due to the evaluation of the elliptic function (\cite[p. 49]{driscoll}). \citeb{howell90} propose a shortcut by mapping to the strip, i.e. $\log$-transforming the points in the upper half-plane to the infinite strip ($0 < \text{Im}\ z < 1$; \citeb[p. 44]{driscoll}). The \sch\ formula to map from the strip is:
 \begin{equation*}
-J_e(w^*,\gamma)=\int_0^{w^*} \frac{1}{\sqrt{1-\gamma\sin^2t}} \text{d} t,
+\varphi(w^*) = A + C \int^{w^*}_{w^*_0} \exp\left[ \frac{\pi}{2}\left(\alpha_- - \alpha_+\right)\zeta\right] \prod_{k=1}^{K} \left [ \sinh\frac{\pi}{2}(\zeta - w^*_k) \right]^{\alpha_k-1} d\zeta.
 \end{equation*}
-where $w^*$ is some point in the rectangle and $\gamma$ specifies where the corners of the rectangle map to on the upper half plane (the points are $-\gamma^{-1/2}, -1, 1, \gamma^{1/2}$). 
+where $\alpha_-$ and $\alpha_+$ are the so-called divergence angles which allow for each end of the strip to map to a different shape (otherwise the mapping will be symmetrical along this line $\text{Re}\ z = \frac{1}{2}$), $\sinh$ is the hyperbolic $\sin$ function. The mapping requires that one prevertex be fixed to the origin. This is how the mapping is computed in the MATLAB package \textit{SC Toolbox}, used below\label{cor-soft4}. 
 
-\label{cor-3s16}The computation of this map is expensive due to the evaluation of the elliptic function (\cite[p. 49]{driscoll}), \citeb{howell90} propose a shortcut by mapping to the strip (which is used in the MATLAB package \textit{SC Toolbox}, used below).
+Figure \ref{rectangledia} shows the series of mappings required, including the use of the mapping from the upper half-plane to the strip for computational convenience.
+
+% Diagram showing the series of rectangle mappings (from omnigraffle)
+\begin{figure} [t]
+\centering
+\includegraphics[width=\textwidth]{sc/figs/rectangledia.pdf}
+\caption{An example of the series of mappings required to go from the rectangle to an arbitrary polygon using the \sch\ transform. From left to right: the corners of the rectangle are mapped to points on the real line using the Jacobi elliptic function; using a $\log$ transformation, points in the upper-half plane are mapped to the strip (this is purely for computational convenience, this step could be skipped and the \sch\ transform from the upper half-plane to the polygon found); finally, points are mapped from the strip to the polygon via \sch\ transform.}
+\label{rectangledia}
+\end{figure}
 
 \subsection{Computation of the \sch\ mapping}
 \label{sc-mapping-problem}
 
-To compute the map, the prevertices, $w^*_k$ must be found. The complex constants $A$ and $C$ control scaling, translation, and rotation and can \label{cor-r29-3}be computed once the prevertices are found. The $w^*_k$ are found by iteratively by mapping those points back to the polygon to give an approximation to $\Gamma$, $\Gamma^\prime$. To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ the following set of equations are used:
+To compute the map, the prevertices, $w^*_k$ must be found. \label{cor-3s17}As mentioned above, the prevertices are solutions to complicated, non-linear equations and must be found numerically. This section illustrates a simple algorithm for finding the prevertices (the primary reference is \citeb[p. 23--27]{driscoll}).
+
+The complex constants ($A$ and $C$) in the above equations control scaling, translation, and rotation and can \label{cor-r29-3}be computed once the prevertices are found. The $w^*_k$ are found by iteratively by mapping those points back to the polygon to give an approximation to $\Gamma$, $\Gamma^\prime$. To measure the quality of approximation of $\Gamma^\prime$ to $\Gamma$ the following set of equations are used:
 \begin{equation}
 \label{optimizeme}
 F_k = \frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert} \qquad \text{for } k=3,\dots,K-1.

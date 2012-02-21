@@ -19,9 +19,10 @@ The points raised in the e-mail have been addressed as follows:
 \begin{itemize}
 	\item \pref{cor-r22} Explained that \texttt{soap} and \texttt{mgcv} were used.
 	\item \pref{cor-soft1} Clarified that all the models were fitted using existing libraries.
-	\item \pref{cor-soft2} Added mention of the \textit{SC Toolbox} and it's author.
-	\item \pref{cor-soft3} Clarified that I wrote the code for finding the distances and performing Gower's interpolation. \texttt{soap} and \texttt{mgcv} were used for smoothing. \textsf{R}'s built-in MDS routine was used.
+	\item \pref{cor-soft2}, \pref{cor-soft4} Added mention of the \textit{SC Toolbox} and it's author.
 	\item \pref{sc-sims} Explains that the MATLAB package \textit{SC Toolbox} is used for the \sch\ mapping and \texttt{mgcv} and \texttt{soap} are used for smoothing.
+	\item \pref{cor-soft3} Clarified that I wrote the code for finding the distances and performing Gower's interpolation. \texttt{soap} and \texttt{mgcv} were used for smoothing. \textsf{R}'s built-in MDS routine was used.
+
 \end{itemize}
 \textit{Throughout the thesis, we would like you to be clear about what software is being used: at present, it is not always clear whether you are picking up and running with “off-the shelf” software (which turned out to be the case for the Schwarz-Christoffel transform) or whether you had to write new code yourself. The work of others should always be duly acknowledged; and you shouldn?t be shy about advertising your own contributions! }
 \item \textit{In Chapter 4, the discussion of the “adjustment” {\cal L} needs to be clarified to make clear that it is heuristic: at present, it is presented as somehow deeper than this. As discussed during the oral examination, one possibility would be to start by considering the idea of using the Jacobian of the transformation, explaining why (as indicated by the candidate during the oral) this didn?t work, and then moving on to the “engineering” solution.}
@@ -33,7 +34,7 @@ The points raised in the e-mail have been addressed as follows:
 \label{richard}
 
 \begin{enumerate}
-\item p. 26 Changed ``this data'' to ``these data''
+\item p. 26 Changed ``this data'' to ``these data''. Also: \pref{cor-r1-2}, \pref{cor-r1-3}, \pref{cor-r1-4}, \pref{cor-r1-5} ``is'' $\rightarrow$ ``are''; \pref{cor-r1-6}, \pref{cor-r1-7} ``was'' $\rightarrow$ ``were''; \pref{cor-r1-8} ``it'' $\rightarrow$ ``they''.
 \item p. 26 Changed to talk about trend surface, rather than process.
 \item p. 28 ``Complementary''
 \item p. 29, 30, [[TKTKTK p66:13, p227:6 find at end!]] ``effect'' $\rightarrow$ ``affect''.
@@ -61,20 +62,20 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-r26} Added figure showing spatial groups and changed caption accordingly. Caption also claimed that the grid was 10x10, it was 5x5. Added comment on the line in the scale-location plot, which does indeed correspond to zeros in the data, coloured these data grey.
 \item \pref{cor-r27} Added comment about how tight the intervals in figure 2-5 are.
 \item \pref{cor-r28} Added timing for model fitting.
-\item \textit{Chapter 3} \pref{cor-r29}
+\item \textit{Chapter 3} \pref{cor-r29} Much of this is covered in the re-write of the rectangle section (see corresponding question from SS).
 \begin{itemize}
 	\item \pref{cor-r29-1} Tidied up and reordered these paragraphs so that we know we're talking about complex numbers before we start.
-	\item \pref{cor-r29-2}
+	\item \pref{cor-r29-2} I've removed the equation for the Jacobi elliptic sine function; I don't think that laying out the definition here is actually very useful to the understanding of the \sch\ transform itself and distracts from the rest of the section. The full explanation would probably take up about another page, which seemed like a major diversion.
 	\item \pref{cor-r29-3} ``can be computed''.
-	\item \pref{cor-r29-4}
-	\item \pref{cor-r29-5}
+	\item \pref{cor-r29-4} Removed definition of $J_e$, see two above.
+	\item \pref{cor-r29-5} More detail on the strip mapping added.
 	\item \pref{cor-r29-6} Removed sentence, as advised by SS, below.%corrected to ``known''.
 \end{itemize}
 \item \textit{Chapter 4} \pref{cor-r30}, \pref{cor-r30-1} ``principle'' $\rightarrow$ ``principal''.
 \item \pref{cor-r31} Clarified that we're pretending that we don't know the $x_i$s.
 \begin{itemize}
 	\item \pref{cor-r31-1}``The first two terms in on'' $\rightarrow$ ``The contributions from the first two terms''
-	\item \pref{cor-r31-2}
+	\item \pref{cor-r31-2} \textbf{Not clear what Richard means here, is there any way you can clarify?}
 	\item \pref{cor-r31-3} Removed sentence as suggested.
 	\item \pref{cor-r31-4} Removed paragraph as suggested.
 	\item \pref{cor-r31-5-2} Corrected matrix dimensions, $\tr{(\mathbf{X}^*)} \rightarrow \tr{(\tilde{\mathbf{X}}^*)}$. \pref{cor-r31-5} $\text{diag}(\mathbb{S})_{ii} \rightarrow \text{diag}(\mathbb{S})_i$. Further clarification.
@@ -166,11 +167,11 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-3s10} Corrected as suggested.
 \item \pref{cor-3s11} Final $\varphi$ should be $\varphi^{-1}$.
 \item \pref{cor-3s12} Corrected ``may'' $\rightarrow $ ``many''.
-\item \pref{cor-3s13-1} Attempted to clarify introduction to the section. \pref{cor-3s13-2} clarified that the prevertices lie on the real line for the upper half plane case. \pref{cor-3s13-3} prevertices are complex in the unit disc case.
+\item \pref{cor-3s13-1} Attempted to clarify introduction to the section. \pref{cor-3s13-2} Clarified that the prevertices lie on the real line for the upper half plane case. \pref{cor-3s13-3} Prevertices are complex in the unit disc case. \pref{cor-3s13-4} Prevertices rectangle case are covered in re-write of that section, see below. 
 \item \pref{cor-3s1-1} Changed $\Gamma$ to $W$. \pref{cor-3s14-1} First sentence the right way around. \pref{cor-3s14-2} $w_0 \rightarrow w^*_0$.  \pref{cor-3s14-3} Talking about calculation numerically, put into separate paragraph. Added some more information about the base point of the integration.
-\item \pref{cor-3s15} Changed $\Gamma$ to $W$.
+\item \pref{cor-3s15} Changed $\Gamma$ to $W$. \pref{cor-3s15-2} Added further explanation to the rectangle map, including a figure illustrating how the series of maps work.
 \item \pref{cor-3s16} Put this computational bit in a separate paragraph, cleared up who solved the numerical issue.
-\item \pref{cor-3s17} 
+\item \pref{cor-3s17} Introduced the section a bit more.
 \item \pref{cor-3s18-1} Removed ref to (3.3), twice. \pref{cor-3s18-2} I've reordered this paragraph, putting the rectangle first and referencing where that comes from. I've left the unit disc but in since I do show examples of the unit disc later. 
 \item \pref{cor-3s19} Removed sentence, don't really need to know this.
 \item \pref{cor-3s20} Added initial values in step 1 of algorithm.
