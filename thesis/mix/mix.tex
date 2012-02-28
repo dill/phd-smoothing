@@ -5,25 +5,25 @@
 
  As was shown in chapter \ref{intro-DS}, distance sampling (\cite{IDS}, \cite{ADS}) is a suite of methods for estimating the size and/or density of biological populations. The most common approach, referred to as conventional distance sampling (CDS), is based on methods developed by \citeb{buckland92}. A commonly used extension to this methodology allows for the probability of detection to vary with covariates as well as just distance from the observer (multiple covariate distance sampling, MCDS, \cite[chapter 3]{ADS}).
 
-Estimating the detection function is key to distance sampling. Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fitted to the data, in particular non-monotone detection functions (as seen in \secref{intro-ds-mono}), in particular in figure \ref{fig1}.
+Estimating the detection function is key to distance sampling. Standard distance sampling methods use the ``key function plus adjustment series'' formulation for the detection function. This can lead to unrealistic functions being fitted to the data\label{cor-8s1}, in particular non-monotone detection functions (as seen in \secref{intro-ds-mono}), in particular in figure \ref{fig1}.
 
 In this chapter, a new class of distance sampling detection function models based on mixtures of simple parametric key functions is introduced. In the next section the models are described and following from that \secref{s:optimization} gives details of the optimization procedure and parametrization. Sections \ref{mmds-sims} and \ref{s:data} show the results of a simulation study and then analysis of real data, respectively. The final section gives some concluding remarks.
 
 \section{Finite mixture model detection functions}
 
-Following on from the definitions of the detection functions given in chapter \ref{intro-DS}, this section shows how from the definition of a mixture model detection function, the likelihood can be found for covariate and non-covariate models of both line and point transect data.
+Following on from the definitions of the detection functions given in \secref{intro-ds-detfct}\label{cor-8s2} in chapter \ref{intro-DS}, this section shows how from the definition of a mixture model detection function, the likelihood can be found for covariate and non-covariate models of both line and point transect data.
 
 \subsection{Formulation}
 \label{s:detfcts}
 
-Denoting the detection function $g$, as before, consider a sum of $J$ mixture (detection function) components $g_j$, scaled by some mixture proportions $\phi_j$:
+\label{cor-8s3}Denoting the detection function $g$, as before, consider a sum of $J$ mixture (detection function) components $g_j$, scaled by some mixture proportions $\phi_j$:
 \begin{equation}
-g(x,\mathbf{Z}; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j g_j(x,\mathbf{z}_i; \bm{\theta}_j),
+g(x,\mathbf{z}; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j g_j(x,\mathbf{z}; \bm{\theta}_j),
 \label{mix-detfct}
 \end{equation}
-where $\sum_{j=1}^J \phi_j = 1$, $\bm{\phi}$ is a $J$-vector of the $\phi_j$s. As in chapter \ref{intro-DS}, the distance is denoted $x$, the $\bm{\theta}_j$s are vectors of parameters for function $g_j$, $\bm{\theta}$ is a vector of all of the $\bm{\theta}_j$s and $\mathbf{Z}$ is an $n\times K$ matrix of covariates with rows $\mathbf{z}_i$.
+where $\sum_{j=1}^J \phi_j = 1$, $\bm{\phi}$ is a $J$-vector of the $\phi_j$s. As in chapter \ref{intro-DS}, the distance is denoted $x$, the $\bm{\theta}_j$s are vectors of parameters for function $g_j$, $\bm{\theta}$ is a vector of all of the $\bm{\theta}_j$s and $\mathbf{z}$ is a $K$-vector of covariates (more detail on the covariates is provided in the next section).
 
-Here all of the $g_j$s are chosen to be half-normal functions, although other monotonic functions such as hazard-rate could be chosen (and the $g_j$s need not all have the same form). A non-covariate, $J$-point, half-normal mixture model would then be written as:
+Here all of the $g_j$s are chosen to be half-normal functions, although other monotonic functions such as hazard-rate could be chosen (and the $g_j$s need not all have the same form). A non-covariate, half-normal mixture model with $J$ components (henceforth, a $J$-point mixture\label{cor-e10}) would then be written as:
 \begin{equation*}
 g(x; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j \exp \Big( - \frac{x^2}{2\sigma_j^2} \Big).
 \end{equation*}
@@ -31,13 +31,15 @@ So here $\bm{\theta} = (\sigma_1, \ldots, \sigma_J)$ and there are no covariates
 
 \subsubsection{Covariates}
 
-Covariates can be included in a similar way to MCDS (\secref{intro-ds-covar}, \cite[Chapter 3]{ADS}). Here it is assumed that each mixture component has a different scale parameter, but that the covariates affect those scale parameters in the same way. This means that the ``intercept'' term in the covariate model is different for each mixture component but the other covariates are estimated jointly for all components. Other more complex models with different covariates in each mixture component may be possible, but only the simplest model is considered here.
+Covariates can be included in the same way as MCDS (\secref{intro-ds-covar}, \cite[Chapter 3]{ADS}): it is assumed that each mixture component has a different scale parameter, but that the covariates affect all of the scale parameters in the same way. This means that the ``intercept'' term in the covariate model is different for each mixture component but the other covariates are estimated jointly for all components. Again, the detection function is modelled as conditional on a given set of covariates\label{cor-8s3-3}. Other more complex models with different covariates in each mixture component may be possible, but only the simplest model is considered here.
 
 Analogously to \secref{intro-ds-covar}, using $i$ to subscript each observation, the formulation for the scale parameter $\sigma_{ij}$, is therefore:
 \begin{equation*}
 \sigma_{ij} = \exp( \beta_{0j} + \sum_{k=1}^K \beta_k z_{ik}),
 \end{equation*}
-where $z_{ik}$ is the $k^\text{th}$ covariate for the $i^\text{th}$ observation. As an example, for a 2-point mixture with 1 covariate, the scale parameters then have the form:
+where $z_{ik}$ is the $k^\text{th}$ covariate for the $i^\text{th}$ observation. It is therefore possible to separate the ``individual'' and ``mixture'' parts of the scale parameter since $\sigma_{ij}=\sigma_i\sigma_j$.\label{cor-8s4}
+
+As an example, for a 2-point mixture with 1 covariate, the scale parameters then have the form:
 \begin{equation*}
 \sigma_{i1} = \exp( \beta_{01} + \beta_1 z_{i1}) \quad \text{and} \quad \sigma_{i2} = \exp( \beta_{02} + \beta_1 z_{i1}) \text{ for } i=1,\ldots,n,
 \end{equation*}
@@ -47,9 +49,9 @@ and then $\bm{\theta}_j = (\beta_{0j}, \beta_1)$ and $\bm{\theta} = (\beta_{01},
 
 \subsubsection{Line transects}
 
-For line transects, given an $n$-vector of perpendicular distances $\mathbf{x}=\left ( x_1,\ldots,x_n \right )$ and associated covariate vectors $\bm{z}_i$ (the rows of $\mathbf{Z}$), the likelihood is given by:
+\label{cor-8s5}For line transects, given an $n$-vector of perpendicular distances $\mathbf{x}=\left ( x_1,\ldots,x_n \right )$ and associated covariate vectors $\bm{z}_i$ (the rows of $\mathbf{Z}$), the conditional likelihood is given by:
 \begin{align}
-\mathcal{L}(\bm{\theta},\bm{\phi}; \mathbf{x},\mathbf{Z}) &= \prod_{i=1}^n f(x_i,\bm{z}_i; \bm{\theta},\bm{\phi}) \notag \\
+\mathcal{L}(\bm{\theta},\bm{\phi}; \mathbf{x},\mathbf{Z}) &= \prod_{i=1}^n f(x_i \vert \bm{z}_i; \bm{\theta},\bm{\phi}) \notag \\
 &= \prod_{i=1}^n \frac{g(x_i,\bm{z}_i; \bm{\theta},\bm{\phi})}{\mu_i} \notag \\
 &= \prod_{i=1}^n \frac{\sum_{j=1}^J \phi_j g_j(x_i,\bm{z}_i; \bm{\theta}_j)}{\mu_i} \label{lt-lik}
 \end{align}
@@ -58,7 +60,7 @@ where $\mu_i$, the effective strip width for an observation with the same covari
 \mu_{i} &= \int_0^w  g(x,\bm{z}_i; \bm{\theta}) \text{d}x,\\
 & =  \int_0^w  \sum_{j=1}^J \phi_j g_j(x,\bm{z}_i; \bm{\theta}_j) \text{d}x,\\
 & = \sum_{j=1}^J \phi_j \int_0^w  g_j(x,\bm{z}_i; \bm{\theta}_j) \text{d}x.
-\end{align*}
+\end{align*}\label{cor-8s6}
 
 \subsubsection{Point transects}
 
@@ -70,10 +72,10 @@ For point transects, with radial distances $\mathbf{r}=\left (r_1,\ldots,r_n \ri
 \end{align}
 where the effective area of detection for an observation with covariate vector $\mathbf{z}_i$, $\nu_i$ is defined as:
 \begin{align*}
-\nu_i &= 2\pi \int_0^w  r g(r,\bm{z}_i; \bm{\theta}) \text{d}r,\\
+\nu_i &= 2\pi \int_0^w  r g(r \vert \bm{z}_i; \bm{\theta}) \text{d}r,\\
 & = 2\pi  \int_0^w  \sum_{j=1}^J \phi_j r g_j(r,\bm{z}_i; \bm{\theta}_j) \text{d}r,\\
 & = 2\pi \sum_{j=1}^J \phi_j \int_0^w  r g_j(r,\bm{z}_i; \bm{\theta}_j) \text{d}r.
-\end{align*}
+\end{align*}\label{cor-8s7}
 
 Parameters are estimated using maximum likelihood. In practice maximization is performed on the $\log$-likelihood (see \secref{s:optimization}) with analytic gradients (given in appendix \ref{app-mixderivs}).
 
@@ -105,7 +107,8 @@ First, simulated annealing (\cite[pp. 549-554]{numrec}) was used to explore the 
 
 When using 2-point mixtures, the constraint that the mixture proportions must sum to unity is enforced by definition (since $\phi_2=1-\phi_1$). However, in $J$-point mixtures in general, it is not guaranteed that the proportions sum to 1. The obvious way to get around this would be to add a penalty to the likelihood, should the optimization procedure propose values for the $\phi_j$s that are not in accordance with this condition. This approach is not appealing since the point of using mixtures here is to avoid penalizing or constraining the likelihood if possible. Given the problems inherent in optimizing mixture likelihoods in general, adding penalization only further complicates matters. Instead, a parametrization is used for the mixture proportions which yields $\phi_j$s that comply.
 
-Rather than estimating the $\phi_j$s, estimate $\alpha_p$s, where the relationship between the two is:
+
+\label{cor-8s8}Rather than estimating the $\phi_j$s, estimate $\alpha_j$s, where the relationship between the two is:
 \begin{equation*}
 \phi_j = F(\sum_{p=1}^j e^{\alpha_p}) - F(\sum_{p=1}^{j-1} e^{\alpha_p}) \qquad \text{for } 1\leq j \leq J-1
 \end{equation*}
@@ -122,17 +125,17 @@ where $F$ is any continuous CDF on $(0,\infty]$. Exponentiation ensures that $e^
 \label{mmds-phifig}
 \end{figure}
 
-To transform from the $\phi_j$s back to the $\alpha_p$s by simply re-arranging the above expression.
+To transform from the $\phi_j$s back to the $\alpha_j$s by simply re-arranging the above expression.
 \begin{equation*}
-\phi_j = \log_e \Big(F^{-1}\Big(\phi_j + F(\sum_{p=1}^{j-1} e^{\alpha_p})\Big) - \sum_{p=1}^{j-1} e^{\alpha_p}\Big).
+\alpha_j = \log_e \Big(F^{-1}\Big(\phi_j + F(\sum_{p=1}^{j-1} e^{\alpha_p})\Big) - \sum_{p=1}^{j-1} e^{\alpha_p}\Big).
 \end{equation*}
-Note that only as many $\alpha_p$s are needed as $\phi_j$s, so no additional parameters are required.
+Note that only as many $\alpha_j$s are needed as $\phi_j$s, so no additional parameters are required.
 
 \subsection{Starting values}
 
 \citeb{beavers98} give a method for estimating starting values for the scale parameter of a half-normal detection function. In the non-covariate case, the estimate is given as the intercept parameter from intercept only regression on $\log(x+\frac{w}{1000})$ (where $w$ denotes the truncation distance, as above). For covariate models, the equation used for the scale parameters is used in the regression and the estimated parameters from the linear regression are used as the starting values for the $\beta$s.
 
-A similar approach can be use in the mixture case by dividing the sorted distances into $J$ equal parts. For each of these parts a Beavers and Ramsay-type estimate is used for the $\beta_{0j}$s. The standard Beavers and Ramsay estimate using the full data was used on the other parameters. The $\phi_j$ had starting values of $1/J$ since there is no reason \textit{a priori} to believe anything else.
+\label{cor-8s9}A similar approach can be use in the mixture case by first sorting the distances from smallest to largest, then dividing the sorted distances into $J$ (approximately) equal groups. For each of these groups a Beavers and Ramsay-type estimate is used for the $\beta_{0j}$s. The standard Beavers and Ramsay estimate using the full data was used on the other parameters. The $\phi_j$ had starting values of $1/J$ since there is no reason \textit{a priori} to believe anything else.
 
 \section{Simulations}
 \label{mmds-sims}
@@ -157,7 +160,7 @@ Extensive simulations were carried out to ensure that both parameters could be r
 %In the line transect case, it is known that that the maximum value of $f$ is $1/\mu$ (since $\mu=1/f(0)$ and f(0) is the maximum of $f$), so $M=1/\mu$ (or $1/\mu_i$ in the covariate case). For point transects the maximum value of $f$ is unknown, so for each simulation the maximum was found via numerical optimization (using the \textsf{R} function \texttt{optimize()}). 
 
 \subsection{Simulation settings}
-
+\label{cor-8s10}
 Clearly there are many possible simulation settings that could be used. Four sets of simulations were run, which give a fairly broad range of possible scenarios.
 \begin{enumerate}
 	\item \textit{Non-covariate 2-point detection functions for line transect data}. Four different detection functions were tested, and are shown in the first row of figure \ref{sim-detfcts}. The first two are deliberately fairly easy to fit. The third should be harder, testing the behaviour of the model when one of the parameters is hard to estimate (the scale parameter of one of the mixture components is very large relative to the truncation distance). Finally, the fourth detection function has a large spike, which is similar to that in some of the data analysed in section \ref{s:data}.
@@ -207,13 +210,13 @@ Given the performance of the method in simulation, four data sets were analysed 
 Species & Model & AIC & $\hat{P_a}$ & K-S $p$\\
 \hline
 Harbour seal & Hn+$\cos(2)$ (W\&T) & 2771.05 & 0.425 & 0.515\\
-(in water) & Hn 2-pt  & 2769.86 & 0.335 & 0.945\\
-Harbour porpoise & Hr (W\&T) & 690.66 & 0.212 & 0.99\\
+(in water) & Hn 2-pt  & \textbf{2769.86} & 0.335 & 0.945\\
+Harbour porpoise & Hr (W\&T) & \textbf{690.66} & 0.212 & 0.99\\
  & Hn 2-pt & 692.09 & 0.254 & 0.99\\
-Humpback & Hn+$\cos(2)$ (W\&T) & 1033.06 & 0.386 & 0.672 \\
+Humpback & Hn+$\cos(2)$ (W\&T) & \textbf{1033.06} & 0.386 & 0.672 \\
  & Hn 2-pt & 1035.94 & 0.381 & 0.649 \\
 \end{tabular}
-\caption{Comparison of the results for the \citeb{williams} data. W\&T indicates the results reported in \citeb{williams}, other results are from mixture models where the number of mixture components was selected by AIC. $\cos(x)$ indicates a Cosine adjustment of order $x$.}
+\caption{Comparison of the results for the \citeb{williams} data. AIC and average detectability ($\hat{P}_a$) are given for each model (bold indicates lowest AIC). Kolmogorov-Smirnov test $p$-values (KS $p$) are also given.  W\&T indicates the results reported in \citeb{williams}, other results are from mixture models where the number of mixture components was selected by AIC. $\cos(x)$ indicates a Cosine adjustment of order $x$.\label{cor-8s11}}
 \label{williams-table}
 \end{table}
 
@@ -334,6 +337,7 @@ Mixture model detection functions present an appealing alternative to the adjust
 In all, the methodology set out here presents a useful addition to the family of possible functions that can be used for distance sampling detection functions. The fact that the method includes the standard 1-point half-normal model as a sub-case only makes it more appealing to practitioners. Additionally, its seamless integration into the current framework (allowing goodness of fit and other statistics to be calculated relatively easily) makes it easy to include it in analyses. Hopefully, because of these factors, mixture model detection functions will be seen as one of the standard tools for those analysing distance sampling data.
 
 \section{Acknowledgement}
+\label{cor-7s15}
 
 This chapter of the thesis is based on the paper ``Mixture models for distance sampling detection functions'' by the author and Len Thomas of the Centre for Ecological and Environmental Modelling at the University of St Andrews and is in preparation to submit to \textit{Biometrics}. A mixture model approach to line transect detection functions without covariates was developed as part of the author's MMath thesis at the University of St Andrews under the supervision of Len Thomas. The material detailed here is a significant development from the methods developed in that thesis. 
 
