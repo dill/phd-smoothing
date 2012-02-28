@@ -5,6 +5,7 @@
 Distance sampling (\cite{IDS}, \cite{ADS}) is a popular method for estimating the abundance of biological populations. It has been used by researchers across the globe to assess the abundance of everything from birds nests to marine mammals. Surveys are cheap to run since they do not require many observers (unlike a census) or multiple site visits (unlike mark-recapture). Distance sampling is also rather different from methods like mark-recapture (\cite{ruthbook}) as it does not explicitly include the abundance in the likelihood, as shall be seen below. The popularity of distance sampling is in part due to the software Distance (\cite{distance-software}) which makes it easy to record and analyse distance sampling data. 
 
 \section{From quadrat sampling to distance sampling}
+\label{quad2ds}
 
 One can think of distance sampling as the logical extension of quadrat and strip transect sampling. In quadrat sampling a series of squares (quadrats) are laid out at random over the sample area and the number of objects of interest within each is counted. It is assumed that within each quadrat a census is performed. From the per-quadrat abundance the density is estimated and multiplied-up to find the total abundance. For quadrat sampling to be efficient the quadrats need to be large and hence it is almost impossible to ensure that all objects in the quadrat are seen, this can be further hindered by animals moving between the quadrats during the survey (\cite[p. 2]{IDS}).
 
@@ -27,7 +28,7 @@ The problem with both quadrat and strip sampling is that there may well be many 
 
 Distance sampling is based on this principle; if the objects of interest are seen, then their presence should be recorded. Instead of using fixed-area sampling units, distance sampling requires that only centrelines are specified. The observers should walk (or swim, ride, drive, sail, etc) down the centrelines recording the distances ($x_i$) to the observed objects as they go. Once the survey is complete, the distances are used to estimated the effective area that was sampled. Figure \ref{quad-to-ds} shows the evolution from quadrat to strip to distance sampling.
 
-In equation (\ref{ds-simpleD}) one can think of replacing $w$ with an estimate of $\mu$, the \textit{effective strip (half-)width}. This is the distance at which as many animals were detected beyond as there were missed inside. Further explanation of $\mu$ is given in \secref{gtoD}, but it serves for now to say that by replacing $w$ with $\mu$, an estimate of the area that was effectively surveyed can be found. (\ref{ds-simpleD}) can then be modified to:
+In equation (\ref{ds-simpleD}) one can think of replacing $w$ with an estimate of $\mu$, the \textit{effective strip (half-)width}. This is the distance at which as many animals were detected beyond as there were missed inside. Further explanation of $\mu$ is given in \secref{gtoD}, but it serves for now to say that by replacing $w$ with $\mu$ an estimate of the area that was effectively surveyed can be found. (\ref{ds-simpleD}) can then be modified to:
 \begin{equation}
 \hat{D}=\frac{n}{2\hat{\mu}L}.
 \label{ds-D}
@@ -68,7 +69,7 @@ An example of point transect data is given in figure \ref{ds-pt-example}. In con
 
 \section{Assumptions}
 \label{ds-assumptions}
-\label{cor-7s2}In order to ensure that estimation is unbiased several assumptions are made. It is first assumed that the objects are distributed throughout the survey region according to some stochastic process. Line or point placement must be random with respect to the distribution of objects; given that this is done, it can be safely assumed that the objects are distributed uniformly from the point or line. (\cite[p.  29]{IDS})\label{cor-7s12}. 
+\label{cor-7s2}In order to ensure that estimation is unbiased several assumptions are made. It is first assumed that the objects are distributed throughout the survey region according to some stochastic process. Line or point placement must be random with respect to the distribution of objects; given that this is done, it can be safely assumed that the objects are distributed uniformly (i.e. the process is stationary; see \citeb[p. 49]{ADS}) from the point or line. (\cite[p.  29]{IDS})\label{cor-7s12}. 
 
 In order to obtain reliable estimates of the density from the point or line, the following three assumptions must hold:
 \begin{itemize}
@@ -153,11 +154,13 @@ where $w$ is again the truncation distance and ignoring the exact form of $g(x)$
 \begin{equation*}
 p = \frac{\int_0^w g(x) \text{d}x}{w}.
 \end{equation*}
-So an estimator of density may be written as:
+\label{cor-r59}So, an estimator of density may be written as:
 \begin{equation*}
-\hat{D}=\frac{n}{2L \int_0^w \hat{g}(x) \text{d}x}.
+\hat{D}=\frac{n}{2 w\hat{p} L}=\frac{n}{2\hat{\mu}L}.
 \end{equation*}
-The detection function is one of the functions described in \secref{intro-ds-detfct} and so only its parameter(s) must be estimated. However to first form the likelihood, the probability density function must be defined. Note that the expected number of objects at a distance $x$ from the transect line (including those not observed) is independent of $x$. This then implies (for line transects) that the shape of the density functions is the same as that of the detection function and can therefore be obtained by rescaling (\cite[p. 38]{IDS}). So, the PDF of the perpendicular distance data, conditional on the object being observed is then:
+That is, the density is estimated by the number of observations divided by the effective area that was surveyed. Since $\hat{\mu}$ gives the distance to which as many objects were observed as missed, the area can be treated like a strip transect where everything was observed out to $\hat{\mu}$, the strip is $2\hat{\mu}$ wide (since we are only estimating the half-width), and $L$ long.
+
+The detection function is one of the functions described in \secref{intro-ds-detfct} and so only its parameter(s) must be estimated. However to first form the likelihood, the probability density function of the distances\label{cor-r59-1} must be defined. Note that the expected number of objects at a distance $x$ from the transect line (including those not observed) is independent of $x$. This then implies (for line transects) that the shape of the density functions is the same as that of the detection function and can therefore be obtained by rescaling (\cite[p. 38]{IDS}). So, the PDF of the perpendicular distance data, conditional on the object being observed is then:
 \begin{equation*}
 f(x;\bm{\theta}) = \frac{g(x;\bm{\theta})}{\int_0^w g(x;\bm{\theta}) \text{d}x} = \frac{g(x;\bm{\theta})}{\mu},
 \end{equation*}
@@ -213,7 +216,7 @@ As above, the log of this expression can then be used in an optimization procedu
 
 One can very easily think of the case in which one or more factors (as well as distance) affect the detectability of objects in the survey. A typical example might be the sex or size of the object or weather conditions at the time of observation. When available this information can be very useful in handling heterogeneity in the detectability (\cite[p. 88]{IDS}). Covariates are included in detection function models by using a link function (\cite{davidbthesis}; \cite{covpaper}\label{cor-7s10-2}\label{cor-8s3-1}). Figure \ref{ds-covarex} shows the effect of both continuous and factor covariates on a hazard-rate detection function.
 
-Non-covariate distance sampling, as in the previous section, is commonly referred to as CDS (conventional distance sampling) and covariate distance sampling as MCDS (multiple covariate distance sampling).
+\label{cor-r62}Non-covariate distance sampling, as in the previous section, is commonly referred to as CDS (conventional distance sampling) and covariate distance sampling as MCDS (multiple covariate distance sampling).
 
 % example covariates and how they effect the detection function
 \begin{figure}
@@ -226,7 +229,7 @@ Non-covariate distance sampling, as in the previous section, is commonly referre
 
 \label{cor-7s10}\label{cor-8s3-2}Referring back to the detection functions given in \secref{intro-ds-detfct}, the covariates affect the scale parameters ($\sigma$) of the hazard-rate and half-normal detection functions only. It is also assumed that the distributions of the distances and covariates are independent (\cite{covpaper}). Since the distribution of the covariates is unknown, the conditional distribution of the distances, given the observed covariates is modelled.
 
-\label{cor-7s9}Say that for observation $i$ a set of $K$ covariates are collected and denote them store them in the $K$-vector $\mathbf{z}$ (containing $z_{i1}, \dots, z_{iK}$). The definition of the detection function in (\ref{ds-wordyeqn}) is now:
+\label{cor-7s9}\label{cor-r60}Say that for observation $i$ a set of $K$ covariates are collected and denote them store them in the $K$-vector $\mathbf{z}$ (containing $z_{i1}, \dots, z_{iK}$). The definition of the detection function in (\ref{ds-wordyeqn}) is now:
 \begin{equation*}
 g(x,\mathbf{z})=\mathbb{P} \left(\text{object detected} \vert \text{object was at distance } x \text{ with covariates } \mathbf{z} \right).
 \end{equation*}
@@ -268,12 +271,13 @@ p_i =\frac{2}{w^2}\int_0^w r g(r; \sigma_i) \text{d}r, \qquad \nu_i = 2\pi \int_
 
 \subsection{Estimating population size}
 \label{intro-ds-pop-size}
+\label{cor-r61}
 
 Population size can be found either by multiplying $D$ by the survey area or from a Horvitz-Thompson-like estimator (\cite[pp. 53-56]{thompson}, \cite[p. 23]{ADS}).
 
-For the covariate models this is:
+For the covariate models the population size may be estimated by:
 \begin{equation}
-N = \sum_{i=1}^n \frac{1}{c_i p_i},
+\hat{N} = \sum_{i=1}^n \frac{1}{c_i \hat{p}_i},
 \label{HT-ds-est}
 \end{equation}
 where $c_i$ is the \textit{coverage probability} (the probability of an individual lying within the surveyed area), and $p_i$ is the probability of the $i\text{th}$ observation being detected given it is within the sampled area (\cite[p. 7 and 38]{ADS}). For the analyses presented here it is assumed that the probability of being in the sampled area is constant across the observations ($c_i=c$) and that:
@@ -282,18 +286,25 @@ c=\frac{2wL}{A},
 \end{equation*}
 where $A$ is the area of the surveyed region. For non-covariate models, this simplifies to:
 \begin{equation*}
-N =  \frac{n}{2 w L p}A,
+\hat{N} =  \frac{n}{2 w L \hat{p}}A,
 \end{equation*}
 for line transects and
 \begin{equation*}
-N =  \frac{n}{m \pi w^2 p}A,
+\hat{N} =  \frac{n}{m \pi w^2 \hat{p}}A,
 \end{equation*}
 for point transects.
 
-A standard summary statistic is the \textit{average detection probability} for an animal within the covered region, $P_a$, which is given by:
+A standard summary statistic is the \textit{average detection probability} for an animal within the covered region, $\hat{P}_a$, which is given by:
 \begin{equation*}
-P_a = n/N.
+\hat{P}_a = n/\hat{N}.
 \end{equation*}
+
+\subsection{Plotting covariate models}
+\label{ds-covplot}
+
+\label{cor-8s12-1}In both this and the next chapter it will be necessary to plot the detection function for a covariate analysis. There are (at least) two ways of plotting the detection function in a covariate analysis. The first is as shown in figure \ref{ds-covarex}, where all but one of the covariates are held at a particular level and the other is varied (over say it's levels or quantiles). The other approach (which will be adopted from here) is to consider a covariate analysis as effectively fitting a detection function to each unique covariate combination, so averaging over the detection functions point-wise should give an indication of the overall shape of the detection function. In this case we evaluate the detection function at each unique covariate combination over distances ranging from 0 to $w$, then simply average their values at each distance to create an overall average detection function. To plot levels or quantiles, the requisite covariate is fixed to that level if there is only one covariate. If there is more than one covariate, the average performed as before fixing the covariate to its chosen value. This approach is useful here since the analyses are designed to highlight the possible shapes of the detection function, rather than to discover ecologically useful or informative covariates. 
+
+From here on, when the phrase ``average detection function'' is used, this refers to a point-wise average of the possible detection functions (i.e. all of the unique values of the scale parameter) over the range $(0,w)$. When quantile/level plots are shown, it is the case that the quantile is fixed and the detection function is averaged over the other values. In each case the detection functions are normalised so that $g(0\vert\cdot)=1$.
 
 \section{Other considerations}
 
@@ -310,14 +321,14 @@ Although AIC is a good measure of relative fit of a model, some formal absolute 
 \label{intro-ds-mono}
 One potential pitfall of both CDS and MCDS is that  it is possible to formulate models which are not physically realistic. In particular it is possible to create models for the detection function which are non-monotonic functions of distance. Data with a mode away from zero distance may occur when there has been heaping (when observers ``eyeball'' distances and round to convenient numbers like 5, 10, 20m etc, \cite[pp. 34-35]{IDS}), when objects move prior to observation. Fitting models to such ``bumps'' can cause bias in abundance estimates (\cite[p. 132]{IDS}). To get around this problem the software package Distance (\cite{distance-software})\label{cor-7s14-2} constrains the detection function to be monotonic. This is done by taking 10 equally spaced distances from $0$ to $w$ and checking that when the detection function is evaluated at each of these points they are less than the last ($g(x_i)\geq g(x_{i+1})$ for distances $x_1 \dots x_{10}$ where $x_1=0$). This is referred to as \textit{strong monotonicity}. Alternatively, \textit{weak monotonicity} may be enforced, where each point is checked only against the value of $g$ at the origin ($g(0)\geq g(x_i)$).
 
-Constraining the shape of the detection function does not necessarily always lead to monotonic detection functions since the constraints can only be applied at a finite number of points. This can lead to constraints missing the non-monotonic points in the function. An example from \citeb{williams} is shown in the first plot of figure \ref{fig1}. Here a half-normal detection function with one second order cosine adjustment term was fitted to humpback whale sightings. In the MCDS case, \citeb{distance-software} do not constrain the detection function. The second and third panels in figure \ref{fig1} show a detection function when covariate data was included in the model. In this case for long-finned pilot whales (\cite{pike}) the Beaufort sea state was added as a covariate, the first plot shows that the detection function, when averaged over the covariate values, shows some non-monotonic behaviour. However, in the third panel the marginal detection function at 25\%, 50\% and 75\% quantiles of the covariate are shown and here the non-monotonicity is particularly pronounced. 
+Constraining the shape of the detection function does not necessarily always lead to monotonic detection functions since the constraints can only be applied at a finite number of points. This can lead to constraints missing the non-monotonic points in the function. An example from \citeb{williams} is shown in the first plot of figure \ref{fig1}. Here a half-normal detection function with one second order cosine adjustment term was fitted to humpback whale sightings. In the MCDS case, \citeb{distance-software} do not constrain the detection function. The second and third panels in figure \ref{fig1} show a detection function when covariate data was included in the model. In this case for long-finned pilot whales (\cite{pike}) the Beaufort sea state was added as a covariate, the first plot shows that the detection function, when averaged over the covariate values, shows some non-monotonic behaviour. However, in the third panel shows the detection function the covariate is fixed to the values 1.5, 2 and 3 (from bottom to top) and here the non-monotonicity is particularly pronounced. 
 
 Although constrained optimization is appealing, it is obviously always preferable to perform unconstrained optimization if possible. Using a class of functions to model the detection function which were both flexible and did not exhibit the undesirable property of non-monotonicity could offer a more  convincing and physically realistic alternative to the conventional way of performing distance analyses.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{mix/figs/figure1.pdf}
-\caption{Two examples of detection functions which are not monotone. The first panel is data from humpback whale (reproduced from data in \citeb{williams}), a half-normal detection function with cosine adjustments provided the best fit to the data, even with constraints in place, the detection function is non-monotonic. The second and third panels are plots for the long-finned pilot whale data taken from \cite{pike}. In the second panel the detection function is averaged over the covariate values and the third shows marginal detection function for quantiles of the Beaufort sea sate covariate (the model was a half-normal detection function), showing that the non-monotonicity gets worse at higher levels of the covariate.}
+\caption{Two examples of detection functions which are not monotone. The first panel is data from humpback whale (reproduced from data in \citeb{williams}), a half-normal detection function with cosine adjustments provided the best fit to the data, even with constraints in place, the detection function is non-monotonic. The second and third panels show plots of a half-normal detection function with cosine adjustments for the long-finned pilot whale data taken from \citeb{pike}\label{cor-e14}. The second panel shows the average detection function (as described in \secref{ds-covplot}) and the third shows the detection function when the covariate values for the Beaufort sea \label{cor-e13}state are set to the values 1.5, 2 and 3 (from light to dark), showing that the non-monotonicity gets worse at higher levels of the covariate.\label{cor-r64}\label{cor-e15}}
 \label{fig1}
 \end{figure}
 

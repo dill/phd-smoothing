@@ -98,7 +98,7 @@ For the purposes of smoothing we are interested in the function $\varphi^{-1}$ (
 
 The forwards map, $\varphi$, is determined up to translation, scaling, and rotation by the prevertices (see below). \label{cor-3s13-1}The \emph{\sch\ parameter problem} is the task of efficiently finding the prevertices (hence $\varphi$). This is a complex problem since the prevertices are solutions to non-linear equations. The \sch\ parameter problem is discussed in \secref{sc-mapping-problem}. For the rest of this section the prevertices (the $w^*_k$s) are assumed to be known. 
 
-The rest of the section discusses the mathematical form of the mappings for the upper half-plane, unit disc and rectangle. In each case the mapping takes the form of an integral which must be evaluated numerically (since there are not closed-form solutions). Accurate and fast (since often many evaluations are needed) computation of these integrals is covered in \citeb[pp. 27--29]{driscoll} and \citeb{howell90}. Methods for finding and computing \sch\ transformations are implemented in the \textit{SC Toolbox} package for MATLAB written by Tobin A. Driscoll.
+The rest of the section discusses the mathematical form of the mappings for the upper half-plane, unit disc and rectangle. In each case the mapping takes the form of an integral which must be evaluated numerically (since there are not closed-form solutions). Accurate and fast (since often many evaluations are needed) computation of these integrals is covered in \citeb[pp. 27--29]{driscoll} and \citeb{howell90}. Methods for finding and computing \sch\ transformations are implemented in the \textit{SC Toolbox} package for MATLAB written by Tobin A. Driscoll\label{cor-soft2}.
 
 \subsubsection{The upper half-plane}
 \label{sc-parprob}
@@ -123,7 +123,7 @@ The formula for the unit disc looks very similar to that for the upper half-plan
 As above, $A$ and $C$ are complex constants responsible for scaling, translation, and rotation, and $w^*_0$ is the base point of the integration.
 
 \subsubsection{Rectangle}
-\label{cor-3s13-4}\label{cor-3s15-2}\label{cor-r29}\label{cor-r29-4}\label{cor-r29-5}
+\label{cor-3s13-4}\label{cor-3s15-2}\label{cor-r29}\label{cor-r29-4}\label{cor-r29-5}\label{cor-r29-2}
 
 The rectangle mapping is slightly different in its calculation to the two above mappings. The mapping proceeds in two stages: first mapping from the rectangle to the upper half-plane and then mapping from upper half-plane to $W$ can be calculated (prevertices lie on the real line, as described for the upper half-plane case). 
 

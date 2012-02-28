@@ -19,14 +19,15 @@ The points raised in the e-mail have been addressed as follows:
 \begin{itemize}
 	\item \pref{cor-r22} Explained that \texttt{soap} and \texttt{mgcv} were used.
 	\item \pref{cor-soft1} Clarified that all the models were fitted using existing libraries.
-	\item \pref{cor-soft2}, \pref{cor-soft4} Added mention of the \textit{SC Toolbox} and it's author.
+	\item \pref{cor-soft2}, \pref{cor-soft4} Added mention of the \textit{SC Toolbox} and its author.
 	\item \pref{sc-sims} Explains that the MATLAB package \textit{SC Toolbox} is used for the \sch\ mapping and \texttt{mgcv} and \texttt{soap} are used for smoothing.
 	\item \pref{cor-soft3} Clarified that I wrote the code for finding the distances and performing Gower's interpolation. \texttt{soap} and \texttt{mgcv} were used for smoothing. \textsf{R}'s built-in MDS routine was used.
+	\item \pref{cor-soft5} Clarified that \texttt{mrds} and \texttt{mmds} were used to fit the case studies for the mixture models.
 
 \end{itemize}
 \textit{Throughout the thesis, we would like you to be clear about what software is being used: at present, it is not always clear whether you are picking up and running with “off-the shelf” software (which turned out to be the case for the Schwarz-Christoffel transform) or whether you had to write new code yourself. The work of others should always be duly acknowledged; and you shouldn?t be shy about advertising your own contributions! }
 \item \textit{In Chapter 4, the discussion of the “adjustment” {\cal L} needs to be clarified to make clear that it is heuristic: at present, it is presented as somehow deeper than this. As discussed during the oral examination, one possibility would be to start by considering the idea of using the Jacobian of the transformation, explaining why (as indicated by the candidate during the oral) this didn?t work, and then moving on to the “engineering” solution.}
-\item \textit{Chapter 7 needs to be restructured: at present the summary appears in Section 7.8, and is followed by two additional sections!}
+\item Chapter 7 has been restructured, this is detailed below.
 \end{itemize}
 
 
@@ -109,10 +110,14 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-r56} \textit{Chapter 6} ``it's'' $\rightarrow$ ``its''.
 \item \pref{cor-r57} ``disirable'' $\rightarrow$ ``desirable''.
 \item \pref{cor-r58} Removed paragraph.
-\item \pref{cor-r59} \textit{Chapter 7} 
+\item \pref{cor-r59} \textit{Chapter 7} Added some further discussion here. \pref{cor-r59-1} It's the pdf of the distances. Stationarity is covered in the assumptions (\pref{cor-7s2}), see also below.
+\item \pref{cor-r60} Typo removed by (SS) correction, below.
+\item \pref{cor-r61} Added hats to $N$, $p$ and $P_a$ as necessary. Re-write of assumptions section (see below) covers the part about the random sampling beforehand now.
+\item \pref{cor-r62} Mentioned CDS/MCDS earlier.
+\item \pref{cor-r63}
+\item \pref{cor-r64} Typo corrected, see modifications below regarding plotting of covariates.
+\item \pref{cor-r65} Plotting of covariates is covered below. Added legend to caption.
 \end{enumerate}
-
-``'' $\rightarrow$ ``''.
 
 \section{Minor corrections from Simon Shaw}
 \label{shaw}
@@ -197,9 +202,9 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-5s1} Added full stop.
 \item \pref{cor-5s2} Added ``that''.
 \item \pref{cor-5s3} Corrected equation.
-\item \pref{cor-5s4} 
-\item \pref{cor-5s5} 
-\item \pref{cor-5s6} 
+\item \pref{cor-5s4} Changed reference to be to equation in this chapter rather than in chapter 1, did the same for the basis function.
+\item \pref{cor-5s5} Added ``for some choice of $s$''. Added some description of the role of $s$ here and re-ordered the section.
+\item \pref{cor-5s6} Clarified that I mean the smallest $s$ satisfying (\ref{duchon-s-eqn}).
 \item \pref{cor-5s7} Replaced hyphen with colon.
 \item \pref{cor-5s8} ``$l$'' $\rightarrow$ ``$\hat{l}$''.
 \item \pref{cor-5s9} Removed ``the''.
@@ -245,14 +250,14 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-8s3} Corrected equation (\label{mix-detfct}). \pref{cor-8s3-2} Added further discussion in previous chapter about covariates. \pref{cor-8s3-1} Added reference to \cite{covpaper}. \pref{cor-8s3-3} Explicitly said that I'm modelling the detection function as conditional on the covariates, as advised.
 \item \pref{cor-8s4} explicitly stated $\sigma_{ij}=\sigma_i\sigma_j$.
 \item \pref{cor-8s5} I do mean the conditional likelihood, I've cleared up the section inline with the corrections detailed above.
-\item \pref{cor-8s6} ``$\mathbf{Z}$'' $\rightarrow$ ``$\mathbf{z}_i$''.
+\item \pref{cor-8s6} ``$\mathbf{Z}$'' $\rightarrow$ ``$\mathbf{z}_i$''. (Also corrected throughout Appendix 1.)
 \item \pref{cor-8s7} ``$\mathbf{Z}$'' $\rightarrow$ ``$\mathbf{z}_i$''.
 \item \pref{cor-8s8} Cleared up subscripts.
 \item \pref{cor-8s9} Clarified what I mean when sorting the distances then splitting them into groups to obtain starting values.
 \item \pref{cor-8s10} Detection functions now defined in the previous chapter. \pref{cor-e10} Cleared up what I mean by a ``a $J$-point mixture''.
-\item \pref{cor-8s11} Expanded caption in figure \ref{williams-table}.
-\item \pref{cor-8s12}
-\item \pref{cor-8s13}
+\item \pref{cor-8s11-1} Expanded discussion of the results for the \citeb{williams} data. \pref{cor-8s11} Expanded caption in figure \ref{williams-table}. \pref{cor-8s11-3} Added some discussion of the harbour seal fits.
+\item \pref{cor-8s12-1} Added a section about how the plotting is done for covariates. \pref{cor-8s12-2} Added some more clarification here.
+\item \pref{cor-8s13} Added discussion of $p$-values for the amakihi data in the main body.
 \end{itemize}
 
 \section{Things I found as I went through\dots}
@@ -267,5 +272,12 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-e7} Clarified the \sch\ algorithm.
 \item \pref{cor-e8} Added some brackets to ``$n-1$-dimensional'' for clarity.
 \item \pref{cor-e9} Corrected bracketing for Gower reference.
+\item \pref{cor-e11} ``fine'' $\rightarrow$ ``find''.
+\item \pref{cor-e12} ``a'' $\rightarrow$ ``at''.
+\item \pref{cor-e13} ``sate'' $\rightarrow$ ``state''.
+\item \pref{cor-e14} Corrected Pike reference.
+\item \pref{cor-e14} Caption claimed the Pike model was half-normal, when it in fact has a cosine adjustment.
+\item \pref{cor-e15} Added some more information on habitat type.
+\item \pref{cor-e16} Added level legend for Pike detection function plot.
 \end{itemize}
 
