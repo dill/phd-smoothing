@@ -14,8 +14,7 @@ The points raised in the e-mail have been addressed as follows:
 \item Corrections to ``minor mathematical and grammatical errors throughout the thesis'' according to the two lists sent are itemized in sections \ref{richard} and \ref{shaw}, below.
 \item Restructured thin plate (\pref{cor-tprs}) and cubic spline (\pref{cor-cubic}) explanation.
 \item Elaboration on soap film and added stronger links to chapter 2.
-\textit{Chapter 1 in general needs to be fleshed out, so as better to set the stage for the remainder of the thesis. For example, the soap film smoother is mentioned almost parenthetically at present, whereas it is adopted as a benchmark for the remainder of Part 1 of the thesis. We do not necessarily ask that all of the details are moved from Chapter 2 (where they appear at present) to Chapter 1: however, some intuition needs to be given, and the key role of this technique needs to be made clear. This would also provide the opportunity to motivate the inclusion of Chapter 2 much more convincingly: the chapter can be presented as a detailed introduction to, and illustration of, the use of the soap film smoother which then sets the stage for the subsequent development.}
-\item 
+\item Regarding the software used:
 \begin{itemize}
 	\item \pref{cor-r22} Explained that \texttt{soap} and \texttt{mgcv} were used.
 	\item \pref{cor-soft1} Clarified that all the models were fitted using existing libraries.
@@ -23,9 +22,7 @@ The points raised in the e-mail have been addressed as follows:
 	\item \pref{sc-sims} Explains that the MATLAB package \textit{SC Toolbox} is used for the \sch\ mapping and \texttt{mgcv} and \texttt{soap} are used for smoothing.
 	\item \pref{cor-soft3} Clarified that I wrote the code for finding the distances and performing Gower's interpolation. \texttt{soap} and \texttt{mgcv} were used for smoothing. \textsf{R}'s built-in MDS routine was used.
 	\item \pref{cor-soft5} Clarified that \texttt{mrds} and \texttt{mmds} were used to fit the case studies for the mixture models.
-
 \end{itemize}
-\textit{Throughout the thesis, we would like you to be clear about what software is being used: at present, it is not always clear whether you are picking up and running with “off-the shelf” software (which turned out to be the case for the Schwarz-Christoffel transform) or whether you had to write new code yourself. The work of others should always be duly acknowledged; and you shouldn?t be shy about advertising your own contributions! }
 \item \textit{In Chapter 4, the discussion of the “adjustment” {\cal L} needs to be clarified to make clear that it is heuristic: at present, it is presented as somehow deeper than this. As discussed during the oral examination, one possibility would be to start by considering the idea of using the Jacobian of the transformation, explaining why (as indicated by the candidate during the oral) this didn?t work, and then moving on to the “engineering” solution.}
 \item Chapter 7 has been restructured, this is detailed below.
 \end{itemize}
@@ -60,7 +57,7 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-r23} Added an extra line explaining that $\lambda_\text{int}$ and $\lambda_\text{bnd}$ are actually estimated rather than $\lambda_\text{space}$. I'm inclined to leave (2.3) as having only $\lambda_\text{space}$ in as it's true in general for tensor products and it makes the explanation of the tensor product simpler. What do you think?
 \item \pref{cor-r24} Added assumptions for posterior.
 \item \pref{cor-r25} Added Richard's paper to the bibliography.
-\item \pref{cor-r26} Added figure showing spatial groups and changed caption accordingly. Caption also claimed that the grid was 10x10, it was 5x5. Added comment on the line in the scale-location plot, which does indeed correspond to zeros in the data, coloured these data grey.
+\item \pref{cor-r26} Added figure showing spatial groups and changed caption accordingly. Caption also claimed that the grid was 10x10, it was 5x5. \pref{cor-r26-2}Added comment on the line in the scale-location plot, which does indeed correspond to zeros in the data, coloured these data grey.
 \item \pref{cor-r27} Added comment about how tight the intervals in figure 2-5 are.
 \item \pref{cor-r28} Added timing for model fitting.
 \item \textit{Chapter 3} \pref{cor-r29} Much of this is covered in the re-write of the rectangle section (see corresponding question from SS).
@@ -76,7 +73,8 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-r31} Clarified that we're pretending that we don't know the $x_i$s.
 \begin{itemize}
 	\item \pref{cor-r31-1}``The first two terms in on'' $\rightarrow$ ``The contributions from the first two terms''
-	\item \pref{cor-r31-2} \textbf{Not clear what Richard means here, is there any way you can clarify?}
+%	\item \pref{cor-r31-2} 
+	\item \textbf{Not clear what Richard means here, is there any way you can clarify?}
 	\item \pref{cor-r31-3} Removed sentence as suggested.
 	\item \pref{cor-r31-4} Removed paragraph as suggested.
 	\item \pref{cor-r31-5-2} Corrected matrix dimensions, $\tr{(\mathbf{X}^*)} \rightarrow \tr{(\tilde{\mathbf{X}}^*)}$. \pref{cor-r31-5} $\text{diag}(\mathbb{S})_{ii} \rightarrow \text{diag}(\mathbb{S})_i$. Further clarification.
@@ -93,7 +91,7 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-r39}
 \item \pref{cor-r40} Noted that numerical calculation of the penalty wasn't necessary before.
 \item \pref{cor-r41} Removed $\dagger$, relic of previous document.
-\item \pref{cor-r42} 
+\item \pref{cor-r42} Clarified that the factor by which the quadrants were stretched were known for one of the cases, clarified that $\mathcal{L}^*$ was calculated from the grid transformed into MDS space.
 \item \pref{cor-r43} Referenced back to section 1.1.
 \item \pref{cor-r44} response is assumed Gamma distributed.
 \item \pref{cor-r45} Corrected grammar.
@@ -276,8 +274,9 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-e12} ``a'' $\rightarrow$ ``at''.
 \item \pref{cor-e13} ``sate'' $\rightarrow$ ``state''.
 \item \pref{cor-e14} Corrected Pike reference.
-\item \pref{cor-e14} Caption claimed the Pike model was half-normal, when it in fact has a cosine adjustment.
-\item \pref{cor-e15} Added some more information on habitat type.
+\item \pref{cor-e15} Caption claimed the Pike model was half-normal, when it in fact has a cosine adjustment.
+\item \pref{cor-e17} Added some more information on habitat type.
 \item \pref{cor-e16} Added level legend for Pike detection function plot.
+\item \pref{cor-e18} 
 \end{itemize}
 

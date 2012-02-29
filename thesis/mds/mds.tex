@@ -555,7 +555,7 @@ for $x_k$ as above. Then $\mathbf{S}$ may be calculated as:
 \end{equation*}
 Note that in previous chapters, the penalty was computed analytically, rather than numerically  in \texttt{mgcv} so these calculations were unnecessary. However, since a different penalty is evaluated here, it must be calculated numerically.\label{cor-r40}
 
-In this example $\mathcal{L}^*(x)$ was simply calculated using the inverse of the cube of the factor by which the relevant part of the domain (given above) was squashed. 
+In this example $\mathcal{L}^*(x)$ was simply calculated using the inverse of the cube of the (known) factor by which the relevant part of the domain (given above) was squashed. 
 
 \subsubsection{Checking that the adjustment works}
 
@@ -614,7 +614,7 @@ Finally, those $(x_{1k},x_{2k})$ that do not lie inside the boundary in MDS spac
 
 \subsubsection{Finding $\mathcal{L}^*$}
 
-Calculating $\mathcal{L}^*(x_1,x_2)$ in two dimensions is more tricky than in the one dimensional case. Since the two-dimensional case is to be used in practice, the method for finding $\mathcal{L}^*(x_1,x_2)$ must depend on the MDS configuration, as the stretch factors will not be known \emph{a priori} (as was the case in the previous example).
+Up to this point it has been assumed that the factors by which the points have been stretched are known. In practice, this is not the case and they must be estimated. Heuristically, one can think of the degree to which the points have been stretched or squashed as a change in the density of the points. By estimating the density of the points over a grid in MDS space (by simply counting the number of points from a grid in the data space are mapped to a particular square in a grid in the MDS space), an approximation to the density change over the whole domain can be found.
 
 The general idea is to make $\mathcal{L}^*(x_1,x_2)$ a function of the change in density of points caused by projecting the original space into MDS space. Assuming that the density in the untransformed space is $1$ everywhere, it is only necessary to calculate the density in MDS space. Having calculated the point density in MDS space, $\mathcal{L}^*(x_1,x_2)$ is just some function of this density.
 
@@ -643,7 +643,7 @@ Note that the power is now $\frac{3}{2}$. This is since the contraction/expansio
 
 In order to make sure that the adjustment works in both the known and unknown contraction/expansion case, a small simulation was run. In this case a surface consisting of two bivariate normal distributions (mean vectors $(0,-0.5)$ and $(0,0.5)$, covariance matrix diagonal entries $(0.2,0.1)$) were sampled from (sample size 300) and then noise added from a $\text{normal}(0,0.05)$ distribution. The surface was then divided into its four constituent quadrants about the origin and squashed according to the following factors (in $(x_1,x_2)$ pairs, in order top left, top right, bottom left, bottom right): ((0.3,5), (1,5), (0.3,1), (1,1)).
 
-The samples were then used to fit a standard \tprs\ model, \tprs\ with adjusted penalty with known stretch factors and a \tprs\ with $\mathcal{L}^*(x_1,x_2)$ estimated from the data. The mean squared error between the truth and prediction over a dense (50 by 50) grid was then calculated.
+The samples were then used to fit a standard \tprs\ model, \tprs\ with adjusted penalty (with the factors above used as the values of $\mathcal{L}^*(x_1,x_2)$) and a \tprs\ with $\mathcal{L}^*(x_1,x_2)$ estimated from the density of the grid once it was transformed into MDS space\label{cor-r42}. The mean squared error between the truth and prediction over a dense (50 by 50) grid was then calculated.
 
 \label{cor-4s10}The simulation results show that there is a decrease in MSE when the expansion/contraction of the space is taken into account (MSEs were: 2.355, 2.30 and 2.305 for thin plate regression splines, known stretch and estimated stretch, respectively). Unfortunately this didn't offer the same visual improvement as the 1-dimensional case.
 
