@@ -26,9 +26,7 @@ Given some region that it is difficult to smooth over, one approach is to transf
 \label{mappingdia}
 \end{figure}
 
-
-
-The \sch\ mapping takes a specified shape and maps it to an arbitrary polygon\label{cor-3s6}. The most common domains to transform to are: (i) the upper half-plane, (ii) a rectangle and (iii) the unit disc. This is achieved in the upper half-plane case by taking the vertices of the polygon and mapping them to points on the real line (see \fig{reallinedia}). This can be thought of as ``unwrapping'' the polygon onto the real line. For the unit disc case, points on the circle bounding the unit disc map to vertices on the polygon (see \fig{unitdiskdia}). The rectangular case is somewhat similar to the unit disc in that extra points are added to the boundary. One the mapping has been performed, those points lying inside the polygon are also moved around, creating a new (non-uniform) distribution of space. These three domains are discussed in more detail in \secref{schparprob}.
+The \sch\ mapping takes a specified shape and maps it to an arbitrary polygon\label{cor-3s6}. The most common domains to transform from are: (i) the upper half-plane, (ii) a rectangle and (iii) the unit disc. This is achieved in the upper half-plane case by taking points on the real line and mapping them to the vertices of the polygon (see \fig{reallinedia}). This can be thought of as ``unwrapping'' the polygon onto the real line. For the unit disc case, points on the circle bounding the unit disc map to vertices on the polygon (see \fig{unitdiskdia}). The rectangular case is somewhat similar to the unit disc in that extra points are added to the boundary. Once the mapping has been performed, those points lying inside the polygon are also moved around, creating a new (non-uniform) distribution of space. These three domains are discussed in more detail in \secref{schparprob}.
 
 % Diagram showing upper half plane to polygon
 \begin{figure} [t]
@@ -111,7 +109,7 @@ Here $A$ and $C$ are complex constants determined once the $w^*_k$ (which all li
 
 Mathematically, the base point of the integration does not matter, as it only affects the value of $A$ (\cite[p. 3]{driscoll}).\label{cor-3s14-3} However, when calculating $\varphi(w^*)$ numerically, $w^*_0$\label{cor-3s14-2} is usually chosen to be the prevertex nearest to the point $w^*$. This is primarily to avoid numerical problems (such as avoiding singularities, see \citeb[p. 27-29]{driscoll}) but choosing a $w^*_0$ near to $w^*$ also makes the computation faster.
 
-Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into the upper half-plane is rather odd from a smoothing perspective. Given two adjacent points near $w_K$, their spacing on the upper half-plane is huge (since $w_K$ is mapped to $\infty$) in comparison to two adjacent points \label{cor-e6}near any other vertex. For this reason mapping to the upper half-plane is not pursued further here.
+Although setting $\varphi(\infty) = w_K$ does not make any difference in a mathematical sense, it does mean that the density of the points mapped into the upper half-plane is rather odd from a smoothing perspective. Given two adjacent points near $w_K$, their spacing on the upper half-plane is huge (since $w_K$ is mapped to $\infty$) in comparison to two adjacent points \label{cor-e6}near any other vertex. For this reason mapping from the upper half-plane is not pursued further here.
 
 \subsubsection{Unit disc}
 

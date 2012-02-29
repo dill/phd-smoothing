@@ -47,7 +47,7 @@ First define $d_{ij}$ as the distance between the points $i$ and $j$. These are 
 \mathbb{S}_{ij} = \mathbf{x}_i^* \left ( \mathbf{x}_j^* \right)^\text{T},
 \label{selem}
 \end{equation}
-where $\mathbb{S}$ is an $(n\cross n)$ matrix and $\mathbf{x}_i^*$ is as above. Note that $\tilde{\mathbf{X}}^*$ may only be found up to a translation and rotation, so it is assumed that the values in $\tilde{\mathbf{X}}^*$ have been centred about the origin.
+where $\mathbb{S}$ is an $(n\cross n)$ matrix and $\mathbf{x}_i^*$ is as above. Note that $\tilde{\mathbf{X}}^*$ may only be found up to a translation and rotation, so it is assumed that the values in $\tilde{\mathbf{X}}^*$ have been centred about the origin (so $\tilde{\mathbf{X}}^{*\text{T}}\mathbf{1}=0$).\label{cor-4s1}
 
 We now wish to relate $\mathbf{D}$ to $\mathbb{S}$. First, note that that \ijth element of $\mathbf{D}$ is 
 \begin{equation}
@@ -76,7 +76,7 @@ By pre- and post-multiplying any matrix by $\mathbf{H}$ the matrix is double cen
 \mathbb{S} = -\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.
 \end{equation}
 
-Now there is a relation between $\mathbf{D}$ and $\mathbb{S}$, we can concentrate on dealing with $\mathbb{S}$. In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbb{S}$. There are many options for matrix decomposition, for example the Choleski decomposition (e.g. \cite[pp. 334-335]{simonbook}). However when performing MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $\mathbb{S}_{ij}$. For that reason, the eigen-decomposition is used.
+Now there is a relation between $\mathbf{D}$ and $\mathbb{S}$, we can concentrate on dealing with $\mathbb{S}$.\label{cor-r31-2} In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbb{S}$. When performing MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $\mathbb{S}_{ij}$ so the  eigen-decomposition is taken. 
 
 Finding the eigen-decomposition of $\mathbb{S}$, we obtain $\mathbb{S}=\mathbf{U}\mathbf{\Lambda}\tr{\mathbf{U}}$. Here $\mathbf{U}$ is the $n \cross n$ matrix with orthogonal columns which are the eigenvectors of $\mathbb{S}$ and $\mathbf{\Lambda}$ is the $n \cross n$ diagonal matrix of eigenvalues of $\mathbb{S}$ (in descending absolute value). An $\tilde{\mathbf{X}}^*$ satisfying (\ref{selem}) may then be computed as:
 \begin{equation}
@@ -517,7 +517,7 @@ Before implementing this approach in full, a 1-dimensional test was run. The fun
 g(x)=0.2x^{11}\left \{ 10(1-x) \right \}^6+10(10x)^3(1-x)^{10},
 \label{hardfcn}
 \end{equation}
-over the range [0,1] was used. The function was then split into four sections ($[0,0.4]$, $(0.4,0.6]$, $(0.6,0.8]$ and $(0.8,1]$) and in each of these sections $x$ values were multiplied by 20,1,0.05 and 1, respectively (effectively contracting or expanding space). The function and its squashed form are shown in the top left and right panels (respectively) of \fig{1dadjust}. The function was evaluated at 100, equally spaced, points over the interval $[0,1]$. These points were then used as the sample (with no noise added), a \tprs\ was fitted, and predictions made at same points yielding the blue lines in the lower two plots. The left plot shows the predictions in the transformed space and the right in the original space. The green line was produced using the same procedure but with a \tprs\ with the adjusted penalty. As can be seen from the plot, the fit has been improved greatly, but how is the adjustment calculated?
+over the range [0,1] was used. The function was then split into four sections ($[0,0.4]$, $(0.4,0.6]$, $(0.6,0.8]$ and $(0.8,1]$) and in each of these sections $x$ values were multiplied by 20,1,0.05 and 1, respectively (effectively contracting or expanding space)\label{cor-r39}. The function and its squashed form are shown in the top left and right panels (respectively) of \fig{1dadjust}. The function was evaluated at 100, equally spaced, points over the interval $[0,1]$. These points were then used as the sample (with no noise added), a \tprs\ was fitted, and predictions made at same points yielding the blue lines in the lower two plots. The left plot shows the predictions in the transformed space and the right in the original space. The green line was produced using the same procedure but with a \tprs\ with the adjusted penalty. As can be seen from the plot, the fit has been improved greatly, but how is the adjustment calculated?
 
 % 1d adjustment 2x2 diagram
 \begin{figure}
@@ -613,10 +613,14 @@ and $x_2$ direction:
 Finally, those $(x_{1k},x_{2k})$ that do not lie inside the boundary in MDS space are removed leaving only those points that lie inside (so that the integration is performed over $\Gamma^\prime$).
 
 \subsubsection{Finding $\mathcal{L}^*$}
+%Would the Jacobian be very slow? Need a dense grid, so we would have f(x...) and there would be an x for each data point?
+\label{mds-findinglstar}
 
-Up to this point it has been assumed that the factors by which the points have been stretched are known. In practice, this is not the case and they must be estimated. Heuristically, one can think of the degree to which the points have been stretched or squashed as a change in the density of the points. By estimating the density of the points over a grid in MDS space (by simply counting the number of points from a grid in the data space are mapped to a particular square in a grid in the MDS space), an approximation to the density change over the whole domain can be found.
+Up to this point it has been assumed that the factors by which the points have been stretched are known. In practice, this is not the case and they dependent on the transformation. A simple, heuristic way to calculate $\mathcal{L}^*(x_1,x_2)$ is to think of the degree to which the points have been stretched or squashed as a change in the density of the points. By estimating the density of the points over a grid in MDS space (by simply counting the number of points from a grid in the data space are mapped to a particular square in a grid in the MDS space), an approximation to the density change over the whole domain can be found.
 
-The general idea is to make $\mathcal{L}^*(x_1,x_2)$ a function of the change in density of points caused by projecting the original space into MDS space. Assuming that the density in the untransformed space is $1$ everywhere, it is only necessary to calculate the density in MDS space. Having calculated the point density in MDS space, $\mathcal{L}^*(x_1,x_2)$ is just some function of this density.
+The general idea is to make $\mathcal{L}^*(x_1,x_2)$ a function of the change in density of points caused by projecting the original space into MDS space. Assuming that the density in the untransformed space is $1$ everywhere, it is only necessary to calculate the density in MDS space. Having calculated the point density in MDS space, $\mathcal{L}^*(x_1,x_2)$ is just some function of this density. 
+
+Although this method of approximating the density change is somewhat ad hoc, it should be able to highlight the large-scale changes in density which are causing the most problems when smoothing in MDS space. The point maps in figure \ref{wt2-2d-proj} show that the density change in density is relatively smooth and does not have any sudden jumps, so a relatively coarse approximation to the density should suffice.
 
 In order to find calculate the point density in MDS space, the following steps are performed:
 \begin{enumerate}
@@ -641,7 +645,7 @@ Note that the power is now $\frac{3}{2}$. This is since the contraction/expansio
 
 \subsubsection{Checking that the adjustment works}
 
-In order to make sure that the adjustment works in both the known and unknown contraction/expansion case, a small simulation was run. In this case a surface consisting of two bivariate normal distributions (mean vectors $(0,-0.5)$ and $(0,0.5)$, covariance matrix diagonal entries $(0.2,0.1)$) were sampled from (sample size 300) and then noise added from a $\text{normal}(0,0.05)$ distribution. The surface was then divided into its four constituent quadrants about the origin and squashed according to the following factors (in $(x_1,x_2)$ pairs, in order top left, top right, bottom left, bottom right): ((0.3,5), (1,5), (0.3,1), (1,1)).
+In order to make sure that the adjustment works in both the known and unknown contraction/expansion case, a small simulation was run. In this case a surface consisting of two bivariate normal distributions (mean vectors $(0,-0.5)$ and $(0,0.5)$, covariance matrix diagonal entries $(0.2,0.1)$) were sampled from (sample size 300) and then noise added from a $\text{normal}(0,0.05)$ distribution. The surface was then divided into its four constituent quadrants about the origin and squashed according to the following factors (in $(x_1,x_2)$ pairs, in order top left, top right, bottom left, bottom right): ((0.3,5), (1,5), (0.3,1), (1,1)). \label{cor-r39-2}This is equivalent to what happened in the 1-dimensional case above, but per-dimension (so for $x_1$, the values are replaced by $x_1/0.3$ and for $x_2$ by $x_2/5$ and so on).
 
 The samples were then used to fit a standard \tprs\ model, \tprs\ with adjusted penalty (with the factors above used as the values of $\mathcal{L}^*(x_1,x_2)$) and a \tprs\ with $\mathcal{L}^*(x_1,x_2)$ estimated from the density of the grid once it was transformed into MDS space\label{cor-r42}. The mean squared error between the truth and prediction over a dense (50 by 50) grid was then calculated.
 

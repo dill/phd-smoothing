@@ -1,10 +1,10 @@
-[[THERE ARE TKTKTKs to look at at the end!!!]]
 
-\textbf{Bold} indicates a query.
-
-Page numbers are updated ones.
-
-Where multiple contiguous pages have been changed, only the first is referenced below.
+A few points:
+\begin{itemize}
+	\item \textbf{Bold} indicates a query.
+	\item Page numbers are updated ones.
+	\item Page numbers are for the start of the correction, so they may flow onto other pages.
+\end{itemize}
 
 
 \section{From e-mail 30$^\text{th}$ January 2012.}
@@ -23,7 +23,7 @@ The points raised in the e-mail have been addressed as follows:
 	\item \pref{cor-soft3} Clarified that I wrote the code for finding the distances and performing Gower's interpolation. \texttt{soap} and \texttt{mgcv} were used for smoothing. \textsf{R}'s built-in MDS routine was used.
 	\item \pref{cor-soft5} Clarified that \texttt{mrds} and \texttt{mmds} were used to fit the case studies for the mixture models.
 \end{itemize}
-\item \textit{In Chapter 4, the discussion of the “adjustment” {\cal L} needs to be clarified to make clear that it is heuristic: at present, it is presented as somehow deeper than this. As discussed during the oral examination, one possibility would be to start by considering the idea of using the Jacobian of the transformation, explaining why (as indicated by the candidate during the oral) this didn?t work, and then moving on to the “engineering” solution.}
+\item In \secref{mds-findinglstar}, the opening paragraph now makes clear that the method used for finding $\mathcal{L}^*$ is heuristic. I don't mention the Jacobian as when I looked back over my notes I found that I'd started to look at it but then switched to the ``engineering'' solution as it was more logical (to me). I must have been thinking of something else in the examination (as you could probably tell, I was not dealing very well with the pressure). I can look into the Jacobian, but as I point out later on, the real problem is with the ordering of points, so it still won't solve the overall problem.
 \item Chapter 7 has been restructured, this is detailed below.
 \end{itemize}
 
@@ -35,7 +35,7 @@ The points raised in the e-mail have been addressed as follows:
 \item p. 26 Changed ``this data'' to ``these data''. Also: \pref{cor-r1-2}, \pref{cor-r1-3}, \pref{cor-r1-4}, \pref{cor-r1-5} ``is'' $\rightarrow$ ``are''; \pref{cor-r1-6}, \pref{cor-r1-7} ``was'' $\rightarrow$ ``were''; \pref{cor-r1-8} ``it'' $\rightarrow$ ``they''.
 \item p. 26 Changed to talk about trend surface, rather than process.
 \item p. 28 ``Complementary''
-\item p. 29, 30, [[TKTKTK p66:13, p227:6 find at end!]] ``effect'' $\rightarrow$ ``affect''.
+\item p. 29, p. 30, \pref{cor-r4-1}, \pref{cor-r4-2} ``effect'' $\rightarrow$ ``affect''.
 \item p. 30, changed caption to say that the function begins to interpolate the data.
 \item p. 30, difference between thin plate splines and thin plate regression splines given from the outset.
 \item p. 38 ``datum'' $\rightarrow$ ``data''
@@ -45,7 +45,7 @@ The points raised in the e-mail have been addressed as follows:
 \item p. 42 corrected two typos
 \item (1.10) corrected Brier definition to have the data in.
 \item p. 44 explained EDF--complexity link better.
-\item p. 45 corrected two typos. \textbf{qualification for the ``flawed'' nature of existing models is in the following text both in section 1.4.1 and the abstract}
+\item p. 45 corrected two typos. I have expanded on the ``flawed'' nature of existing models briefly in the abstract, the whole of section 1.4.1 explains why conventional models don't work though...
 \item p. 49 corrected typo
 \item p. 50 unsure what I meant by ``leakage as a breakdown of stationarity'', I've elaborated further on how these methods work as an introduction to the MDS stuff that comes later on.
 \item p. 50 corrected typo
@@ -72,9 +72,8 @@ The points raised in the e-mail have been addressed as follows:
 \item \textit{Chapter 4} \pref{cor-r30}, \pref{cor-r30-1} ``principle'' $\rightarrow$ ``principal''.
 \item \pref{cor-r31} Clarified that we're pretending that we don't know the $x_i$s.
 \begin{itemize}
-	\item \pref{cor-r31-1}``The first two terms in on'' $\rightarrow$ ``The contributions from the first two terms''
-%	\item \pref{cor-r31-2} 
-	\item \textbf{Not clear what Richard means here, is there any way you can clarify?}
+	\item \pref{cor-r31-1}``The first two terms in on'' $\rightarrow$ ``The contributions from the first two terms'' 
+	\item \pref{cor-r31-2} \textbf{Not clear what Richard means here by ``why does the eigen-decomposition have this form'' is there any way you can clarify?} I've removed the bit about the Choleski decomposition because I don't think it's actually relevant to the definition of MDS.
 	\item \pref{cor-r31-3} Removed sentence as suggested.
 	\item \pref{cor-r31-4} Removed paragraph as suggested.
 	\item \pref{cor-r31-5-2} Corrected matrix dimensions, $\tr{(\mathbf{X}^*)} \rightarrow \tr{(\tilde{\mathbf{X}}^*)}$. \pref{cor-r31-5} $\text{diag}(\mathbb{S})_{ii} \rightarrow \text{diag}(\mathbb{S})_i$. Further clarification.
@@ -88,7 +87,7 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-r36} Added explanation of the change in surface from the earlier peninsula domain.
 \item \pref{cor-r37} ``sever'' $\rightarrow$ ``severe''
 \item \pref{cor-r38} Changed axis labels to be correct.
-\item \pref{cor-r39}
+\item \pref{cor-r39}, \pref{cor-r39-2} Clarified what I mean by ``squashing''.
 \item \pref{cor-r40} Noted that numerical calculation of the penalty wasn't necessary before.
 \item \pref{cor-r41} Removed $\dagger$, relic of previous document.
 \item \pref{cor-r42} Clarified that the factor by which the quadrants were stretched were known for one of the cases, clarified that $\mathcal{L}^*$ was calculated from the grid transformed into MDS space.
@@ -112,7 +111,7 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-r60} Typo removed by (SS) correction, below.
 \item \pref{cor-r61} Added hats to $N$, $p$ and $P_a$ as necessary. Re-write of assumptions section (see below) covers the part about the random sampling beforehand now.
 \item \pref{cor-r62} Mentioned CDS/MCDS earlier.
-\item \pref{cor-r63}
+\item \pref{cor-r63} Clarified that I'm talking about the $\log$-normality of $\hat{D}$.
 \item \pref{cor-r64} Typo corrected, see modifications below regarding plotting of covariates.
 \item \pref{cor-r65} Plotting of covariates is covered below. Added legend to caption.
 \end{enumerate}
@@ -132,7 +131,7 @@ The points raised in the e-mail have been addressed as follows:
 \item p. 36 Removed self-reference.
 \item p. 36 Corrected definition of cubic splines.
 \item \textbf{p. 36 ``p36 $\beta_j$ and $\delta_j$ should be defined in relation to the form of $f(x)$''. Can you elaborate on what this means?}
-\item p. 36 [[TKTKTK 37?]]  Short discussion of cyclic splines added.
+\item p. 36 Added discussion of cyclic splines.
 \item p. 36 Changed definition to $\delta_j = \frac{\partial^2 f(x)}{\partial x^2}\vert_{x=x_j^*}$
 \item p. 37 Tensor product definition now has two different size bases.
 \item p. 38,39 defined $\mathbf{\hat{f}}$.
@@ -153,12 +152,12 @@ The points raised in the e-mail have been addressed as follows:
 \begin{itemize}
 \item \pref{cor-2s1} Corrected.
 \item \pref{cor-2s2} Removed.
-\item \pref{cor-2s3} \Secref{mds-faster} deals with ensuring that the model we're using is fast enough not to cause frustration to users. Should I reference this here?
+\item \pref{cor-2s3} Clarified that I'm talking about the speed of the fitting for the models. \Secref{mds-faster} deals with ensuring that the model we're using is fast enough not to cause frustration to users. Should I reference this here?
 \end{itemize}
 
 \subsection{Chapter 3}
 \begin{itemize}
-\item \pref{cor-3s1-1} Changed $\Gamma$ to $W$. \pref{cor-3s1-3} stated that $W$ is the inside of $\Gamma$.
+\item I've made a number of changes to this opening explanation of the \sch\ transform, hopefully it is now much more consistent. \pref{cor-3s1-1} Changed $\Gamma$ to $W$. \pref{cor-3s1-3} stated that $W$ is the inside of $\Gamma$.
 \item \pref{cor-3s2} Removed references to $\varphi$ at this point.
 \item \pref{cor-3s3} Expanded opening paragraph(s) to discuss the Ramsay horseshoe in a bit more depth.
 \item \pref{cor-3s4} Replaced figure 3-1 with 3-5; corrected $x$ to $w$ and $w^*$ in caption; reversed diagram to be same ordering as others, later. \pref{cor-3s4-2} Added some elaboration here.
@@ -182,7 +181,7 @@ The points raised in the e-mail have been addressed as follows:
 
 \subsection{Chapter 4}
 \begin{itemize}
-\item \pref{cor-4s1}
+\item \pref{cor-4s1} I had already mentioned that $\tilde{\mathbf{X}}^{*\text{T}}$ was centered, but added clarification afterwards.
 \item \pref{cor-4s2} Emboldened.
 \item \pref{cor-4s3} Added ``the''.
 \item \pref{cor-4s4} Re-ordered figures.
@@ -192,7 +191,6 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-4s8} Grammar correction.
 \item \pref{cor-4s9} Changed equation as suggested.
 \item \pref{cor-4s10} Corrected line break.
-\item \pref{cor-4s11}
 \end{itemize}
 
 \subsection{Chapter 5}
