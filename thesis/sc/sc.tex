@@ -82,7 +82,7 @@ The external angle, $\theta_k\pi$, is given by $(1-\alpha_k)\pi$ (see \fig{angle
 \end{figure}
 
 \label{cor-r29-1}
-Both points in the domain and the vertices of the polygon are represented as complex numbers (e.g. for some point $w$,  $w=x_1+ix_2$).The boundary of the polygon is denoted by $\Gamma$. Two domains have already been mentioned: $W$ and $W^*$, denoting the original domain (inside $\Gamma$) and the transformed domain (for example, the plane, unit disc or rectangle\label{cor-3s10}), respectively. The vertices of $\Gamma$ are denoted as $w_k$ and the vertices of the transformed boundary are denoted as $w^*_k$ (the \emph{prevertices}). In general, a point in the polygon's original domain will be denoted as $w$ and in the transformed domain as $w^*$. 
+Both points in the domain and the vertices of the polygon are represented as complex numbers (e.g. for some point $w$,  $w=x_1+ix_2$). The boundary of the polygon is denoted by $\Gamma$. Two domains have already been mentioned: $W$ and $W^*$, denoting the original domain (inside $\Gamma$) and the transformed domain (for example, the plane, unit disc or rectangle\label{cor-3s10}), respectively. The vertices of $\Gamma$ are denoted as $w_k$ and the vertices of the transformed boundary are denoted as $w^*_k$ (the \emph{prevertices}). In general, a point in the polygon's original domain will be denoted as $w$ and in the transformed domain as $w^*$. 
 
 The function $\varphi$ is a mapping from the transformed domain to the polygon (i.e. $\varphi:W^* \mapsto W$). The inverse mapping function, $\varphi^{-1}$, is used to take points from the polygon to one of: the unit disc, rectangle or half-plane (\label{cor-3s11}$\varphi^{-1}:W \mapsto W^*$).  See \fig{mappingdia}.
 
@@ -184,7 +184,7 @@ $A$ is the image of the base point of the integration and is usually written as 
       \item \label{cor-3s20}$w^*_1,\dots,w^*_K$ (initial values for the prevertices),
       \item $\epsilon$ (tolerance for convergence).
    \end{itemize}
-\item Define the objective function, $F$, as:
+\item Define the objective function, $F_k$, as:
  \begin{equation*}
 F_k=\frac{\vert \varphiinv(w_{k+1}) -  \varphiinv(w_k) \vert}{\vert \varphiinv(w_2)-\varphiinv(w_1)\vert} - \frac{\vert w^*_{k+1} - w^*_k\vert}{\vert w^*_2 - w^*_1\vert}, \qquad \text{for } k=3,\dots,K-1,
  \end{equation*}

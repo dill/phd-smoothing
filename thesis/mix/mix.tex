@@ -11,7 +11,7 @@ In this chapter, a new class of distance sampling detection function models base
 
 \section{Finite mixture model detection functions}
 
-Following on from the definitions of the detection functions given in \secref{intro-ds-detfct}\label{cor-8s2} in chapter \ref{intro-DS}, this section shows how from the definition of a mixture model detection function, the likelihood can be found for covariate and non-covariate models of both line and point transect data.
+Following on from the definitions of the detection functions given in \secref{intro-ds-detfct}\label{cor-8s2}, this section shows how from the definition of a mixture model detection function, the likelihood can be found for covariate and non-covariate models of both line and point transect data.
 
 \subsection{Formulation}
 \label{s:detfcts}
@@ -27,7 +27,7 @@ Here all of the $g_j$s are chosen to be half-normal functions, although other mo
 \begin{equation*}
 g(x; \bm{\theta}, \bm{\phi}) = \sum_{j=1}^J \phi_j \exp \Big( - \frac{x^2}{2\sigma_j^2} \Big).
 \end{equation*}
-So here $\bm{\theta} = (\sigma_1, \ldots, \sigma_J)$ and there are no covariates so $\mathbf{Z}$ and $\mathbf{z}_i$ are removed.
+So here $\bm{\theta} = (\sigma_1, \ldots, \sigma_J)$ and there are no covariates so $\mathbf{z}_i$ is removed.
 
 \subsubsection{Covariates}
 
@@ -121,7 +121,7 @@ where $F$ is any continuous CDF on $(0,\infty]$. Exponentiation ensures that $e^
 \begin{figure}
 \centering
 \includegraphics[width=3.5in]{mix/figs/phidia.pdf}
-\caption{Illustration of the relationship between the mixture proportions, $\phi_j$ and the quantites estimated in the optimization procedure $\alpha_p$.}
+\caption{Illustration of the relationship between the mixture proportions, $\phi_j$ and the quantites estimated in the optimization procedure $\alpha_j$.}
 \label{mmds-phifig}
 \end{figure}
 
@@ -244,7 +244,7 @@ As can be seen from table \ref{big-results-table}, the best model by AIC was a 2
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{mix/analyses/ants-nesthab.pdf}
-\caption{Plot of the detection functions for the AIC best model for the ants data set (2-point mixture with nest size and habitat as covariates). The first panel shows the average detection function, in the sense of \secref{ds-covplot} (dashed lines are the two mixture components, calculated in the same way but setting one of the mixture components to zero)\label{cor-8s12-2}. The second and third panels show the quantiles (25\%, 50\% and 75\% from bottom to top) of nest size and the levels of habitat type (1 to 4 from dark to lightest line, see main description for more information) respectively. (Again, these are calculated as above but the holding one covariate fixed to the appropriate quantile/level and averaging over the other.)\label{cor-r65}}
+\caption{Plot of the detection functions for the AIC best model for the ants data set (2-point mixture with nest size and habitat as covariates). The first panel shows the average detection function, in the sense of \secref{ds-covplot} (dashed lines are the two mixture components, calculated in the same way but setting one of the mixture components to zero)\label{cor-8s12-2}. The second and third panels show the quantiles (25\%, 50\% and 75\% from bottom to top) of nest size and the levels of habitat type (1 to 4 from dark to lightest line, see main description for more information) respectively. (Again, these are calculated as above but holding one covariate fixed to the appropriate quantile/level and averaging over the other.)\label{cor-r65}}
 \label{ants-nesthab}
 \end{figure}
 
@@ -333,7 +333,7 @@ In simulation 3-point mixtures did not appear to be good surrogates for missing 
 
 A possible extension the methodology would be to allow continuous mixtures. In that case the detection function can be modelled as:
 \begin{equation*}
-g(x) = \int_\mathbb{R} \varphi(\kappa) g_\kappa(x,\mathbf{Z}; \theta, \kappa) \text{d}\kappa
+g(x,\mathbf{z}; \bm{\theta}, \kappa) = \int_\mathbb{R} \varphi(\kappa) g_\kappa(x,\mathbf{z}; \bm{\theta}, \kappa) \text{d}\kappa
 \end{equation*}
 where $\varphi(\kappa)$ is some function which controls the mixing of $g_\kappa$. Such an approach may present significant computation issues. However, the benefits for model fitting may be considerable. Provided that an appropriate function can be chosen for $\varphi$, more flexible models could be used whilst keeping the number of parameters low. In addition, a finite mixture of both finite and continuous mixtures could be used, echoing the work of \citeb{morgan08} in capture-recapture.
 

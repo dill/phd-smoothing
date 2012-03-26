@@ -89,7 +89,7 @@
 
    # here are some zeros
    ind<-fixdat$italy$dat$share_100==0
-   points(sl.dat$x[ind],sl.dat$y[ind],col="grey",cex=0.3)
+   points(sl.dat$x[ind],sl.dat$y[ind],col="red",cex=0.3)
 
 
 #}

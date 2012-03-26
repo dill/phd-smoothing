@@ -60,7 +60,7 @@ If the $b_j$s are a sufficiently rich set of functions, this objective function 
 
 Penalizing the \textit{wigglyness} (or \textit{roughness}, \cite{rwc}) of $f$ makes sense since (as stated above) the belief is that the underlying phenomena is smooth. Mathematically, taking (\ref{intro-OLS}) and adding on a penalty based on the wigglyness gives:
 \begin{equation}
-\sum_{i=1}^n \left \{ z_i - f(\mathbf{x}_i) \right \}^2 +  \lambda \int\int \lvert \lvert P f(\mathbf{x}) \rvert \rvert^2 \text{d}\mathbf{x}.
+\sum_{i=1}^n \left \{ z_i - f(\mathbf{x}_i) \right \}^2 +  \lambda \int \dots \int \lvert \lvert P f(\mathbf{x}) \rvert \rvert^2 \text{d}\mathbf{x}.
 \label{intro-2d-objfcn}
 \end{equation}
 Here $P$ is some derivative operator, for example the second derivatives (e.g. $P=\left ( \frac{\partial^2}{\partial x_1^2}, \sqrt{2} \frac{\partial^2}{\partial x_1 x_2}, \frac{\partial^2}{\partial x_2^2}\right )$ in a 2-dimensional case). Integrating the derivatives over the whole space gives a measure of the wigglyness of the function, functions which vary a lot will lead to large values of the integral and hence have larger penalties. The exact form of $P$ changes with the basis and dimensionality of the problem (as will be seen in the next section).
@@ -169,7 +169,7 @@ B_j^m(x) = \frac{x-x^*_j}{x^*_{j+m+1} - x^*_j} B_j^{m-1}(x) + \frac{x^*_{j+m+2} 
 and
 \begin{equation*}
  B_j^{-1}(x)=\begin{cases}
-1 \quad x_j \leq x < x_{j+1}\\
+1 \quad x^*_j \leq x < x^*_{j+1}\\
 0 \quad \text{otherwise}. 
 \end{cases}
 \end{equation*}
@@ -199,13 +199,13 @@ if squared second differences are used (this could be a higher order difference,
 \begin{equation*}
 \sum_{i=1}^n \left \{ z_i - f(x_i) \right \}^2 +  \lambda \int_{x^*_1}^{x^*_J}\left( \frac{\partial^2 f(x)}{\partial x^2} \right)^2 \text{d}x,
 \end{equation*}
-where $\{x_j^* : j=1,\ldots,J\}$ are $J$ knots. This gives rise to the set of cubic polynomials that form the basis. Such a basis has many possible parametrizations; here the ``cardinal'' parametrisation is used (the basis functions take the value one at one knot and zero at all others). The parametrization gives the following form for $f$:
+where $\{x_j^* : j=1,\ldots,J\}$ are $J$ knots. This gives rise to the set of cubic polynomials that form the basis. Such a basis has many possible parametrizations; here the ``cardinal'' parametrisation is used (the basis functions take the value one at one knot and zero at all others). Letting $\beta_j = f(x_j^*)$ and $\delta_j = \frac{\partial^2 f(x)}{\partial x^2}\vert_{x=x_j^*}$ (so one can then write the $\delta_j$s as a function of the $\beta_j$s), the parametrization gives the following form for $f$:
 \begin{align*}
 f(x) =& \frac{x_{j+1}^* - x}{x_{j+1}^* - x_j^*} \beta_j + \frac{x - x_j^*}{x_{j+1}^* - x_j^*} \beta_{j+1}\\
 & + \left\{ \frac{\left (x_{j+1}^* - x\right )^3}{x_{j+1}^* - x_j^*} - (x_{j+1}^* - x_j^*)(x_{j+1}^* - x)\right \}\frac{\delta_j}{6}\\
 & + \left\{ \frac{\left (x - x_j^*\right )^3}{x_{j+1}^* - x_j^*} - (x_{j+1}^* - x_j^*)(x - x_j^*)\right \}\frac{\delta_{j+1}}{6} \qquad \text{if } x_j^* \leq x \leq x_{j+1}^*.
 \end{align*}
-Letting $\beta_j = f(x_j^*)$ and $\delta_j = \frac{\partial^2 f(x)}{\partial x^2}\vert_{x=x_j^*}$, one can then write the $\delta_j$s as a function of the $\beta_j$s. Summing over $j$ then yields an implicit set of $J$ $b_j$s as in (\ref{intro-basisdecomp}). The cubic spline basis is then parameterized in terms of its values (and the values of its derivatives) at the knots. This setup may seem odd but does lead to the spline having directly interpretable parameters (which is not the case for, say, thin plate splines). An example of a basis function is given in figure \ref{cs-basis}.
+Summing over $j$ then yields an implicit set of $J$ $b_j$s as in (\ref{intro-basisdecomp}). The cubic spline basis is then parameterized in terms of its values (and the values of its derivatives) at the knots. This setup may seem odd but does lead to the spline having directly interpretable parameters (which is not the case for, say, thin plate splines). An example of a basis function is given in figure \ref{cs-basis}.
 
 Further details may be found in \citeb[pp. 122-126, pp. 149-151]{simonbook}.
 
@@ -255,7 +255,11 @@ The objective function given in \secref{GAMpenalties} only allows the estimation
 \mathcal{V}_g = \frac{n \lvert\lvert \mathbf{z} - \mathbf{\hat{f}}\rvert \rvert^2}{\left \{n-\text{tr}(\mathbf{A}) \right \}^2},
 \label{intro-GCV}
 \end{equation}
-where $\text{tr}(\mathbf{A})$ indicates the trace of $\mathbf{A}$, the hat (or influence) matrix for the smoother (see \secref{GAMEDF}), $\mathbf{\hat{f}}=\left(f(\mathbf{x}_1), f(\mathbf{x}_2), \ldots, f(\mathbf{x}_n)\right)^\text{T}$ is the vector of fitted values for the model (i.e. evaluations of $\hat{f}$ at each of the data). Numerical minimization of $\mathcal{V}_g$ with respect to $\lambda$ (which enters $\mathcal{V}_g$ via $\mathbf{A}$) gives the optimal smoothing parameter ($\hat{\lambda}$). Further details are given in \citeb[pp.  134--137]{simonbook}. Details of how smoothing parameter selection and estimation of $\bm{\hat{\beta}}$ are combined into a fitting procedure are given in \secref{intro-extending-gams}.
+where $\text{tr}(\mathbf{A})$ indicates the trace of $\mathbf{A}$, the hat (or influence) matrix for the smoother (see \secref{GAMEDF}), $\mathbf{\hat{f}}=\left(\hat{f}(\mathbf{x}_1), \hat{f}(\mathbf{x}_2), \ldots, \hat{f}(\mathbf{x}_n)\right)^\text{T}$ is the vector of fitted values for the model (i.e. evaluations of $\hat{f}$ at each of the data points). Numerical minimization of $\mathcal{V}_g$ with respect to $\lambda$ (which enters $\mathcal{V}_g$ via $\mathbf{A}$) gives the optimal smoothing parameter ($\hat{\lambda}$). Further details are given in \citeb[pp.  134--137]{simonbook}. 
+
+\label{cor-r9}There are, of course, other ways to select optimal smoothing parameters. In the unidimensional case, a simple grid search for $\lambda$ is possible, however this obviously becomes computationally burdensome once more than one optimal smoothing parameter is required. When the scale parameter is known the \textit{Un-Biased Risk Estimator} (UBRE) can be used in place of GCV (\cite{craven}). UBRE can be thought of as an estimate of the expected mean square error: the expected, squared, distance between the truth and the estimated model (see \secref{intro-MSE}, below, for further discussion of the MSE). Further discussion of smoothing parameter selection is given in sections 4.5, 4.6 and 4.7 of \citeb{simonbook}.
+
+Details of how smoothing parameter selection and estimation of $\bm{\hat{\beta}}$ are combined into a fitting procedure are given in \secref{intro-extending-gams}.
 
 
 
@@ -279,7 +283,7 @@ Up until now only additive models with normal errors have been considered. If ot
 
 To use PIRLS, one must first think of the GAM as a penalized GLM. Consider first the usual GLM model matrix $\mathbf{X}$. By appending the basis evaluations of each datum as columns of $\mathbf{X}$ (i.e. $\mathbf{X}:=\left ( \mathbf{X},\mathbf{X}^* \right )$, where the $ij^\text{th}$ element of $\mathbf{X}^*$ is  $b_j(\mathbf{x}_i)$), the smooth terms in the model can be included in the usual model matrix setup. The PIRLS algorithm is as follows (\cite[p. 138]{simonbook}):
 
-First define $\eta_i = \mathbf{X}_i\bm{\beta}$ (where $\mathbf{X}_i$ is the $i^\text{th}$ row of $\mathbf{X}$) as the linear predictor such that $\mu_i = g^{-1}(\eta_i)$ and the variance function, $V(\cdot)$, such that $\text{Var}\left ( Z_i \right ) = \phi V(\mu^{[k]})$ ($\phi$ is the scale parameter, see \cite[p. 62]{simonbook}). At iteration $k$ the PIRLS algorithm is:
+First define $\eta_i = \mathbf{X}_i\bm{\beta}$ (where $\mathbf{X}_i$ is the $i^\text{th}$ row of $\mathbf{X}$) as the linear predictor such that $\mu_i = g^{-1}(\eta_i)$ and the variance function, $V(\cdot)$, such that $\text{Var}\left ( Z_i \right ) = \phi V(\mu_i)$ ($\phi$ is the scale parameter, see \cite[p. 62]{simonbook}). At iteration $k$ the PIRLS algorithm is:
 \begin{enumerate}
 \item Given the current linear predictor estimate and mean response vectors ($\bm{\eta}^{[k]}$ and $\bm{\mu}^{[k]}$, respectively) calculate the diagonal weight matrix with the following elements:
 \begin{equation*}
@@ -287,16 +291,17 @@ First define $\eta_i = \mathbf{X}_i\bm{\beta}$ (where $\mathbf{X}_i$ is the $i^\
 \end{equation*}
 and the pseudodata:
 \begin{equation*}
-s_i = g^\prime(\mu_i^{[k]})^2(z_i-\mu_i^{[k]}) + \mathbf{X}_i\bm{\hat{\beta}}^{[k]},
+s_i = g^\prime(\mu_i^{[k]})(z_i-\mu_i^{[k]}) + \mathbf{X}_i\bm{\beta}^{[k]},
 \end{equation*}
 stored in the $n$-vector $\mathbf{s}$. $g^\prime(\mu_i^{[k]})$ is the first derivative of the link function with respect to $\mu_i^{[k]}$.
 \item Minimize
 \begin{equation*}
-\lvert \lvert \sqrt{\mathbf{W}^{[k]}} (\mathbf{s}^{[k]} - \mathbf{X}\bm{\beta})  \rvert \rvert^2 + \lambda \int \dots \int \lvert \lvert P f(\mathbf{x})\rvert \rvert^2 \text{d}\mathbf{x}
+%\lvert \lvert \sqrt{\mathbf{W}^{[k]}} (\mathbf{s}^{[k]} - \mathbf{X}\bm{\beta})  \rvert \rvert^2 + \lambda \int \dots \int \lvert \lvert P f(\mathbf{x})\rvert \rvert^2 \text{d}\mathbf{x}
+\lvert \lvert \sqrt{\mathbf{W}^{[k]}} (\mathbf{s}^{[k]} - \mathbf{X}\bm{\beta})  \rvert \rvert^2 + \sum_j \lambda_j \bm{\beta}^\text{T}\mathbf{S}_j\bm{\beta}
 \end{equation*}
 with respect to $\bm{\beta}$, giving $\bm{\beta}^{[k+1]}$ and hence allowing the calculation of $\bm{\eta}^{[k+1]}$ and $\bm{\mu}^{[k+1]}$.
 \end{enumerate}
-This procedure is iterated to convergence of $\bm{\beta}$ for the given smoothing parameter(s). Further information on IRLS in the GLM context can be found in chapter 1 of \citeb{GEEbook}.
+This procedure is iterated to convergence of $\bm{\beta}$ for the given smoothing parameter(s).
 
 The ``hierarchical'' optimisation method of \citeb{remlpaper} is used throughout this thesis to find $\bm{\hat{\beta}}$ and $\bm{\hat{\lambda}}$. That is: at each iteration a smoothing parameter is selected to optimize the (GCV) score, which in the generalized case is given by:
 \begin{equation*}
@@ -365,7 +370,7 @@ where $\hat{f}^{-i}$ is the model fit to all of the data except the $i^\text{th}
 \subsection{Effective degrees of freedom}
 \label{GAMEDF}
 
-The hat or influence matrix, $\mathbf{A}$, is the matrix such that $\hat{\bm{\eta}} = \mathbf{A}\mathbf{z}$. It has the rather useful property that taking the trace of $\mathbf{A}$ ($\text{tr}(\mathbf{A})$) gives the \textit{effective degrees of freedom} (EDF) of the model. The EDF gives an measure of the complexity of the fitted model. The higher the EDF, the more complex the model. The rationale for this is by analogy to the linear model. In that case we know that the degrees of freedom is simply the length of $\bm{\beta}$ (minus any identifiability constraints) which is the same as the value of $\text{tr}(\mathbf{A})$ if the smoothing parameters are all set to zero. It can also be shown that the minimum value of the EDF is $\text{rank}(\sum_i \mathbf{S}_i)$ and that the EDF varies smoothly between these two values with the smoothing parameters (\cite[p. 170--171]{simonbook}).
+The hat or influence matrix, $\mathbf{A}$, is the matrix such that $\hat{\bm{\eta}} = \mathbf{A}\mathbf{z}$. It has the rather useful property that taking the trace of $\mathbf{A}$ ($\text{tr}(\mathbf{A})$) gives the \textit{effective degrees of freedom} (EDF) of the model. The EDF gives a measure of the complexity of the fitted model. The higher the EDF, the more complex the model. The rationale for this is by analogy to the linear model. In that case we know that the degrees of freedom is simply the length of $\bm{\beta}$ (minus any identifiability constraints) which is the same as the value of $\text{tr}(\mathbf{A})$ if the smoothing parameters are all set to zero. It can also be shown that the minimum value of the EDF is $\text{rank}(\sum_i \mathbf{S}_i)$ and that the EDF varies smoothly between these two values with the smoothing parameters (\cite[p. 170--171]{simonbook}).
 
 The EDF can be a useful tool when it comes to model choice and model diagnostics; if models seem to have similar performance then looking at the EDF may give a reason to choose one over another (if one is simpler). In most cases the basis dimension is set as an upper bound, the smoothing penalty suppresses parts of the model (see \secref{GAMtprs}). Therefore basis dimension is not a major concern provided that it is not set too low (\cite[p. 161]{simonbook}). 
 
@@ -426,8 +431,9 @@ As mentioned above, when the smoothing problem is specified in terms of Euclidea
 
 The cause of leakage can be characterized in two ways: either the smooth does not respect the boundary of the domain, or the smooth does not take into account the geometry of the domain (in particular with regard to the distance between points within the domain). Previous work in this area has been to combat leakage along these two lines. Work of \citeb{ramsay} and \citeb{soap} both use a partial differential equation (PDE) boundary condition approach to try to prevent leakage, whereas \citeb{wangranalli} and \citeb{eilerstalk} modify the way that inter-point distances are measured in order to avoid smoothing across boundaries. These four main works are now summarized.
 
-\begin{enumerate}
-\item \citeb{ramsay} proposes finite element $L$-splines (FELSPLINEs). The $L$-spline penalty is similar to the one in (\ref{intro-2d-objfcn}):
+\subsubsection{FELSPLINE}
+
+\citeb{ramsay} proposes finite element $L$-splines (FELSPLINEs). The $L$-spline penalty is similar to the one in (\ref{intro-2d-objfcn}):
 \be
 \int_\Gamma (L_p f)^2 \text{d}\mathbf{x}.
 \ee
@@ -443,25 +449,31 @@ Since the triangulation and hence the penalty of the FELSPLINE is only calculate
 
 FELSPLINE does not offer a realistic physical model and is therefore not a viable solution to the finite area smoothing problem in general.
 
-\item \citeb{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. They choose to use the geodesic distance between two points, that being the shortest path within the domain. This gives a definition of how near objects are in the domain. The within-area distances are used in the radial basis functions in place of the Euclidean norm (\secref{GAMtprs}).
+\subsubsection{Geodesic low-rank thin plate splines}
+
+\citeb{wangranalli} adopt a ``within-area distance'' formulation for thin plate splines. They choose to use the geodesic distance between two points, that being the shortest path within the domain. This gives a definition of how near objects are in the domain. The within-area distances are used in the radial basis functions in place of the Euclidean norm (\secref{GAMtprs}). The approach is referred to as \textit{geodesic low-rank thin plate splines} (GLTPS).
 
 To calculate the distances, Wang and Ranalli first create a complete, weighted, undirected, graph ($G$, say) with a data point at each vertex and the distance between each pair of vertices as the weights on the edges. They then find the restricted graph of $G$, $G_k$, in which each vertex is only connected to its $k$ nearest neighbours. With this new, restricted graph the geodesic distances between each pair of vertices can be calculated using Floyd's algorithm (\cite{Floyd}).
 
 As the authors point out, the quality of the approximation is dependent on the size of the data set and its density. At low densities the estimated geodesic distance will tend towards the Euclidean, at high densities the approximation tends, asymptotically toward the true geodesic distance (\cite{bernstein}). Even if  dense enough data were available, the method will be rather slow since Floyd's algorithm is cubic in the number of vertices (the size of the data set). 
 
-Taking these points into account, Wang and Ranalli's approach appears cumbersome, slow and dependent on dense data.
+Taking these points into account, GLTPS appears cumbersome, slow and dependent on dense data.
 
-\item The soap film smoother (\cite{soap}) uses a rather simple physical model to prevent leakage from occurring. First, consider the domain boundary to be made of wire, then dip this wire into a bucket of soapy water, you will then have a soap film in the shape of your boundary. Consider the wire to lie in the $x_1-x_2$ plane and the height of the soap film at a given point to be the functional value of the model (i.e. in the $z$ direction). This film is then distorted smoothly by moving it toward the data, while minimising the surface tension in the film.
+\subsubsection{Soap film smoother}
 
-Fitting a model using the soap film smoother consists of first finding a set of basis functions which are solutions to a series of partial differential equations (PDEs) which define the film. Since these functions arise from PDE with boundary conditions, the resulting functions respect those boundary conditions (which can be estimated from the data or set to some known values), by default. 
+\label{cor-soaprev}The soap film smoother (\cite{soap}) uses a rather simple physical model to prevent leakage from occurring. First, consider the domain boundary to be made of wire, then dip this wire into a bucket of soapy water, you will then have a soap film in the shape of your boundary. Consider the wire to lie in the $x_1-x_2$ plane and the ``height'' of the soap film at a given point to be the functional value of the model (i.e. in the $z$ direction). This film is then distorted smoothly by moving it toward the data, while minimising the surface tension in the film. The film is bounded by the wire, so smoothing across any peninsulae (and thus leakage) is not possible by construction. It has been assumed so far that the wire has the correct values for the boundary; fortunately it is possible to estimate the wire's height simultaneously with the rest of the film so the whole smooth is totally data-dependent.
 
-Although mathematically elegant, the soap film smoother is a rather complex and computationally expensive model (since the series of PDEs must be solved every time). One must also pick knots for the soap film smoother to use, introducing an element of arbitrariness into the fitting process. The model also treats the boundary as something special, it is not clear that this is always appropriate (in particular thinking of ocean-based studies where some of the boundaries are coastlines but others are essentially arbitrary).
+Fitting a model using the soap film smoother consists of first finding a set of basis functions which are solutions to a series of partial differential equations (PDEs) which define the film. Since these functions arise from PDE with boundary conditions, the resulting functions respect those boundary conditions by default. In a similar way to the thin plate spline, the soap film basis functions can be separated into two parts:  one which deals with the interior of the boundary (equivalent to the radial basis functions) and the other, which performs a similar function to the linearly independent polynomials in the thin plate spline: controlling what the smooth looks like when the function is completely smooth (i.e. when the penalty evaluates to zero). In two dimensions, the thin plate spline will reduce to a plane when the penalty is zero (since a plane is completely smooth according to the penalty) however, for the soap film the surface should respect the boundary conditions.
 
-Although not perfect, the soap film smoother will be used throughout the thesis a the ``gold standard'' against which the methods proposed herein will be measured. The soap film was chosen over the other methods above since it is already implemented in the \textsf{R} package \texttt{soap} (unlike GLTPS, which does not have an easily available implementation) and it does not have any obvious major technical flaw (like the unrealistic physical assumptions that FELSPLINE makes).
+Although mathematically elegant, the soap film smoother is a rather complex and computationally expensive model (since the series of PDEs must be solved to create the basis before the model can be fitted). One must also pick knots for the soap film smoother to use, introducing an element of arbitrariness into the fitting process. The model also treats the boundary as something special, it is not clear that this is always appropriate (in particular thinking of ocean-based studies where some of the boundaries are coastlines but others are essentially arbitrary).
 
-Chapter \ref{chap-it} gives the technical details relating to the construction of the basis. The chapter also further illustrates the soap film smoother via a case study showing its use as the spatial part of a spatiotemporal model for the incidence of resident foreigners in Italy. 
+Although not perfect, the soap film smoother does not have any obvious major technical flaw, unlike the unrealistic physical assumptions that FELSPLINE makes. It is also already implemented in the \textsf{R} package \texttt{soap} unlike GLTPS, which does not have an easily available software package. For these reasons it will be used throughout the thesis as the ``gold standard'' against which the methods proposed will be measured. 
 
-\item An alternative approach to treating the boundary as something special is to transform the space in which the points lie to a different domain which is more suitable for smoothing. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe into a long strip and then smooth on that domain.
+Since the soap film smoother will play a key part in the thesis as a benchmark for other methods, chapter \ref{chap-it} is a dedicated introduction to the method. The chapter is set in the context of a case study, investigating the spatiotemporal distribution of resident foreigners in Italy. \Secref{METH} illustrates the basis construction as well as how to incorporate the soap film smoother in a larger spatiotemporal model using a tensor product (\secref{GAMtensor}). 
+
+\subsubsection{Domain morphing}
+
+An alternative approach to treating the boundary as something special is to transform the space in which the points lie to a different domain which is more suitable for smoothing. For example, with Ramsay's horseshoe, it seems intuitive to simply bend the horseshoe into a long strip and then smooth on that domain.
 
 \label{cor-3s2}Indeed, \citeb{eilerstalk} proposed using the \textit{\sch\ transform} for this very purpose (the author independently came to the idea in 2008). The basic idea is to find a function that takes points in the domain the data lie in and maps them to another domain in which smoothing is easier. Using the \sch\ transform for smoothing will be investigated in chapter \ref{chap-sc}.
 
@@ -472,7 +484,6 @@ Several authors have suggested the use of some kind of transformation of the dat
 %Although not specifically designed to deal with leakage issues (although leakage manifests itself as a breakdown of stationarity in a kriging context), several authors have suggested the use of some kind of transformation of the data points in space in order to maintain stationarity by approximating within-area distances with equivalent Euclidean distances via \textit{multidimensional scaling} (\cite{mdskrig}; \cite{crabkrig}; \cite{curriero}). 
 
 Using multidimensional scaling as a transformation of a spatial domain is investigated in chapters  \ref{chap-mds} and \ref{chap-gds}. A comparison between the geostatistical implementations and the methods developed in this thesis is given in \secref{gds-krig}, once the proposed methods have been fully explained.
-\end{enumerate}
 
 Creating some kind of mapping between the space in which the data lies and the space in which conventional smoothers perform well is convenient. Relying on existing, tested methodology is clearly appealing. Transformation-based approach also benefit from not treating the boundary as a special in the basis setup. The properties that such a mapping would require to be useful for smoothing will be investigated in subsequent chapters.
 

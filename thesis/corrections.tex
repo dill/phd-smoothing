@@ -12,8 +12,8 @@ A few points:
 The points raised in the e-mail have been addressed as follows:
 \begin{itemize}
 \item Corrections to ``minor mathematical and grammatical errors throughout the thesis'' according to the two lists sent are itemized in sections \ref{richard} and \ref{shaw}, below.
-\item Restructured thin plate (\pref{cor-tprs}) and cubic spline (\pref{cor-cubic}) explanation.
-\item Elaboration on soap film and added stronger links to chapter 2.
+\item Rewrote the thin plate (\pref{cor-tprs}) and cubic spline (\pref{cor-cubic}) explanations.
+\item \pref{cor-soaprev} Elaborated on soap film from a intuitive point of view, saving the main technical details for chapter 2.
 \item Regarding the software used:
 \begin{itemize}
 	\item \pref{cor-r22} Explained that \texttt{soap} and \texttt{mgcv} were used.
@@ -23,7 +23,7 @@ The points raised in the e-mail have been addressed as follows:
 	\item \pref{cor-soft3} Clarified that I wrote the code for finding the distances and performing Gower's interpolation. \texttt{soap} and \texttt{mgcv} were used for smoothing. \textsf{R}'s built-in MDS routine was used.
 	\item \pref{cor-soft5} Clarified that \texttt{mrds} and \texttt{mmds} were used to fit the case studies for the mixture models.
 \end{itemize}
-\item In \secref{mds-findinglstar}, the opening paragraph now makes clear that the method used for finding $\mathcal{L}^*$ is heuristic. I don't mention the Jacobian as when I looked back over my notes I found that I'd started to look at it but then switched to the ``engineering'' solution as it was more logical (to me). I must have been thinking of something else in the examination (as you could probably tell, I was not dealing very well with the pressure). I can look into the Jacobian, but as I point out later on, the real problem is with the ordering of points, so it still won't solve the overall problem.
+\item \textbf{In \secref{mds-findinglstar}, the opening paragraph now makes clear that the method used for finding $\mathcal{L}^*$ is heuristic. I don't mention the Jacobian as when I looked back over my notes I found that I'd started to look at it but then switched to the ``engineering'' solution as it was more logical (to me). I must have been thinking of something else in the examination (as you could probably tell, I was not dealing very well with the pressure). I can look into the Jacobian, but as becomes clear later on (\secref{pensuck}), the real problem is with the ordering of points, so it still won't solve the overall problem.}
 \item Chapter 7 has been restructured, this is detailed below.
 \end{itemize}
 
@@ -40,12 +40,12 @@ The points raised in the e-mail have been addressed as follows:
 \item p. 30, difference between thin plate splines and thin plate regression splines given from the outset.
 \item p. 38 ``datum'' $\rightarrow$ ``data''
 \item p. 40. now reads as requested.
-\item p. 41 ``PIRLS'' $\rightarrow$ ``IRLS'', included definition of $\mathcal{V}_g$ in the GAM case.
+\item p. 41 ``PIRLS'' $\rightarrow$ ``IRLS'', included definition of $\mathcal{V}_g$ in the GAM case. \pref{cor-r9} Added brief discussion of other smoothing parameter selection methods. The ``hierarchical'' method is always used by \texttt{mgcv} by default (and this was not changed by me for any of the work here), except in the Gaussian/identity link case. This case is covered in \secref{GAMfitting} and \secref{GAMpenalties}.
 \item Section 1.3 title ``practice'' $\rightarrow$ ``practise'', same p. 183
 \item p. 42 corrected two typos
 \item (1.10) corrected Brier definition to have the data in.
 \item p. 44 explained EDF--complexity link better.
-\item p. 45 corrected two typos. I have expanded on the ``flawed'' nature of existing models briefly in the abstract, the whole of section 1.4.1 explains why conventional models don't work though...
+\item p. 45 corrected two typos. I have expanded on the ``flawed'' nature of existing models briefly in the abstract (\pref{cor-r14-2}), the whole of section 1.4.1 explains why conventional models are flawed.
 \item p. 49 corrected typo
 \item p. 50 unsure what I meant by ``leakage as a breakdown of stationarity'', I've elaborated further on how these methods work as an introduction to the MDS stuff that comes later on.
 \item p. 50 corrected typo
@@ -77,7 +77,7 @@ The points raised in the e-mail have been addressed as follows:
 	\item \pref{cor-r31-3} Removed sentence as suggested.
 	\item \pref{cor-r31-4} Removed paragraph as suggested.
 	\item \pref{cor-r31-5-2} Corrected matrix dimensions, $\tr{(\mathbf{X}^*)} \rightarrow \tr{(\tilde{\mathbf{X}}^*)}$. \pref{cor-r31-5} $\text{diag}(\mathbb{S})_{ii} \rightarrow \text{diag}(\mathbb{S})_i$. Further clarification.
-	\item \pref{cor-r31-6} Unless I'm getting the wrong end of the stick here, I think Richard's statement is incorrect. The fact that you can perform MDS on a reduced set of points, insert the other points and end up with the same configuration as if you'd done the lot from the start means that it is \textit{not} sensitive to starting values. I've clarified that this is only in the Euclidean case (according to Gower's paper anyway).
+	\item \pref{cor-r31-6} \textbf{The fact that you can perform MDS on a reduced set of points, insert the other points and end up with the same configuration as if you'd done the lot from the start means that it is not sensitive to starting values. I've clarified that this is only in the Euclidean case (according to Gower's paper anyway). Unsure whether this is what Richard meant or not.}
 	\item \pref{cor-r31-7} ``in a similar to check'' $\rightarrow$ ``in a similar way to check''.
 \end{itemize}
 \item \pref{cor-r32} ``is show'' $\rightarrow$ ``is shown''.
@@ -89,10 +89,10 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-r38} Changed axis labels to be correct.
 \item \pref{cor-r39}, \pref{cor-r39-2} Clarified what I mean by ``squashing''.
 \item \pref{cor-r40} Noted that numerical calculation of the penalty wasn't necessary before.
-\item \pref{cor-r41} Removed $\dagger$, relic of previous document.
+\item \pref{cor-r41} Removed $\dagger$, relic of a previous document.
 \item \pref{cor-r42} Clarified that the factor by which the quadrants were stretched were known for one of the cases, clarified that $\mathcal{L}^*$ was calculated from the grid transformed into MDS space.
 \item \pref{cor-r43} Referenced back to section 1.1.
-\item \pref{cor-r44} response is assumed Gamma distributed.
+\item \pref{cor-r44} Response is assumed Gamma distributed.
 \item \pref{cor-r45} Corrected grammar.
 \item \pref{cor-r46} Bug in plotting code caused the dimension to be shifted, corrected.
 \item \pref{cor-r47} ``an as such'' $\rightarrow$ ``and as such''.
@@ -102,7 +102,7 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-r51} (Assuming that GCM is a typo here and Richard means GCV). Clarified that at each stage we have GCV-optimal smoothness and that then we pick between the models using the GCV score.
 \item \pref{cor-r52} Boxplots are in groups of 5!
 \item \pref{cor-r53} Made this sentence make more sense.
-\item I'm very much aware of red-green colourblindness as this is a condition that I suffer from! As far as I can tell, all of the figures in the thesis are visible to someone with red-green colourblindness (at least for the subtype which I have). I've tested the figure in question (5-10) and it looks fine on the website suggested.
+\item \textbf{I'm very much aware of red-green colourblindness as this is a condition that I suffer from! As far as I can tell, all of the figures in the thesis are visible to someone with red-green colourblindness (at least for the subtype which I have). I've tested the figure in question (5-10) and it looks fine on the website suggested.}
 \item \pref{cor-r55} By ``smooth'' I meant non-linear here, corrected.
 \item \pref{cor-r56} \textit{Chapter 6} ``it's'' $\rightarrow$ ``its''.
 \item \pref{cor-r57} ``disirable'' $\rightarrow$ ``desirable''.
@@ -130,22 +130,22 @@ The points raised in the e-mail have been addressed as follows:
 \item p. 35 Objective function corrected.
 \item p. 36 Removed self-reference.
 \item p. 36 Corrected definition of cubic splines.
-\item \textbf{p. 36 ``p36 $\beta_j$ and $\delta_j$ should be defined in relation to the form of $f(x)$''. Can you elaborate on what this means?}
+\item \textbf{p. 36 ``p36 $\beta_j$ and $\delta_j$ should be defined in relation to the form of $f(x)$''. Can you elaborate on what you mean by this?}
 \item p. 36 Added discussion of cyclic splines.
 \item p. 36 Changed definition to $\delta_j = \frac{\partial^2 f(x)}{\partial x^2}\vert_{x=x_j^*}$
 \item p. 37 Tensor product definition now has two different size bases.
 \item p. 38,39 defined $\mathbf{\hat{f}}$.
 \item p. 39 ``leasst'' $\rightarrow$ ``least''.
 \item p. 40 $\bm{\beta}^{[k]} \rightarrow \bm{\hat{\beta}}^{[k]}$
-\item p. 40 added $\dots$
-\item p. 41 smoothing parameter does need to be a vector, changed later references
-\item p. 41 corrected reference
-\item p. 42 added brackets to references
-\item p. 45 cleared up explanation of a complex boundary with an example
-\item p. 45 fixed typo
-\item p. 47 fixed typo
-\item p. 48 removed
-\item p. 49 fixed typo
+\item p. 40 Added $\dots$
+\item p. 41 Smoothing parameter does need to be a vector, changed later references
+\item p. 41 Corrected reference
+\item p. 42 Added brackets to references
+\item p. 45 Cleared up explanation of a complex boundary with an example
+\item p. 45 Fixed typo
+\item p. 47 Fixed typo
+\item p. 48 Removed
+\item p. 49 Fixed typo
 \end{itemize}
 
 \subsection{Chapter 2}
@@ -169,7 +169,7 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-3s10} Corrected as suggested.
 \item \pref{cor-3s11} Final $\varphi$ should be $\varphi^{-1}$.
 \item \pref{cor-3s12} Corrected ``may'' $\rightarrow $ ``many''.
-\item \pref{cor-3s13-1} Attempted to clarify introduction to the section. \pref{cor-3s13-2} Clarified that the prevertices lie on the real line for the upper half plane case. \pref{cor-3s13-3} Prevertices are complex in the unit disc case. \pref{cor-3s13-4} Prevertices rectangle case are covered in re-write of that section, see below. 
+\item \pref{cor-3s13-1} Attempted to clarify introduction to the section. \pref{cor-3s13-2} Clarified that the prevertices lie on the real line for the upper half plane case. \pref{cor-3s13-3} Prevertices are complex in the unit disc case. \pref{cor-3s13-4} Prevertices for the rectangle case are covered in re-write of that section, see below. 
 \item \pref{cor-3s1-1} Changed $\Gamma$ to $W$. \pref{cor-3s14-1} First sentence the right way around. \pref{cor-3s14-2} $w_0 \rightarrow w^*_0$.  \pref{cor-3s14-3} Talking about calculation numerically, put into separate paragraph. Added some more information about the base point of the integration.
 \item \pref{cor-3s15-2} Added further explanation to the rectangle map, including a figure illustrating how the series of maps work.
 \item \pref{cor-3s16} Put this computational bit in a separate paragraph, cleared up who solved the numerical issue.
@@ -232,7 +232,7 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-7s8} ``Instead'' $\rightarrow$ ``instead''.
 \item \pref{cor-7s9} Removed specific example and re-ordered.
 \item \pref{cor-7s10} Pointed out that the covariates only affect the scale but not shape, referred back to the detection function definitions. Added further discussion of assumptions. \pref{cor-7s10-2} Added reference to \citeb{davidbthesis}.
-\item \pref{cor-7s11} Corrected definition of $\nu$/$\nu_i$.
+\item \pref{cor-7s11} Corrected definition of $\nu$ and $\nu_i$.
 \item \pref{cor-7s12} Added that random line/point placement is critical into ``Assumptions''.
 \item \pref{cor-7s13} Put the summary at the end.
 \item \pref{cor-7s14} Added a paragraph on how people deal with monotonicity. \pref{cor-7s14-2} explicitly mentioned the Distance software, then cited the standard reference for the software.
@@ -243,7 +243,7 @@ The points raised in the e-mail have been addressed as follows:
 \begin{itemize}
 \item \pref{cor-8s1} ``being fit to data'' $\rightarrow$ ``fitted to the data''.
 \item \pref{cor-8s2} Referenced the added detection functions.
-\item \pref{cor-8s3} Corrected equation (\label{mix-detfct}). \pref{cor-8s3-2} Added further discussion in previous chapter about covariates. \pref{cor-8s3-1} Added reference to \cite{covpaper}. \pref{cor-8s3-3} Explicitly said that I'm modelling the detection function as conditional on the covariates, as advised.
+\item \pref{cor-8s3} Corrected equation (\ref{mix-detfct}). \pref{cor-8s3-2} Added further discussion in previous chapter about covariates. \pref{cor-8s3-1} Added reference to \cite{covpaper}. \pref{cor-8s3-3} Explicitly said that I'm modelling the detection function as conditional on the covariates, as advised.
 \item \pref{cor-8s4} explicitly stated $\sigma_{ij}=\sigma_i\sigma_j$.
 \item \pref{cor-8s5} I do mean the conditional likelihood, I've cleared up the section inline with the corrections detailed above.
 \item \pref{cor-8s6} ``$\mathbf{Z}$'' $\rightarrow$ ``$\mathbf{z}_i$''. (Also corrected throughout Appendix 1.)
@@ -275,6 +275,6 @@ The points raised in the e-mail have been addressed as follows:
 \item \pref{cor-e15} Caption claimed the Pike model was half-normal, when it in fact has a cosine adjustment.
 \item \pref{cor-e17} Added some more information on habitat type.
 \item \pref{cor-e16} Added level legend for Pike detection function plot.
-\item \pref{cor-e18} 
+%\item \pref{cor-e18} 
 \end{itemize}
 

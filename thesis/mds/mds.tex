@@ -24,7 +24,7 @@ First take the sample locations $\mathbf{x}_i = (x_{1i}, x_{2i})$ (as in \secref
 \item Obtain the MDS configuration for the domain using some representative set of points over the area in question. The only use of the MDS locations obtained in this step is to find the initial MDS configuration; they are discarded afterward. Representative points could be a sparse grid over the domain or a subset of $\{\mathbf{x}_i : i=1\dots n\}$. More detail and justification is provided in \secref{grids}, below.
 \item Using the MDS configuration obtained above along with Gower's interpolation (see \secref{gowers}) to obtain the location of the sample in the MDS configuration: $\{\mathbf{x}_i^*, z_i : i=1\dots n\}$.
 \item Smooth $\{\mathbf{x}_i^*, z_i : i=1\dots n\}$ using a penalised regression spline.
-\item To predict at a location $\mathbf{x_j}$ in the original domain, use Gower's interpolation to obtain the point's location in the MDS space: $\mathbf{x}_j^*$. Predict $\hat{f}(\mathbf{x}_j)$.
+\item To predict at a location $\mathbf{x}_j$ in the original domain, use Gower's interpolation to obtain the point's location in the MDS space: $\mathbf{x}_j^*$. Predict $\hat{f}(\mathbf{x}_j)$.
 \end{enumerate}
 Here, finding an MDS configuration of a set of points consists of: $i$) calculating the within-area distances between the points, $ii$) forming the distance matrix and, $iii$) actually performing the MDS projection; the details of each step are covered in the following sections. This approach is referred to as \mdsap\ (MultiDimensional Scaling with Regression Splines) throughout the chapter.
 
@@ -38,16 +38,17 @@ The basic concept behind MDS as used here is to take the data, calculate their w
 
 \subsection{Finding the new point configuration}
 
-First define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a symmetric $n \cross n$ matrix, $\mathbf{D}$, with \ijth element $d^2_{ij}$. For the moment let us assume that $\mathbf{D}$ is known and $d_{ij}$ is the Euclidean distance between points $i$ and $j$. 
+First define $d_{ij}$ as the distance between the points $i$ and $j$. These are used to form a symmetric $n \cross n$ matrix, $\mathbf{D}$, with \ijth element $d^2_{ij}$. For the moment let us ignore the issue of how distances are calculated and assume that $d_{ij}$ is simply the Euclidean distance between points $i$ and $j$. 
 
-\citeb{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \citeb{principlesofMA}, pp. 104-108 and \citeb{chatfieldcollins}, pp. 189-200.
+\citeb{diaconis08} gives a clear definition of the algorithm (due to \cite{schoenberg35} and \cite{torgerson}) for finding the new locations of points, which is outlined below. Further detail is given in \citeb{principlesofMA}, pp. 104--108 and \citeb{chatfieldcollins}, pp. 189--200.
 
-\label{cor-r31}First pretending that we do not have the original locations (the $x_i$s), we suppose that the $n$ unknown new locations (in $n$ dimensions) in our MDS configuration are rows of an $n \times n$ matrix, $\tilde{\mathbf{X}}^*$ (that is, that these new locations reside in $n$-dimensional space, which we can find lower dimensional projections of; see below). Now let $\mathbb{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbb{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbb{S}$ is:
+
+\label{cor-r31}First suppose that the original data locations (the $\mathbf{x}_i$s) are unknown, let us find a spatial configuration which reproduces the same distance matrix as the $\mathbf{x}_i$s, then show that there is a simple relation between these two configurations. The $n$ locations in MDS space, $\mathbf{x}^*_i$ (for $i=1,\dots,n$), form the rows of an $n \times p$ matrix, $\tilde{\mathbf{X}}^*$ (these new locations reside in $p$-dimensional space, which we can find lower dimensional projections of; see below). Now let $\mathbb{S}=\tilde{\mathbf{X}}^{*} \tilde{\mathbf{X}}^{*\text{T}} $, so $\mathbb{S}$ is a matrix of scalar products of the point vectors, i.e. the \ijth element of $\mathbb{S}$ is:
 \begin{equation}
 \mathbb{S}_{ij} = \mathbf{x}_i^* \left ( \mathbf{x}_j^* \right)^\text{T},
 \label{selem}
 \end{equation}
-where $\mathbb{S}$ is an $(n\cross n)$ matrix and $\mathbf{x}_i^*$ is as above. Note that $\tilde{\mathbf{X}}^*$ may only be found up to a translation and rotation, so it is assumed that the values in $\tilde{\mathbf{X}}^*$ have been centred about the origin (so $\tilde{\mathbf{X}}^{*\text{T}}\mathbf{1}=0$).\label{cor-4s1}
+where $\mathbb{S}$ is an $(n\cross n)$ matrix and $\mathbf{x}_i^*$ is as above. Note that $\tilde{\mathbf{X}}^*$ may only be found up to a translation and rotation (this does not alter the Euclidean distances). The centroid of the points in $\tilde{\mathbf{X}}^*$ is at the origin, so the sum of each column of $\tilde{\mathbf{X}}^*$ is zero.\label{cor-4s1}
 
 We now wish to relate $\mathbf{D}$ to $\mathbb{S}$. First, note that that \ijth element of $\mathbf{D}$ is 
 \begin{equation}
@@ -76,14 +77,20 @@ By pre- and post-multiplying any matrix by $\mathbf{H}$ the matrix is double cen
 \mathbb{S} = -\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.
 \end{equation}
 
-Now there is a relation between $\mathbf{D}$ and $\mathbb{S}$, we can concentrate on dealing with $\mathbb{S}$.\label{cor-r31-2} In order to find $\tilde{\mathbf{X}}^{*}$ we must factor $\mathbb{S}$. When performing MDS we are looking to decompose the space based on the directions of largest variation, i.e. those that have the largest contribution to $\mathbb{S}_{ij}$ so the  eigen-decomposition is taken. 
+\label{cor-r31-2}Having found a relation between $\mathbf{D}$ and $\mathbb{S}$, we can now find the relation between $\mathbb{S}$ and $\tilde{\mathbf{X}}^{*}$. This is simply a case of finding the eigen-decomposition of $\mathbb{S}$. The eigen-decompostion is useful since we wish to decompose the space based on the directions of largest variation (those that contribute to $\mathbb{S}_{ij}$the most).
 
 Finding the eigen-decomposition of $\mathbb{S}$, we obtain $\mathbb{S}=\mathbf{U}\mathbf{\Lambda}\tr{\mathbf{U}}$. Here $\mathbf{U}$ is the $n \cross n$ matrix with orthogonal columns which are the eigenvectors of $\mathbb{S}$ and $\mathbf{\Lambda}$ is the $n \cross n$ diagonal matrix of eigenvalues of $\mathbb{S}$ (in descending absolute value). An $\tilde{\mathbf{X}}^*$ satisfying (\ref{selem}) may then be computed as:
 \begin{equation}
 \tilde{\mathbf{X}}^*=\mathbf{U}\mathbf{\Lambda}^{\frac{1}{2}}.
 \end{equation}
+To summarize the above procedure, given that we have a distance matrix $\mathbf{D}$, the following steps can be performed to find the MDS projection of the data that $\mathbf{D}$ was calculated from:
+\begin{enumerate}
+\item Finding the matrix $\mathbb{S}=\frac{1}{2}\mathbf{H}\mathbf{D}\mathbf{H}.$
+\item Eigen-decomposing $\mathbb{S}$, to obtain $\mathbb{S}=\mathbf{U}\mathbf{\Lambda} \tr{\mathbf{U}}$.
+\item Computing $\tilde{\mathbf{X}}^*=\mathbf{U}\mathbf{\Lambda}^{\frac{1}{2}}$.
+\end{enumerate}
 
-Following these steps $\tilde{\mathbf{X}}^*$ is an $n \cross n$ matrix. The aim here is to smooth in two dimensions, and in general multidimensional scaling is performed to reduce the dimensionality of the data, so we must now reduce the dimensionality of $\tilde{\mathbf{X}}^*$. To represent the space using two dimensions the directions with the two largest eigenvalues are chosen and the others discarded. These two largest eigenvalues and their associated eigenvectors constitute the two largest sources of variation in distance (since they are the two largest contributions to $\mathbb{S}$) this gives the two dimensional representation of the data. 
+The aim here is to smooth in two dimensions, and in general multidimensional scaling is performed to reduce the dimensionality of the data, so we must now reduce the dimensionality of $\tilde{\mathbf{X}}^*$. To represent the space using two dimensions the directions with the two largest eigenvalues are chosen and the others discarded. These two largest eigenvalues and their associated eigenvectors constitute the two largest sources of variation in distance (since they are the two largest contributions to $\mathbb{S}$) this gives the two dimensional representation of the data. 
 
 Defining $\mathbf{X}^*$ to be the $n \cross 2$ dimensional matrix found by truncating $\tilde{\mathbf{X}}^*$ to its first two columns, a 2-dimensional representation has been obtained. More generally, the $k$-dimensional MDS representation of the space can be found by taking the first $k$ columns of $\tilde{\mathbf{X}}^*$.
 
@@ -109,12 +116,12 @@ We may find the position in the transformed space, $x^*_{\text{new}}$ , of some 
 \tilde{x}^*_{\text{new}} = \frac{1}{2} \mathbf{\Lambda}^{-1} \tr{(\tilde{\mathbf{X}}^*)} \mathbb{D}.
 \label{gower}
 \end{equation}
-Here $\mathbf{\Lambda}$ ($n \cross n$) and $\tr{(\tilde{\mathbf{X}}^*)}$ ($n \cross n$)\label{cor-r31-5} are as above, $\mathbb{D}$ ($n \cross 1$) is the vector of centred within-area distances from the points in the original configuration to $x_{\text{new}}$. The resulting vector, $\tilde{x}^*_{\text{new}}$, is an $n$-vector, so again we can truncate to a $k$-vector in a similar way to above (taking the first two entries gives the 2-dimensional projection).
+Here $\mathbf{\Lambda}$ ($n \cross n$) and $\tilde{\mathbf{X}}^*$ ($n \cross p$)\label{cor-r31-5} are as above, $\mathbb{D}$ ($n \cross 1$) is the vector of centred within-area distances from the points in the original configuration to $x_{\text{new}}$. The resulting vector, $\tilde{x}^*_{\text{new}}$, is a $p$-vector, so again we can truncate to a $k$-vector in a similar way to above (taking the first two entries gives the 2-dimensional projection).
 
 % Thesis fact: this paragraph infact represents about 3 months of work :(
 In \citeb{gower1968} the $i^\text{th}$ element of $\mathbb{D}$ is defined as $-(d^2_{i,\text{new}}-\text{diag}(\mathbf{\tilde{X}}^* \mathbf{\tilde{X}}^{*\text{T}})_i)$\label{cor-4s2}, with $d^2_{i,\text{new}}$ being the squared distance from the $i^\text{th}$ point to the new point. The centring is given by the diagonal elements of $\tilde{\mathbf{X}}^*\tilde{\mathbf{X}^{* \text{T}}}$ i.e. the squared distances from the original points to the centroid of the MDS configuration. To avoid confusion (and to emphasise that the full $\tilde{\mathbf{X}}^*$ matrix is used, rather than its truncated version), it may be easier to think of the expression for the $i^\text{th}$ element of $\mathbb{D}$ as $-(d^2_{i,n+1}-\text{diag}(\mathbb{S})_i)$\label{cor-r31-5-2}. Since $\mathbb{S}$ is already known, this expression is more sensible to use for computation as it doesn't imply any extra matrix multiplication.
 
-Gower's interpolation extends simply to the case when $m$ new points are inserted by having $\mathbb{D}$ as an $n \cross m$ matrix (so that the resulting $\tilde{x}^*_{\text{new}}$ is an $n\cross m$ matrix that can be truncated to the first $k$ columns, as above).
+Gower's interpolation extends simply to the case when $m$ new points are inserted by having $\mathbb{D}$ as an $n \cross m$ matrix (so that the resulting $\tilde{x}^*_{\text{new}}$ is an $p\cross m$ matrix that can be truncated to the first $k$ columns, as above).
 
 
 %\subsection{Practical considerations}
@@ -250,7 +257,7 @@ If a general method is to be useful it must first perform well on even a simple 
 
 \subsubsection{Setup}
 
-For the horseshoe, samples of 250 points were taken and normal noise added (for 3 different standard deviations: 0.1, 1 and 10). (These are the settings used in \cite{soap}.) Using these samples, three methods were fitted to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the effective degrees of freedom\label{cor-r35-1} (EDF) and MSE recorded for each replicate. The three methods used were as follows:
+For the horseshoe, samples of 250 points were taken and normal noise added (for 3 different standard deviations: 0.1, 1 and 10). (These are the settings used in \cite{soap}.) Three methods were applied to the data. Predictions were then made over 718 points (including the sample locations). 200 realisations were generated and the effective degrees of freedom\label{cor-r35-1} (EDF) and MSE recorded for each replicate. The three methods used were as follows:
 
 \begin{enumerate}
 \item \emph{Thin plate spline}: bivariate \tprs\  with basis size 100.
@@ -328,7 +335,7 @@ Just as when the \sch\ transform was used to morph the domain, it is interesting
 \subsection{Peninsula domain}
 \label{mds-wt2-sim}
 
-\label{cor-r36}The Ramsay horseshoe is an easy domain to smooth over since it is clear that a transformation should be parting the two arms of the domain. In practice however, which parts of the domain should be separated the most may not be so clear cut. For this reason a more realistic, complex domain would provide a better insight into the efficacy of the method. The domain shown in \fig{wt2-truth} is a modification of the peninsula domain seen in \secref{sc-penin} with the three high density areas in the far left peninsula replaced with a single continuous gradient, making it a slightly easier domain. The domain was modified because it was found in the simulations in \secref{sc-penin} that it was difficult to verify visually that the smoother estimating the peaks in the peninsula correctly; a single gradient is easier to check by eye.
+\label{cor-r36}The Ramsay horseshoe is an easy domain to smooth over since it is clear that a transformation should be parting the two arms of the domain. In practice however, which parts of the domain should be separated the most may not be so clear cut. For this reason a more realistic, complex domain would provide a better insight into the efficacy of the method. The domain shown in \fig{wt2-truth} is a modification of the peninsula domain seen in \secref{sc-penin} with the three high density areas in the far left peninsula replaced with a single continuous gradient, making it a slightly easier domain. The domain was modified because it was found in the simulations in \secref{sc-penin} that it was difficult to verify visually that the smoother estimated the peaks in the peninsula correctly; a single gradient is easier to check by eye.
 
 \subsubsection{Setup}
 
@@ -419,7 +426,7 @@ Prediction &  155.400 & 29.395 & 0.125\\
 \end{centering}
 \end{table}
 
-\label{cor-4s8}\mdsap\ must not only to have a sensible physical model to be useful to practitioners, it must also outperform the soap film smoother in terms of accuracy (and, preferably, be at least as quick at model fitting). The next two sections address these issues.
+\label{cor-4s8} In order to be useful to practitioners \mdsap\ must perform at least as well as the soap film smoother in terms of accuracy (i.e. low MSE) and preferably take comparable computational time for model fitting. The next two sections address these issues.
 
 \section{Making \mdsap\ faster}
 \label{mds-faster}
@@ -616,7 +623,7 @@ Finally, those $(x_{1k},x_{2k})$ that do not lie inside the boundary in MDS spac
 %Would the Jacobian be very slow? Need a dense grid, so we would have f(x...) and there would be an x for each data point?
 \label{mds-findinglstar}
 
-Up to this point it has been assumed that the factors by which the points have been stretched are known. In practice, this is not the case and they dependent on the transformation. A simple, heuristic way to calculate $\mathcal{L}^*(x_1,x_2)$ is to think of the degree to which the points have been stretched or squashed as a change in the density of the points. By estimating the density of the points over a grid in MDS space (by simply counting the number of points from a grid in the data space are mapped to a particular square in a grid in the MDS space), an approximation to the density change over the whole domain can be found.
+Up to this point it has been assumed that the factors by which space has been stretched are known. In practice, this is not the case and they dependent on the transformation. A simple, heuristic way to calculate $\mathcal{L}^*(x_1,x_2)$ is to think of the degree to which space has been stretched or squashed as a change in the density of the points in space. By estimating the density of the points over a grid in MDS space (by simply counting the number of points from a grid in the data space are mapped to a particular square in a grid in the MDS space), an approximation to the density change over the whole domain can be found.
 
 The general idea is to make $\mathcal{L}^*(x_1,x_2)$ a function of the change in density of points caused by projecting the original space into MDS space. Assuming that the density in the untransformed space is $1$ everywhere, it is only necessary to calculate the density in MDS space. Having calculated the point density in MDS space, $\mathcal{L}^*(x_1,x_2)$ is just some function of this density. 
 
